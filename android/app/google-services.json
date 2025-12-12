@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "845499195541",
+    "project_id": "wecoop-app",
+    "storage_bucket": "wecoop-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:845499195541:android:f72bb94ce2c89757873b9c",
+        "android_client_info": {
+          "package_name": "com.wecoop.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_UG15DcEOSHUdBFPiE8h_eaJYUOV4mHw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

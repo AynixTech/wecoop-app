@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="gcm_defaultSenderId" translatable="false">845499195541</string>
-    <string name="google_api_key" translatable="false">AIzaSyD_UG15DcEOSHUdBFPiE8h_eaJYUOV4mHw</string>
-    <string name="google_app_id" translatable="false">1:845499195541:android:f72bb94ce2c89757873b9c</string>
-    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyD_UG15DcEOSHUdBFPiE8h_eaJYUOV4mHw</string>
-    <string name="google_storage_bucket" translatable="false">wecoop-app.firebasestorage.app</string>
-    <string name="project_id" translatable="false">wecoop-app</string>
-</resources>

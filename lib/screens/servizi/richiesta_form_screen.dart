@@ -386,6 +386,102 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     return Padding(padding: const EdgeInsets.only(bottom: 16), child: field);
   }
 
+  /// Converte le label italiane dei campi in chiavi snake_case per l'API
+  Map<String, dynamic> _convertToApiFormat(Map<String, dynamic> formData) {
+    final apiData = <String, dynamic>{};
+
+    // Mappa di conversione label -> chiave API
+    final labelToApiKey = {
+      'Nome completo': 'nome_completo',
+      'Nome e Cognome': 'nome_completo',
+      'Nome richiedente': 'nome_completo',
+      'Email': 'email',
+      'Email richiedente': 'email',
+      'Telefono': 'telefono',
+      'Telefono richiedente': 'telefono',
+      'Numero di telefono': 'telefono',
+      'Data di nascita': 'data_nascita',
+      'Luogo di nascita': 'luogo_nascita',
+      'Paese di provenienza': 'paese_provenienza',
+      'Paese di nascita': 'paese_nascita',
+      'Paese nascita': 'paese_nascita',
+      'Paese di origine': 'paese_origine',
+      'Paese origine': 'paese_origine',
+      'Tipo di contratto': 'tipo_contratto',
+      'Tipo contratto': 'tipo_contratto',
+      'Nome azienda': 'nome_azienda',
+      'Tipo di attività': 'tipo_attivita',
+      'Tipo attività': 'tipo_attivita',
+      'Relazione familiare': 'relazione_familiare',
+      'Nome istituto/università': 'nome_istituto_universita',
+      'Nome istituto università': 'nome_istituto_universita',
+      'Data arrivo in Italia': 'data_arrivo_italia',
+      'Data di arrivo in Italia': 'data_arrivo_italia',
+      'Indirizzo residenza attuale': 'indirizzo_residenza_attuale',
+      'Indirizzo di residenza attuale': 'indirizzo_residenza_attuale',
+      'Motivo richiesta': 'motivo_richiesta',
+      'Motivo della richiesta': 'motivo_richiesta',
+      'Nazionalità': 'nazionalita',
+      'Numero passaporto': 'numero_passaporto',
+      'Data arrivo prevista': 'data_arrivo_prevista',
+      'Data di arrivo prevista': 'data_arrivo_prevista',
+      'Codice Fiscale': 'codice_fiscale',
+      'Codice fiscale': 'codice_fiscale',
+      'Indirizzo': 'indirizzo',
+      'Indirizzo residenza': 'indirizzo_residenza',
+      'Indirizzo di residenza': 'indirizzo_residenza',
+      'Anno fiscale': 'anno_fiscale',
+      'Partita IVA': 'partita_iva',
+      'Tipo supporto richiesto': 'tipo_supporto_richiesto',
+      'Tipo di supporto richiesto': 'tipo_supporto_richiesto',
+      'Tipo adempimento': 'tipo_adempimento',
+      'Tipo di adempimento': 'tipo_adempimento',
+      'Argomento consulenza': 'argomento_consulenza',
+      'Argomento della consulenza': 'argomento_consulenza',
+      'Cosa vuoi fare': 'cosa_vuoi_fare',
+      'Città': 'citta',
+      'Città di residenza': 'citta',
+      'CAP': 'cap',
+      'Provincia': 'provincia',
+      'Professione': 'professione',
+      'Note aggiuntive': 'note',
+      'Note': 'note',
+      'Durata contratto (mesi)': 'durata_contratto_mesi',
+      'Durata soggiorno (giorni)': 'durata_soggiorno_giorni',
+      'Documenti disponibili': 'documenti_disponibili',
+    };
+
+    // Campi data che devono essere convertiti da DD/MM/YYYY a YYYY-MM-DD
+    final dateFields = {
+      'data_nascita',
+      'data_arrivo_italia',
+      'data_arrivo_prevista',
+    };
+
+    for (var entry in formData.entries) {
+      final apiKey =
+          labelToApiKey[entry.key] ??
+          entry.key.toLowerCase().replaceAll(' ', '_');
+      var value = entry.value;
+
+      // Converti date dal formato DD/MM/YYYY a YYYY-MM-DD
+      if (dateFields.contains(apiKey) && value is String) {
+        final datePattern = RegExp(r'^(\d{1,2})/(\d{1,2})/(\d{4})$');
+        final match = datePattern.firstMatch(value);
+        if (match != null) {
+          final day = match.group(1)!.padLeft(2, '0');
+          final month = match.group(2)!.padLeft(2, '0');
+          final year = match.group(3);
+          value = '$year-$month-$day';
+        }
+      }
+
+      apiData[apiKey] = value;
+    }
+
+    return apiData;
+  }
+
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -404,11 +500,19 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     });
 
     try {
+      // Converti i dati dal formato form al formato API
+      final apiData = _convertToApiFormat(_formData);
+
+      print('=== DATI FORM ORIGINALI ===');
+      print(_formData);
+      print('=== DATI CONVERTITI PER API ===');
+      print(apiData);
+
       // Usa il nuovo endpoint API
       final result = await SocioService.inviaRichiestaServizio(
         servizio: widget.servizio,
         categoria: widget.categoria,
-        dati: _formData,
+        dati: apiData,
       );
 
       setState(() {

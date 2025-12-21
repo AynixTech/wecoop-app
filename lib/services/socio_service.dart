@@ -9,6 +9,7 @@ class SocioService {
   static const storage = FlutterSecureStorage();
 
   /// Verifica se l'utente è un socio attivo (PUBBLICO)
+  /// GET /soci/verifica/{email}
   static Future<bool> isSocio() async {
     try {
       final email = await storage.read(key: 'user_email');
@@ -31,7 +32,8 @@ class SocioService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['is_attivo'] == true;
+        // Nuova API ritorna: {"success": true, "is_socio": true, "status": "attivo", "data_adesione": "2024-01-10"}
+        return data['is_socio'] == true && data['status'] == 'attivo';
       }
       return false;
     } catch (e) {
@@ -41,6 +43,8 @@ class SocioService {
   }
 
   /// Verifica se c'è una richiesta di adesione in attesa (PUBBLICO)
+  /// GET /soci/verifica/{email}
+  /// Ritorna true se is_socio è false (richiesta non ancora approvata ma presente)
   static Future<bool> hasRichiestaInAttesa() async {
     try {
       final email = await storage.read(key: 'user_email');
@@ -56,8 +60,9 @@ class SocioService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        // Se is_socio è true ma status è pending
-        return data['is_socio'] == true && data['status'] == 'pending';
+        // Se success è true ma is_socio è false, significa che c'è una richiesta pending
+        // Quando approvata: is_socio=true, status=attivo
+        return data['success'] == true && data['is_socio'] == false;
       }
       return false;
     } catch (e) {
@@ -119,28 +124,34 @@ class SocioService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
+        // Nuova API ritorna: {"success": true, "message": "...", "data": {"richiesta_id": 123, "nome": "...", "email": "...", "status": "pending"}}
         return {
-          'success': true,
-          'message': data['message'] ?? 'Richiesta inviata con successo',
-          'numero_pratica': data['data']?['numero_pratica'],
+          'success': data['success'] ?? true,
+          'message':
+              data['message'] ?? 'Richiesta di adesione inviata con successo',
+          'richiesta_id': data['data']?['richiesta_id'],
+          'status': data['data']?['status'] ?? 'pending',
         };
       } else if (response.statusCode == 400) {
         final errorData = jsonDecode(response.body);
         return {
           'success': false,
-          'message': errorData['message'] ?? 'Dati non validi',
+          'message': errorData['message'] ?? 'Parametro mancante o non valido',
         };
       } else if (response.statusCode == 409) {
         final errorData = jsonDecode(response.body);
         return {
           'success': false,
-          'message': errorData['message'] ?? 'Hai già una richiesta in attesa',
+          'message':
+              errorData['message'] ??
+              'Esiste già una richiesta con questa email',
         };
       } else {
         final errorData = jsonDecode(response.body);
         return {
           'success': false,
-          'message': errorData['message'] ?? 'Errore durante l\'invio',
+          'message':
+              errorData['message'] ?? 'Errore durante l\'invio della richiesta',
         };
       }
     } on TimeoutException {
@@ -163,6 +174,7 @@ class SocioService {
   }
 
   /// Invia richiesta servizio (SOLO SOCI ATTIVI)
+  /// POST /richiesta-servizio
   static Future<Map<String, dynamic>> inviaRichiestaServizio({
     required String servizio,
     required String categoria,
@@ -170,7 +182,7 @@ class SocioService {
   }) async {
     try {
       final token = await storage.read(key: 'jwt_token');
-      final url = '$baseUrl/servizi/richiesta';
+      final url = '$baseUrl/richiesta-servizio';
 
       print('=== INVIANDO RICHIESTA SERVIZIO ===');
       print('URL: $url');
@@ -179,7 +191,6 @@ class SocioService {
       final body = jsonEncode({
         'servizio': servizio,
         'categoria': categoria,
-        'data_richiesta': DateTime.now().toIso8601String(),
         'dati': dati,
       });
 
@@ -200,26 +211,37 @@ class SocioService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
+        // Nuova API ritorna: {"success": true, "message": "Richiesta ricevuta con successo", "id": 789, "numero_pratica": "WECOOP-2025-00001", "data_richiesta": "..."}
         return {
-          'success': true,
-          'message': data['message'] ?? 'Richiesta inviata con successo',
-          'numero_pratica': data['data']?['numero_pratica'],
+          'success': data['success'] ?? true,
+          'message': data['message'] ?? 'Richiesta ricevuta con successo',
+          'id': data['id'],
+          'numero_pratica': data['numero_pratica'],
+          'data_richiesta': data['data_richiesta'],
+        };
+      } else if (response.statusCode == 400) {
+        final errorData = jsonDecode(response.body);
+        return {
+          'success': false,
+          'message': errorData['message'] ?? 'Campo obbligatorio mancante',
         };
       } else if (response.statusCode == 401) {
         return {
           'success': false,
-          'message': 'Devi essere un socio attivo per richiedere servizi',
+          'message': 'Devi essere autenticato. Effettua il login.',
         };
       } else if (response.statusCode == 403) {
         return {
           'success': false,
-          'message': 'Non hai i permessi per richiedere questo servizio',
+          'message':
+              'Non hai i permessi. Solo i soci possono richiedere servizi.',
         };
       } else {
         final errorData = jsonDecode(response.body);
         return {
           'success': false,
-          'message': errorData['message'] ?? 'Errore durante l\'invio',
+          'message':
+              errorData['message'] ?? 'Errore durante l\'invio della richiesta',
         };
       }
     } on TimeoutException {
@@ -229,6 +251,95 @@ class SocioService {
     } catch (e) {
       print('Errore: $e');
       return {'success': false, 'message': 'Errore: ${e.toString()}'};
+    }
+  }
+
+  /// Ottieni i dati completi dell'utente socio corrente (AUTENTICATO)
+  /// GET /soci/me
+  static Future<Map<String, dynamic>?> getMe() async {
+    try {
+      final token = await storage.read(key: 'jwt_token');
+
+      if (token == null) {
+        print('Token JWT mancante');
+        return null;
+      }
+
+      final url = '$baseUrl/soci/me';
+      print('🔄 Chiamata GET /soci/me...');
+
+      final response = await http
+          .get(Uri.parse(url), headers: {'Authorization': 'Bearer $token'})
+          .timeout(const Duration(seconds: 30));
+
+      print('📥 GET /soci/me status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        // API ritorna: {"success": true, "data": {...tutti i campi socio...}}
+        if (responseData['success'] == true && responseData['data'] != null) {
+          return responseData['data'] as Map<String, dynamic>;
+        }
+      } else if (response.statusCode == 401) {
+        print('⚠️ Token scaduto o non valido');
+        return null;
+      }
+
+      return null;
+    } catch (e) {
+      print('❌ Errore durante GET /soci/me: $e');
+      return null;
+    }
+  }
+
+  /// Ottieni lista dei soci (AUTENTICATO - solo admin)
+  /// GET /soci
+  static Future<List<Map<String, dynamic>>> getSoci({
+    String status = 'attivo',
+    int perPage = 50,
+    int page = 1,
+    String? search,
+  }) async {
+    try {
+      final token = await storage.read(key: 'jwt_token');
+
+      if (token == null) {
+        print('Token JWT mancante');
+        return [];
+      }
+
+      final queryParams = <String, String>{
+        'status': status,
+        'per_page': perPage.toString(),
+        'page': page.toString(),
+      };
+
+      if (search != null && search.isNotEmpty) {
+        queryParams['search'] = search;
+      }
+
+      final uri = Uri.parse(
+        '$baseUrl/soci',
+      ).replace(queryParameters: queryParams);
+      print('🔄 Chiamata GET /soci...');
+
+      final response = await http
+          .get(uri, headers: {'Authorization': 'Bearer $token'})
+          .timeout(const Duration(seconds: 30));
+
+      print('📥 GET /soci status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData['success'] == true && responseData['data'] != null) {
+          return List<Map<String, dynamic>>.from(responseData['data']);
+        }
+      }
+
+      return [];
+    } catch (e) {
+      print('❌ Errore durante GET /soci: $e');
+      return [];
     }
   }
 }

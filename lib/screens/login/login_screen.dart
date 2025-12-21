@@ -73,9 +73,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _fetchUserMeta(String token, String nicename) async {
-    final url = Uri.parse(
-      'https://www.wecoop.org/wp-json/wecoop/v1/user-meta/$nicename',
-    );
+    // Usa il nuovo endpoint /soci/me per ottenere tutti i dati dell'utente
+    final url = Uri.parse('https://www.wecoop.org/wp-json/wecoop/v1/soci/me');
 
     try {
       final response = await http.get(
@@ -83,20 +82,55 @@ class _LoginScreenState extends State<LoginScreen> {
         headers: {'Authorization': 'Bearer $token'},
       );
 
-      print('GET user-meta status: ${response.statusCode}');
-      print('GET user-meta body: ${response.body}');
+      print('GET /soci/me status: ${response.statusCode}');
+      print('GET /soci/me body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final meta = jsonDecode(response.body);
-        await storage.write(key: 'telefono', value: meta['telefono']);
-        await storage.write(key: 'citta', value: meta['citta']);
-        await storage.write(key: 'interessi', value: meta['interessi']);
-        await storage.write(key: 'carta_id', value: meta['carta_id']);
+        final data = jsonDecode(response.body);
+
+        // Salva tutti i dati dell'utente socio
+        await storage.write(key: 'socio_id', value: data['id']?.toString());
+        await storage.write(key: 'first_name', value: data['nome']);
+        await storage.write(key: 'last_name', value: data['cognome']);
+        await storage.write(
+          key: 'codice_fiscale',
+          value: data['codice_fiscale'],
+        );
+        await storage.write(key: 'data_nascita', value: data['data_nascita']);
+        await storage.write(key: 'luogo_nascita', value: data['luogo_nascita']);
+        await storage.write(key: 'indirizzo', value: data['indirizzo']);
+        await storage.write(key: 'citta', value: data['citta']);
+        await storage.write(key: 'cap', value: data['cap']);
+        await storage.write(key: 'provincia', value: data['provincia']);
+        await storage.write(key: 'telefono', value: data['telefono']);
+        await storage.write(key: 'professione', value: data['professione']);
+        await storage.write(key: 'stato_socio', value: data['stato']);
+        await storage.write(
+          key: 'data_iscrizione',
+          value: data['data_iscrizione'],
+        );
+        await storage.write(
+          key: 'tessera_numero',
+          value: data['tessera_numero'],
+        );
+        await storage.write(key: 'tessera_url', value: data['tessera_url']);
+
+        // Crea nome completo
+        final nome = data['nome'] ?? '';
+        final cognome = data['cognome'] ?? '';
+        if (nome.isNotEmpty || cognome.isNotEmpty) {
+          final fullName = '$nome $cognome'.trim();
+          await storage.write(key: 'full_name', value: fullName);
+        }
+
+        print('✅ Dati socio salvati con successo');
+        print('Nome completo: ${data['nome']} ${data['cognome']}');
+        print('Tessera: ${data['tessera_numero']}');
       } else {
-        print('Errore nel recupero dei metadati utente');
+        print('⚠️ Errore nel recupero dei dati socio: ${response.statusCode}');
       }
     } catch (e) {
-      print('Eccezione durante il recupero dei metadati: $e');
+      print('❌ Eccezione durante il recupero dei dati socio: $e');
     }
   }
 

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../../services/socio_service.dart';
+import '../login/login_screen.dart';
 
 class AdesioneSocioScreen extends StatefulWidget {
   const AdesioneSocioScreen({super.key});
@@ -10,8 +14,11 @@ class AdesioneSocioScreen extends StatefulWidget {
 
 class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
   final _formKey = GlobalKey<FormState>();
-  final SocioService _socioService = SocioService();
+  final _storage = const FlutterSecureStorage();
   bool _isSubmitting = false;
+
+  // 🧪 FLAG DEBUG: Imposta a true per precompilare i campi con dati di test
+  static const bool _useTestData = true;
 
   // Controllers per i campi del form
   final _nomeController = TextEditingController();
@@ -26,6 +33,29 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
   final _emailController = TextEditingController();
   final _professioneController = TextEditingController();
   final _noteController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (_useTestData) {
+      _loadTestData();
+    }
+  }
+
+  void _loadTestData() {
+    _nomeController.text = 'Jordan';
+    _cognomeController.text = 'Avila';
+    _codiceFiscaleController.text = 'VLGGGN94L13Z605E';
+    _dataNascitaController.text = '13/07/1994';
+    _luogoNascitaController.text = 'Roma';
+    _indirizzoController.text = 'Via Roma 123';
+    _cittaController.text = 'Milano';
+    _capController.text = '20100';
+    _telefonoController.text = '+39 3891733185';
+    _emailController.text = 'jordanavila1394gmail.com';
+    _professioneController.text = 'Ingegnere';
+    _noteController.text = 'Voglio contribuire alla cooperativa sociale';
+  }
 
   @override
   void dispose() {
@@ -53,7 +83,20 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
       _isSubmitting = true;
     });
 
-    final result = await _socioService.richiestaAdesioneSocio(
+    // Prima controlla se l'email è già registrata
+    final email = _emailController.text.trim();
+    final emailExists = await _checkEmailExists(email);
+
+    if (emailExists) {
+      setState(() {
+        _isSubmitting = false;
+      });
+      if (!mounted) return;
+      _showEmailExistsDialog();
+      return;
+    }
+
+    final result = await SocioService.richiestaAdesioneSocio(
       nome: _nomeController.text.trim(),
       cognome: _cognomeController.text.trim(),
       codiceFiscale: _codiceFiscaleController.text.trim().toUpperCase(),
@@ -65,7 +108,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
       telefono: _telefonoController.text.trim(),
       email: _emailController.text.trim(),
       professione: _professioneController.text.trim(),
-      note: _noteController.text.trim(),
+      motivazione: _noteController.text.trim(),
     );
 
     setState(() {
@@ -78,6 +121,12 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
     final message = result['message'] ?? 'Operazione completata';
 
     if (success) {
+      // Salva l'email localmente per verifiche future
+      final email = _emailController.text.trim();
+      await _storage.write(key: 'pending_socio_email', value: email);
+
+      if (!mounted) return;
+
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -130,6 +179,73 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
             ),
       );
     }
+  }
+
+  /// Controlla se l'email esiste già nel sistema
+  Future<bool> _checkEmailExists(String email) async {
+    try {
+      // Chiama direttamente l'endpoint di verifica
+      final encodedEmail = Uri.encodeComponent(email);
+      final url = '${SocioService.baseUrl}/soci/verifica/$encodedEmail';
+
+      final response = await http
+          .get(Uri.parse(url))
+          .timeout(const Duration(seconds: 30));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // Se is_socio è true, l'email esiste già
+        return data['is_socio'] == true;
+      }
+      return false;
+    } catch (e) {
+      print('Errore controllo email: $e');
+      return false;
+    }
+  }
+
+  /// Mostra dialog quando l'email esiste già
+  void _showEmailExistsDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Row(
+              children: [
+                Icon(Icons.info_outline, color: Colors.blue, size: 32),
+                SizedBox(width: 12),
+                Expanded(child: Text('Email già registrata')),
+              ],
+            ),
+            content: const Text(
+              'Questa email è già registrata nel sistema.\n\n'
+              'Sei già un socio WECOOP! Effettua il login per accedere ai servizi.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Annulla'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Chiudi dialog
+                  Navigator.of(context).pop(); // Chiudi form adesione
+                  // Vai al login
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Vai al Login'),
+              ),
+            ],
+          ),
+    );
   }
 
   @override

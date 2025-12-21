@@ -1,58 +1,73 @@
-import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:async';
+import 'dart:io';
 
 class SocioService {
-  static const String baseUrl = 'https://www.wecoop.org/wp-json';
-  final storage = const FlutterSecureStorage();
+  static const String baseUrl = 'https://www.wecoop.org/wp-json/wecoop/v1';
+  static const storage = FlutterSecureStorage();
 
-  /// Verifica se l'utente loggato è un socio attivo
-  Future<bool> isSocio() async {
+  /// Verifica se l'utente è un socio attivo (PUBBLICO)
+  static Future<bool> isSocio() async {
     try {
-      final token = await storage.read(key: 'jwt_token');
-      final nicename = await storage.read(key: 'user_nicename');
+      final email = await storage.read(key: 'user_email');
 
-      if (token == null || nicename == null) {
+      if (email == null) {
+        print('Nessuna email trovata');
         return false;
       }
 
-      // Chiamata all'endpoint WordPress per verificare lo stato socio
-      final url = Uri.parse('$baseUrl/wecoop/v1/user-meta/$nicename');
-      final response = await http.get(
-        url,
-        headers: {'Authorization': 'Bearer $token'},
-      );
+      final encodedEmail = Uri.encodeComponent(email);
+      final url = '$baseUrl/soci/verifica/$encodedEmail';
+      print('Verifico socio su: $url');
+
+      final response = await http
+          .get(Uri.parse(url))
+          .timeout(const Duration(seconds: 30));
+
+      print('Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-
-        // Verifica se l'utente ha il campo 'is_socio' = true
-        // oppure se ha un campo specifico come 'membership_status' = 'active'
-        final isSocio =
-            data['is_socio'] == true ||
-            data['is_socio'] == 'true' ||
-            data['membership_status'] == 'active';
-
-        // Salva lo stato in cache
-        await storage.write(key: 'is_socio', value: isSocio.toString());
-
-        return isSocio;
+        return data['is_attivo'] == true;
       }
-
       return false;
     } catch (e) {
       print('Errore verifica socio: $e');
-
-      // Fallback: controlla la cache
-      final cachedStatus = await storage.read(key: 'is_socio');
-      return cachedStatus == 'true';
+      return false;
     }
   }
 
-  /// Invia richiesta di adesione come socio
-  /// Ritorna un Map con 'success' e 'message' invece di solo bool
-  /// NOTA: Può essere chiamata anche da utenti non loggati
-  Future<Map<String, dynamic>> richiestaAdesioneSocio({
+  /// Verifica se c'è una richiesta di adesione in attesa (PUBBLICO)
+  static Future<bool> hasRichiestaInAttesa() async {
+    try {
+      final email = await storage.read(key: 'user_email');
+
+      if (email == null) return false;
+
+      final encodedEmail = Uri.encodeComponent(email);
+      final url = '$baseUrl/soci/verifica/$encodedEmail';
+
+      final response = await http
+          .get(Uri.parse(url))
+          .timeout(const Duration(seconds: 30));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // Se is_socio è true ma status è pending
+        return data['is_socio'] == true && data['status'] == 'pending';
+      }
+      return false;
+    } catch (e) {
+      print('Errore verifica richiesta: $e');
+      return false;
+    }
+  }
+
+  /// Invia richiesta di adesione come socio (PUBBLICO - no auth richiesta)
+  static Future<Map<String, dynamic>> richiestaAdesioneSocio({
     required String nome,
     required String cognome,
     required String codiceFiscale,
@@ -64,14 +79,16 @@ class SocioService {
     required String telefono,
     required String email,
     String? professione,
-    String? note,
+    String? provincia,
+    String? motivazione,
   }) async {
     try {
-      final token = await storage.read(key: 'jwt_token');
+      final url = '$baseUrl/soci/richiesta';
 
-      final url = Uri.parse('$baseUrl/wecoop/v1/richiesta-adesione-socio');
+      print('=== INVIANDO RICHIESTA ADESIONE SOCIO ===');
+      print('URL: $url');
 
-      final body = {
+      final body = jsonEncode({
         'nome': nome,
         'cognome': cognome,
         'codice_fiscale': codiceFiscale,
@@ -80,113 +97,138 @@ class SocioService {
         'indirizzo': indirizzo,
         'citta': citta,
         'cap': cap,
+        'provincia': provincia ?? '',
         'telefono': telefono,
         'email': email,
         'professione': professione ?? '',
-        'note': note ?? '',
-        'data_richiesta': DateTime.now().toIso8601String(),
+        'motivazione': motivazione ?? 'Richiesta di adesione alla cooperativa',
+      });
+
+      print('Body: $body');
+
+      final response = await http
+          .post(
+            Uri.parse(url),
+            headers: {'Content-Type': 'application/json'},
+            body: body,
+          )
+          .timeout(const Duration(seconds: 30));
+
+      print('Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        return {
+          'success': true,
+          'message': data['message'] ?? 'Richiesta inviata con successo',
+          'numero_pratica': data['data']?['numero_pratica'],
+        };
+      } else if (response.statusCode == 400) {
+        final errorData = jsonDecode(response.body);
+        return {
+          'success': false,
+          'message': errorData['message'] ?? 'Dati non validi',
+        };
+      } else if (response.statusCode == 409) {
+        final errorData = jsonDecode(response.body);
+        return {
+          'success': false,
+          'message': errorData['message'] ?? 'Hai già una richiesta in attesa',
+        };
+      } else {
+        final errorData = jsonDecode(response.body);
+        return {
+          'success': false,
+          'message': errorData['message'] ?? 'Errore durante l\'invio',
+        };
+      }
+    } on TimeoutException {
+      return {
+        'success': false,
+        'message': 'Timeout: il server non risponde. Riprova più tardi.',
       };
+    } on SocketException {
+      return {
+        'success': false,
+        'message': 'Nessuna connessione internet. Verifica la connessione.',
+      };
+    } catch (e) {
+      print('Errore generico: $e');
+      return {
+        'success': false,
+        'message': 'Errore imprevisto: ${e.toString()}',
+      };
+    }
+  }
 
-      print('=== RICHIESTA ADESIONE SOCIO ===');
+  /// Invia richiesta servizio (SOLO SOCI ATTIVI)
+  static Future<Map<String, dynamic>> inviaRichiestaServizio({
+    required String servizio,
+    required String categoria,
+    required Map<String, dynamic> dati,
+  }) async {
+    try {
+      final token = await storage.read(key: 'jwt_token');
+      final url = '$baseUrl/servizi/richiesta';
+
+      print('=== INVIANDO RICHIESTA SERVIZIO ===');
       print('URL: $url');
-      print('Token presente: ${token != null && token.isNotEmpty}');
-      print('Body: ${jsonEncode(body)}');
+      print('Token presente: ${token != null}');
 
-      // Headers - aggiungi token solo se presente
+      final body = jsonEncode({
+        'servizio': servizio,
+        'categoria': categoria,
+        'data_richiesta': DateTime.now().toIso8601String(),
+        'dati': dati,
+      });
+
+      print('Body: $body');
+
       final headers = <String, String>{'Content-Type': 'application/json'};
 
-      if (token != null && token.isNotEmpty) {
+      if (token != null) {
         headers['Authorization'] = 'Bearer $token';
       }
 
       final response = await http
-          .post(url, headers: headers, body: jsonEncode(body))
-          .timeout(
-            const Duration(seconds: 30),
-            onTimeout: () {
-              throw Exception('Timeout: il server non risponde');
-            },
-          );
+          .post(Uri.parse(url), headers: headers, body: body)
+          .timeout(const Duration(seconds: 30));
 
-      print('Status Code: ${response.statusCode}');
-      print('Response Body: ${response.body}');
+      print('Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Segna come richiesta in attesa
-        await storage.write(key: 'adesione_richiesta', value: 'pending');
-
-        // Prova a parsare la risposta
-        try {
-          final responseData = jsonDecode(response.body);
-          return {
-            'success': true,
-            'message':
-                responseData['message'] ?? 'Richiesta inviata con successo',
-            'id': responseData['id'],
-          };
-        } catch (e) {
-          return {'success': true, 'message': 'Richiesta inviata con successo'};
-        }
-      } else if (response.statusCode == 409) {
-        // Richiesta già esistente
+        final data = jsonDecode(response.body);
         return {
-          'success': false,
-          'message': 'Hai già una richiesta di adesione in attesa',
+          'success': true,
+          'message': data['message'] ?? 'Richiesta inviata con successo',
+          'numero_pratica': data['data']?['numero_pratica'],
         };
       } else if (response.statusCode == 401) {
         return {
           'success': false,
-          'message': 'Sessione scaduta. Effettua nuovamente il login.',
+          'message': 'Devi essere un socio attivo per richiedere servizi',
         };
-      } else if (response.statusCode == 404) {
+      } else if (response.statusCode == 403) {
         return {
           'success': false,
-          'message': 'Endpoint non trovato. Contatta l\'amministratore.',
+          'message': 'Non hai i permessi per richiedere questo servizio',
         };
       } else {
-        // Prova a leggere il messaggio di errore dal server
-        try {
-          final errorData = jsonDecode(response.body);
-          return {
-            'success': false,
-            'message':
-                errorData['message'] ??
-                'Errore del server (${response.statusCode})',
-          };
-        } catch (e) {
-          return {
-            'success': false,
-            'message':
-                'Errore del server (${response.statusCode}): ${response.body}',
-          };
-        }
+        final errorData = jsonDecode(response.body);
+        return {
+          'success': false,
+          'message': errorData['message'] ?? 'Errore durante l\'invio',
+        };
       }
+    } on TimeoutException {
+      return {'success': false, 'message': 'Timeout: il server non risponde'};
+    } on SocketException {
+      return {'success': false, 'message': 'Nessuna connessione internet'};
     } catch (e) {
-      print('ECCEZIONE durante richiesta adesione: $e');
-
-      String errorMessage = 'Errore di connessione';
-      if (e.toString().contains('SocketException')) {
-        errorMessage =
-            'Impossibile connettersi al server. Verifica la connessione internet.';
-      } else if (e.toString().contains('Timeout')) {
-        errorMessage = 'Il server impiega troppo tempo a rispondere. Riprova.';
-      } else {
-        errorMessage = 'Errore: ${e.toString()}';
-      }
-
-      return {'success': false, 'message': errorMessage};
+      print('Errore: $e');
+      return {'success': false, 'message': 'Errore: ${e.toString()}'};
     }
-  }
-
-  /// Verifica se c'è una richiesta di adesione in pending
-  Future<bool> hasRichiestaInAttesa() async {
-    final status = await storage.read(key: 'adesione_richiesta');
-    return status == 'pending';
-  }
-
-  /// Pulisce lo stato di adesione (per logout)
-  Future<void> clearAdesioneStatus() async {
-    await storage.delete(key: 'is_socio');
-    await storage.delete(key: 'adesione_richiesta');
   }
 }

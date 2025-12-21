@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../services/socio_service.dart';
 import 'adesione_socio_screen.dart';
+import '../login/login_screen.dart';
 
 /// Middleware che verifica se l'utente è socio prima di accedere ai servizi
 class ServiziGateScreen extends StatefulWidget {
@@ -18,9 +20,10 @@ class ServiziGateScreen extends StatefulWidget {
 }
 
 class _ServiziGateScreenState extends State<ServiziGateScreen> {
-  final SocioService _socioService = SocioService();
+  final _storage = const FlutterSecureStorage();
   bool _isLoading = true;
   bool _hasRichiestaInAttesa = false;
+  bool _shouldShowLogin = false;
 
   @override
   void initState() {
@@ -29,8 +32,35 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
   }
 
   Future<void> _checkSocioStatus() async {
-    final isSocio = await _socioService.isSocio();
-    final hasRichiesta = await _socioService.hasRichiestaInAttesa();
+    // 1. Controlla se c'è una email salvata da una richiesta precedente
+    final savedEmail = await _storage.read(key: 'pending_socio_email');
+
+    // 2. Verifica se l'utente è già socio
+    final isSocio = await SocioService.isSocio();
+
+    // 3. Se non è socio ma ha una email salvata, controlla se è stato approvato
+    if (!isSocio && savedEmail != null && savedEmail.isNotEmpty) {
+      final hasRichiesta = await SocioService.hasRichiestaInAttesa();
+
+      // Se non ha più richiesta in attesa, potrebbe essere stato approvato
+      // Mostra il prompt per il login
+      if (!hasRichiesta) {
+        setState(() {
+          _shouldShowLogin = true;
+          _isLoading = false;
+        });
+        return;
+      }
+
+      setState(() {
+        _hasRichiestaInAttesa = hasRichiesta;
+        _isLoading = false;
+      });
+      return;
+    }
+
+    // 4. Controllo standard
+    final hasRichiesta = await SocioService.hasRichiestaInAttesa();
 
     setState(() {
       _hasRichiestaInAttesa = hasRichiesta;
@@ -55,11 +85,86 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
       );
     }
 
+    if (_shouldShowLogin) {
+      return _buildLoginPromptScreen();
+    }
+
     if (_hasRichiestaInAttesa) {
       return _buildRichiestaInAttesaScreen();
     }
 
     return _buildAdesioneRequiredScreen();
+  }
+
+  Widget _buildLoginPromptScreen() {
+    return Scaffold(
+      appBar: AppBar(title: Text(widget.serviceName)),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.check_circle_outline,
+                size: 80,
+                color: Colors.green.shade400,
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Richiesta Approvata!',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'La tua richiesta di adesione è stata approvata!\n\n'
+                'Effettua il login per accedere a tutti i servizi riservati ai soci.',
+                style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.login),
+                label: const Text('Vai al Login'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 16,
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              OutlinedButton.icon(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back),
+                label: const Text('Torna indietro'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildRichiestaInAttesaScreen() {

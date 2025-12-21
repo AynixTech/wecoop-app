@@ -14,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final storage = FlutterSecureStorage();
   String userName = '...'; // valore iniziale
-  
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +44,9 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _GreetingSection(userName: userName),
+              const SizedBox(height: 24),
+
+              const _ServicesSection(),
               const SizedBox(height: 24),
 
               const _SectionWithHorizontalCards(
@@ -217,6 +220,7 @@ class _InfoCard extends StatelessWidget {
     );
   }
 }
+
 class _QuickAccessSection extends StatelessWidget {
   const _QuickAccessSection();
   @override
@@ -258,6 +262,156 @@ class _QuickAccessSection extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+class _ServicesSection extends StatelessWidget {
+  const _ServicesSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _SectionTitle(title: '🛠️ I nostri servizi'),
+        const SizedBox(height: 12),
+        _ServiceButton(
+          title: 'Accoglienza e Orientamento',
+          imagePath: 'assets/images/home/accoglienza.jpg',
+          onTap: () {
+            // TODO: Navigare alla pagina del servizio
+            debugPrint('Accoglienza e Orientamento tapped');
+          },
+        ),
+        const SizedBox(height: 12),
+        _ServiceButton(
+          title: 'Mediazione Fiscale',
+          imagePath: 'assets/images/home/mediazione.jpg',
+          onTap: () {
+            // TODO: Navigare alla pagina del servizio
+            debugPrint('Mediazione Fiscale tapped');
+          },
+        ),
+        const SizedBox(height: 12),
+        _ServiceButton(
+          title: 'Supporto Contabile',
+          imagePath: 'assets/images/home/contabile.jpg',
+          onTap: () {
+            // TODO: Navigare alla pagina del servizio
+            debugPrint('Supporto Contabile tapped');
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _ServiceButton extends StatelessWidget {
+  final String title;
+  final String imagePath;
+  final VoidCallback onTap;
+
+  const _ServiceButton({
+    required this.title,
+    required this.imagePath,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        height: 100,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            // Immagine di sfondo
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.asset(
+                imagePath,
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  // Fallback con colore gradiente se l'immagine non esiste
+                  return Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      gradient: LinearGradient(
+                        colors: [Colors.amber.shade300, Colors.amber.shade600],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            // Overlay scuro per migliorare la leggibilità del testo
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.black.withOpacity(0.5),
+                    Colors.black.withOpacity(0.3),
+                  ],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+              ),
+            ),
+            // Testo
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black45,
+                        blurRadius: 4,
+                        offset: Offset(1, 1),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            // Icona freccia a destra
+            Positioned(
+              right: 16,
+              top: 0,
+              bottom: 0,
+              child: Center(
+                child: Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.white.withOpacity(0.9),
+                  size: 24,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -315,7 +469,7 @@ class _SectionTitle extends StatelessWidget {
 }
 
 class _LatestPostsSection extends StatefulWidget {
-  const _LatestPostsSection({super.key});
+  const _LatestPostsSection();
 
   @override
   State<_LatestPostsSection> createState() => _LatestPostsSectionState();

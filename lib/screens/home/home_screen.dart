@@ -3,6 +3,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../models/post_model.dart';
 import '../../services/wordpress_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../servizi/accoglienza_screen.dart';
+import '../servizi/mediazione_fiscale_screen.dart';
+import '../servizi/supporto_contabile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -280,8 +283,12 @@ class _ServicesSection extends StatelessWidget {
           title: 'Accoglienza e Orientamento',
           imagePath: 'assets/images/home/accoglienza.jpg',
           onTap: () {
-            // TODO: Navigare alla pagina del servizio
-            debugPrint('Accoglienza e Orientamento tapped');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AccoglienzaScreen(),
+              ),
+            );
           },
         ),
         const SizedBox(height: 12),
@@ -289,8 +296,12 @@ class _ServicesSection extends StatelessWidget {
           title: 'Mediazione Fiscale',
           imagePath: 'assets/images/home/mediazione.jpg',
           onTap: () {
-            // TODO: Navigare alla pagina del servizio
-            debugPrint('Mediazione Fiscale tapped');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MediazioneFiscaleScreen(),
+              ),
+            );
           },
         ),
         const SizedBox(height: 12),
@@ -298,8 +309,12 @@ class _ServicesSection extends StatelessWidget {
           title: 'Supporto Contabile',
           imagePath: 'assets/images/home/contabile.jpg',
           onTap: () {
-            // TODO: Navigare alla pagina del servizio
-            debugPrint('Supporto Contabile tapped');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SupportoContabileScreen(),
+              ),
+            );
           },
         ),
       ],

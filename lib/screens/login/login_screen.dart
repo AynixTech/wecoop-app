@@ -16,6 +16,20 @@ class _LoginScreenState extends State<LoginScreen> {
   final storage = const FlutterSecureStorage();
   bool rememberPassword = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadLastEmail();
+  }
+
+  /// Carica l'ultima email usata per il login
+  Future<void> _loadLastEmail() async {
+    final lastEmail = await storage.read(key: 'last_login_email');
+    if (lastEmail != null && lastEmail.isNotEmpty) {
+      emailController.text = lastEmail;
+    }
+  }
+
   Future<void> _login() async {
     final email = emailController.text.trim();
     final password = passwordController.text;
@@ -47,6 +61,9 @@ class _LoginScreenState extends State<LoginScreen> {
           value: data['user_display_name'],
         );
         await storage.write(key: 'user_nicename', value: data['user_nicename']);
+
+        // Salva sempre l'ultima email usata
+        await storage.write(key: 'last_login_email', value: email);
 
         if (rememberPassword) {
           await storage.write(key: 'saved_email', value: email);

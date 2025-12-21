@@ -1,0 +1,1 @@
+ /Users/georgeavila/Desktop/personali/wecoop_app/.dart_tool/flutter_build/e301906d34142a554efa20ae137ff354/native_assets.json: 

@@ -1,0 +1,102 @@
+{
+  "@@locale": "es",
+  
+  "appTitle": "WECOOP",
+  
+  "hello": "Hola",
+  "welcome": "¡Bienvenida a WECOOP! Explora eventos, servicios y proyectos cerca de ti.",
+  "user": "Usuario",
+  
+  "profile": "Perfil",
+  "home": "Inicio",
+  "calendar": "Calendario",
+  "projects": "Proyectos",
+  "services": "Servicios",
+  "notifications": "Notificaciones",
+  
+  "login": "Iniciar sesión",
+  "logout": "Cerrar sesión",
+  "logoutConfirm": "Sesión cerrada",
+  "email": "Correo",
+  "password": "Contraseña",
+  "rememberPassword": "Recordar contraseña",
+  "loginButton": "INICIAR SESIÓN",
+  "loginError": "Error de inicio de sesión",
+  "networkError": "Error de red",
+  "emailNotAvailable": "correo no disponible",
+  
+  "memberCard": "Tarjeta de Socio WECOOP",
+  "cardNumber": "N° Tarjeta",
+  "cardNotAvailable": "Tarjeta no disponible",
+  "openDigitalCard": "Abrir tarjeta digital",
+  
+  "preferences": "Preferencias",
+  "language": "Idioma",
+  "areaOfInterest": "Área de interés",
+  "participationHistory": "Historial de participación",
+  
+  "italian": "Italiano",
+  "english": "Inglés",
+  "spanish": "Español",
+  "arabic": "Árabe",
+  
+  "culture": "Cultura",
+  "sport": "Deporte",
+  "training": "Formación",
+  "volunteering": "Voluntariado",
+  "socialServices": "Servicios sociales",
+  
+  "servicesTitle": "🛠️ Servicios",
+  "welcomeService": "Acogida",
+  "taxMediationService": "Mediación fiscal",
+  "accountingService": "Soporte contable",
+  "seeAll": "Ver todos",
+  
+  "upcomingEvents": "📅 Próximos eventos",
+  "activeProjects": "🤝 Proyectos activos",
+  "latestNews": "📰 Últimas noticias",
+  "quickAccess": "⚡ Acceso rápido",
+  
+  "eventInterculturalDinner": "Cena Intercultural",
+  "eventSewingLab": "Taller de costura",
+  "eventItalianCourse": "Curso de italiano",
+  
+  "projectMafalda": "MAFALDA",
+  "projectMafaldaDesc": "Jóvenes e inclusión",
+  "projectWomentor": "WOMENTOR",
+  "projectWomentorDesc": "Mentoría entre mujeres",
+  "projectSportunity": "SPORTUNITY",
+  "projectSportunityDesc": "Deporte y comunidad",
+  
+  "loading": "Cargando...",
+  "noNews": "No hay noticias disponibles",
+  "refresh": "Actualizar",
+  
+  "myRequests": "Mis Solicitudes",
+  "allRequests": "Todas",
+  "pendingPayment": "Pendiente de pago",
+  "processing": "En proceso",
+  "completed": "Completadas",
+  "cancelled": "Canceladas",
+  
+  "requestDetails": "Detalle de Solicitud",
+  "service": "Servicio",
+  "description": "Descripción",
+  "requestDate": "Fecha de Solicitud",
+  "status": "Estado",
+  "paymentInfo": "Información de Pago",
+  "paymentStatus": "Estado del Pago",
+  "paid": "Pagado",
+  "notPaid": "No pagado",
+  "paymentMethod": "Método",
+  "paymentDate": "Fecha de Pago",
+  "transactionId": "ID de Transacción",
+  "amount": "Importe",
+  "payNow": "Pagar ahora",
+  "cannotOpenPaymentLink": "No se puede abrir el enlace de pago",
+  
+  "noRequestsForDay": "No hay solicitudes para este día",
+  "noRequests": "No se encontraron solicitudes",
+  
+  "close": "Cerrar"
+}

@@ -1,0 +1,102 @@
+{
+  "@@locale": "it",
+  
+  "appTitle": "WECOOP",
+  
+  "hello": "Ciao",
+  "welcome": "Benvenuta su WECOOP! Esplora eventi, servizi e progetti vicino a te.",
+  "user": "Utente",
+  
+  "profile": "Profilo",
+  "home": "Home",
+  "calendar": "Calendario",
+  "projects": "Progetti",
+  "services": "Servizi",
+  "notifications": "Notifiche",
+  
+  "login": "Accedi",
+  "logout": "Logout",
+  "logoutConfirm": "Logout effettuato",
+  "email": "Email",
+  "password": "Password",
+  "rememberPassword": "Ricorda password",
+  "loginButton": "ACCEDI",
+  "loginError": "Login fallito",
+  "networkError": "Errore di rete",
+  "emailNotAvailable": "email non disponibile",
+  
+  "memberCard": "Tessera Socio WECOOP",
+  "cardNumber": "N° Tessera",
+  "cardNotAvailable": "Tessera non disponibile",
+  "openDigitalCard": "Apri tessera digitale",
+  
+  "preferences": "Preferenze",
+  "language": "Lingua",
+  "areaOfInterest": "Area di interesse",
+  "participationHistory": "Storico partecipazioni",
+  
+  "italian": "Italiano",
+  "english": "Inglese",
+  "spanish": "Spagnolo",
+  "arabic": "Arabo",
+  
+  "culture": "Cultura",
+  "sport": "Sport",
+  "training": "Formazione",
+  "volunteering": "Volontariato",
+  "socialServices": "Servizi sociali",
+  
+  "servicesTitle": "🛠️ Servizi",
+  "welcomeService": "Accoglienza",
+  "taxMediationService": "Mediazione fiscale",
+  "accountingService": "Supporto contabile",
+  "seeAll": "Vedi tutti",
+  
+  "upcomingEvents": "📅 Prossimi eventi",
+  "activeProjects": "🤝 Progetti attivi",
+  "latestNews": "📰 Ultime notizie",
+  "quickAccess": "⚡ Accesso rapido",
+  
+  "eventInterculturalDinner": "Cena Interculturale",
+  "eventSewingLab": "Laboratorio di cucito",
+  "eventItalianCourse": "Corso di italiano",
+  
+  "projectMafalda": "MAFALDA",
+  "projectMafaldaDesc": "Giovani e inclusione",
+  "projectWomentor": "WOMENTOR",
+  "projectWomentorDesc": "Mentoring tra donne",
+  "projectSportunity": "SPORTUNITY",
+  "projectSportunityDesc": "Sport e comunità",
+  
+  "loading": "Caricamento...",
+  "noNews": "Nessuna notizia disponibile",
+  "refresh": "Aggiorna",
+  
+  "myRequests": "Le Mie Richieste",
+  "allRequests": "Tutte",
+  "pendingPayment": "In attesa pagamento",
+  "processing": "In lavorazione",
+  "completed": "Completate",
+  "cancelled": "Annullate",
+  
+  "requestDetails": "Dettaglio Richiesta",
+  "service": "Servizio",
+  "description": "Descrizione",
+  "requestDate": "Data Richiesta",
+  "status": "Stato",
+  "paymentInfo": "Informazioni Pagamento",
+  "paymentStatus": "Stato Pagamento",
+  "paid": "Pagato",
+  "notPaid": "Non pagato",
+  "paymentMethod": "Metodo",
+  "paymentDate": "Data Pagamento",
+  "transactionId": "ID Transazione",
+  "amount": "Importo",
+  "payNow": "Paga ora",
+  "cannotOpenPaymentLink": "Impossibile aprire il link di pagamento",
+  
+  "noRequestsForDay": "Nessuna richiesta per questo giorno",
+  "noRequests": "Nessuna richiesta trovata",
+  
+  "close": "Chiudi"
+}

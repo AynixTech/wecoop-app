@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 import '../../services/socio_service.dart';
 import 'adesione_socio_screen.dart';
 import '../login/login_screen.dart';
@@ -97,6 +98,7 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
   }
 
   Widget _buildLoginPromptScreen() {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(title: Text(widget.serviceName)),
       body: Center(
@@ -111,14 +113,14 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
                 color: Colors.green.shade400,
               ),
               const SizedBox(height: 24),
-              const Text(
-                'Richiesta Approvata!',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              Text(
+                '${l10n.requestSent}',
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
               Text(
-                'La tua richiesta di adesione è stata approvata!\n\n'
+                '${l10n.requestReceived}\n\n'
                 'Effettua il login per accedere a tutti i servizi riservati ai soci.',
                 style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
                 textAlign: TextAlign.center,
@@ -134,7 +136,7 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
                   );
                 },
                 icon: const Icon(Icons.login),
-                label: const Text('Vai al Login'),
+                label: Text(l10n.goToLogin),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
@@ -152,7 +154,7 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
               OutlinedButton.icon(
                 onPressed: () => Navigator.pop(context),
                 icon: const Icon(Icons.arrow_back),
-                label: const Text('Torna indietro'),
+                label: Text(l10n.goBack),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
@@ -168,6 +170,7 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
   }
 
   Widget _buildRichiestaInAttesaScreen() {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(title: Text(widget.serviceName)),
       body: Center(
@@ -182,9 +185,9 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
                 color: Colors.orange.shade400,
               ),
               const SizedBox(height: 24),
-              const Text(
-                'Richiesta in attesa',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              Text(
+                '${l10n.pending}',
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
@@ -199,7 +202,7 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
               OutlinedButton.icon(
                 onPressed: () => Navigator.pop(context),
                 icon: const Icon(Icons.arrow_back),
-                label: const Text('Torna alla home'),
+                label: Text(l10n.backToHome),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
@@ -215,6 +218,7 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
   }
 
   Widget _buildAdesioneRequiredScreen() {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(title: Text(widget.serviceName)),
       body: Center(
@@ -229,9 +233,9 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
                 color: Colors.amber.shade700,
               ),
               const SizedBox(height: 24),
-              const Text(
-                'Servizio riservato ai soci',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              Text(
+                l10n.needLogin,
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
@@ -260,7 +264,7 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
                   });
                 },
                 icon: const Icon(Icons.how_to_reg),
-                label: const Text('Diventa Socio'),
+                label: Text(l10n.becomeMember),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.amber,
                   foregroundColor: Colors.black,
@@ -278,7 +282,7 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
               OutlinedButton.icon(
                 onPressed: () => Navigator.pop(context),
                 icon: const Icon(Icons.arrow_back),
-                label: const Text('Torna alla home'),
+                label: Text(l10n.backToHome),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,

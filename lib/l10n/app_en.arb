@@ -1,0 +1,102 @@
+{
+  "@@locale": "en",
+  
+  "appTitle": "WECOOP",
+  
+  "hello": "Hello",
+  "welcome": "Welcome to WECOOP! Explore events, services and projects near you.",
+  "user": "User",
+  
+  "profile": "Profile",
+  "home": "Home",
+  "calendar": "Calendar",
+  "projects": "Projects",
+  "services": "Services",
+  "notifications": "Notifications",
+  
+  "login": "Login",
+  "logout": "Logout",
+  "logoutConfirm": "Logged out successfully",
+  "email": "Email",
+  "password": "Password",
+  "rememberPassword": "Remember password",
+  "loginButton": "LOGIN",
+  "loginError": "Login failed",
+  "networkError": "Network error",
+  "emailNotAvailable": "email not available",
+  
+  "memberCard": "WECOOP Member Card",
+  "cardNumber": "Card Number",
+  "cardNotAvailable": "Card not available",
+  "openDigitalCard": "Open digital card",
+  
+  "preferences": "Preferences",
+  "language": "Language",
+  "areaOfInterest": "Area of interest",
+  "participationHistory": "Participation history",
+  
+  "italian": "Italian",
+  "english": "English",
+  "spanish": "Spanish",
+  "arabic": "Arabic",
+  
+  "culture": "Culture",
+  "sport": "Sport",
+  "training": "Training",
+  "volunteering": "Volunteering",
+  "socialServices": "Social services",
+  
+  "servicesTitle": "🛠️ Services",
+  "welcomeService": "Welcome",
+  "taxMediationService": "Tax mediation",
+  "accountingService": "Accounting support",
+  "seeAll": "See all",
+  
+  "upcomingEvents": "📅 Upcoming events",
+  "activeProjects": "🤝 Active projects",
+  "latestNews": "📰 Latest news",
+  "quickAccess": "⚡ Quick access",
+  
+  "eventInterculturalDinner": "Intercultural Dinner",
+  "eventSewingLab": "Sewing Workshop",
+  "eventItalianCourse": "Italian Course",
+  
+  "projectMafalda": "MAFALDA",
+  "projectMafaldaDesc": "Youth and inclusion",
+  "projectWomentor": "WOMENTOR",
+  "projectWomentorDesc": "Mentoring between women",
+  "projectSportunity": "SPORTUNITY",
+  "projectSportunityDesc": "Sport and community",
+  
+  "loading": "Loading...",
+  "noNews": "No news available",
+  "refresh": "Refresh",
+  
+  "myRequests": "My Requests",
+  "allRequests": "All",
+  "pendingPayment": "Pending payment",
+  "processing": "Processing",
+  "completed": "Completed",
+  "cancelled": "Cancelled",
+  
+  "requestDetails": "Request Details",
+  "service": "Service",
+  "description": "Description",
+  "requestDate": "Request Date",
+  "status": "Status",
+  "paymentInfo": "Payment Information",
+  "paymentStatus": "Payment Status",
+  "paid": "Paid",
+  "notPaid": "Not paid",
+  "paymentMethod": "Method",
+  "paymentDate": "Payment Date",
+  "transactionId": "Transaction ID",
+  "amount": "Amount",
+  "payNow": "Pay now",
+  "cannotOpenPaymentLink": "Cannot open payment link",
+  
+  "noRequestsForDay": "No requests for this day",
+  "noRequests": "No requests found",
+  
+  "close": "Close"
+}

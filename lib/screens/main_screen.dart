@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 import 'home/home_screen.dart';
 import 'calendar/calendar_screen.dart';
 import 'sportello/sportello_screen.dart';
@@ -31,6 +32,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Image.asset('assets/images/wecoop_logo.png', height: 36),
@@ -46,21 +48,21 @@ class _MainScreenState extends State<MainScreen> {
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        items: [
+          BottomNavigationBarItem(icon: const Icon(Icons.home), label: l10n.home),
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Calendario',
+            icon: const Icon(Icons.calendar_today),
+            label: l10n.calendar,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.support_agent),
-            label: 'Sportello',
+            icon: const Icon(Icons.support_agent),
+            label: l10n.sportello,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.volunteer_activism),
-            label: 'Progetti',
+            icon: const Icon(Icons.volunteer_activism),
+            label: l10n.projects,
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profilo'),
+          BottomNavigationBarItem(icon: const Icon(Icons.person), label: l10n.profile),
         ],
       ),
     );

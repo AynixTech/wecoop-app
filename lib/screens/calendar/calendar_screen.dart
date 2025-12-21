@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 import '../../services/socio_service.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -20,13 +21,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   String? _filtroStato;
   bool _localeInitialized = false;
 
-  final List<Map<String, dynamic>> _filtriStato = [
-    {'label': 'Tutti', 'value': null},
-    {'label': 'In attesa pagamento', 'value': 'pending_payment'},
-    {'label': 'In lavorazione', 'value': 'processing'},
-    {'label': 'Completate', 'value': 'completed'},
-    {'label': 'Annullate', 'value': 'cancelled'},
-  ];
+  List<Map<String, dynamic>> _filtriStato = [];
 
   @override
   void initState() {
@@ -61,9 +56,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
       } else {
         setState(() => _isLoading = false);
         if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result['message'] ?? 'Errore nel caricamento'),
+              content: Text(result['message'] ?? l10n.errorLoadingData),
             ),
           );
         }
@@ -71,9 +67,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
     } catch (e) {
       setState(() => _isLoading = false);
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Errore: ${e.toString()}')));
+        ).showSnackBar(SnackBar(content: Text('${l10n.error}: ${e.toString()}')));
       }
     }
   }
@@ -124,9 +121,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Impossibile aprire il link di pagamento'),
+          SnackBar(
+            content: Text(l10n.cannotOpenPaymentLink),
           ),
         );
       }
@@ -281,7 +279,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             _apriLinkPagamento(paymentLink);
                           },
                           icon: const Icon(Icons.payment),
-                          label: const Text('Paga Ora'),
+                          label: Text(AppLocalizations.of(context)!.payNow),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
@@ -342,13 +340,26 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
+    // Inizializza filtri con traduzioni
+    if (_filtriStato.isEmpty) {
+      _filtriStato = [
+        {'label': l10n.all, 'value': null},
+        {'label': l10n.pending, 'value': 'pending_payment'},
+        {'label': 'In lavorazione', 'value': 'processing'},
+        {'label': 'Completate', 'value': 'completed'},
+        {'label': 'Annullate', 'value': 'cancelled'},
+      ];
+    }
+    
     if (!_localeInitialized) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Le Mie Richieste'),
+        title: Text(l10n.myRequests),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -457,6 +468,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             : _tutteRichieste;
 
     if (richieste.isEmpty) {
+      final l10n = AppLocalizations.of(context)!;
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -624,7 +636,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   child: ElevatedButton.icon(
                     onPressed: () => _apriLinkPagamento(paymentLink),
                     icon: const Icon(Icons.payment, size: 18),
-                    label: const Text('Paga Ora'),
+                    label: Text(AppLocalizations.of(context)!.payNow),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,

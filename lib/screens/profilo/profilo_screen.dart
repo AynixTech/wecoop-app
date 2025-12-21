@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
+import '../../services/locale_provider.dart';
+import '../../services/app_localizations.dart';
 
 final storage = FlutterSecureStorage();
 
@@ -17,17 +20,8 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   String tesseraNumero = '...';
   String? tesseraUrl;
 
-  String selectedLanguage = 'Italiano';
-  String selectedInterest = 'Cultura';
-
-  final List<String> languages = ['Italiano', 'Inglese', 'Spagnolo', 'Arabo'];
-  final List<String> interests = [
-    'Cultura',
-    'Sport',
-    'Formazione',
-    'Volontariato',
-    'Servizi sociali',
-  ];
+  String selectedLanguageCode = 'it';
+  String selectedInterest = 'culture';
 
   final List<String> participationHistory = [
     'Evento culturale - 15 Marzo 2025',
@@ -47,16 +41,22 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     final email = await storage.read(key: 'user_email');
     final tessera = await storage.read(key: 'tessera_numero');
     final url = await storage.read(key: 'tessera_url');
+    final langCode = await storage.read(key: 'language_code');
+    final interest = await storage.read(key: 'selected_interest');
 
     setState(() {
       userName = name ?? displayName ?? 'Utente';
       userEmail = email ?? 'email non disponibile';
       tesseraNumero = tessera ?? 'Tessera non disponibile';
       tesseraUrl = url;
+      selectedLanguageCode = langCode ?? 'it';
+      selectedInterest = interest ?? 'culture';
     });
   }
 
   void _logout(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+
     // Salva l'email prima di fare logout per poterla ricaricare
     final currentEmail = await storage.read(key: 'user_email');
     if (currentEmail != null) {
@@ -99,14 +99,30 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     print('Utente disconnesso');
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Logout effettuato')));
+    ).showSnackBar(SnackBar(content: Text(l10n.logoutConfirm)));
 
     Navigator.pushReplacementNamed(context, '/login');
+  }
+
+  Future<void> _changeLanguage(String languageCode) async {
+    final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
+    await localeProvider.setLocale(Locale(languageCode));
+    setState(() {
+      selectedLanguageCode = languageCode;
+    });
+  }
+
+  Future<void> _saveInterest(String interest) async {
+    await storage.write(key: 'selected_interest', value: interest);
+    setState(() {
+      selectedInterest = interest;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: SafeArea(
@@ -162,7 +178,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Tessera Socio WECOOP',
+                          l10n.memberCard,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -189,7 +205,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'N° Tessera',
+                      l10n.cardNumber,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: Colors.grey.shade600,
                       ),
@@ -210,7 +226,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                           // Apri URL tessera nel browser
                         },
                         icon: const Icon(Icons.open_in_new, size: 16),
-                        label: const Text('Apri tessera digitale'),
+                        label: Text(l10n.openDigitalCard),
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.amber.shade700,
                         ),
@@ -224,58 +240,60 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
             const Divider(height: 32, thickness: 1),
 
             Text(
-              'Preferenze',
+              l10n.preferences,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              decoration: const InputDecoration(
-                labelText: 'Lingua',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.language,
+                border: const OutlineInputBorder(),
               ),
-              value: selectedLanguage,
-              items:
-                  languages
-                      .map(
-                        (lang) =>
-                            DropdownMenuItem(value: lang, child: Text(lang)),
-                      )
-                      .toList(),
+              value: selectedLanguageCode,
+              items: const [
+                DropdownMenuItem(value: 'it', child: Text('Italiano')),
+                DropdownMenuItem(value: 'en', child: Text('English')),
+                DropdownMenuItem(value: 'es', child: Text('Español')),
+              ],
               onChanged: (value) {
-                setState(() {
-                  selectedLanguage = value ?? selectedLanguage;
-                });
+                if (value != null) {
+                  _changeLanguage(value);
+                }
               },
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              decoration: const InputDecoration(
-                labelText: 'Area di interesse',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.areaOfInterest,
+                border: const OutlineInputBorder(),
               ),
               value: selectedInterest,
-              items:
-                  interests
-                      .map(
-                        (interest) => DropdownMenuItem(
-                          value: interest,
-                          child: Text(interest),
-                        ),
-                      )
-                      .toList(),
+              items: [
+                DropdownMenuItem(value: 'culture', child: Text(l10n.culture)),
+                DropdownMenuItem(value: 'sport', child: Text(l10n.sport)),
+                DropdownMenuItem(value: 'training', child: Text(l10n.training)),
+                DropdownMenuItem(
+                  value: 'volunteering',
+                  child: Text(l10n.volunteering),
+                ),
+                DropdownMenuItem(
+                  value: 'socialServices',
+                  child: Text(l10n.socialServices),
+                ),
+              ],
               onChanged: (value) {
-                setState(() {
-                  selectedInterest = value ?? selectedInterest;
-                });
+                if (value != null) {
+                  _saveInterest(value);
+                }
               },
             ),
 
             const Divider(height: 32, thickness: 1),
 
             Text(
-              'Storico partecipazioni',
+              l10n.participationHistory,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -293,7 +311,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
               child: ElevatedButton.icon(
                 onPressed: () => _logout(context),
                 icon: const Icon(Icons.logout),
-                label: const Text('Logout'),
+                label: Text(l10n.logout),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.redAccent,
                   padding: const EdgeInsets.symmetric(

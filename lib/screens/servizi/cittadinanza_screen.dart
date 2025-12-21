@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 import 'richiesta_form_screen.dart';
 
 class CittadinanzaScreen extends StatelessWidget {
@@ -6,8 +7,9 @@ class CittadinanzaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Cittadinanza')),
+      appBar: AppBar(title: Text(l10n.citizenshipService)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -19,8 +21,8 @@ class CittadinanzaScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Rispondi alle domande per verificare se hai i requisiti',
+              Text(
+                l10n.citizenshipDescription,
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               ),
               const SizedBox(height: 24),
@@ -98,25 +100,24 @@ class CittadinanzaScreen extends StatelessWidget {
   }
 
   void _showIneligibleDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Requisiti non soddisfatti'),
-            content: const Text(
-              'Per richiedere la cittadinanza italiana è necessario avere almeno 10 anni di residenza legale in Italia.\n\nPuoi comunque contattarci per maggiori informazioni su altri percorsi possibili.',
-            ),
+            title: Text(l10n.requirementsNotMet),
+            content: Text(l10n.requirementsMessage),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Ho capito'),
+                child: Text(l10n.understand),
               ),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                   // TODO: Apri chat o contatti
                 },
-                child: const Text('Contattaci'),
+                child: Text(l10n.contactUs),
               ),
             ],
           ),
@@ -169,7 +170,7 @@ class _QuestionCard extends StatelessWidget {
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  child: const Text('Sì'),
+                  child: Text(AppLocalizations.of(context)!.yes),
                 ),
               ),
               const SizedBox(width: 12),
@@ -181,7 +182,7 @@ class _QuestionCard extends StatelessWidget {
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  child: const Text('No'),
+                  child: Text(AppLocalizations.of(context)!.no),
                 ),
               ),
             ],

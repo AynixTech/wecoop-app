@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 import 'permesso_soggiorno_screen.dart';
 import 'cittadinanza_screen.dart';
 import 'asilo_politico_screen.dart';
@@ -9,28 +10,29 @@ class AccoglienzaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Accoglienza e Orientamento')),
+      appBar: AppBar(title: Text(l10n.welcomeOrientation)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Seleziona il servizio di cui hai bisogno',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                l10n.selectServiceYouNeed,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Ti guideremo passo dopo passo per completare la tua richiesta',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+              Text(
+                l10n.guideStepByStep,
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
               ),
               const SizedBox(height: 24),
               _ServiceOptionCard(
                 icon: Icons.badge,
-                title: 'Permesso di Soggiorno',
-                description: 'Richiesta, rinnovo e informazioni',
+                title: l10n.residencePermit,
+                description: l10n.residencePermitDesc,
                 onTap: () {
                   Navigator.push(
                     context,
@@ -43,8 +45,8 @@ class AccoglienzaScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _ServiceOptionCard(
                 icon: Icons.flag,
-                title: 'Cittadinanza',
-                description: 'Richiesta cittadinanza italiana',
+                title: l10n.citizenship,
+                description: l10n.citizenshipDesc,
                 onTap: () {
                   Navigator.push(
                     context,
@@ -57,8 +59,8 @@ class AccoglienzaScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _ServiceOptionCard(
                 icon: Icons.verified_user,
-                title: 'Asilo Politico',
-                description: 'Protezione internazionale',
+                title: l10n.politicalAsylum,
+                description: l10n.politicalAsylumDesc,
                 onTap: () {
                   Navigator.push(
                     context,
@@ -71,8 +73,8 @@ class AccoglienzaScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _ServiceOptionCard(
                 icon: Icons.flight,
-                title: 'Visa per Turismo',
-                description: 'Richiesta visto turistico',
+                title: l10n.touristVisa,
+                description: l10n.touristVisaDesc,
                 onTap: () {
                   Navigator.push(
                     context,

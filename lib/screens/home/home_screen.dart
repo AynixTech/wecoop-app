@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 import '../../models/post_model.dart';
 import '../../services/wordpress_service.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -49,9 +50,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('WECOOP'),
+        title: Text(l10n.appTitle),
         actions: [
           IconButton(icon: const Icon(Icons.notifications), onPressed: () {}),
         ],
@@ -68,9 +70,9 @@ class _HomeScreenState extends State<HomeScreen> {
               const _ServicesSection(),
               const SizedBox(height: 24),
 
-              const _SectionWithHorizontalCards(
-                title: '📅 Prossimi eventi',
-                items: [
+              _SectionWithHorizontalCards(
+                title: '📅 ${l10n.upcomingEvents}',
+                items: const [
                   {'title': 'Cena Interculturale', 'subtitle': '3 Ago'},
                   {'title': 'Laboratorio di cucito', 'subtitle': '5 Ago'},
                   {'title': 'Corso di italiano', 'subtitle': '7 Ago'},
@@ -79,9 +81,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(height: 24),
 
-              const _SectionWithHorizontalCards(
-                title: '🤝 Progetti attivi',
-                items: [
+              _SectionWithHorizontalCards(
+                title: '🤝 ${l10n.activeProjects}',
+                items: const [
                   {'title': 'MAFALDA', 'subtitle': 'Giovani e inclusione'},
                   {'title': 'WOMENTOR', 'subtitle': 'Mentoring tra donne'},
                   {'title': 'SPORTUNITY', 'subtitle': 'Sport e comunità'},
@@ -110,16 +112,17 @@ class _GreetingSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Ciao, $userName 👋',
+          '${l10n.hello}, $userName 👋',
           style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        const Text(
-          'Benvenuta su WECOOP! Esplora eventi, servizi e progetti vicino a te.',
+        Text(
+          l10n.welcome,
         ),
       ],
     );
@@ -244,10 +247,11 @@ class _QuickAccessSection extends StatelessWidget {
   const _QuickAccessSection();
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle(title: '⚡ Accesso rapido'),
+        _SectionTitle(title: '⚡ ${l10n.quickAccess}'),
         const SizedBox(height: 12),
         Wrap(
           spacing: 20,
@@ -255,27 +259,27 @@ class _QuickAccessSection extends StatelessWidget {
           children: [
             _QuickAccessButton(
               icon: Icons.map,
-              label: 'Mappa Comunità',
+              label: l10n.communityMap,
               onTap: () {},
             ),
             _QuickAccessButton(
               icon: Icons.book,
-              label: 'Risorse e Guide',
+              label: l10n.resourcesGuides,
               onTap: () {},
             ),
             _QuickAccessButton(
               icon: Icons.group,
-              label: 'Gruppi Locali',
+              label: l10n.localGroups,
               onTap: () {},
             ),
             _QuickAccessButton(
               icon: Icons.message,
-              label: 'Forum & Discussioni',
+              label: l10n.forumDiscussions,
               onTap: () {},
             ),
             _QuickAccessButton(
               icon: Icons.help_center,
-              label: 'Supporto',
+              label: l10n.support,
               onTap: () {},
             ),
           ],
@@ -290,22 +294,23 @@ class _ServicesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle(title: '🛠️ I nostri servizi'),
+        _SectionTitle(title: '🛠️ ${l10n.ourServices}'),
         const SizedBox(height: 12),
         _ServiceButton(
-          title: 'Accoglienza e Orientamento',
+          title: l10n.welcomeOrientation,
           imagePath: 'assets/images/home/accoglienza.jpg',
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder:
-                    (context) => const ServiziGateScreen(
-                      destinationScreen: AccoglienzaScreen(),
-                      serviceName: 'Accoglienza e Orientamento',
+                    (context) => ServiziGateScreen(
+                      destinationScreen: const AccoglienzaScreen(),
+                      serviceName: l10n.welcomeOrientation,
                     ),
               ),
             );
@@ -313,16 +318,16 @@ class _ServicesSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _ServiceButton(
-          title: 'Mediazione Fiscale',
+          title: l10n.taxMediation,
           imagePath: 'assets/images/home/mediazione.jpg',
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder:
-                    (context) => const ServiziGateScreen(
-                      destinationScreen: MediazioneFiscaleScreen(),
-                      serviceName: 'Mediazione Fiscale',
+                    (context) => ServiziGateScreen(
+                      destinationScreen: const MediazioneFiscaleScreen(),
+                      serviceName: l10n.taxMediation,
                     ),
               ),
             );
@@ -330,16 +335,16 @@ class _ServicesSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _ServiceButton(
-          title: 'Supporto Contabile',
+          title: l10n.accountingSupport,
           imagePath: 'assets/images/home/contabile.jpg',
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder:
-                    (context) => const ServiziGateScreen(
-                      destinationScreen: SupportoContabileScreen(),
-                      serviceName: 'Supporto Contabile',
+                    (context) => ServiziGateScreen(
+                      destinationScreen: const SupportoContabileScreen(),
+                      serviceName: l10n.accountingSupport,
                     ),
               ),
             );
@@ -530,10 +535,11 @@ class _LatestPostsSectionState extends State<_LatestPostsSection> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle(title: '📰 Ultimi articoli'),
+        _SectionTitle(title: '📰 ${l10n.latestArticles}'),
         const SizedBox(height: 12),
         FutureBuilder<List<Post>>(
           future: postsFuture,
@@ -541,9 +547,9 @@ class _LatestPostsSectionState extends State<_LatestPostsSection> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return Text('Errore: ${snapshot.error}');
+              return Text('${l10n.errorLoading}: ${snapshot.error}');
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Text('Nessun articolo disponibile.');
+              return Text(l10n.noArticlesAvailable);
             }
 
             final posts = snapshot.data!;

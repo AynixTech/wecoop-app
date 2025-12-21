@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 
 class ProgettiScreen extends StatelessWidget {
   const ProgettiScreen({super.key});
@@ -20,16 +21,17 @@ class ProgettiScreen extends StatelessWidget {
   ];
 
   void _showProposalDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder:
           (ctx) => AlertDialog(
-            title: const Text('Proponi un corso o evento'),
-            content: const Text('Funzionalità in sviluppo.'),
+            title: Text(l10n.proposeEventTitle),
+            content: Text(l10n.featureInDevelopment),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('Chiudi'),
+                child: Text(l10n.close),
               ),
             ],
           ),
@@ -39,12 +41,13 @@ class ProgettiScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         children: [
           Text(
-            'Progetti Attivi',
+            l10n.activeProjects,
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -101,7 +104,7 @@ class ProgettiScreen extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: () => _showProposalDialog(context),
               icon: const Icon(Icons.add),
-              label: const Text('Proponi corso o evento'),
+              label: Text(l10n.proposeEvent),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,

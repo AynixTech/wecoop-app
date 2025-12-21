@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 
 class Compilazione730Screen extends StatefulWidget {
   const Compilazione730Screen({super.key});
@@ -15,6 +16,7 @@ class _Compilazione730ScreenState extends State<Compilazione730Screen> {
   bool _formValid = true;
 
   void _submitForm() {
+    final l10n = AppLocalizations.of(context)!;
     final isValid =
         famigliaController.text.isNotEmpty &&
         redditoController.text.isNotEmpty &&
@@ -26,12 +28,12 @@ class _Compilazione730ScreenState extends State<Compilazione730Screen> {
 
     if (isValid) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Dati 730 inviati con successo')),
+        SnackBar(content: Text(l10n.data730SentSuccess)),
       );
       // TODO: invia i dati al backend o salva localmente
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Errore: tutti i campi sono obbligatori')),
+        SnackBar(content: Text(l10n.allFieldsRequired)),
       );
 
     }
@@ -47,8 +49,9 @@ class _Compilazione730ScreenState extends State<Compilazione730Screen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Compilazione 730')),
+      appBar: AppBar(title: Text(l10n.compilation730)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -66,7 +69,7 @@ class _Compilazione730ScreenState extends State<Compilazione730Screen> {
                 labelText: 'Dati Familiari',
                 errorText:
                     !_formValid && famigliaController.text.isEmpty
-                        ? 'Campo obbligatorio'
+                        ? l10n.fillAllFields
                         : null,
               ),
             ),
@@ -81,10 +84,10 @@ class _Compilazione730ScreenState extends State<Compilazione730Screen> {
               controller: redditoController,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: 'Dati Reddituali',
+                labelText: l10n.incomeData,
                 errorText:
                     !_formValid && redditoController.text.isEmpty
-                        ? 'Campo obbligatorio'
+                        ? l10n.fillAllFields
                         : null,
               ),
               keyboardType: TextInputType.number,
@@ -100,10 +103,10 @@ class _Compilazione730ScreenState extends State<Compilazione730Screen> {
               controller: speseController,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
-                labelText: 'Spese Deductibili',
+                labelText: l10n.deductions,
                 errorText:
                     !_formValid && speseController.text.isEmpty
-                        ? 'Campo obbligatorio'
+                        ? l10n.fillAllFields
                         : null,
               ),
               keyboardType: TextInputType.number,
@@ -114,7 +117,7 @@ class _Compilazione730ScreenState extends State<Compilazione730Screen> {
               child: ElevatedButton.icon(
                 onPressed: _submitForm,
                 icon: const Icon(Icons.send),
-                label: const Text('Invia 730'),
+                label: Text(l10n.send730),
               ),
             ),
           ],

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -92,9 +93,10 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       print('Eccezione durante il login: $e');
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Errore di rete')));
+      ).showSnackBar(SnackBar(content: Text(l10n.networkError)));
     }
   }
 
@@ -200,8 +202,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(title: Text(l10n.login)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -211,13 +214,13 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 32),
             TextField(
               controller: emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
+              decoration: InputDecoration(labelText: l10n.email),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: passwordController,
               obscureText: true,
-              decoration: const InputDecoration(labelText: 'Password'),
+              decoration: InputDecoration(labelText: l10n.password),
             ),
             const SizedBox(height: 8),
             Row(
@@ -230,11 +233,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     });
                   },
                 ),
-                const Text('Ricorda password'),
+                Text(l10n.rememberPassword),
               ],
             ),
             const SizedBox(height: 24),
-            ElevatedButton(onPressed: _login, child: const Text('Accedi')),
+            ElevatedButton(onPressed: _login, child: Text(l10n.login)),
           ],
         ),
       ),

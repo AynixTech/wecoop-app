@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 import '../../services/socio_service.dart';
 
 class RichiestaFormScreen extends StatefulWidget {
@@ -258,8 +259,8 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                                       ),
                                     ),
                                   )
-                                  : const Text(
-                                    'Invia richiesta',
+                                  : Text(
+                                    AppLocalizations.of(context)!.sendRequest,
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -275,6 +276,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   }
 
   Widget _buildField(Map<String, dynamic> campo) {
+    final l10n = AppLocalizations.of(context)!;
     final label = campo['label'] as String;
     final type = campo['type'] as String;
     final required = campo['required'] as bool;
@@ -292,7 +294,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
           validator:
               required
                   ? (value) =>
-                      value?.isEmpty ?? true ? 'Campo obbligatorio' : null
+                      value?.isEmpty ?? true ? l10n.fillAllFields : null
                   : null,
           onChanged: (value) => _formData[label] = value,
         );
@@ -308,7 +310,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
           validator:
               required
                   ? (value) =>
-                      value?.isEmpty ?? true ? 'Campo obbligatorio' : null
+                      value?.isEmpty ?? true ? l10n.fillAllFields : null
                   : null,
           onChanged: (value) => _formData[label] = value,
         );
@@ -324,7 +326,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
           validator:
               required
                   ? (value) =>
-                      value?.isEmpty ?? true ? 'Campo obbligatorio' : null
+                      value?.isEmpty ?? true ? l10n.fillAllFields : null
                   : null,
           onChanged: (value) => _formData[label] = value,
         );
@@ -354,7 +356,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
           validator:
               required
                   ? (value) =>
-                      value?.isEmpty ?? true ? 'Campo obbligatorio' : null
+                      value?.isEmpty ?? true ? l10n.fillAllFields : null
                   : null,
         );
         break;
@@ -374,7 +376,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
               }).toList(),
           validator:
               required
-                  ? (value) => value == null ? 'Campo obbligatorio' : null
+                  ? (value) => value == null ? l10n.fillAllFields : null
                   : null,
           onChanged: (value) => _formData[label] = value,
         );
@@ -535,22 +537,23 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       if (!mounted) return;
 
       if (result['success'] == true) {
+        final l10n = AppLocalizations.of(context)!;
         final numeroPratica = result['numero_pratica'];
         final message =
             numeroPratica != null
-                ? 'Richiesta inviata con successo!\n\nNumero pratica: $numeroPratica'
-                : result['message'] ?? 'Richiesta inviata con successo';
+                ? '${l10n.requestSent}\n\n${l10n.error}: $numeroPratica'
+                : result['message'] ?? l10n.requestSent;
 
         showDialog(
           context: context,
           barrierDismissible: false,
           builder:
               (context) => AlertDialog(
-                title: const Row(
+                title: Row(
                   children: [
-                    Icon(Icons.check_circle, color: Colors.green, size: 32),
-                    SizedBox(width: 12),
-                    Text('Richiesta inviata!'),
+                    const Icon(Icons.check_circle, color: Colors.green, size: 32),
+                    const SizedBox(width: 12),
+                    Text(l10n.requestSent),
                   ],
                 ),
                 content: Text(
@@ -563,22 +566,23 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                       Navigator.of(context).pop(); // Chiudi dialog
                       Navigator.of(context).pop(); // Torna indietro
                     },
-                    child: const Text('OK'),
+                    child: Text(l10n.ok),
                   ),
                 ],
               ),
         );
       } else {
+        final l10n = AppLocalizations.of(context)!;
         showDialog(
           context: context,
           builder:
               (context) => AlertDialog(
-                title: const Text('❌ Errore'),
+                title: Text('❌ ${l10n.error}'),
                 content: Text(result['message'] ?? 'Errore durante l\'invio'),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('OK'),
+                    child: Text(l10n.ok),
                   ),
                 ],
               ),
@@ -591,16 +595,17 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
 
       if (!mounted) return;
 
+      final l10n = AppLocalizations.of(context)!;
       showDialog(
         context: context,
         builder:
             (context) => AlertDialog(
-              title: const Text('❌ Errore'),
-              content: Text('Errore di connessione: ${e.toString()}'),
+              title: Text('❌ ${l10n.error}'),
+              content: Text('${l10n.connectionError}: ${e.toString()}'),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('OK'),
+                  child: Text(l10n.ok),
                 ),
               ],
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:wecoop_app/services/app_localizations.dart';
 import '../../services/socio_service.dart';
 import '../login/login_screen.dart';
 
@@ -131,49 +132,52 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
         context: context,
         barrierDismissible: false,
         builder:
-            (context) => AlertDialog(
-              title: const Row(
-                children: [
-                  Icon(Icons.check_circle, color: Colors.green, size: 32),
-                  SizedBox(width: 12),
-                  Text('Richiesta inviata!'),
-                ],
-              ),
-              content: Text(
-                message +
-                    '\n\nRiceverai una conferma via email entro 24-48 ore.\n\n'
-                        'Una volta approvata, potrai accedere a tutti i servizi riservati ai soci.',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Chiudi dialog
-                    Navigator.of(
-                      context,
-                    ).pop(); // Torna alla schermata precedente
-                  },
-                  child: const Text('OK'),
+            (context) {
+              final l10n = AppLocalizations.of(context)!;
+              return AlertDialog(
+                title: Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.green, size: 32),
+                    const SizedBox(width: 12),
+                    Text(l10n.requestSent),
+                  ],
                 ),
-              ],
-            ),
+                content: Text(
+                  message +
+                      '\n\n${l10n.requestReceived}',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Chiudi dialog
+                      Navigator.of(
+                        context,
+                      ).pop(); // Torna alla schermata precedente
+                    },
+                    child: Text(l10n.ok),
+                  ),
+                ],
+              );
+            },
       );
     } else {
+      final l10n = AppLocalizations.of(context)!;
       showDialog(
         context: context,
         builder:
             (context) => AlertDialog(
-              title: const Row(
+              title: Row(
                 children: [
-                  Icon(Icons.error_outline, color: Colors.red, size: 32),
-                  SizedBox(width: 12),
-                  Expanded(child: Text('Errore')),
+                  const Icon(Icons.error_outline, color: Colors.red, size: 32),
+                  const SizedBox(width: 12),
+                  Expanded(child: Text(l10n.error)),
                 ],
               ),
               content: Text(message),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('OK'),
+                  child: Text(l10n.ok),
                 ),
               ],
             ),
@@ -206,25 +210,23 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
 
   /// Mostra dialog quando l'email esiste già
   void _showEmailExistsDialog() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Row(
+            title: Row(
               children: [
-                Icon(Icons.info_outline, color: Colors.blue, size: 32),
-                SizedBox(width: 12),
-                Expanded(child: Text('Email già registrata')),
+                const Icon(Icons.info_outline, color: Colors.blue, size: 32),
+                const SizedBox(width: 12),
+                Expanded(child: Text(l10n.emailAlreadyRegistered)),
               ],
             ),
-            content: const Text(
-              'Questa email è già registrata nel sistema.\n\n'
-              'Sei già un socio WECOOP! Effettua il login per accedere ai servizi.',
-            ),
+            content: Text(l10n.emailExistsMessage),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Annulla'),
+                child: Text(l10n.cancel),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -241,7 +243,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Vai al Login'),
+                child: Text(l10n.goToLogin),
               ),
             ],
           ),
@@ -250,8 +252,9 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Diventa Socio WECOOP')),
+      appBar: AppBar(title: Text(l10n.becomeMember)),
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -304,9 +307,9 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      const Text(
-                        'Dati Personali',
-                        style: TextStyle(
+                      Text(
+                        l10n.personalInfo,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -315,42 +318,42 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
 
                       TextFormField(
                         controller: _nomeController,
-                        decoration: const InputDecoration(
-                          labelText: 'Nome *',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: '${l10n.name} *',
+                          border: const OutlineInputBorder(),
                         ),
                         validator:
                             (value) =>
                                 value?.isEmpty ?? true
-                                    ? 'Campo obbligatorio'
+                                    ? l10n.fillAllFields
                                     : null,
                       ),
                       const SizedBox(height: 12),
 
                       TextFormField(
                         controller: _cognomeController,
-                        decoration: const InputDecoration(
-                          labelText: 'Cognome *',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: '${l10n.surname} *',
+                          border: const OutlineInputBorder(),
                         ),
                         validator:
                             (value) =>
                                 value?.isEmpty ?? true
-                                    ? 'Campo obbligatorio'
+                                    ? l10n.fillAllFields
                                     : null,
                       ),
                       const SizedBox(height: 12),
 
                       TextFormField(
                         controller: _codiceFiscaleController,
-                        decoration: const InputDecoration(
-                          labelText: 'Codice Fiscale *',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: '${l10n.fiscalCode} *',
+                          border: const OutlineInputBorder(),
                         ),
                         textCapitalization: TextCapitalization.characters,
                         validator: (value) {
                           if (value?.isEmpty ?? true) {
-                            return 'Campo obbligatorio';
+                            return l10n.fillAllFields;
                           }
                           if (value!.length != 16) {
                             return 'Il codice fiscale deve essere di 16 caratteri';
@@ -362,11 +365,11 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
 
                       TextFormField(
                         controller: _dataNascitaController,
-                        decoration: const InputDecoration(
-                          labelText: 'Data di Nascita *',
-                          border: OutlineInputBorder(),
-                          hintText: 'gg/mm/aaaa',
-                          suffixIcon: Icon(Icons.calendar_today),
+                        decoration: InputDecoration(
+                          labelText: '${l10n.birthDate} *',
+                          border: const OutlineInputBorder(),
+                          hintText: l10n.dateFormat,
+                          suffixIcon: const Icon(Icons.calendar_today),
                         ),
                         readOnly: true,
                         onTap: () async {
@@ -384,7 +387,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                         validator:
                             (value) =>
                                 value?.isEmpty ?? true
-                                    ? 'Campo obbligatorio'
+                                    ? l10n.fillAllFields
                                     : null,
                       ),
                       const SizedBox(height: 12),
@@ -398,7 +401,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                         validator:
                             (value) =>
                                 value?.isEmpty ?? true
-                                    ? 'Campo obbligatorio'
+                                    ? l10n.fillAllFields
                                     : null,
                       ),
                       const SizedBox(height: 24),
@@ -414,14 +417,14 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
 
                       TextFormField(
                         controller: _indirizzoController,
-                        decoration: const InputDecoration(
-                          labelText: 'Indirizzo *',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          labelText: '${l10n.address} *',
+                          border: const OutlineInputBorder(),
                         ),
                         validator:
                             (value) =>
                                 value?.isEmpty ?? true
-                                    ? 'Campo obbligatorio'
+                                    ? l10n.fillAllFields
                                     : null,
                       ),
                       const SizedBox(height: 12),
@@ -432,14 +435,14 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                             flex: 2,
                             child: TextFormField(
                               controller: _cittaController,
-                              decoration: const InputDecoration(
-                                labelText: 'Città *',
-                                border: OutlineInputBorder(),
+                              decoration: InputDecoration(
+                                labelText: '${l10n.city} *',
+                                border: const OutlineInputBorder(),
                               ),
                               validator:
                                   (value) =>
                                       value?.isEmpty ?? true
-                                          ? 'Obbligatorio'
+                                          ? l10n.fillAllFields
                                           : null,
                             ),
                           ),
@@ -447,14 +450,14 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                           Expanded(
                             child: TextFormField(
                               controller: _capController,
-                              decoration: const InputDecoration(
-                                labelText: 'CAP *',
-                                border: OutlineInputBorder(),
+                              decoration: InputDecoration(
+                                labelText: '${l10n.postalCode} *',
+                                border: const OutlineInputBorder(),
                               ),
                               keyboardType: TextInputType.number,
                               validator: (value) {
                                 if (value?.isEmpty ?? true) {
-                                  return 'Obbligatorio';
+                                  return l10n.fillAllFields;
                                 }
                                 if (value!.length != 5) {
                                   return 'CAP non valido';
@@ -467,9 +470,9 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      const Text(
-                        'Contatti',
-                        style: TextStyle(
+                      Text(
+                        l10n.contactInfo,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -478,31 +481,31 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
 
                       TextFormField(
                         controller: _telefonoController,
-                        decoration: const InputDecoration(
-                          labelText: 'Telefono *',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.phone),
+                        decoration: InputDecoration(
+                          labelText: '${l10n.phone} *',
+                          border: const OutlineInputBorder(),
+                          prefixIcon: const Icon(Icons.phone),
                         ),
                         keyboardType: TextInputType.phone,
                         validator:
                             (value) =>
                                 value?.isEmpty ?? true
-                                    ? 'Campo obbligatorio'
+                                    ? l10n.fillAllFields
                                     : null,
                       ),
                       const SizedBox(height: 12),
 
                       TextFormField(
                         controller: _emailController,
-                        decoration: const InputDecoration(
-                          labelText: 'Email *',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.email),
+                        decoration: InputDecoration(
+                          labelText: '${l10n.email} *',
+                          border: const OutlineInputBorder(),
+                          prefixIcon: const Icon(Icons.email),
                         ),
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           if (value?.isEmpty ?? true) {
-                            return 'Campo obbligatorio';
+                            return l10n.fillAllFields;
                           }
                           if (!value!.contains('@')) {
                             return 'Email non valida';
@@ -512,9 +515,9 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      const Text(
-                        'Informazioni Aggiuntive',
-                        style: TextStyle(
+                      Text(
+                        l10n.additionalInfo,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -532,10 +535,10 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
 
                       TextFormField(
                         controller: _noteController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Note (opzionale)',
-                          border: OutlineInputBorder(),
-                          hintText: 'Eventuali informazioni aggiuntive',
+                          border: const OutlineInputBorder(),
+                          hintText: l10n.additionalInfoPlaceholder,
                         ),
                         maxLines: 3,
                       ),
@@ -603,8 +606,8 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                               ),
                             ),
                           )
-                          : const Text(
-                            'Invia richiesta di adesione',
+                          : Text(
+                            l10n.sendRequest,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,

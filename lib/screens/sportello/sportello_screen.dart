@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 
 class SportelloScreen extends StatefulWidget {
   const SportelloScreen({super.key});
@@ -8,24 +9,21 @@ class SportelloScreen extends StatefulWidget {
 }
 
 class _SportelloScreenState extends State<SportelloScreen> {
-  final List<String> servizi = [
-    'CAF',
-    'Supporto Legale',
-    'Consulenza Migratoria',
-    'Supporto Psicologico',
-  ];
+  List<String> servizi = [];
 
   String? _selectedServizio;
 
-  void _prenota(String tipo) {
+  void _prenota(String tipo, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(SnackBar(content: Text('Appuntamento richiesto per $tipo')));
+    ).showSnackBar(SnackBar(content: Text('${l10n.bookAppointment}: $tipo')));
   }
 
   void _openChatbot() {
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Chatbot non disponibile al momento')),
+      SnackBar(content: Text(l10n.chatbotUnavailable)),
     );
   }
 
@@ -35,28 +33,40 @@ class _SportelloScreenState extends State<SportelloScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
+    // Inizializza servizi se vuoto
+    if (servizi.isEmpty) {
+      servizi = [
+        'CAF',
+        'Supporto Legale',
+        'Consulenza Migratoria',
+        'Supporto Psicologico',
+      ];
+    }
+    
     return Scaffold(
-      appBar: AppBar(title: const Text('Sportello Digitale')),
+      appBar: AppBar(title: Text(l10n.digitalDesk)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Sportello Digitale',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            Text(
+              l10n.digitalDesk,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
 
-            const Text(
-              'Seleziona il servizio',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            Text(
+              l10n.selectService,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Servizio',
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: l10n.services,
               ),
               value: _selectedServizio,
               items:
@@ -95,7 +105,7 @@ class _SportelloScreenState extends State<SportelloScreen> {
                   ),
                   const SizedBox(height: 8),
                   ElevatedButton.icon(
-                    onPressed: () => _prenota('Assegno Unico'),
+                    onPressed: () => _prenota('Assegno Unico', context),
                     icon: const Icon(Icons.event_available),
                     label: const Text('Assegno Unico'),
                   ),
@@ -108,15 +118,15 @@ class _SportelloScreenState extends State<SportelloScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Prenota Appuntamento',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  Text(
+                    l10n.bookAppointment,
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
                   ElevatedButton.icon(
-                    onPressed: () => _prenota(_selectedServizio!),
+                    onPressed: () => _prenota(_selectedServizio!, context),
                     icon: const Icon(Icons.event_available),
-                    label: Text('Prenota Appuntamento $_selectedServizio'),
+                    label: Text('${l10n.bookAppointment} $_selectedServizio'),
                   ),
                 ],
               ),
@@ -130,13 +140,13 @@ class _SportelloScreenState extends State<SportelloScreen> {
                   ElevatedButton.icon(
                     onPressed: _openChatbot,
                     icon: const Icon(Icons.chat_bubble_outline),
-                    label: const Text('Chatbot / Supporto'),
+                    label: Text(l10n.chatbotSupport),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
                     onPressed: _vaiAllaPrenotazioneDigitale,
                     icon: const Icon(Icons.calendar_month),
-                    label: const Text('Prenota Appuntamento Digitale'),
+                    label: Text(l10n.bookDigitalAppointment),
                   ),
                 ],
               ),

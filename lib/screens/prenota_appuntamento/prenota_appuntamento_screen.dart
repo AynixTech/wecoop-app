@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/screens/calendar/calendar_screen.dart';
 
 class PrenotaAppuntamentoScreen extends StatefulWidget {
@@ -71,12 +72,13 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
   }
 
   Future<void> inviaPrenotazione() async {
+    final l10n = AppLocalizations.of(context)!;
     if (selectedAppuntamentoId == null ||
         selectedOrario == null ||
         email.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Compila tutti i campi')));
+      ).showSnackBar(SnackBar(content: Text(l10n.fillAllFields)));
       return;
     }
 
@@ -94,13 +96,13 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
     if (response.statusCode == 200 && result['success'] == true) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Prenotazione confermata!')));
+      ).showSnackBar(SnackBar(content: Text(l10n.bookingConfirmed)));
       Navigator.pop(context, true); // ✅ Torna con conferma
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Errore: ${result['message'] ?? 'Impossibile prenotare'}',
+            '${l10n.error}: ${result['message'] ?? 'Impossibile prenotare'}',
           ),
         ),
       );
@@ -123,14 +125,14 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
     };
 
     return Scaffold(
-      appBar: AppBar(title: Text('Prenota Appuntamento')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.bookAppointment)),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
               TextField(
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: InputDecoration(labelText: AppLocalizations.of(context)!.email),
                 controller: TextEditingController(text: email),
                 onChanged: (val) => email = val,
               ),
@@ -243,7 +245,7 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: inviaPrenotazione,
-              child: Text('Prenota'),
+              child: Text(AppLocalizations.of(context)!.book),
             ),
           ),
         ),

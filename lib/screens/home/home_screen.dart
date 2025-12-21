@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../servizi/accoglienza_screen.dart';
 import '../servizi/mediazione_fiscale_screen.dart';
 import '../servizi/supporto_contabile_screen.dart';
+import '../servizi/servizi_gate_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -286,7 +287,11 @@ class _ServicesSection extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const AccoglienzaScreen(),
+                builder:
+                    (context) => const ServiziGateScreen(
+                      destinationScreen: AccoglienzaScreen(),
+                      serviceName: 'Accoglienza e Orientamento',
+                    ),
               ),
             );
           },
@@ -299,7 +304,11 @@ class _ServicesSection extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const MediazioneFiscaleScreen(),
+                builder:
+                    (context) => const ServiziGateScreen(
+                      destinationScreen: MediazioneFiscaleScreen(),
+                      serviceName: 'Mediazione Fiscale',
+                    ),
               ),
             );
           },
@@ -312,7 +321,11 @@ class _ServicesSection extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const SupportoContabileScreen(),
+                builder:
+                    (context) => const ServiziGateScreen(
+                      destinationScreen: SupportoContabileScreen(),
+                      serviceName: 'Supporto Contabile',
+                    ),
               ),
             );
           },

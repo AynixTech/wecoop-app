@@ -503,6 +503,19 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       // Converti i dati dal formato form al formato API
       final apiData = _convertToApiFormat(_formData);
 
+      // Aggiungi l'ID del socio/user per collegare la richiesta all'utente WordPress
+      final socioId = await _storage.read(key: 'socio_id');
+      final userId = await _storage.read(key: 'user_id');
+
+      // Usa socio_id se disponibile, altrimenti user_id
+      if (socioId != null && socioId.isNotEmpty) {
+        apiData['socio_id'] = socioId;
+        print('📋 Aggiunto socio_id: $socioId');
+      } else if (userId != null && userId.isNotEmpty) {
+        apiData['user_id'] = userId;
+        print('📋 Aggiunto user_id: $userId');
+      }
+
       print('=== DATI FORM ORIGINALI ===');
       print(_formData);
       print('=== DATI CONVERTITI PER API ===');

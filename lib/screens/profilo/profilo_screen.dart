@@ -74,6 +74,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
 
     // Cancella dati socio
     await storage.delete(key: 'socio_id');
+    await storage.delete(key: 'user_id');
     await storage.delete(key: 'first_name');
     await storage.delete(key: 'last_name');
     await storage.delete(key: 'full_name');

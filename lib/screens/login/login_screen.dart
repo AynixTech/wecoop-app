@@ -62,6 +62,15 @@ class _LoginScreenState extends State<LoginScreen> {
         );
         await storage.write(key: 'user_nicename', value: data['user_nicename']);
 
+        // Salva anche user_id se presente nella risposta JWT
+        if (data['user_id'] != null) {
+          await storage.write(
+            key: 'user_id',
+            value: data['user_id'].toString(),
+          );
+          print('💾 Salvato user_id: ${data['user_id']}');
+        }
+
         // Salva sempre l'ultima email usata
         await storage.write(key: 'last_login_email', value: email);
 
@@ -114,6 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
         final data = responseData['data'] as Map<String, dynamic>;
 
         print('📦 Dati ricevuti:');
+        print('  - id: ${data['id']}');
         print('  - nome: ${data['nome']}');
         print('  - cognome: ${data['cognome']}');
         print('  - telefono: ${data['telefono']}');
@@ -121,7 +131,14 @@ class _LoginScreenState extends State<LoginScreen> {
         print('  - numero_tessera: ${data['numero_tessera']}');
 
         // Salva tutti i dati dell'utente socio
+        // Salva sia socio_id (ID tabella soci) che user_id (ID WordPress)
         await storage.write(key: 'socio_id', value: data['id']?.toString());
+        if (data['user_id'] != null) {
+          await storage.write(
+            key: 'user_id',
+            value: data['user_id'].toString(),
+          );
+        }
         await storage.write(key: 'first_name', value: data['nome']);
         await storage.write(key: 'last_name', value: data['cognome']);
         await storage.write(

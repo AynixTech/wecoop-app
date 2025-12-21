@@ -342,4 +342,103 @@ class SocioService {
       return [];
     }
   }
+
+  /// Ottieni lista richieste servizi dell'utente corrente (AUTENTICATO)
+  /// GET /richieste-utente
+  static Future<Map<String, dynamic>> getRichiesteUtente({
+    int page = 1,
+    int perPage = 20,
+    String? stato,
+  }) async {
+    try {
+      final token = await storage.read(key: 'jwt_token');
+
+      if (token == null) {
+        print('Token JWT mancante');
+        return {'success': false, 'data': [], 'pagination': {}};
+      }
+
+      final queryParams = <String, String>{
+        'page': page.toString(),
+        'per_page': perPage.toString(),
+      };
+
+      if (stato != null && stato.isNotEmpty) {
+        queryParams['stato'] = stato;
+      }
+
+      final uri = Uri.parse(
+        '$baseUrl/richieste-utente',
+      ).replace(queryParameters: queryParams);
+      print('🔄 Chiamata GET /richieste-utente...');
+
+      final response = await http
+          .get(uri, headers: {'Authorization': 'Bearer $token'})
+          .timeout(const Duration(seconds: 30));
+
+      print('📥 GET /richieste-utente status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData['success'] == true) {
+          return {
+            'success': true,
+            'data': responseData['data'] ?? [],
+            'pagination': responseData['pagination'] ?? {},
+          };
+        }
+      } else if (response.statusCode == 401) {
+        print('⚠️ Token scaduto o non valido');
+        return {'success': false, 'message': 'Token scaduto', 'data': []};
+      }
+
+      return {'success': false, 'data': [], 'pagination': {}};
+    } catch (e) {
+      print('❌ Errore durante GET /richieste-utente: $e');
+      return {'success': false, 'data': [], 'pagination': {}};
+    }
+  }
+
+  /// Ottieni dettaglio singola richiesta (AUTENTICATO)
+  /// GET /richiesta-servizio/{id}
+  static Future<Map<String, dynamic>?> getDettaglioRichiesta(int id) async {
+    try {
+      final token = await storage.read(key: 'jwt_token');
+
+      if (token == null) {
+        print('Token JWT mancante');
+        return null;
+      }
+
+      final url = '$baseUrl/richiesta-servizio/$id';
+      print('🔄 Chiamata GET /richiesta-servizio/$id...');
+
+      final response = await http
+          .get(
+            Uri.parse(url),
+            headers: {'Authorization': 'Bearer $token'},
+          )
+          .timeout(const Duration(seconds: 30));
+
+      print('📥 GET /richiesta-servizio/$id status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData['success'] == true && responseData['data'] != null) {
+          return responseData['data'] as Map<String, dynamic>;
+        }
+      } else if (response.statusCode == 404) {
+        print('⚠️ Richiesta non trovata');
+        return null;
+      } else if (response.statusCode == 403) {
+        print('⚠️ Non hai i permessi per visualizzare questa richiesta');
+        return null;
+      }
+
+      return null;
+    } catch (e) {
+      print('❌ Errore durante GET /richiesta-servizio/$id: $e');
+      return null;
+    }
+  }
 }

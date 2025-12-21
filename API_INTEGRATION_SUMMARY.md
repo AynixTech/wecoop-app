@@ -37,6 +37,7 @@ static Future<Map<String, dynamic>> inviaRichiestaServizio({
   required String categoria,
   required Map<String, dynamic> dati,
 })
+// I dati includono automaticamente socio_id o user_id per collegare la richiesta all'utente
 // Response: {"success": true, "id": 789, "numero_pratica": "WECOOP-2025-00001"}
 ```
 
@@ -93,11 +94,23 @@ Utilizza:
 
 ## 📋 Mappatura Campi API vs Storage
 
+### ID Utente Collegato
+**Ogni richiesta di servizio include automaticamente:**
+- `socio_id`: ID dalla tabella soci (preferito se disponibile)
+- `user_id`: ID utente WordPress (fallback se socio_id non disponibile)
+
+Questo permette al backend WordPress di:
+1. Collegare la richiesta al socio/utente corretto
+2. Tracciare chi ha fatto la richiesta
+3. Inviare notifiche all'utente
+4. Mostrare lo storico richieste nel profilo
+
 ### Campi salvati dopo GET /soci/me:
 
 | Campo API | Storage Key | Tipo |
 |-----------|-------------|------|
 | id | socio_id | string |
+| user_id | user_id | string (ID WordPress) |
 | nome | first_name | string |
 | cognome | last_name | string |
 | email | user_email | string |

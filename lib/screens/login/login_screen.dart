@@ -76,17 +76,32 @@ class _LoginScreenState extends State<LoginScreen> {
     // Usa il nuovo endpoint /soci/me per ottenere tutti i dati dell'utente
     final url = Uri.parse('https://www.wecoop.org/wp-json/wecoop/v1/soci/me');
 
+    print('🔄 Chiamata a /soci/me...');
+    print('URL: $url');
+    print('Token: ${token.substring(0, 20)}...');
+
     try {
       final response = await http.get(
         url,
         headers: {'Authorization': 'Bearer $token'},
       );
 
-      print('GET /soci/me status: ${response.statusCode}');
-      print('GET /soci/me body: ${response.body}');
+      print('📥 GET /soci/me status: ${response.statusCode}');
+      print('📥 GET /soci/me body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final responseData = jsonDecode(response.body);
+
+        // L'endpoint restituisce {success: true, data: {...}}
+        // I dati del socio sono dentro responseData['data']
+        final data = responseData['data'] as Map<String, dynamic>;
+
+        print('📦 Dati ricevuti:');
+        print('  - nome: ${data['nome']}');
+        print('  - cognome: ${data['cognome']}');
+        print('  - telefono: ${data['telefono']}');
+        print('  - citta: ${data['citta']}');
+        print('  - numero_tessera: ${data['numero_tessera']}');
 
         // Salva tutti i dati dell'utente socio
         await storage.write(key: 'socio_id', value: data['id']?.toString());
@@ -104,16 +119,24 @@ class _LoginScreenState extends State<LoginScreen> {
         await storage.write(key: 'provincia', value: data['provincia']);
         await storage.write(key: 'telefono', value: data['telefono']);
         await storage.write(key: 'professione', value: data['professione']);
-        await storage.write(key: 'stato_socio', value: data['stato']);
+        await storage.write(key: 'stato_socio', value: data['status_socio']);
         await storage.write(
           key: 'data_iscrizione',
-          value: data['data_iscrizione'],
+          value: data['data_adesione'],
         );
         await storage.write(
           key: 'tessera_numero',
-          value: data['tessera_numero'],
+          value: data['numero_tessera'],
         );
         await storage.write(key: 'tessera_url', value: data['tessera_url']);
+        await storage.write(
+          key: 'quota_pagata',
+          value: data['quota_pagata']?.toString(),
+        );
+        await storage.write(
+          key: 'anni_socio',
+          value: data['anni_socio']?.toString(),
+        );
 
         // Crea nome completo
         final nome = data['nome'] ?? '';
@@ -121,16 +144,23 @@ class _LoginScreenState extends State<LoginScreen> {
         if (nome.isNotEmpty || cognome.isNotEmpty) {
           final fullName = '$nome $cognome'.trim();
           await storage.write(key: 'full_name', value: fullName);
+          print('✅ Nome completo salvato: $fullName');
         }
 
         print('✅ Dati socio salvati con successo');
-        print('Nome completo: ${data['nome']} ${data['cognome']}');
-        print('Tessera: ${data['tessera_numero']}');
+        print('Tessera: ${data['numero_tessera']}');
+        print('Anni socio: ${data['anni_socio']}');
+        print('Quota pagata: ${data['quota_pagata']}');
+      } else if (response.statusCode == 404) {
+        print('⚠️ Utente non trovato come socio nel database');
+        print('⚠️ Response: ${response.body}');
       } else {
         print('⚠️ Errore nel recupero dei dati socio: ${response.statusCode}');
+        print('⚠️ Response: ${response.body}');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       print('❌ Eccezione durante il recupero dei dati socio: $e');
+      print('Stack trace: $stackTrace');
     }
   }
 

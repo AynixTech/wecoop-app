@@ -28,7 +28,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get home => 'Home';
 
   @override
-  String get calendar => 'Calendar';
+  String get calendar => 'Requests';
 
   @override
   String get projects => 'Projects';

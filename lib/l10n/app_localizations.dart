@@ -139,7 +139,7 @@ abstract class AppLocalizations {
   /// No description provided for @calendar.
   ///
   /// In it, this message translates to:
-  /// **'Calendario'**
+  /// **'Richieste'**
   String get calendar;
 
   /// No description provided for @projects.

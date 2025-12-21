@@ -26,9 +26,24 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _loadUserData() async {
-    final name = await storage.read(key: 'user_display_name');
+    final displayName = await storage.read(key: 'user_display_name');
+    final nicename = await storage.read(key: 'user_nicename');
+    final email = await storage.read(key: 'user_email');
+
+    // Usa il display name se disponibile, altrimenti nicename, altrimenti nome dall'email
+    String finalName = 'Utente';
+
+    if (displayName != null && displayName.isNotEmpty) {
+      finalName = displayName;
+    } else if (nicename != null && nicename.isNotEmpty) {
+      finalName = nicename;
+    } else if (email != null && email.isNotEmpty) {
+      // Estrai il nome dalla parte prima della @
+      finalName = email.split('@').first;
+    }
+
     setState(() {
-      userName = name ?? 'Utente';
+      userName = finalName;
     });
   }
 

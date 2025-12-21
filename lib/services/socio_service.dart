@@ -344,7 +344,7 @@ class SocioService {
   }
 
   /// Ottieni lista richieste servizi dell'utente corrente (AUTENTICATO)
-  /// GET /richieste-utente
+  /// GET /mie-richieste
   static Future<Map<String, dynamic>> getRichiesteUtente({
     int page = 1,
     int perPage = 20,
@@ -368,22 +368,24 @@ class SocioService {
       }
 
       final uri = Uri.parse(
-        '$baseUrl/richieste-utente',
+        '$baseUrl/mie-richieste',
       ).replace(queryParameters: queryParams);
-      print('🔄 Chiamata GET /richieste-utente...');
+      print('🔄 Chiamata GET /mie-richieste...');
 
       final response = await http
           .get(uri, headers: {'Authorization': 'Bearer $token'})
           .timeout(const Duration(seconds: 30));
 
-      print('📥 GET /richieste-utente status: ${response.statusCode}');
+      print('📥 GET /mie-richieste status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         if (responseData['success'] == true) {
           return {
             'success': true,
-            'data': responseData['data'] ?? [],
+            'data':
+                responseData['richieste'] ??
+                [], // Backend usa 'richieste' non 'data'
             'pagination': responseData['pagination'] ?? {},
           };
         }
@@ -414,10 +416,7 @@ class SocioService {
       print('🔄 Chiamata GET /richiesta-servizio/$id...');
 
       final response = await http
-          .get(
-            Uri.parse(url),
-            headers: {'Authorization': 'Bearer $token'},
-          )
+          .get(Uri.parse(url), headers: {'Authorization': 'Bearer $token'})
           .timeout(const Duration(seconds: 30));
 
       print('📥 GET /richiesta-servizio/$id status: ${response.statusCode}');

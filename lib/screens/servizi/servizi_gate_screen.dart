@@ -284,6 +284,22 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+              TextButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.login),
+                label: Text(l10n.translate('alreadyRegisteredLogin')),
+                style: TextButton.styleFrom(
+                  foregroundColor: const Color(0xFF2196F3),
+                ),
+              ),
+              const SizedBox(height: 16),
               OutlinedButton.icon(
                 onPressed: () => Navigator.pop(context),
                 icon: const Icon(Icons.arrow_back),

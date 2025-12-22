@@ -44,9 +44,11 @@ class _HomeScreenState extends State<HomeScreen> {
       finalName = email.split('@').first;
     }
 
-    setState(() {
-      userName = finalName;
-    });
+    if (mounted) {
+      setState(() {
+        userName = finalName;
+      });
+    }
   }
 
   @override

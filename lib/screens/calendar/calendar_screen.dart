@@ -32,12 +32,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Future<void> _initializeLocale() async {
     await initializeDateFormatting('it_IT', null);
-    setState(() => _localeInitialized = true);
+    if (mounted) {
+      setState(() => _localeInitialized = true);
+    }
     _caricaRichieste();
   }
 
   Future<void> _caricaRichieste() async {
-    setState(() => _isLoading = true);
+    if (mounted) {
+      setState(() => _isLoading = true);
+    }
 
     try {
       final result = await SocioService.getRichiesteUtente(
@@ -47,14 +51,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
       );
 
       if (result['success'] == true) {
-        setState(() {
-          _tutteRichieste = List<Map<String, dynamic>>.from(
-            result['data'] ?? [],
-          );
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _tutteRichieste = List<Map<String, dynamic>>.from(
+              result['data'] ?? [],
+            );
+            _isLoading = false;
+          });
+        }
       } else {
-        setState(() => _isLoading = false);
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
         if (mounted) {
           final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
@@ -65,7 +73,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
         }
       }
     } catch (e) {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(

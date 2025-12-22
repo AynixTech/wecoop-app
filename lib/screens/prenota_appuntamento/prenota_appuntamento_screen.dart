@@ -28,7 +28,7 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
 
   Future<void> caricaDatiUtente() async {
     final storedEmail = await storage.read(key: 'user_email');
-    if (storedEmail != null) {
+    if (storedEmail != null && mounted) {
       setState(() {
         email = storedEmail;
       });
@@ -50,9 +50,11 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
         if (da == null || db == null) return 0;
         return da.compareTo(db);
       });
-      setState(() {
-        appuntamenti = dati;
-      });
+      if (mounted) {
+        setState(() {
+          appuntamenti = dati;
+        });
+      }
     } else {
       print('Errore nel recupero appuntamenti: ${response.body}');
     }

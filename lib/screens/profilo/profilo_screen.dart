@@ -44,14 +44,16 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     final langCode = await storage.read(key: 'language_code');
     final interest = await storage.read(key: 'selected_interest');
 
-    setState(() {
-      userName = name ?? displayName ?? 'Utente';
-      userEmail = email ?? 'email non disponibile';
-      tesseraNumero = tessera ?? 'Tessera non disponibile';
-      tesseraUrl = url;
-      selectedLanguageCode = langCode ?? 'it';
-      selectedInterest = interest ?? 'culture';
-    });
+    if (mounted) {
+      setState(() {
+        userName = name ?? displayName ?? 'Utente';
+        userEmail = email ?? 'email non disponibile';
+        tesseraNumero = tessera ?? 'Tessera non disponibile';
+        tesseraUrl = url;
+        selectedLanguageCode = langCode ?? 'it';
+        selectedInterest = interest ?? 'culture';
+      });
+    }
   }
 
   void _logout(BuildContext context) async {
@@ -107,16 +109,20 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   Future<void> _changeLanguage(String languageCode) async {
     final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
     await localeProvider.setLocale(Locale(languageCode));
-    setState(() {
-      selectedLanguageCode = languageCode;
-    });
+    if (mounted) {
+      setState(() {
+        selectedLanguageCode = languageCode;
+      });
+    }
   }
 
   Future<void> _saveInterest(String interest) async {
     await storage.write(key: 'selected_interest', value: interest);
-    setState(() {
-      selectedInterest = interest;
-    });
+    if (mounted) {
+      setState(() {
+        selectedInterest = interest;
+      });
+    }
   }
 
   @override

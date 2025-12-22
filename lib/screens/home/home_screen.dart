@@ -24,6 +24,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final storage = FlutterSecureStorage();
   String userName = '...'; // valore iniziale
+  bool isLoggedIn = false;
 
   @override
   void initState() {
@@ -32,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _loadUserData() async {
+    final token = await storage.read(key: 'jwt_token');
     final fullName = await storage.read(key: 'full_name');
     final displayName = await storage.read(key: 'user_display_name');
     final nicename = await storage.read(key: 'user_nicename');
@@ -39,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Priorità: full_name (nome + cognome) > display_name > nicename > email
     String finalName = 'Utente';
+    bool logged = token != null && token.isNotEmpty;
 
     if (fullName != null && fullName.isNotEmpty) {
       finalName = fullName;
@@ -54,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (mounted) {
       setState(() {
         userName = finalName;
+        isLoggedIn = logged;
       });
     }
   }
@@ -77,6 +81,59 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _GreetingSection(userName: userName),
               const SizedBox(height: 24),
+
+              if (!isLoggedIn)
+                Card(
+                  elevation: 2,
+                  color: const Color(0xFF2196F3),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/login');
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.login,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.alreadyRegistered,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  l10n.loginToAccess,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              if (!isLoggedIn) const SizedBox(height: 24),
 
               const _ServicesSection(),
               const SizedBox(height: 24),

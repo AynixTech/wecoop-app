@@ -263,5 +263,7 @@
   "chatbotInputHint": "Scrivi un messaggio...",
   
   "alreadyRegisteredLogin": "Se sei già registrato effettua il login",
-  "continueWithoutLogin": "Continua senza loggarti"
+  "continueWithoutLogin": "Continua senza loggarti",
+  "alreadyRegistered": "Sei già registrato?",
+  "loginToAccess": "Accedi per utilizzare tutti i servizi"
 }

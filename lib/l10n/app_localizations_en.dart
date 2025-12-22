@@ -772,4 +772,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get continueWithoutLogin => 'Continue without logging in';
+
+  @override
+  String get alreadyRegistered => 'Already registered?';
+
+  @override
+  String get loginToAccess => 'Login to access all services';
 }

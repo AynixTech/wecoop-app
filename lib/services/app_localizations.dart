@@ -273,6 +273,8 @@ class AppLocalizations {
       'chatbotInputHint': 'Scrivi un messaggio...',
       'alreadyRegisteredLogin': 'Se sei già registrato effettua il login',
       'continueWithoutLogin': 'Continua senza loggarti',
+      'alreadyRegistered': 'Sei già registrato?',
+      'loginToAccess': 'Accedi per utilizzare tutti i servizi',
     },
     'en': {
       'appTitle': 'WECOOP',
@@ -534,6 +536,8 @@ class AppLocalizations {
       'chatbotInputHint': 'Write a message...',
       'alreadyRegisteredLogin': 'If you are already registered, log in',
       'continueWithoutLogin': 'Continue without logging in',
+      'alreadyRegistered': 'Already registered?',
+      'loginToAccess': 'Login to access all services',
     },
     'es': {
       'appTitle': 'WECOOP',
@@ -795,6 +799,8 @@ class AppLocalizations {
       'chatbotInputHint': 'Escribe un mensaje...',
       'alreadyRegisteredLogin': 'Si ya estás registrado, inicia sesión',
       'continueWithoutLogin': 'Continuar sin iniciar sesión',
+      'alreadyRegistered': '¿Ya estás registrado?',
+      'loginToAccess': 'Inicia sesión para acceder a todos los servicios',
     },
   };
 
@@ -1066,6 +1072,8 @@ class AppLocalizations {
   // Login & Registration
   String get alreadyRegisteredLogin => translate('alreadyRegisteredLogin');
   String get continueWithoutLogin => translate('continueWithoutLogin');
+  String get alreadyRegistered => translate('alreadyRegistered');
+  String get loginToAccess => translate('loginToAccess');
 }
 
 class _AppLocalizationsDelegate

@@ -260,5 +260,9 @@
   "chatbotFAQ4Answer": "Desde tu perfil haz clic en \"Hazte Socio de WECOOP\" y completa el formulario de adhesión.",
   "chatbotFAQ5Question": "¿Cómo reservo una cita?",
   "chatbotFAQ5Answer": "Puedes reservar directamente desde la app haciendo clic en \"Reservar Cita\".",
-  "chatbotInputHint": "Escribe un mensaje..."
+  "chatbotInputHint": "Escribe un mensaje...",
+  "continueWithoutLogin": "Continuar sin iniciar sesión",
+  "alreadyRegisteredLogin": "Si ya estás registrado, inicia sesión",
+  "alreadyRegistered": "¿Ya estás registrado?",
+  "loginToAccess": "Inicia sesión para acceder a todos los servicios"
 }

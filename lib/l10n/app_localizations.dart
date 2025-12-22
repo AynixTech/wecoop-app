@@ -1545,6 +1545,18 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Continua senza loggarti'**
   String get continueWithoutLogin;
+
+  /// No description provided for @alreadyRegistered.
+  ///
+  /// In it, this message translates to:
+  /// **'Sei già registrato?'**
+  String get alreadyRegistered;
+
+  /// No description provided for @loginToAccess.
+  ///
+  /// In it, this message translates to:
+  /// **'Accedi per utilizzare tutti i servizi'**
+  String get loginToAccess;
 }
 
 class _AppLocalizationsDelegate

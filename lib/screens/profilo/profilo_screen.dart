@@ -29,12 +29,6 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   List<Evento> _mieiEventi = [];
   bool _isLoadingEventi = false;
 
-  final List<String> participationHistory = [
-    'Evento culturale - 15 Marzo 2025',
-    'Laboratorio di lingua - 10 Febbraio 2025',
-    'Cena tematica - 5 Gennaio 2025',
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -504,20 +498,6 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
             ),
 
             const Divider(height: 32, thickness: 1),
-
-            Text(
-              l10n.participationHistory,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            ...participationHistory.map((event) {
-              return ListTile(
-                leading: const Icon(Icons.event),
-                title: Text(event),
-              );
-            }).toList(),
 
             const SizedBox(height: 30),
             Center(

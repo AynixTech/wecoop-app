@@ -436,4 +436,170 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get detailsAndNotes => 'Detalles y notas';
+
+  @override
+  String get youthCategory => 'Jóvenes';
+
+  @override
+  String get womenCategory => 'Mujeres';
+
+  @override
+  String get sportsCategory => 'Deportes';
+
+  @override
+  String get migrantsCategory => 'Migrantes';
+
+  @override
+  String get projectDescription => 'Descripción del proyecto';
+
+  @override
+  String get servicesOffered => 'Servicios ofrecidos';
+
+  @override
+  String get mafaldaDescription =>
+      'Proyecto europeo dedicado a los jóvenes para el desarrollo de competencias y oportunidades de movilidad internacional.';
+
+  @override
+  String get womentorDescription =>
+      'Programa de mentoría y networking intergeneracional entre mujeres para el crecimiento personal y profesional.';
+
+  @override
+  String get sportunityDescription =>
+      'Integración social e inclusión a través del deporte y actividades recreativas para toda la comunidad.';
+
+  @override
+  String get passaparolaDescription =>
+      'Oficina dedicada a los migrantes para apoyo documental, orientación e integración social.';
+
+  @override
+  String get europeanProjectDesign => 'Diseño de Proyectos Europeos';
+
+  @override
+  String get europeanProjectDesignDesc =>
+      'Apoyo en el diseño y gestión de proyectos financiados por la Unión Europea';
+
+  @override
+  String get youthMobility => 'Movilidad Juvenil';
+
+  @override
+  String get youthMobilityDesc =>
+      'Oportunidades de intercambios internacionales, voluntariado y prácticas en el extranjero';
+
+  @override
+  String get skillsDevelopment => 'Desarrollo de Competencias';
+
+  @override
+  String get skillsDevelopmentDesc =>
+      'Formación y talleres para el desarrollo de competencias personales y profesionales';
+
+  @override
+  String get intergenerationalMentoring => 'Mentoría Intergeneracional';
+
+  @override
+  String get intergenerationalMentoringDesc =>
+      'Programas de emparejamiento entre mujeres de diferentes generaciones';
+
+  @override
+  String get womenNetworking => 'Networking Femenino';
+
+  @override
+  String get womenNetworkingDesc =>
+      'Eventos y actividades para crear una red de apoyo entre mujeres';
+
+  @override
+  String get leadershipTraining => 'Formación en Liderazgo';
+
+  @override
+  String get leadershipTrainingDesc =>
+      'Cursos y seminarios para el desarrollo del liderazgo femenino';
+
+  @override
+  String get socialIntegrationSport => 'Integración a través del Deporte';
+
+  @override
+  String get socialIntegrationSportDesc =>
+      'Actividades deportivas para promover la inclusión social';
+
+  @override
+  String get inclusiveSportActivities => 'Actividades Deportivas Inclusivas';
+
+  @override
+  String get inclusiveSportActivitiesDesc =>
+      'Deportes accesibles para todos, independientemente de las capacidades';
+
+  @override
+  String get communityEvents => 'Eventos Comunitarios';
+
+  @override
+  String get communityEventsDesc =>
+      'Torneos y eventos deportivos para la comunidad';
+
+  @override
+  String get migrantDesk => 'Oficina de Migrantes';
+
+  @override
+  String get migrantDeskDesc =>
+      'Asistencia y orientación para personas migrantes';
+
+  @override
+  String get documentSupport => 'Apoyo Documental';
+
+  @override
+  String get documentSupportDesc =>
+      'Ayuda en la cumplimentación y gestión de documentos administrativos';
+
+  @override
+  String get legalGuidance => 'Orientación Legal';
+
+  @override
+  String get legalGuidanceDesc =>
+      'Asesoramiento e información sobre derechos y procedimientos legales';
+
+  @override
+  String get mafaldaService1 => 'Diseño de Proyectos Europeos';
+
+  @override
+  String get mafaldaService2 => 'Movilidad Juvenil';
+
+  @override
+  String get mafaldaService3 => 'Desarrollo de Competencias';
+
+  @override
+  String get mafaldaService4 => 'Networking Europeo';
+
+  @override
+  String get womentorService1 => 'Mentoría Intergeneracional';
+
+  @override
+  String get womentorService2 => 'Networking Femenino';
+
+  @override
+  String get womentorService3 => 'Formación en Liderazgo';
+
+  @override
+  String get womentorService4 => 'Empoderamiento Profesional';
+
+  @override
+  String get sportunityService1 => 'Integración a través del Deporte';
+
+  @override
+  String get sportunityService2 => 'Actividades Deportivas Inclusivas';
+
+  @override
+  String get sportunityService3 => 'Eventos Comunitarios';
+
+  @override
+  String get sportunityService4 => 'Promoción del Bienestar';
+
+  @override
+  String get passaparolaService1 => 'Oficina de Migrantes';
+
+  @override
+  String get passaparolaService2 => 'Apoyo Documental';
+
+  @override
+  String get passaparolaService3 => 'Orientación Legal';
+
+  @override
+  String get passaparolaService4 => 'Integración Social';
 }

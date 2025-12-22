@@ -1,130 +1,202 @@
 import 'package:flutter/material.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'project_category_detail_screen.dart';
 
 class ProgettiScreen extends StatelessWidget {
   const ProgettiScreen({super.key});
 
-  final List<Map<String, String>> mockProjects = const [
-    {'title': 'MAFALDA', 'description': 'Progettazione europea per giovani.'},
-    {
-      'title': 'WOMENTOR',
-      'description': 'Mentoring e networking intergenerazionale tra donne.',
-    },
-    {
-      'title': 'SPORTUNITY',
-      'description': 'Integrazione sociale tramite sport.',
-    },
-    {
-      'title': 'PASSAPAROLA',
-      'description': 'Sportello migranti e supporto documentale.',
-    },
-  ];
-
-  void _showProposalDialog(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder:
-          (ctx) => AlertDialog(
-            title: Text(l10n.proposeEventTitle),
-            content: Text(l10n.featureInDevelopment),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: Text(l10n.close),
-              ),
-            ],
-          ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    final categories = _getCategories(context);
+
     return Scaffold(
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-        children: [
-          Text(
-            l10n.activeProjects,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+      appBar: AppBar(
+        title: Text(l10n!.projects),
+
+        backgroundColor: Colors.deepPurple,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.deepPurple.shade50,
+              Colors.white,
+            ],
           ),
-          const SizedBox(height: 20),
-          ...mockProjects.map((project) {
+        ),
+        child: ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: categories.length,
+          itemBuilder: (context, index) {
+            final category = categories[index];
             return Card(
+              elevation: 4,
               margin: const EdgeInsets.only(bottom: 16),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
               ),
-              elevation: 4,
-              shadowColor: Colors.amber.shade200,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.folder_open,
-                      size: 40,
-                      color: Colors.amber.shade700,
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            project['title']!,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.amber.shade900,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            project['description']!,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey.shade700,
-                              height: 1.3,
-                            ),
-                          ),
-                        ],
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProjectCategoryDetailScreen(
+                        categoryKey: category['key'],
+                        categoryName: category['name'],
+                        categoryIcon: category['icon'],
+                        categoryColor: category['color'],
+                        projects: category['projects'],
                       ),
                     ),
-                  ],
+                  );
+                },
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        category['color'].withOpacity(0.7),
+                        category['color'],
+                      ],
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          category['icon'],
+                          size: 32,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              category['name'],
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${category['projects'].length} ${category['projects'].length == 1 ? 'progetto' : 'progetti'}',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white.withOpacity(0.9),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(
+                        Icons.arrow_forward_ios,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
-          }).toList(),
-          const SizedBox(height: 30),
-          Center(
-            child: ElevatedButton.icon(
-              onPressed: () => _showProposalDialog(context),
-              icon: const Icon(Icons.add),
-              label: Text(l10n.proposeEvent),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 14,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                backgroundColor: Colors.amber.shade700,
-                textStyle: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-                elevation: 5,
-                shadowColor: Colors.amber.shade300,
-              ),
-            ),
-          ),
-        ],
+          },
+        ),
       ),
     );
+  }
+
+  List<Map<String, dynamic>> _getCategories(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return [
+      {
+        'key': 'giovani',
+        'name': l10n.youthCategory,
+        'icon': Icons.school,
+        'color': Colors.blue,
+        'projects': [
+          {
+            'name': 'MAFALDA',
+            'description': l10n.mafaldaDescription,
+            'services': [
+              l10n.mafaldaService1,
+              l10n.mafaldaService2,
+              l10n.mafaldaService3,
+              l10n.mafaldaService4,
+            ],
+          },
+        ],
+      },
+      {
+        'key': 'donne',
+        'name': l10n.womenCategory,
+        'icon': Icons.people,
+        'color': Colors.purple,
+        'projects': [
+          {
+            'name': 'WOMENTOR',
+            'description': l10n.womentorDescription,
+            'services': [
+              l10n.womentorService1,
+              l10n.womentorService2,
+              l10n.womentorService3,
+              l10n.womentorService4,
+            ],
+          },
+        ],
+      },
+      {
+        'key': 'sport',
+        'name': l10n.sportsCategory,
+        'icon': Icons.sports_soccer,
+        'color': Colors.green,
+        'projects': [
+          {
+            'name': 'SPORTUNITY',
+            'description': l10n.sportunityDescription,
+            'services': [
+              l10n.sportunityService1,
+              l10n.sportunityService2,
+              l10n.sportunityService3,
+              l10n.sportunityService4,
+            ],
+          },
+        ],
+      },
+      {
+        'key': 'migranti',
+        'name': l10n.migrantsCategory,
+        'icon': Icons.support_agent,
+        'color': Colors.orange,
+        'projects': [
+          {
+            'name': 'PASSAPAROLA',
+            'description': l10n.passaparolaDescription,
+            'services': [
+              l10n.passaparolaService1,
+              l10n.passaparolaService2,
+              l10n.passaparolaService3,
+              l10n.passaparolaService4,
+            ],
+          },
+        ],
+      },
+    ];
   }
 }

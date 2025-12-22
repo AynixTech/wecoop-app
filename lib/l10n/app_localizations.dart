@@ -933,6 +933,306 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Dettagli e note'**
   String get detailsAndNotes;
+
+  /// No description provided for @youthCategory.
+  ///
+  /// In it, this message translates to:
+  /// **'Giovani'**
+  String get youthCategory;
+
+  /// No description provided for @womenCategory.
+  ///
+  /// In it, this message translates to:
+  /// **'Donne'**
+  String get womenCategory;
+
+  /// No description provided for @sportsCategory.
+  ///
+  /// In it, this message translates to:
+  /// **'Sport'**
+  String get sportsCategory;
+
+  /// No description provided for @migrantsCategory.
+  ///
+  /// In it, this message translates to:
+  /// **'Migranti'**
+  String get migrantsCategory;
+
+  /// No description provided for @projectDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Descrizione del progetto'**
+  String get projectDescription;
+
+  /// No description provided for @servicesOffered.
+  ///
+  /// In it, this message translates to:
+  /// **'Servizi offerti'**
+  String get servicesOffered;
+
+  /// No description provided for @mafaldaDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Progetto europeo dedicato ai giovani per lo sviluppo di competenze e opportunità di mobilità internazionale.'**
+  String get mafaldaDescription;
+
+  /// No description provided for @womentorDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Programma di mentoring e networking intergenerazionale tra donne per la crescita personale e professionale.'**
+  String get womentorDescription;
+
+  /// No description provided for @sportunityDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Integrazione sociale e inclusione attraverso lo sport e attività ricreative per tutta la comunità.'**
+  String get sportunityDescription;
+
+  /// No description provided for @passaparolaDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Sportello dedicato ai migranti per supporto documentale, orientamento e integrazione sociale.'**
+  String get passaparolaDescription;
+
+  /// No description provided for @europeanProjectDesign.
+  ///
+  /// In it, this message translates to:
+  /// **'Progettazione Europea'**
+  String get europeanProjectDesign;
+
+  /// No description provided for @europeanProjectDesignDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Supporto nella progettazione e gestione di progetti finanziati dall\'Unione Europea'**
+  String get europeanProjectDesignDesc;
+
+  /// No description provided for @youthMobility.
+  ///
+  /// In it, this message translates to:
+  /// **'Mobilità Giovanile'**
+  String get youthMobility;
+
+  /// No description provided for @youthMobilityDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Opportunità di scambi internazionali, volontariato e stage all\'estero'**
+  String get youthMobilityDesc;
+
+  /// No description provided for @skillsDevelopment.
+  ///
+  /// In it, this message translates to:
+  /// **'Sviluppo Competenze'**
+  String get skillsDevelopment;
+
+  /// No description provided for @skillsDevelopmentDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Formazione e workshop per lo sviluppo di competenze personali e professionali'**
+  String get skillsDevelopmentDesc;
+
+  /// No description provided for @intergenerationalMentoring.
+  ///
+  /// In it, this message translates to:
+  /// **'Mentoring Intergenerazionale'**
+  String get intergenerationalMentoring;
+
+  /// No description provided for @intergenerationalMentoringDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Programmi di affiancamento tra donne di diverse generazioni'**
+  String get intergenerationalMentoringDesc;
+
+  /// No description provided for @womenNetworking.
+  ///
+  /// In it, this message translates to:
+  /// **'Networking Femminile'**
+  String get womenNetworking;
+
+  /// No description provided for @womenNetworkingDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Eventi e attività per creare una rete di supporto tra donne'**
+  String get womenNetworkingDesc;
+
+  /// No description provided for @leadershipTraining.
+  ///
+  /// In it, this message translates to:
+  /// **'Formazione Leadership'**
+  String get leadershipTraining;
+
+  /// No description provided for @leadershipTrainingDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Corsi e seminari per lo sviluppo della leadership femminile'**
+  String get leadershipTrainingDesc;
+
+  /// No description provided for @socialIntegrationSport.
+  ///
+  /// In it, this message translates to:
+  /// **'Integrazione tramite Sport'**
+  String get socialIntegrationSport;
+
+  /// No description provided for @socialIntegrationSportDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Attività sportive per favorire l\'inclusione sociale'**
+  String get socialIntegrationSportDesc;
+
+  /// No description provided for @inclusiveSportActivities.
+  ///
+  /// In it, this message translates to:
+  /// **'Attività Sportive Inclusive'**
+  String get inclusiveSportActivities;
+
+  /// No description provided for @inclusiveSportActivitiesDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Sport accessibili a tutti, indipendentemente dalle abilità'**
+  String get inclusiveSportActivitiesDesc;
+
+  /// No description provided for @communityEvents.
+  ///
+  /// In it, this message translates to:
+  /// **'Eventi Comunitari'**
+  String get communityEvents;
+
+  /// No description provided for @communityEventsDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Tornei e manifestazioni sportive per la comunità'**
+  String get communityEventsDesc;
+
+  /// No description provided for @migrantDesk.
+  ///
+  /// In it, this message translates to:
+  /// **'Sportello Migranti'**
+  String get migrantDesk;
+
+  /// No description provided for @migrantDeskDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Assistenza e orientamento per persone migranti'**
+  String get migrantDeskDesc;
+
+  /// No description provided for @documentSupport.
+  ///
+  /// In it, this message translates to:
+  /// **'Supporto Documentale'**
+  String get documentSupport;
+
+  /// No description provided for @documentSupportDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Aiuto nella compilazione e gestione di documenti amministrativi'**
+  String get documentSupportDesc;
+
+  /// No description provided for @legalGuidance.
+  ///
+  /// In it, this message translates to:
+  /// **'Orientamento Legale'**
+  String get legalGuidance;
+
+  /// No description provided for @legalGuidanceDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Consulenza e informazioni sui diritti e procedure legali'**
+  String get legalGuidanceDesc;
+
+  /// No description provided for @mafaldaService1.
+  ///
+  /// In it, this message translates to:
+  /// **'Progettazione Europea'**
+  String get mafaldaService1;
+
+  /// No description provided for @mafaldaService2.
+  ///
+  /// In it, this message translates to:
+  /// **'Mobilità Giovanile'**
+  String get mafaldaService2;
+
+  /// No description provided for @mafaldaService3.
+  ///
+  /// In it, this message translates to:
+  /// **'Sviluppo Competenze'**
+  String get mafaldaService3;
+
+  /// No description provided for @mafaldaService4.
+  ///
+  /// In it, this message translates to:
+  /// **'Networking Europeo'**
+  String get mafaldaService4;
+
+  /// No description provided for @womentorService1.
+  ///
+  /// In it, this message translates to:
+  /// **'Mentoring Intergenerazionale'**
+  String get womentorService1;
+
+  /// No description provided for @womentorService2.
+  ///
+  /// In it, this message translates to:
+  /// **'Networking Femminile'**
+  String get womentorService2;
+
+  /// No description provided for @womentorService3.
+  ///
+  /// In it, this message translates to:
+  /// **'Formazione Leadership'**
+  String get womentorService3;
+
+  /// No description provided for @womentorService4.
+  ///
+  /// In it, this message translates to:
+  /// **'Empowerment Professionale'**
+  String get womentorService4;
+
+  /// No description provided for @sportunityService1.
+  ///
+  /// In it, this message translates to:
+  /// **'Integrazione tramite Sport'**
+  String get sportunityService1;
+
+  /// No description provided for @sportunityService2.
+  ///
+  /// In it, this message translates to:
+  /// **'Attività Sportive Inclusive'**
+  String get sportunityService2;
+
+  /// No description provided for @sportunityService3.
+  ///
+  /// In it, this message translates to:
+  /// **'Eventi Comunitari'**
+  String get sportunityService3;
+
+  /// No description provided for @sportunityService4.
+  ///
+  /// In it, this message translates to:
+  /// **'Promozione Benessere'**
+  String get sportunityService4;
+
+  /// No description provided for @passaparolaService1.
+  ///
+  /// In it, this message translates to:
+  /// **'Sportello Migranti'**
+  String get passaparolaService1;
+
+  /// No description provided for @passaparolaService2.
+  ///
+  /// In it, this message translates to:
+  /// **'Supporto Documentale'**
+  String get passaparolaService2;
+
+  /// No description provided for @passaparolaService3.
+  ///
+  /// In it, this message translates to:
+  /// **'Orientamento Legale'**
+  String get passaparolaService3;
+
+  /// No description provided for @passaparolaService4.
+  ///
+  /// In it, this message translates to:
+  /// **'Integrazione Sociale'**
+  String get passaparolaService4;
 }
 
 class _AppLocalizationsDelegate

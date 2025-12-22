@@ -197,6 +197,32 @@ class AppLocalizations {
       'multipleTypes': 'Più tipologie',
       'hasProperties': 'Hai immobili?',
       'detailsAndNotes': 'Dettagli e note',
+      'projectDescription': 'Descrizione del progetto',
+      'servicesOffered': 'Servizi offerti',
+      'youthCategory': 'Giovani',
+      'womenCategory': 'Donne',
+      'sportsCategory': 'Sport',
+      'migrantsCategory': 'Migranti',
+      'mafaldaDescription': 'Progetto europeo dedicato ai giovani per lo sviluppo di competenze e opportunità di mobilità internazionale.',
+      'womentorDescription': 'Programma di mentoring e networking intergenerazionale tra donne per la crescita personale e professionale.',
+      'sportunityDescription': 'Integrazione sociale e inclusione attraverso lo sport e attività ricreative per tutta la comunità.',
+      'passaparolaDescription': 'Sportello dedicato ai migranti per supporto documentale, orientamento e integrazione sociale.',
+      'mafaldaService1': 'Progettazione Europea',
+      'mafaldaService2': 'Mobilità Giovanile',
+      'mafaldaService3': 'Sviluppo Competenze',
+      'mafaldaService4': 'Networking Europeo',
+      'womentorService1': 'Mentoring Intergenerazionale',
+      'womentorService2': 'Networking Femminile',
+      'womentorService3': 'Formazione Leadership',
+      'womentorService4': 'Empowerment Professionale',
+      'sportunityService1': 'Integrazione tramite Sport',
+      'sportunityService2': 'Attività Sportive Inclusive',
+      'sportunityService3': 'Eventi Comunitari',
+      'sportunityService4': 'Promozione Benessere',
+      'passaparolaService1': 'Sportello Migranti',
+      'passaparolaService2': 'Supporto Documentale',
+      'passaparolaService3': 'Orientamento Legale',
+      'passaparolaService4': 'Integrazione Sociale',
     },
     'en': {
       'appTitle': 'WECOOP',
@@ -380,8 +406,34 @@ class AppLocalizations {
       'capitalIncome': 'Capital income',
       'otherIncome': 'Other income',
       'multipleTypes': 'Multiple types',
-      'hasProperties': 'Do you own properties?',
+      'hasProperties': 'Has real estate properties',
       'detailsAndNotes': 'Details and notes',
+      'projectDescription': 'Project description',
+      'servicesOffered': 'Services offered',
+      'youthCategory': 'Youth',
+      'womenCategory': 'Women',
+      'sportsCategory': 'Sports',
+      'migrantsCategory': 'Migrants',
+      'mafaldaDescription': 'European project dedicated to young people for skills development and international mobility opportunities.',
+      'womentorDescription': 'Intergenerational mentoring and networking program among women for personal and professional growth.',
+      'sportunityDescription': 'Social integration and inclusion through sports and recreational activities for the entire community.',
+      'passaparolaDescription': 'Dedicated desk for migrants providing document support, guidance and social integration.',
+      'mafaldaService1': 'European Project Design',
+      'mafaldaService2': 'Youth Mobility',
+      'mafaldaService3': 'Skills Development',
+      'mafaldaService4': 'European Networking',
+      'womentorService1': 'Intergenerational Mentoring',
+      'womentorService2': 'Women\'s Networking',
+      'womentorService3': 'Leadership Training',
+      'womentorService4': 'Professional Empowerment',
+      'sportunityService1': 'Integration through Sport',
+      'sportunityService2': 'Inclusive Sport Activities',
+      'sportunityService3': 'Community Events',
+      'sportunityService4': 'Wellness Promotion',
+      'passaparolaService1': 'Migrant Desk',
+      'passaparolaService2': 'Document Support',
+      'passaparolaService3': 'Legal Guidance',
+      'passaparolaService4': 'Social Integration',
     },
     'es': {
       'appTitle': 'WECOOP',
@@ -565,8 +617,34 @@ class AppLocalizations {
       'capitalIncome': 'Ingresos de capital',
       'otherIncome': 'Otros ingresos',
       'multipleTypes': 'Múltiples tipos',
-      'hasProperties': '¿Tienes propiedades?',
+      'hasProperties': 'Tiene propiedades inmobiliarias',
       'detailsAndNotes': 'Detalles y notas',
+      'projectDescription': 'Descripción del proyecto',
+      'servicesOffered': 'Servicios ofrecidos',
+      'youthCategory': 'Jóvenes',
+      'womenCategory': 'Mujeres',
+      'sportsCategory': 'Deportes',
+      'migrantsCategory': 'Migrantes',
+      'mafaldaDescription': 'Proyecto europeo dedicado a los jóvenes para el desarrollo de competencias y oportunidades de movilidad internacional.',
+      'womentorDescription': 'Programa de mentoría y networking intergeneracional entre mujeres para el crecimiento personal y profesional.',
+      'sportunityDescription': 'Integración social e inclusión a través del deporte y actividades recreativas para toda la comunidad.',
+      'passaparolaDescription': 'Oficina dedicada a los migrantes para apoyo documental, orientación e integración social.',
+      'mafaldaService1': 'Diseño de Proyectos Europeos',
+      'mafaldaService2': 'Movilidad Juvenil',
+      'mafaldaService3': 'Desarrollo de Competencias',
+      'mafaldaService4': 'Networking Europeo',
+      'womentorService1': 'Mentoría Intergeneracional',
+      'womentorService2': 'Networking Femenino',
+      'womentorService3': 'Formación en Liderazgo',
+      'womentorService4': 'Empoderamiento Profesional',
+      'sportunityService1': 'Integración a través del Deporte',
+      'sportunityService2': 'Actividades Deportivas Inclusivas',
+      'sportunityService3': 'Eventos Comunitarios',
+      'sportunityService4': 'Promoción del Bienestar',
+      'passaparolaService1': 'Oficina de Migrantes',
+      'passaparolaService2': 'Apoyo Documental',
+      'passaparolaService3': 'Orientación Legal',
+      'passaparolaService4': 'Integración Social',
     },
   };
 
@@ -756,6 +834,32 @@ class AppLocalizations {
   String get multipleTypes => translate('multipleTypes');
   String get hasProperties => translate('hasProperties');
   String get detailsAndNotes => translate('detailsAndNotes');
+  String get projectDescription => translate('projectDescription');
+  String get servicesOffered => translate('servicesOffered');
+  String get youthCategory => translate('youthCategory');
+  String get womenCategory => translate('womenCategory');
+  String get sportsCategory => translate('sportsCategory');
+  String get migrantsCategory => translate('migrantsCategory');
+  String get mafaldaDescription => translate('mafaldaDescription');
+  String get womentorDescription => translate('womentorDescription');
+  String get sportunityDescription => translate('sportunityDescription');
+  String get passaparolaDescription => translate('passaparolaDescription');
+  String get mafaldaService1 => translate('mafaldaService1');
+  String get mafaldaService2 => translate('mafaldaService2');
+  String get mafaldaService3 => translate('mafaldaService3');
+  String get mafaldaService4 => translate('mafaldaService4');
+  String get womentorService1 => translate('womentorService1');
+  String get womentorService2 => translate('womentorService2');
+  String get womentorService3 => translate('womentorService3');
+  String get womentorService4 => translate('womentorService4');
+  String get sportunityService1 => translate('sportunityService1');
+  String get sportunityService2 => translate('sportunityService2');
+  String get sportunityService3 => translate('sportunityService3');
+  String get sportunityService4 => translate('sportunityService4');
+  String get passaparolaService1 => translate('passaparolaService1');
+  String get passaparolaService2 => translate('passaparolaService2');
+  String get passaparolaService3 => translate('passaparolaService3');
+  String get passaparolaService4 => translate('passaparolaService4');
 }
 
 class _AppLocalizationsDelegate

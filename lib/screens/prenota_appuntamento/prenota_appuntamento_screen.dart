@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
-import 'package:wecoop_app/screens/calendar/calendar_screen.dart';
 
 class PrenotaAppuntamentoScreen extends StatefulWidget {
   @override

@@ -16,6 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
   final storage = const FlutterSecureStorage();
   bool rememberPassword = false;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -32,6 +33,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
+    setState(() {
+      isLoading = true;
+    });
+
     final email = emailController.text.trim();
     final password = passwordController.text;
 
@@ -83,8 +88,15 @@ class _LoginScreenState extends State<LoginScreen> {
         // Recupera metadati utente
         await _fetchUserMeta(data['token'], data['user_nicename']);
 
+        setState(() {
+          isLoading = false;
+        });
+
         Navigator.pushReplacementNamed(context, '/home');
       } else {
+        setState(() {
+          isLoading = false;
+        });
         final message = data['message'] ?? 'Login fallito';
         print('Login fallito: $message');
         ScaffoldMessenger.of(
@@ -92,6 +104,9 @@ class _LoginScreenState extends State<LoginScreen> {
         ).showSnackBar(SnackBar(content: Text(message)));
       }
     } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       print('Eccezione durante il login: $e');
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(
@@ -241,7 +256,26 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
             const SizedBox(height: 24),
-            ElevatedButton(onPressed: _login, child: Text(l10n.login)),
+            ElevatedButton(
+              onPressed: isLoading ? null : _login,
+              child: isLoading
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(l10n.sending),
+                      ],
+                    )
+                  : Text(l10n.login),
+            ),
           ],
         ),
       ),

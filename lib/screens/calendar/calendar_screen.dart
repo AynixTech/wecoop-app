@@ -478,7 +478,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
             : _tutteRichieste;
 
     if (richieste.isEmpty) {
-      final l10n = AppLocalizations.of(context)!;
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

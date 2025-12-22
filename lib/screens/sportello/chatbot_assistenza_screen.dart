@@ -308,21 +308,18 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
         children: [
           if (_showFAQ) _buildFAQSection(),
           Expanded(
-            child: Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _messages.length,
-                    itemBuilder: (context, index) {
-                      return _buildMessageBubble(_messages[index]);
-                    },
-                  ),
-                ),
-                _buildInputArea(),
-              ],
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(16),
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                return _buildMessageBubble(_messages[index]);
+              },
             ),
+          ),
+          SafeArea(
+            top: false,
+            child: _buildInputArea(),
           ),
         ],
       ),
@@ -332,6 +329,7 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
   Widget _buildFAQSection() {
     final l10n = AppLocalizations.of(context)!;
     return Container(
+      constraints: const BoxConstraints(maxHeight: 300),
       decoration: BoxDecoration(
         color: const Color(0xFFE3F2FD),
         boxShadow: [
@@ -342,52 +340,54 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
           ),
         ],
       ),
-      child: ExpansionTile(
-        title: Text(l10n.translate('chatbotFAQTitle'), style: const TextStyle(fontWeight: FontWeight.bold)),
-        initiallyExpanded: false,
-        children: [
-          _buildFAQItem(
-            l10n.translate('chatbotFAQ1Question'),
-            l10n.translate('chatbotFAQ1Answer'),
-            () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const ServiziGateScreen(
-                destinationScreen: PermessoSoggiornoScreen(),
-                serviceName: 'Permesso di Soggiorno',
-              )));
-            },
-          ),
-          _buildFAQItem(
-            l10n.translate('chatbotFAQ2Question'),
-            l10n.translate('chatbotFAQ2Answer'),
-            () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const ServiziGateScreen(
-                destinationScreen: MediazioneFiscaleScreen(),
-                serviceName: '730',
-              )));
-            },
-          ),
-          _buildFAQItem(
-            l10n.translate('chatbotFAQ3Question'),
-            l10n.translate('chatbotFAQ3Answer'),
-            () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const ProgettiScreen()));
-            },
-          ),
-          _buildFAQItem(
-            l10n.translate('chatbotFAQ4Question'),
-            l10n.translate('chatbotFAQ4Answer'),
-            () {
-              Navigator.pushNamed(context, '/home');
-            },
-          ),
-          _buildFAQItem(
-            l10n.translate('chatbotFAQ5Question'),
-            l10n.translate('chatbotFAQ5Answer'),
-            () {
-              Navigator.pushNamed(context, '/prenotaAppuntamento');
-            },
-          ),
-        ],
+      child: SingleChildScrollView(
+        child: ExpansionTile(
+          title: Text(l10n.translate('chatbotFAQTitle'), style: const TextStyle(fontWeight: FontWeight.bold)),
+          initiallyExpanded: false,
+          children: [
+            _buildFAQItem(
+              l10n.translate('chatbotFAQ1Question'),
+              l10n.translate('chatbotFAQ1Answer'),
+              () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const ServiziGateScreen(
+                  destinationScreen: PermessoSoggiornoScreen(),
+                  serviceName: 'Permesso di Soggiorno',
+                )));
+              },
+            ),
+            _buildFAQItem(
+              l10n.translate('chatbotFAQ2Question'),
+              l10n.translate('chatbotFAQ2Answer'),
+              () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const ServiziGateScreen(
+                  destinationScreen: MediazioneFiscaleScreen(),
+                  serviceName: '730',
+                )));
+              },
+            ),
+            _buildFAQItem(
+              l10n.translate('chatbotFAQ3Question'),
+              l10n.translate('chatbotFAQ3Answer'),
+              () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const ProgettiScreen()));
+              },
+            ),
+            _buildFAQItem(
+              l10n.translate('chatbotFAQ4Question'),
+              l10n.translate('chatbotFAQ4Answer'),
+              () {
+                Navigator.pushNamed(context, '/home');
+              },
+            ),
+            _buildFAQItem(
+              l10n.translate('chatbotFAQ5Question'),
+              l10n.translate('chatbotFAQ5Answer'),
+              () {
+                Navigator.pushNamed(context, '/prenotaAppuntamento');
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

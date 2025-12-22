@@ -339,9 +339,9 @@ class _InfoCard extends StatelessWidget {
       child: Container(
         width: 180,
         decoration: BoxDecoration(
-          color: Colors.amber.shade50,
+          color: const Color(0xFFE3F2FD),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.amber),
+          border: Border.all(color: const Color(0xFF2196F3)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -545,7 +545,7 @@ class _ServiceButton extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
                       gradient: LinearGradient(
-                        colors: [Colors.amber.shade300, Colors.amber.shade600],
+                        colors: [const Color(0xFF64B5F6), const Color(0xFF2196F3)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -632,7 +632,7 @@ class _QuickAccessButton extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 28,
-              backgroundColor: Colors.amber,
+              backgroundColor: const Color(0xFF2196F3),
               child: Icon(icon, color: Colors.white, size: 28),
             ),
             const SizedBox(height: 6),

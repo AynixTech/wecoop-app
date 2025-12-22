@@ -28,9 +28,72 @@ class WECOOPApp extends StatelessWidget {
           ],
           supportedLocales: const [Locale('it'), Locale('en'), Locale('es')],
           theme: ThemeData(
-            useMaterial3: false,
-            primarySwatch: Colors.amber,
-            scaffoldBackgroundColor: Colors.white,
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: const Color(0xFF2196F3), // Azzurro moderno
+              primary: const Color(0xFF2196F3),
+              secondary: const Color(0xFF1976D2),
+              surface: Colors.white,
+              background: const Color(0xFFF5F9FF),
+            ),
+            scaffoldBackgroundColor: const Color(0xFFF5F9FF),
+            appBarTheme: const AppBarTheme(
+              elevation: 0,
+              centerTitle: false,
+              backgroundColor: Color(0xFF2196F3),
+              foregroundColor: Colors.white,
+              iconTheme: IconThemeData(color: Colors.white),
+            ),
+            cardTheme: CardThemeData(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              color: Colors.white,
+            ),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2196F3),
+                foregroundColor: Colors.white,
+                elevation: 2,
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            inputDecorationTheme: InputDecorationTheme(
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Color(0xFF2196F3), width: 2),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            ),
+            floatingActionButtonTheme: const FloatingActionButtonThemeData(
+              backgroundColor: Color(0xFF2196F3),
+              foregroundColor: Colors.white,
+            ),
+            bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+              backgroundColor: Colors.white,
+              selectedItemColor: Color(0xFF2196F3),
+              unselectedItemColor: Color(0xFF9E9E9E),
+              elevation: 8,
+              type: BottomNavigationBarType.fixed,
+            ),
             visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
           home: const MainScreen(),

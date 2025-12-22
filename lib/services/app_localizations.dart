@@ -144,6 +144,59 @@ class AppLocalizations {
       'politicalAsylumDesc': 'Protezione internazionale',
       'touristVisa': 'Visa per Turismo',
       'touristVisaDesc': 'Richiesta visto turistico',
+      'loginToAccessServices': 'Effettua il login per accedere a tutti i servizi riservati ai soci.',
+      'membershipPendingApproval': 'La tua richiesta di adesione come socio è in fase di approvazione.',
+      'confirmationWithin24to48Hours': 'Riceverai una conferma via email entro 24-48 ore.',
+      'onceApprovedAccessAllServices': 'Una volta approvata, potrai accedere a tutti i servizi.',
+      'toAccessServicesBecomeMember': 'Per accedere ai servizi di {serviceName} devi essere socio di WECOOP.',
+      'becomeMemberToAccess': 'Diventa socio per accedere a:',
+      'whyBecomeMember': 'Perché diventare socio?',
+      'operationCompleted': 'Operazione completata',
+      'fiscalCodeMustBe16Chars': 'Il codice fiscale deve essere di 16 caratteri',
+      'birthPlace': 'Luogo di Nascita',
+      'invalidPostalCode': 'CAP non valido',
+      'invalidEmail': 'Email non valida',
+      'fillFollowingFields': 'Compila i seguenti campi',
+      'sendingError': 'Errore durante l\'invio',
+      'internationalProtectionRequest': 'La richiesta di protezione internazionale è un processo delicato. Ti aiuteremo a preparare la documentazione.',
+      'internationalProtection': 'Protezione Internazionale',
+      'fullName': 'Nome completo',
+      'dateOfBirth': 'Data di nascita',
+      'countryOfOrigin': 'Paese di origine',
+      'dateOfArrivalInItaly': 'Data di arrivo in Italia',
+      'reasonForRequest': 'Motivo della richiesta',
+      'politicalPersecution': 'Persecuzione politica',
+      'religiousPersecution': 'Persecuzione religiosa',
+      'persecutionSexualOrientation': 'Persecuzione per orientamento sessuale',
+      'war': 'Guerra',
+      'other': 'Altro',
+      'situationDescription': 'Descrizione situazione',
+      'hasFamilyInItaly': 'Hai familiari in Italia?',
+      'additionalNotes': 'Note aggiuntive',
+      'startRequest': 'Inizia la richiesta',
+      'touristVisaRequest': 'Richiesta Visa per Turismo',
+      'taxMediation': 'Mediazione Fiscale',
+      'accountingSupport': 'Supporto Contabile',
+      'selectFiscalService': 'Seleziona il servizio fiscale',
+      'tax730Declaration': '730 - Dichiarazione dei Redditi',
+      'tax730Description': 'Compilazione modello 730 per dipendenti e pensionati',
+      'individualPerson': 'Persona Fisica',
+      'individualPersonDescription': 'Dichiarazione redditi per persone fisiche',
+      'taxpayerType': 'Tipologia contribuente',
+      'employee': 'Lavoratore dipendente',
+      'pensioner': 'Pensionato',
+      'fiscalYear': 'Anno fiscale',
+      'hasDeductibleExpenses': 'Hai spese detraibili/deducibili?',
+      'notesAndAdditionalInfo': 'Note e informazioni aggiuntive',
+      'incomeType': 'Tipologia di reddito',
+      'employedWork': 'Lavoro dipendente',
+      'selfEmployed': 'Lavoro autonomo',
+      'pension': 'Pensione',
+      'capitalIncome': 'Redditi da capitale',
+      'otherIncome': 'Redditi diversi',
+      'multipleTypes': 'Più tipologie',
+      'hasProperties': 'Hai immobili?',
+      'detailsAndNotes': 'Dettagli e note',
     },
     'en': {
       'appTitle': 'WECOOP',
@@ -276,6 +329,59 @@ class AppLocalizations {
       'notMemberYet': 'Not a member yet?',
       'notMemberMessage': 'To access this service you must be a WECOOP member.',
       'backToHome': 'Back to home',
+      'loginToAccessServices': 'Log in to access all services reserved for members.',
+      'membershipPendingApproval': 'Your membership application is pending approval.',
+      'confirmationWithin24to48Hours': 'You will receive an email confirmation within 24-48 hours.',
+      'onceApprovedAccessAllServices': 'Once approved, you will be able to access all services.',
+      'toAccessServicesBecomeMember': 'To access {serviceName} services you must be a WECOOP member.',
+      'becomeMemberToAccess': 'Become a member to access:',
+      'whyBecomeMember': 'Why become a member?',
+      'operationCompleted': 'Operation completed',
+      'fiscalCodeMustBe16Chars': 'Tax ID must be 16 characters',
+      'birthPlace': 'Place of Birth',
+      'invalidPostalCode': 'Invalid postal code',
+      'invalidEmail': 'Invalid email',
+      'fillFollowingFields': 'Fill in the following fields',
+      'sendingError': 'Error during submission',
+      'internationalProtectionRequest': 'The international protection request is a delicate process. We will help you prepare the documentation.',
+      'internationalProtection': 'International Protection',
+      'fullName': 'Full name',
+      'dateOfBirth': 'Date of birth',
+      'countryOfOrigin': 'Country of origin',
+      'dateOfArrivalInItaly': 'Date of arrival in Italy',
+      'reasonForRequest': 'Reason for request',
+      'politicalPersecution': 'Political persecution',
+      'religiousPersecution': 'Religious persecution',
+      'persecutionSexualOrientation': 'Persecution for sexual orientation',
+      'war': 'War',
+      'other': 'Other',
+      'situationDescription': 'Situation description',
+      'hasFamilyInItaly': 'Do you have family in Italy?',
+      'additionalNotes': 'Additional notes',
+      'startRequest': 'Start request',
+      'touristVisaRequest': 'Tourist Visa Request',
+      'taxMediation': 'Tax Mediation',
+      'accountingSupport': 'Accounting Support',
+      'selectFiscalService': 'Select tax service',
+      'tax730Declaration': '730 - Income Tax Return',
+      'tax730Description': 'Form 730 preparation for employees and pensioners',
+      'individualPerson': 'Individual Person',
+      'individualPersonDescription': 'Income tax return for individuals',
+      'taxpayerType': 'Taxpayer type',
+      'employee': 'Employee',
+      'pensioner': 'Pensioner',
+      'fiscalYear': 'Fiscal year',
+      'hasDeductibleExpenses': 'Do you have deductible expenses?',
+      'notesAndAdditionalInfo': 'Notes and additional information',
+      'incomeType': 'Income type',
+      'employedWork': 'Employed work',
+      'selfEmployed': 'Self-employed',
+      'pension': 'Pension',
+      'capitalIncome': 'Capital income',
+      'otherIncome': 'Other income',
+      'multipleTypes': 'Multiple types',
+      'hasProperties': 'Do you own properties?',
+      'detailsAndNotes': 'Details and notes',
     },
     'es': {
       'appTitle': 'WECOOP',
@@ -408,6 +514,59 @@ class AppLocalizations {
       'notMemberYet': '¿Aún no eres socio?',
       'notMemberMessage': 'Para acceder a este servicio debes ser socio de WECOOP.',
       'backToHome': 'Volver al inicio',
+      'loginToAccessServices': 'Inicia sesión para acceder a todos los servicios reservados para socios.',
+      'membershipPendingApproval': 'Tu solicitud de membresía está pendiente de aprobación.',
+      'confirmationWithin24to48Hours': 'Recibirás una confirmación por email dentro de 24-48 horas.',
+      'onceApprovedAccessAllServices': 'Una vez aprobada, podrás acceder a todos los servicios.',
+      'toAccessServicesBecomeMember': 'Para acceder a los servicios de {serviceName} debes ser socio de WECOOP.',
+      'becomeMemberToAccess': 'Hazte socio para acceder a:',
+      'whyBecomeMember': '¿Por qué hacerse socio?',
+      'operationCompleted': 'Operación completada',
+      'fiscalCodeMustBe16Chars': 'El código fiscal debe tener 16 caracteres',
+      'birthPlace': 'Lugar de Nacimiento',
+      'invalidPostalCode': 'Código postal no válido',
+      'invalidEmail': 'Email no válido',
+      'fillFollowingFields': 'Completa los siguientes campos',
+      'sendingError': 'Error durante el envío',
+      'internationalProtectionRequest': 'La solicitud de protección internacional es un proceso delicado. Te ayudaremos a preparar la documentación.',
+      'internationalProtection': 'Protección Internacional',
+      'fullName': 'Nombre completo',
+      'dateOfBirth': 'Fecha de nacimiento',
+      'countryOfOrigin': 'País de origen',
+      'dateOfArrivalInItaly': 'Fecha de llegada a Italia',
+      'reasonForRequest': 'Motivo de la solicitud',
+      'politicalPersecution': 'Persecución política',
+      'religiousPersecution': 'Persecución religiosa',
+      'persecutionSexualOrientation': 'Persecución por orientación sexual',
+      'war': 'Guerra',
+      'other': 'Otro',
+      'situationDescription': 'Descripción de la situación',
+      'hasFamilyInItaly': '¿Tienes familia en Italia?',
+      'additionalNotes': 'Notas adicionales',
+      'startRequest': 'Iniciar solicitud',
+      'touristVisaRequest': 'Solicitud de Visa Turística',
+      'taxMediation': 'Mediación Fiscal',
+      'accountingSupport': 'Soporte Contable',
+      'selectFiscalService': 'Selecciona el servicio fiscal',
+      'tax730Declaration': '730 - Declaración de la Renta',
+      'tax730Description': 'Preparación del modelo 730 para empleados y pensionistas',
+      'individualPerson': 'Persona Física',
+      'individualPersonDescription': 'Declaración de la renta para personas físicas',
+      'taxpayerType': 'Tipo de contribuyente',
+      'employee': 'Trabajador empleado',
+      'pensioner': 'Pensionista',
+      'fiscalYear': 'Año fiscal',
+      'hasDeductibleExpenses': '¿Tienes gastos deducibles?',
+      'notesAndAdditionalInfo': 'Notas e información adicional',
+      'incomeType': 'Tipo de ingresos',
+      'employedWork': 'Trabajo empleado',
+      'selfEmployed': 'Autónomo',
+      'pension': 'Pensión',
+      'capitalIncome': 'Ingresos de capital',
+      'otherIncome': 'Otros ingresos',
+      'multipleTypes': 'Múltiples tipos',
+      'hasProperties': '¿Tienes propiedades?',
+      'detailsAndNotes': 'Detalles y notas',
     },
   };
 
@@ -546,6 +705,57 @@ class AppLocalizations {
   String get politicalAsylumDesc => translate('politicalAsylumDesc');
   String get touristVisa => translate('touristVisa');
   String get touristVisaDesc => translate('touristVisaDesc');
+  String get loginToAccessServices => translate('loginToAccessServices');
+  String get membershipPendingApproval => translate('membershipPendingApproval');
+  String get confirmationWithin24to48Hours => translate('confirmationWithin24to48Hours');
+  String get onceApprovedAccessAllServices => translate('onceApprovedAccessAllServices');
+  String get toAccessServicesBecomeMember => translate('toAccessServicesBecomeMember');
+  String get becomeMemberToAccess => translate('becomeMemberToAccess');
+  String get whyBecomeMember => translate('whyBecomeMember');
+  String get operationCompleted => translate('operationCompleted');
+  String get fiscalCodeMustBe16Chars => translate('fiscalCodeMustBe16Chars');
+  String get birthPlace => translate('birthPlace');
+  String get invalidPostalCode => translate('invalidPostalCode');
+  String get invalidEmail => translate('invalidEmail');
+  String get fillFollowingFields => translate('fillFollowingFields');
+  String get sendingError => translate('sendingError');
+  String get internationalProtectionRequest => translate('internationalProtectionRequest');
+  String get internationalProtection => translate('internationalProtection');
+  String get fullName => translate('fullName');
+  String get dateOfBirth => translate('dateOfBirth');
+  String get countryOfOrigin => translate('countryOfOrigin');
+  String get dateOfArrivalInItaly => translate('dateOfArrivalInItaly');
+  String get reasonForRequest => translate('reasonForRequest');
+  String get politicalPersecution => translate('politicalPersecution');
+  String get religiousPersecution => translate('religiousPersecution');
+  String get persecutionSexualOrientation => translate('persecutionSexualOrientation');
+  String get war => translate('war');
+  String get other => translate('other');
+  String get situationDescription => translate('situationDescription');
+  String get hasFamilyInItaly => translate('hasFamilyInItaly');
+  String get additionalNotes => translate('additionalNotes');
+  String get startRequest => translate('startRequest');
+  String get touristVisaRequest => translate('touristVisaRequest');
+  String get selectFiscalService => translate('selectFiscalService');
+  String get tax730Declaration => translate('tax730Declaration');
+  String get tax730Description => translate('tax730Description');
+  String get individualPerson => translate('individualPerson');
+  String get individualPersonDescription => translate('individualPersonDescription');
+  String get taxpayerType => translate('taxpayerType');
+  String get employee => translate('employee');
+  String get pensioner => translate('pensioner');
+  String get fiscalYear => translate('fiscalYear');
+  String get hasDeductibleExpenses => translate('hasDeductibleExpenses');
+  String get notesAndAdditionalInfo => translate('notesAndAdditionalInfo');
+  String get incomeType => translate('incomeType');
+  String get employedWork => translate('employedWork');
+  String get selfEmployed => translate('selfEmployed');
+  String get pension => translate('pension');
+  String get capitalIncome => translate('capitalIncome');
+  String get otherIncome => translate('otherIncome');
+  String get multipleTypes => translate('multipleTypes');
+  String get hasProperties => translate('hasProperties');
+  String get detailsAndNotes => translate('detailsAndNotes');
 }
 
 class _AppLocalizationsDelegate

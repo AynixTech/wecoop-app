@@ -212,12 +212,17 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                                 ),
                               ),
                               const SizedBox(height: 24),
-                              const Text(
-                                'Compila i seguenti campi',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              Builder(
+                                builder: (context) {
+                                  final l10n = AppLocalizations.of(context)!;
+                                  return Text(
+                                    l10n.fillFollowingFields,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  );
+                                },
                               ),
                               const SizedBox(height: 16),
                               ...widget.campi.map(

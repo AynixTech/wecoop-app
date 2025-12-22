@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/app_localizations.dart';
 import 'richiesta_form_screen.dart';
 
 class MediazioneFiscaleScreen extends StatelessWidget {
@@ -6,81 +7,58 @@ class MediazioneFiscaleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
-      appBar: AppBar(title: const Text('Mediazione Fiscale')),
+      appBar: AppBar(title: Text(l10n.taxMediation)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Seleziona il servizio fiscale',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                l10n.selectFiscalService,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 24),
               _ServiceCard(
                 icon: Icons.description,
-                title: '730 - Dichiarazione dei Redditi',
-                description:
-                    'Compilazione modello 730 per dipendenti e pensionati',
+                title: l10n.tax730Declaration,
+                description: l10n.tax730Description,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder:
-                          (context) => RichiestaFormScreen(
-                            servizio: 'Mediazione Fiscale',
-                            categoria: '730',
-                            campi: const [
-                              {
-                                'label': 'Nome completo',
-                                'type': 'text',
-                                'required': true,
-                              },
-                              {
-                                'label': 'Codice fiscale',
-                                'type': 'text',
-                                'required': true,
-                              },
-                              {
-                                'label': 'Data di nascita',
-                                'type': 'date',
-                                'required': true,
-                              },
-                              {
-                                'label': 'Indirizzo di residenza',
-                                'type': 'text',
-                                'required': true,
-                              },
-                              {
-                                'label': 'Tipologia contribuente',
-                                'type': 'select',
-                                'options': [
-                                  'Lavoratore dipendente',
-                                  'Pensionato',
-                                ],
-                                'required': true,
-                              },
-                              {
-                                'label': 'Anno fiscale',
-                                'type': 'select',
-                                'options': ['2024', '2023', '2022'],
-                                'required': true,
-                              },
-                              {
-                                'label': 'Hai spese detraibili/deducibili?',
-                                'type': 'select',
-                                'options': ['Sì', 'No'],
-                                'required': true,
-                              },
-                              {
-                                'label': 'Note e informazioni aggiuntive',
-                                'type': 'textarea',
-                                'required': false,
-                              },
-                            ],
-                          ),
+                      builder: (context) => RichiestaFormScreen(
+                        servizio: l10n.taxMediation,
+                        categoria: '730',
+                        campi: [
+                          {'label': l10n.fullName, 'type': 'text', 'required': true},
+                          {'label': l10n.fiscalCode, 'type': 'text', 'required': true},
+                          {'label': l10n.dateOfBirth, 'type': 'date', 'required': true},
+                          {'label': l10n.address, 'type': 'text', 'required': true},
+                          {
+                            'label': l10n.taxpayerType,
+                            'type': 'select',
+                            'options': [l10n.employee, l10n.pensioner],
+                            'required': true,
+                          },
+                          {
+                            'label': l10n.fiscalYear,
+                            'type': 'select',
+                            'options': ['2024', '2023', '2022'],
+                            'required': true,
+                          },
+                          {
+                            'label': l10n.hasDeductibleExpenses,
+                            'type': 'select',
+                            'options': [l10n.yes, l10n.no],
+                            'required': true,
+                          },
+                          {'label': l10n.notesAndAdditionalInfo, 'type': 'textarea', 'required': false},
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -88,69 +66,48 @@ class MediazioneFiscaleScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _ServiceCard(
                 icon: Icons.person,
-                title: 'Persona Fisica',
-                description: 'Dichiarazione redditi per persone fisiche',
+                title: l10n.individualPerson,
+                description: l10n.individualPersonDescription,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder:
-                          (context) => RichiestaFormScreen(
-                            servizio: 'Mediazione Fiscale',
-                            categoria: 'Persona Fisica',
-                            campi: const [
-                              {
-                                'label': 'Nome completo',
-                                'type': 'text',
-                                'required': true,
-                              },
-                              {
-                                'label': 'Codice fiscale',
-                                'type': 'text',
-                                'required': true,
-                              },
-                              {
-                                'label': 'Data di nascita',
-                                'type': 'date',
-                                'required': true,
-                              },
-                              {
-                                'label': 'Indirizzo di residenza',
-                                'type': 'text',
-                                'required': true,
-                              },
-                              {
-                                'label': 'Tipologia di reddito',
-                                'type': 'select',
-                                'options': [
-                                  'Lavoro dipendente',
-                                  'Lavoro autonomo',
-                                  'Pensione',
-                                  'Redditi da capitale',
-                                  'Redditi diversi',
-                                  'Più tipologie',
-                                ],
-                                'required': true,
-                              },
-                              {
-                                'label': 'Anno fiscale',
-                                'type': 'select',
-                                'options': ['2024', '2023', '2022'],
-                                'required': true,
-                              },
-                              {
-                                'label': 'Hai immobili?',
-                                'type': 'select',
-                                'options': ['Sì', 'No'],
-                                'required': true,
-                              },
-                              {
-                                'label': 'Dettagli e note',
-                                'type': 'textarea',
-                                'required': false,
-                              },
+                      builder: (context) => RichiestaFormScreen(
+                        servizio: l10n.taxMediation,
+                        categoria: l10n.individualPerson,
+                        campi: [
+                          {'label': l10n.fullName, 'type': 'text', 'required': true},
+                          {'label': l10n.fiscalCode, 'type': 'text', 'required': true},
+                          {'label': l10n.dateOfBirth, 'type': 'date', 'required': true},
+                          {'label': l10n.address, 'type': 'text', 'required': true},
+                          {
+                            'label': l10n.incomeType,
+                            'type': 'select',
+                            'options': [
+                              l10n.employedWork,
+                              l10n.selfEmployed,
+                              l10n.pension,
+                              l10n.capitalIncome,
+                              l10n.otherIncome,
+                              l10n.multipleTypes,
                             ],
-                          ),
+                            'required': true,
+                          },
+                          {
+                            'label': l10n.fiscalYear,
+                            'type': 'select',
+                            'options': ['2024', '2023', '2022'],
+                            'required': true,
+                          },
+                          {
+                            'label': l10n.hasProperties,
+                            'type': 'select',
+                            'options': [l10n.yes, l10n.no],
+                            'required': true,
+                          },
+                          {'label': l10n.detailsAndNotes, 'type': 'textarea', 'required': false},
+                        ],
+                      ),
                     ),
                   );
                 },

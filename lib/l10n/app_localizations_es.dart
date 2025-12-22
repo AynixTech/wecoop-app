@@ -254,4 +254,186 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get close => 'Cerrar';
+
+  @override
+  String get loginToAccessServices =>
+      'Inicia sesión para acceder a todos los servicios reservados para socios.';
+
+  @override
+  String get membershipPendingApproval =>
+      'Tu solicitud de membresía está pendiente de aprobación.';
+
+  @override
+  String get confirmationWithin24to48Hours =>
+      'Recibirás una confirmación por email dentro de 24-48 horas.';
+
+  @override
+  String get onceApprovedAccessAllServices =>
+      'Una vez aprobada, podrás acceder a todos los servicios.';
+
+  @override
+  String toAccessServicesBecomeMember(Object serviceName) {
+    return 'Para acceder a los servicios de $serviceName debes ser socio de WECOOP.';
+  }
+
+  @override
+  String get becomeMemberToAccess => 'Hazte socio para acceder a:';
+
+  @override
+  String get whyBecomeMember => '¿Por qué hacerse socio?';
+
+  @override
+  String get operationCompleted => 'Operación completada';
+
+  @override
+  String get fiscalCodeMustBe16Chars =>
+      'El código fiscal debe tener 16 caracteres';
+
+  @override
+  String get birthPlace => 'Lugar de Nacimiento';
+
+  @override
+  String get invalidPostalCode => 'Código postal no válido';
+
+  @override
+  String get invalidEmail => 'Email no válido';
+
+  @override
+  String get fillFollowingFields => 'Completa los siguientes campos';
+
+  @override
+  String get sendingError => 'Error durante el envío';
+
+  @override
+  String get politicalAsylum => 'Asilo Político';
+
+  @override
+  String get internationalProtectionRequest =>
+      'La solicitud de protección internacional es un proceso delicado. Te ayudaremos a preparar la documentación.';
+
+  @override
+  String get internationalProtection => 'Protección Internacional';
+
+  @override
+  String get fullName => 'Nombre completo';
+
+  @override
+  String get dateOfBirth => 'Fecha de nacimiento';
+
+  @override
+  String get countryOfOrigin => 'País de origen';
+
+  @override
+  String get dateOfArrivalInItaly => 'Fecha de llegada a Italia';
+
+  @override
+  String get reasonForRequest => 'Motivo de la solicitud';
+
+  @override
+  String get politicalPersecution => 'Persecución política';
+
+  @override
+  String get religiousPersecution => 'Persecución religiosa';
+
+  @override
+  String get persecutionSexualOrientation =>
+      'Persecución por orientación sexual';
+
+  @override
+  String get war => 'Guerra';
+
+  @override
+  String get other => 'Otro';
+
+  @override
+  String get situationDescription => 'Descripción de la situación';
+
+  @override
+  String get hasFamilyInItaly => '¿Tienes familia en Italia?';
+
+  @override
+  String get additionalNotes => 'Notas adicionales';
+
+  @override
+  String get startRequest => 'Iniciar solicitud';
+
+  @override
+  String get touristVisaRequest => 'Solicitud de Visa Turística';
+
+  @override
+  String get taxMediation => 'Mediación Fiscal';
+
+  @override
+  String get accountingSupport => 'Soporte Contable';
+
+  @override
+  String get residencePermit => 'Permiso de Residencia';
+
+  @override
+  String get yes => 'Sí';
+
+  @override
+  String get no => 'No';
+
+  @override
+  String get selectFiscalService => 'Selecciona el servicio fiscal';
+
+  @override
+  String get tax730Declaration => '730 - Declaración de la Renta';
+
+  @override
+  String get tax730Description =>
+      'Preparación del modelo 730 para empleados y pensionistas';
+
+  @override
+  String get individualPerson => 'Persona Física';
+
+  @override
+  String get individualPersonDescription =>
+      'Declaración de la renta para personas físicas';
+
+  @override
+  String get taxpayerType => 'Tipo de contribuyente';
+
+  @override
+  String get employee => 'Trabajador empleado';
+
+  @override
+  String get pensioner => 'Pensionista';
+
+  @override
+  String get fiscalYear => 'Año fiscal';
+
+  @override
+  String get hasDeductibleExpenses => '¿Tienes gastos deducibles?';
+
+  @override
+  String get notesAndAdditionalInfo => 'Notas e información adicional';
+
+  @override
+  String get incomeType => 'Tipo de ingresos';
+
+  @override
+  String get employedWork => 'Trabajo empleado';
+
+  @override
+  String get selfEmployed => 'Autónomo';
+
+  @override
+  String get pension => 'Pensión';
+
+  @override
+  String get capitalIncome => 'Ingresos de capital';
+
+  @override
+  String get otherIncome => 'Otros ingresos';
+
+  @override
+  String get multipleTypes => 'Múltiples tipos';
+
+  @override
+  String get hasProperties => '¿Tienes propiedades?';
+
+  @override
+  String get detailsAndNotes => 'Detalles y notas';
 }

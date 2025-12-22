@@ -591,6 +591,348 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Chiudi'**
   String get close;
+
+  /// No description provided for @loginToAccessServices.
+  ///
+  /// In it, this message translates to:
+  /// **'Effettua il login per accedere a tutti i servizi riservati ai soci.'**
+  String get loginToAccessServices;
+
+  /// No description provided for @membershipPendingApproval.
+  ///
+  /// In it, this message translates to:
+  /// **'La tua richiesta di adesione come socio è in fase di approvazione.'**
+  String get membershipPendingApproval;
+
+  /// No description provided for @confirmationWithin24to48Hours.
+  ///
+  /// In it, this message translates to:
+  /// **'Riceverai una conferma via email entro 24-48 ore.'**
+  String get confirmationWithin24to48Hours;
+
+  /// No description provided for @onceApprovedAccessAllServices.
+  ///
+  /// In it, this message translates to:
+  /// **'Una volta approvata, potrai accedere a tutti i servizi.'**
+  String get onceApprovedAccessAllServices;
+
+  /// No description provided for @toAccessServicesBecomeMember.
+  ///
+  /// In it, this message translates to:
+  /// **'Per accedere ai servizi di {serviceName} devi essere socio di WECOOP.'**
+  String toAccessServicesBecomeMember(Object serviceName);
+
+  /// No description provided for @becomeMemberToAccess.
+  ///
+  /// In it, this message translates to:
+  /// **'Diventa socio per accedere a:'**
+  String get becomeMemberToAccess;
+
+  /// No description provided for @whyBecomeMember.
+  ///
+  /// In it, this message translates to:
+  /// **'Perché diventare socio?'**
+  String get whyBecomeMember;
+
+  /// No description provided for @operationCompleted.
+  ///
+  /// In it, this message translates to:
+  /// **'Operazione completata'**
+  String get operationCompleted;
+
+  /// No description provided for @fiscalCodeMustBe16Chars.
+  ///
+  /// In it, this message translates to:
+  /// **'Il codice fiscale deve essere di 16 caratteri'**
+  String get fiscalCodeMustBe16Chars;
+
+  /// No description provided for @birthPlace.
+  ///
+  /// In it, this message translates to:
+  /// **'Luogo di Nascita'**
+  String get birthPlace;
+
+  /// No description provided for @invalidPostalCode.
+  ///
+  /// In it, this message translates to:
+  /// **'CAP non valido'**
+  String get invalidPostalCode;
+
+  /// No description provided for @invalidEmail.
+  ///
+  /// In it, this message translates to:
+  /// **'Email non valida'**
+  String get invalidEmail;
+
+  /// No description provided for @fillFollowingFields.
+  ///
+  /// In it, this message translates to:
+  /// **'Compila i seguenti campi'**
+  String get fillFollowingFields;
+
+  /// No description provided for @sendingError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore durante l\'invio'**
+  String get sendingError;
+
+  /// No description provided for @politicalAsylum.
+  ///
+  /// In it, this message translates to:
+  /// **'Asilo Politico'**
+  String get politicalAsylum;
+
+  /// No description provided for @internationalProtectionRequest.
+  ///
+  /// In it, this message translates to:
+  /// **'La richiesta di protezione internazionale è un processo delicato. Ti aiuteremo a preparare la documentazione.'**
+  String get internationalProtectionRequest;
+
+  /// No description provided for @internationalProtection.
+  ///
+  /// In it, this message translates to:
+  /// **'Protezione Internazionale'**
+  String get internationalProtection;
+
+  /// No description provided for @fullName.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome completo'**
+  String get fullName;
+
+  /// No description provided for @dateOfBirth.
+  ///
+  /// In it, this message translates to:
+  /// **'Data di nascita'**
+  String get dateOfBirth;
+
+  /// No description provided for @countryOfOrigin.
+  ///
+  /// In it, this message translates to:
+  /// **'Paese di origine'**
+  String get countryOfOrigin;
+
+  /// No description provided for @dateOfArrivalInItaly.
+  ///
+  /// In it, this message translates to:
+  /// **'Data di arrivo in Italia'**
+  String get dateOfArrivalInItaly;
+
+  /// No description provided for @reasonForRequest.
+  ///
+  /// In it, this message translates to:
+  /// **'Motivo della richiesta'**
+  String get reasonForRequest;
+
+  /// No description provided for @politicalPersecution.
+  ///
+  /// In it, this message translates to:
+  /// **'Persecuzione politica'**
+  String get politicalPersecution;
+
+  /// No description provided for @religiousPersecution.
+  ///
+  /// In it, this message translates to:
+  /// **'Persecuzione religiosa'**
+  String get religiousPersecution;
+
+  /// No description provided for @persecutionSexualOrientation.
+  ///
+  /// In it, this message translates to:
+  /// **'Persecuzione per orientamento sessuale'**
+  String get persecutionSexualOrientation;
+
+  /// No description provided for @war.
+  ///
+  /// In it, this message translates to:
+  /// **'Guerra'**
+  String get war;
+
+  /// No description provided for @other.
+  ///
+  /// In it, this message translates to:
+  /// **'Altro'**
+  String get other;
+
+  /// No description provided for @situationDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Descrizione situazione'**
+  String get situationDescription;
+
+  /// No description provided for @hasFamilyInItaly.
+  ///
+  /// In it, this message translates to:
+  /// **'Hai familiari in Italia?'**
+  String get hasFamilyInItaly;
+
+  /// No description provided for @additionalNotes.
+  ///
+  /// In it, this message translates to:
+  /// **'Note aggiuntive'**
+  String get additionalNotes;
+
+  /// No description provided for @startRequest.
+  ///
+  /// In it, this message translates to:
+  /// **'Inizia la richiesta'**
+  String get startRequest;
+
+  /// No description provided for @touristVisaRequest.
+  ///
+  /// In it, this message translates to:
+  /// **'Richiesta Visa per Turismo'**
+  String get touristVisaRequest;
+
+  /// No description provided for @taxMediation.
+  ///
+  /// In it, this message translates to:
+  /// **'Mediazione Fiscale'**
+  String get taxMediation;
+
+  /// No description provided for @accountingSupport.
+  ///
+  /// In it, this message translates to:
+  /// **'Supporto Contabile'**
+  String get accountingSupport;
+
+  /// No description provided for @residencePermit.
+  ///
+  /// In it, this message translates to:
+  /// **'Permesso di Soggiorno'**
+  String get residencePermit;
+
+  /// No description provided for @yes.
+  ///
+  /// In it, this message translates to:
+  /// **'Sì'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In it, this message translates to:
+  /// **'No'**
+  String get no;
+
+  /// No description provided for @selectFiscalService.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona il servizio fiscale'**
+  String get selectFiscalService;
+
+  /// No description provided for @tax730Declaration.
+  ///
+  /// In it, this message translates to:
+  /// **'730 - Dichiarazione dei Redditi'**
+  String get tax730Declaration;
+
+  /// No description provided for @tax730Description.
+  ///
+  /// In it, this message translates to:
+  /// **'Compilazione modello 730 per dipendenti e pensionati'**
+  String get tax730Description;
+
+  /// No description provided for @individualPerson.
+  ///
+  /// In it, this message translates to:
+  /// **'Persona Fisica'**
+  String get individualPerson;
+
+  /// No description provided for @individualPersonDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Dichiarazione redditi per persone fisiche'**
+  String get individualPersonDescription;
+
+  /// No description provided for @taxpayerType.
+  ///
+  /// In it, this message translates to:
+  /// **'Tipologia contribuente'**
+  String get taxpayerType;
+
+  /// No description provided for @employee.
+  ///
+  /// In it, this message translates to:
+  /// **'Lavoratore dipendente'**
+  String get employee;
+
+  /// No description provided for @pensioner.
+  ///
+  /// In it, this message translates to:
+  /// **'Pensionato'**
+  String get pensioner;
+
+  /// No description provided for @fiscalYear.
+  ///
+  /// In it, this message translates to:
+  /// **'Anno fiscale'**
+  String get fiscalYear;
+
+  /// No description provided for @hasDeductibleExpenses.
+  ///
+  /// In it, this message translates to:
+  /// **'Hai spese detraibili/deducibili?'**
+  String get hasDeductibleExpenses;
+
+  /// No description provided for @notesAndAdditionalInfo.
+  ///
+  /// In it, this message translates to:
+  /// **'Note e informazioni aggiuntive'**
+  String get notesAndAdditionalInfo;
+
+  /// No description provided for @incomeType.
+  ///
+  /// In it, this message translates to:
+  /// **'Tipologia di reddito'**
+  String get incomeType;
+
+  /// No description provided for @employedWork.
+  ///
+  /// In it, this message translates to:
+  /// **'Lavoro dipendente'**
+  String get employedWork;
+
+  /// No description provided for @selfEmployed.
+  ///
+  /// In it, this message translates to:
+  /// **'Lavoro autonomo'**
+  String get selfEmployed;
+
+  /// No description provided for @pension.
+  ///
+  /// In it, this message translates to:
+  /// **'Pensione'**
+  String get pension;
+
+  /// No description provided for @capitalIncome.
+  ///
+  /// In it, this message translates to:
+  /// **'Redditi da capitale'**
+  String get capitalIncome;
+
+  /// No description provided for @otherIncome.
+  ///
+  /// In it, this message translates to:
+  /// **'Redditi diversi'**
+  String get otherIncome;
+
+  /// No description provided for @multipleTypes.
+  ///
+  /// In it, this message translates to:
+  /// **'Più tipologie'**
+  String get multipleTypes;
+
+  /// No description provided for @hasProperties.
+  ///
+  /// In it, this message translates to:
+  /// **'Hai immobili?'**
+  String get hasProperties;
+
+  /// No description provided for @detailsAndNotes.
+  ///
+  /// In it, this message translates to:
+  /// **'Dettagli e note'**
+  String get detailsAndNotes;
 }
 
 class _AppLocalizationsDelegate

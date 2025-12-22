@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import 'richiesta_form_screen.dart';
 
 class AsiloPoliticoScreen extends StatelessWidget {
@@ -6,9 +7,11 @@ class AsiloPoliticoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Asilo Politico'),
+        title: Text(l10n.politicalAsylum),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -27,10 +30,10 @@ class AsiloPoliticoScreen extends StatelessWidget {
                   children: [
                     Icon(Icons.info_outline, color: Colors.blue.shade700),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'La richiesta di protezione internazionale è un processo delicato. Ti aiuteremo a preparare la documentazione.',
-                        style: TextStyle(fontSize: 14),
+                        l10n.internationalProtectionRequest,
+                        style: const TextStyle(fontSize: 14),
                       ),
                     ),
                   ],
@@ -43,37 +46,37 @@ class AsiloPoliticoScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => RichiestaFormScreen(
-                        servizio: 'Asilo Politico',
-                        categoria: 'Protezione Internazionale',
-                        campi: const [
-                          {'label': 'Nome completo', 'type': 'text', 'required': true},
-                          {'label': 'Data di nascita', 'type': 'date', 'required': true},
-                          {'label': 'Paese di origine', 'type': 'text', 'required': true},
-                          {'label': 'Data di arrivo in Italia', 'type': 'date', 'required': true},
+                        servizio: l10n.politicalAsylum,
+                        categoria: l10n.internationalProtection,
+                        campi: [
+                          {'label': l10n.fullName, 'type': 'text', 'required': true},
+                          {'label': l10n.dateOfBirth, 'type': 'date', 'required': true},
+                          {'label': l10n.countryOfOrigin, 'type': 'text', 'required': true},
+                          {'label': l10n.dateOfArrivalInItaly, 'type': 'date', 'required': true},
                           {
-                            'label': 'Motivo della richiesta',
+                            'label': l10n.reasonForRequest,
                             'type': 'select',
                             'options': [
-                              'Persecuzione politica',
-                              'Persecuzione religiosa',
-                              'Persecuzione per orientamento sessuale',
-                              'Guerra/conflitto armato',
-                              'Altro'
+                              l10n.politicalPersecution,
+                              l10n.religiousPersecution,
+                              l10n.persecutionSexualOrientation,
+                              l10n.war,
+                              l10n.other
                             ],
                             'required': true
                           },
                           {
-                            'label': 'Descrizione situazione',
+                            'label': l10n.situationDescription,
                             'type': 'textarea',
                             'required': true
                           },
                           {
-                            'label': 'Hai familiari in Italia?',
+                            'label': l10n.hasFamilyInItaly,
                             'type': 'select',
-                            'options': ['Sì', 'No'],
+                            'options': [l10n.yes, l10n.no],
                             'required': true
                           },
-                          {'label': 'Note aggiuntive', 'type': 'textarea', 'required': false},
+                          {'label': l10n.additionalNotes, 'type': 'textarea', 'required': false},
                         ],
                       ),
                     ),
@@ -85,9 +88,9 @@ class AsiloPoliticoScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   minimumSize: const Size(double.infinity, 0),
                 ),
-                child: const Text(
-                  'Inizia la richiesta',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                child: Text(
+                  l10n.startRequest,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ],

@@ -121,7 +121,7 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
               const SizedBox(height: 16),
               Text(
                 '${l10n.requestReceived}\n\n'
-                'Effettua il login per accedere a tutti i servizi riservati ai soci.',
+                '${l10n.loginToAccessServices}',
                 style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
                 textAlign: TextAlign.center,
               ),
@@ -192,9 +192,9 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'La tua richiesta di adesione come socio è in fase di approvazione.\n\n'
-                'Riceverai una conferma via email entro 24-48 ore.\n\n'
-                'Una volta approvata, potrai accedere a tutti i servizi.',
+                '${l10n.membershipPendingApproval}\n\n'
+                '${l10n.confirmationWithin24to48Hours}\n\n'
+                '${l10n.onceApprovedAccessAllServices}',
                 style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
                 textAlign: TextAlign.center,
               ),
@@ -240,9 +240,8 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Per accedere ai servizi di ${widget.serviceName.toLowerCase()} '
-                'è necessario essere socio WECOOP.\n\n'
-                'Diventa socio per accedere a:\n'
+                '${l10n.toAccessServicesBecomeMember.replaceAll('{serviceName}', widget.serviceName.toLowerCase())}\n\n'
+                '${l10n.becomeMemberToAccess}\n'
                 '• Assistenza dedicata\n'
                 '• Consulenze gratuite\n'
                 '• Eventi e networking\n'

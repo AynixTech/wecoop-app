@@ -260,5 +260,8 @@
   "chatbotFAQ4Answer": "From your profile click on \"Become a WECOOP Member\" and fill out the membership form.",
   "chatbotFAQ5Question": "How do I book an appointment?",
   "chatbotFAQ5Answer": "You can book directly from the app by clicking on \"Book Appointment\".",
-  "chatbotInputHint": "Write a message..."
+  "chatbotInputHint": "Write a message...",
+  
+  "alreadyRegisteredLogin": "If you are already registered, log in",
+  "continueWithoutLogin": "Continue without logging in"
 }

@@ -276,6 +276,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     )
                   : Text(l10n.login),
             ),
+            const SizedBox(height: 16),
+            TextButton.icon(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/home');
+              },
+              icon: const Icon(Icons.home),
+              label: Text(
+                l10n.translate('continueWithoutLogin'),
+                style: const TextStyle(fontSize: 14),
+              ),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.grey[700],
+              ),
+            ),
           ],
         ),
       ),

@@ -586,33 +586,58 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                     ),
                   ],
                 ),
-                child: ElevatedButton(
-                  onPressed: _isSubmitting ? null : _submitAdesione,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amber,
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    minimumSize: const Size(double.infinity, 0),
-                  ),
-                  child:
-                      _isSubmitting
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Pulsante per andare al login
+                    TextButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.login),
+                      label: Text(
+                        l10n.translate('alreadyRegisteredLogin'),
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                      style: TextButton.styleFrom(
+                        foregroundColor: const Color(0xFF2196F3),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // Pulsante di invio richiesta
+                    ElevatedButton(
+                      onPressed: _isSubmitting ? null : _submitAdesione,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.amber,
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        minimumSize: const Size(double.infinity, 0),
+                      ),
+                      child: _isSubmitting
                           ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.black,
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.black,
+                                ),
+                              ),
+                            )
+                          : Text(
+                              l10n.sendRequest,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          )
-                          : Text(
-                            l10n.sendRequest,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                    ),
+                  ],
                 ),
               ),
             ],

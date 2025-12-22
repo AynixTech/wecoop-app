@@ -46,27 +46,33 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
       // Se non ha più richiesta in attesa, potrebbe essere stato approvato
       // Mostra il prompt per il login
       if (!hasRichiesta) {
-        setState(() {
-          _shouldShowLogin = true;
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _shouldShowLogin = true;
+            _isLoading = false;
+          });
+        }
         return;
       }
 
-      setState(() {
-        _hasRichiestaInAttesa = hasRichiesta;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _hasRichiestaInAttesa = hasRichiesta;
+          _isLoading = false;
+        });
+      }
       return;
     }
 
     // 4. Controllo standard
     final hasRichiesta = await SocioService.hasRichiestaInAttesa();
 
-    setState(() {
-      _hasRichiestaInAttesa = hasRichiesta;
-      _isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _hasRichiestaInAttesa = hasRichiesta;
+        _isLoading = false;
+      });
+    }
 
     // Se è già socio, naviga direttamente al servizio
     if (isSocio && mounted) {

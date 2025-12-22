@@ -260,5 +260,8 @@
   "chatbotFAQ4Answer": "Dal tuo profilo clicca su \"Diventa Socio WECOOP\" e compila il modulo di adesione.",
   "chatbotFAQ5Question": "Come prenoto un appuntamento?",
   "chatbotFAQ5Answer": "Puoi prenotare direttamente dall'app cliccando su \"Prenota Appuntamento\".",
-  "chatbotInputHint": "Scrivi un messaggio..."
+  "chatbotInputHint": "Scrivi un messaggio...",
+  
+  "alreadyRegisteredLogin": "Se sei già registrato effettua il login",
+  "continueWithoutLogin": "Continua senza loggarti"
 }

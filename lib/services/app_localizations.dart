@@ -271,6 +271,8 @@ class AppLocalizations {
       'chatbotFAQ5Question': 'Come prenoto un appuntamento?',
       'chatbotFAQ5Answer': 'Puoi prenotare direttamente dall\'app cliccando su "Prenota Appuntamento".',
       'chatbotInputHint': 'Scrivi un messaggio...',
+      'alreadyRegisteredLogin': 'Se sei già registrato effettua il login',
+      'continueWithoutLogin': 'Continua senza loggarti',
     },
     'en': {
       'appTitle': 'WECOOP',
@@ -530,6 +532,8 @@ class AppLocalizations {
       'chatbotFAQ5Question': 'How do I book an appointment?',
       'chatbotFAQ5Answer': 'You can book directly from the app by clicking on "Book Appointment".',
       'chatbotInputHint': 'Write a message...',
+      'alreadyRegisteredLogin': 'If you are already registered, log in',
+      'continueWithoutLogin': 'Continue without logging in',
     },
     'es': {
       'appTitle': 'WECOOP',
@@ -789,6 +793,8 @@ class AppLocalizations {
       'chatbotFAQ5Question': '¿Cómo reservo una cita?',
       'chatbotFAQ5Answer': 'Puedes reservar directamente desde la app haciendo clic en "Reservar Cita".',
       'chatbotInputHint': 'Escribe un mensaje...',
+      'alreadyRegisteredLogin': 'Si ya estás registrado, inicia sesión',
+      'continueWithoutLogin': 'Continuar sin iniciar sesión',
     },
   };
 
@@ -1056,6 +1062,10 @@ class AppLocalizations {
   String get chatbotFAQ5Question => translate('chatbotFAQ5Question');
   String get chatbotFAQ5Answer => translate('chatbotFAQ5Answer');
   String get chatbotInputHint => translate('chatbotInputHint');
+  
+  // Login & Registration
+  String get alreadyRegisteredLogin => translate('alreadyRegisteredLogin');
+  String get continueWithoutLogin => translate('continueWithoutLogin');
 }
 
 class _AppLocalizationsDelegate

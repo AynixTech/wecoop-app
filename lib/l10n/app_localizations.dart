@@ -1233,6 +1233,306 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Integrazione Sociale'**
   String get passaparolaService4;
+
+  /// No description provided for @chatbotTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Assistenza & FAQ'**
+  String get chatbotTitle;
+
+  /// No description provided for @chatbotWelcome.
+  ///
+  /// In it, this message translates to:
+  /// **'Ciao! 👋 Sono l\'assistente virtuale WECOOP. Come posso aiutarti oggi?'**
+  String get chatbotWelcome;
+
+  /// No description provided for @chatbotServicesResponse.
+  ///
+  /// In it, this message translates to:
+  /// **'Offriamo diversi servizi:\n\n• Accoglienza e Orientamento\n• Mediazione Fiscale\n• Supporto Contabile\n• Servizi per Migranti\n\nQuale ti interessa?'**
+  String get chatbotServicesResponse;
+
+  /// No description provided for @chatbotProjectsResponse.
+  ///
+  /// In it, this message translates to:
+  /// **'Abbiamo 4 macro-categorie di progetti:\n\n🔵 Giovani (MAFALDA)\n🟣 Donne (WOMENTOR)\n🟢 Sport (SPORTUNITY)\n🟠 Migranti (PASSAPAROLA)\n\nVuoi saperne di più?'**
+  String get chatbotProjectsResponse;
+
+  /// No description provided for @chatbotPermitResponse.
+  ///
+  /// In it, this message translates to:
+  /// **'Ti serve il permesso di soggiorno? Possiamo aiutarti con:\n\n• Lavoro Subordinato\n• Lavoro Autonomo\n• Studio\n• Famiglia\n\nSeleziona il tipo che ti interessa.'**
+  String get chatbotPermitResponse;
+
+  /// No description provided for @chatbotCitizenshipResponse.
+  ///
+  /// In it, this message translates to:
+  /// **'Per la cittadinanza italiana ti aiutiamo a:\n\n• Verificare i requisiti\n• Preparare la documentazione\n• Presentare la domanda\n\nVuoi iniziare la richiesta?'**
+  String get chatbotCitizenshipResponse;
+
+  /// No description provided for @chatbotAsylumResponse.
+  ///
+  /// In it, this message translates to:
+  /// **'Ti aiutiamo con la richiesta di protezione internazionale. È un processo delicato e ti seguiremo passo passo.\n\nVuoi iniziare?'**
+  String get chatbotAsylumResponse;
+
+  /// No description provided for @chatbotTaxResponse.
+  ///
+  /// In it, this message translates to:
+  /// **'Ti serve aiuto con il 730 o altri servizi fiscali?\n\nOffriamo:\n• Dichiarazione 730\n• Consulenza fiscale\n• Supporto contabile'**
+  String get chatbotTaxResponse;
+
+  /// No description provided for @chatbotAppointmentResponse.
+  ///
+  /// In it, this message translates to:
+  /// **'Vuoi prenotare un appuntamento? Puoi farlo facilmente dalla nostra app!'**
+  String get chatbotAppointmentResponse;
+
+  /// No description provided for @chatbotGreeting.
+  ///
+  /// In it, this message translates to:
+  /// **'Ciao! Come posso aiutarti oggi? 😊'**
+  String get chatbotGreeting;
+
+  /// No description provided for @chatbotThanksResponse.
+  ///
+  /// In it, this message translates to:
+  /// **'Prego! Sono qui per aiutarti. C\'è altro che posso fare per te?'**
+  String get chatbotThanksResponse;
+
+  /// No description provided for @chatbotDefaultResponse.
+  ///
+  /// In it, this message translates to:
+  /// **'Non sono sicuro di aver capito. Puoi dirmi:\n\n• \"Servizi\" per vedere i nostri servizi\n• \"Progetti\" per i nostri progetti\n• \"Permesso di soggiorno\"\n• \"Cittadinanza\"\n• \"730\" per servizi fiscali\n• \"Appuntamento\" per prenotare\n\nOppure seleziona una domanda qui sotto:'**
+  String get chatbotDefaultResponse;
+
+  /// No description provided for @chatbotGoToServices.
+  ///
+  /// In it, this message translates to:
+  /// **'Vai ai servizi'**
+  String get chatbotGoToServices;
+
+  /// No description provided for @chatbotRequestCitizenship.
+  ///
+  /// In it, this message translates to:
+  /// **'Richiedi Cittadinanza'**
+  String get chatbotRequestCitizenship;
+
+  /// No description provided for @chatbotStartRequest.
+  ///
+  /// In it, this message translates to:
+  /// **'Inizia Richiesta'**
+  String get chatbotStartRequest;
+
+  /// No description provided for @chatbotFiscalServices.
+  ///
+  /// In it, this message translates to:
+  /// **'Servizi Fiscali'**
+  String get chatbotFiscalServices;
+
+  /// No description provided for @chatbotBookNow.
+  ///
+  /// In it, this message translates to:
+  /// **'Prenota Ora'**
+  String get chatbotBookNow;
+
+  /// No description provided for @chatbotWelcomeBtn.
+  ///
+  /// In it, this message translates to:
+  /// **'Accoglienza'**
+  String get chatbotWelcomeBtn;
+
+  /// No description provided for @chatbotFiscalBtn.
+  ///
+  /// In it, this message translates to:
+  /// **'Servizi Fiscali'**
+  String get chatbotFiscalBtn;
+
+  /// No description provided for @chatbotMigrantsBtn.
+  ///
+  /// In it, this message translates to:
+  /// **'Servizi Migranti'**
+  String get chatbotMigrantsBtn;
+
+  /// No description provided for @chatbotWelcomeService.
+  ///
+  /// In it, this message translates to:
+  /// **'Accoglienza e Orientamento'**
+  String get chatbotWelcomeService;
+
+  /// No description provided for @chatbotFiscalService.
+  ///
+  /// In it, this message translates to:
+  /// **'Mediazione Fiscale'**
+  String get chatbotFiscalService;
+
+  /// No description provided for @chatbotMigrantsService.
+  ///
+  /// In it, this message translates to:
+  /// **'Servizi per Migranti'**
+  String get chatbotMigrantsService;
+
+  /// No description provided for @chatbotWelcomeDetail.
+  ///
+  /// In it, this message translates to:
+  /// **'Il servizio di Accoglienza ti aiuta con orientamento e supporto iniziale. Vuoi maggiori informazioni?'**
+  String get chatbotWelcomeDetail;
+
+  /// No description provided for @chatbotGoToService.
+  ///
+  /// In it, this message translates to:
+  /// **'Vai al Servizio'**
+  String get chatbotGoToService;
+
+  /// No description provided for @chatbotYouthBtn.
+  ///
+  /// In it, this message translates to:
+  /// **'Giovani'**
+  String get chatbotYouthBtn;
+
+  /// No description provided for @chatbotWomenBtn.
+  ///
+  /// In it, this message translates to:
+  /// **'Donne'**
+  String get chatbotWomenBtn;
+
+  /// No description provided for @chatbotSportBtn.
+  ///
+  /// In it, this message translates to:
+  /// **'Sport'**
+  String get chatbotSportBtn;
+
+  /// No description provided for @chatbotMigrantsProjectBtn.
+  ///
+  /// In it, this message translates to:
+  /// **'Migranti'**
+  String get chatbotMigrantsProjectBtn;
+
+  /// No description provided for @chatbotYouthProjects.
+  ///
+  /// In it, this message translates to:
+  /// **'Progetti Giovani'**
+  String get chatbotYouthProjects;
+
+  /// No description provided for @chatbotWomenProjects.
+  ///
+  /// In it, this message translates to:
+  /// **'Progetti Donne'**
+  String get chatbotWomenProjects;
+
+  /// No description provided for @chatbotSportProjects.
+  ///
+  /// In it, this message translates to:
+  /// **'Progetti Sport'**
+  String get chatbotSportProjects;
+
+  /// No description provided for @chatbotMigrantsProjects.
+  ///
+  /// In it, this message translates to:
+  /// **'Progetti Migranti'**
+  String get chatbotMigrantsProjects;
+
+  /// No description provided for @chatbotServicesQuick.
+  ///
+  /// In it, this message translates to:
+  /// **'Servizi'**
+  String get chatbotServicesQuick;
+
+  /// No description provided for @chatbotProjectsQuick.
+  ///
+  /// In it, this message translates to:
+  /// **'Progetti'**
+  String get chatbotProjectsQuick;
+
+  /// No description provided for @chatbotPermitQuick.
+  ///
+  /// In it, this message translates to:
+  /// **'Permesso Soggiorno'**
+  String get chatbotPermitQuick;
+
+  /// No description provided for @chatbotCitizenshipQuick.
+  ///
+  /// In it, this message translates to:
+  /// **'Cittadinanza'**
+  String get chatbotCitizenshipQuick;
+
+  /// No description provided for @chatbotAppointmentQuick.
+  ///
+  /// In it, this message translates to:
+  /// **'Appuntamento'**
+  String get chatbotAppointmentQuick;
+
+  /// No description provided for @chatbotFAQTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'❓ Domande Frequenti (FAQ)'**
+  String get chatbotFAQTitle;
+
+  /// No description provided for @chatbotFAQ1Question.
+  ///
+  /// In it, this message translates to:
+  /// **'Come posso richiedere il permesso di soggiorno?'**
+  String get chatbotFAQ1Question;
+
+  /// No description provided for @chatbotFAQ1Answer.
+  ///
+  /// In it, this message translates to:
+  /// **'Vai su Servizi > Servizi per Migranti > Permesso di Soggiorno e seleziona la categoria appropriata.'**
+  String get chatbotFAQ1Answer;
+
+  /// No description provided for @chatbotFAQ2Question.
+  ///
+  /// In it, this message translates to:
+  /// **'Quali documenti servono per il 730?'**
+  String get chatbotFAQ2Question;
+
+  /// No description provided for @chatbotFAQ2Answer.
+  ///
+  /// In it, this message translates to:
+  /// **'Ti serviranno: CU, documenti di spesa detraibili, codice fiscale. Possiamo aiutarti nella compilazione!'**
+  String get chatbotFAQ2Answer;
+
+  /// No description provided for @chatbotFAQ3Question.
+  ///
+  /// In it, this message translates to:
+  /// **'Che progetti avete per i giovani?'**
+  String get chatbotFAQ3Question;
+
+  /// No description provided for @chatbotFAQ3Answer.
+  ///
+  /// In it, this message translates to:
+  /// **'Il progetto MAFALDA offre opportunità di mobilità europea, formazione e sviluppo competenze.'**
+  String get chatbotFAQ3Answer;
+
+  /// No description provided for @chatbotFAQ4Question.
+  ///
+  /// In it, this message translates to:
+  /// **'Come posso diventare socio?'**
+  String get chatbotFAQ4Question;
+
+  /// No description provided for @chatbotFAQ4Answer.
+  ///
+  /// In it, this message translates to:
+  /// **'Dal tuo profilo clicca su \"Diventa Socio WECOOP\" e compila il modulo di adesione.'**
+  String get chatbotFAQ4Answer;
+
+  /// No description provided for @chatbotFAQ5Question.
+  ///
+  /// In it, this message translates to:
+  /// **'Come prenoto un appuntamento?'**
+  String get chatbotFAQ5Question;
+
+  /// No description provided for @chatbotFAQ5Answer.
+  ///
+  /// In it, this message translates to:
+  /// **'Puoi prenotare direttamente dall\'app cliccando su \"Prenota Appuntamento\".'**
+  String get chatbotFAQ5Answer;
+
+  /// No description provided for @chatbotInputHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Scrivi un messaggio...'**
+  String get chatbotInputHint;
 }
 
 class _AppLocalizationsDelegate

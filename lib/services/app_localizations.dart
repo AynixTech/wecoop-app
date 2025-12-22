@@ -175,8 +175,6 @@ class AppLocalizations {
       'additionalNotes': 'Note aggiuntive',
       'startRequest': 'Inizia la richiesta',
       'touristVisaRequest': 'Richiesta Visa per Turismo',
-      'taxMediation': 'Mediazione Fiscale',
-      'accountingSupport': 'Supporto Contabile',
       'selectFiscalService': 'Seleziona il servizio fiscale',
       'tax730Declaration': '730 - Dichiarazione dei Redditi',
       'tax730Description': 'Compilazione modello 730 per dipendenti e pensionati',
@@ -223,6 +221,56 @@ class AppLocalizations {
       'passaparolaService2': 'Supporto Documentale',
       'passaparolaService3': 'Orientamento Legale',
       'passaparolaService4': 'Integrazione Sociale',
+      'chatbotTitle': 'Assistenza & FAQ',
+      'chatbotWelcome': 'Ciao! 👋 Sono l\'assistente virtuale WECOOP. Come posso aiutarti oggi?',
+      'chatbotServicesResponse': 'Offriamo diversi servizi:\n\n• Accoglienza e Orientamento\n• Mediazione Fiscale\n• Supporto Contabile\n• Servizi per Migranti\n\nQuale ti interessa?',
+      'chatbotProjectsResponse': 'Abbiamo 4 macro-categorie di progetti:\n\n🔵 Giovani (MAFALDA)\n🟣 Donne (WOMENTOR)\n🟢 Sport (SPORTUNITY)\n🟠 Migranti (PASSAPAROLA)\n\nVuoi saperne di più?',
+      'chatbotPermitResponse': 'Ti serve il permesso di soggiorno? Possiamo aiutarti con:\n\n• Lavoro Subordinato\n• Lavoro Autonomo\n• Studio\n• Famiglia\n\nSeleziona il tipo che ti interessa.',
+      'chatbotCitizenshipResponse': 'Per la cittadinanza italiana ti aiutiamo a:\n\n• Verificare i requisiti\n• Preparare la documentazione\n• Presentare la domanda\n\nVuoi iniziare la richiesta?',
+      'chatbotAsylumResponse': 'Ti aiutiamo con la richiesta di protezione internazionale. È un processo delicato e ti seguiremo passo passo.\n\nVuoi iniziare?',
+      'chatbotTaxResponse': 'Ti serve aiuto con il 730 o altri servizi fiscali?\n\nOffriamo:\n• Dichiarazione 730\n• Consulenza fiscale\n• Supporto contabile',
+      'chatbotAppointmentResponse': 'Vuoi prenotare un appuntamento? Puoi farlo facilmente dalla nostra app!',
+      'chatbotGreeting': 'Ciao! Come posso aiutarti oggi? 😊',
+      'chatbotThanksResponse': 'Prego! Sono qui per aiutarti. C\'è altro che posso fare per te?',
+      'chatbotDefaultResponse': 'Non sono sicuro di aver capito. Puoi dirmi:\n\n• "Servizi" per vedere i nostri servizi\n• "Progetti" per i nostri progetti\n• "Permesso di soggiorno"\n• "Cittadinanza"\n• "730" per servizi fiscali\n• "Appuntamento" per prenotare\n\nOppure seleziona una domanda qui sotto:',
+      'chatbotGoToServices': 'Vai ai servizi',
+      'chatbotRequestCitizenship': 'Richiedi Cittadinanza',
+      'chatbotStartRequest': 'Inizia Richiesta',
+      'chatbotFiscalServices': 'Servizi Fiscali',
+      'chatbotBookNow': 'Prenota Ora',
+      'chatbotWelcomeBtn': 'Accoglienza',
+      'chatbotFiscalBtn': 'Servizi Fiscali',
+      'chatbotMigrantsBtn': 'Servizi Migranti',
+      'chatbotWelcomeService': 'Accoglienza e Orientamento',
+      'chatbotFiscalService': 'Mediazione Fiscale',
+      'chatbotMigrantsService': 'Servizi per Migranti',
+      'chatbotWelcomeDetail': 'Il servizio di Accoglienza ti aiuta con orientamento e supporto iniziale. Vuoi maggiori informazioni?',
+      'chatbotGoToService': 'Vai al Servizio',
+      'chatbotYouthBtn': 'Giovani',
+      'chatbotWomenBtn': 'Donne',
+      'chatbotSportBtn': 'Sport',
+      'chatbotMigrantsProjectBtn': 'Migranti',
+      'chatbotYouthProjects': 'Progetti Giovani',
+      'chatbotWomenProjects': 'Progetti Donne',
+      'chatbotSportProjects': 'Progetti Sport',
+      'chatbotMigrantsProjects': 'Progetti Migranti',
+      'chatbotServicesQuick': 'Servizi',
+      'chatbotProjectsQuick': 'Progetti',
+      'chatbotPermitQuick': 'Permesso Soggiorno',
+      'chatbotCitizenshipQuick': 'Cittadinanza',
+      'chatbotAppointmentQuick': 'Appuntamento',
+      'chatbotFAQTitle': '❓ Domande Frequenti (FAQ)',
+      'chatbotFAQ1Question': 'Come posso richiedere il permesso di soggiorno?',
+      'chatbotFAQ1Answer': 'Vai su Servizi > Servizi per Migranti > Permesso di Soggiorno e seleziona la categoria appropriata.',
+      'chatbotFAQ2Question': 'Quali documenti servono per il 730?',
+      'chatbotFAQ2Answer': 'Ti serviranno: CU, documenti di spesa detraibili, codice fiscale. Possiamo aiutarti nella compilazione!',
+      'chatbotFAQ3Question': 'Che progetti avete per i giovani?',
+      'chatbotFAQ3Answer': 'Il progetto MAFALDA offre opportunità di mobilità europea, formazione e sviluppo competenze.',
+      'chatbotFAQ4Question': 'Come posso diventare socio?',
+      'chatbotFAQ4Answer': 'Dal tuo profilo clicca su "Diventa Socio WECOOP" e compila il modulo di adesione.',
+      'chatbotFAQ5Question': 'Come prenoto un appuntamento?',
+      'chatbotFAQ5Answer': 'Puoi prenotare direttamente dall\'app cliccando su "Prenota Appuntamento".',
+      'chatbotInputHint': 'Scrivi un messaggio...',
     },
     'en': {
       'appTitle': 'WECOOP',
@@ -386,8 +434,6 @@ class AppLocalizations {
       'additionalNotes': 'Additional notes',
       'startRequest': 'Start request',
       'touristVisaRequest': 'Tourist Visa Request',
-      'taxMediation': 'Tax Mediation',
-      'accountingSupport': 'Accounting Support',
       'selectFiscalService': 'Select tax service',
       'tax730Declaration': '730 - Income Tax Return',
       'tax730Description': 'Form 730 preparation for employees and pensioners',
@@ -434,6 +480,56 @@ class AppLocalizations {
       'passaparolaService2': 'Document Support',
       'passaparolaService3': 'Legal Guidance',
       'passaparolaService4': 'Social Integration',
+      'chatbotTitle': 'Assistance & FAQ',
+      'chatbotWelcome': 'Hello! 👋 I\'m the WECOOP virtual assistant. How can I help you today?',
+      'chatbotServicesResponse': 'We offer several services:\n\n• Welcome and Orientation\n• Tax Mediation\n• Accounting Support\n• Migrant Services\n\nWhich one interests you?',
+      'chatbotProjectsResponse': 'We have 4 macro-categories of projects:\n\n🔵 Youth (MAFALDA)\n🟣 Women (WOMENTOR)\n🟢 Sport (SPORTUNITY)\n🟠 Migrants (PASSAPAROLA)\n\nWould you like to know more?',
+      'chatbotPermitResponse': 'Do you need a residence permit? We can help you with:\n\n• Employed Work\n• Self-Employment\n• Study\n• Family\n\nSelect the type that interests you.',
+      'chatbotCitizenshipResponse': 'For Italian citizenship we help you:\n\n• Verify requirements\n• Prepare documentation\n• Submit the application\n\nWould you like to start the request?',
+      'chatbotAsylumResponse': 'We help you with the international protection request. It\'s a delicate process and we will guide you step by step.\n\nWould you like to start?',
+      'chatbotTaxResponse': 'Do you need help with the 730 or other tax services?\n\nWe offer:\n• 730 Declaration\n• Tax Consulting\n• Accounting Support',
+      'chatbotAppointmentResponse': 'Would you like to book an appointment? You can easily do it from our app!',
+      'chatbotGreeting': 'Hello! How can I help you today? 😊',
+      'chatbotThanksResponse': 'You\'re welcome! I\'m here to help. Is there anything else I can do for you?',
+      'chatbotDefaultResponse': 'I\'m not sure I understood. You can tell me:\n\n• "Services" to see our services\n• "Projects" for our projects\n• "Residence permit"\n• "Citizenship"\n• "730" for tax services\n• "Appointment" to book\n\nOr select a question below:',
+      'chatbotGoToServices': 'Go to services',
+      'chatbotRequestCitizenship': 'Request Citizenship',
+      'chatbotStartRequest': 'Start Request',
+      'chatbotFiscalServices': 'Tax Services',
+      'chatbotBookNow': 'Book Now',
+      'chatbotWelcomeBtn': 'Welcome',
+      'chatbotFiscalBtn': 'Tax Services',
+      'chatbotMigrantsBtn': 'Migrant Services',
+      'chatbotWelcomeService': 'Welcome and Orientation',
+      'chatbotFiscalService': 'Tax Mediation',
+      'chatbotMigrantsService': 'Migrant Services',
+      'chatbotWelcomeDetail': 'The Welcome service helps you with orientation and initial support. Would you like more information?',
+      'chatbotGoToService': 'Go to Service',
+      'chatbotYouthBtn': 'Youth',
+      'chatbotWomenBtn': 'Women',
+      'chatbotSportBtn': 'Sport',
+      'chatbotMigrantsProjectBtn': 'Migrants',
+      'chatbotYouthProjects': 'Youth Projects',
+      'chatbotWomenProjects': 'Women Projects',
+      'chatbotSportProjects': 'Sport Projects',
+      'chatbotMigrantsProjects': 'Migrant Projects',
+      'chatbotServicesQuick': 'Services',
+      'chatbotProjectsQuick': 'Projects',
+      'chatbotPermitQuick': 'Residence Permit',
+      'chatbotCitizenshipQuick': 'Citizenship',
+      'chatbotAppointmentQuick': 'Appointment',
+      'chatbotFAQTitle': '❓ Frequently Asked Questions (FAQ)',
+      'chatbotFAQ1Question': 'How can I request a residence permit?',
+      'chatbotFAQ1Answer': 'Go to Services > Migrant Services > Residence Permit and select the appropriate category.',
+      'chatbotFAQ2Question': 'What documents are needed for the 730?',
+      'chatbotFAQ2Answer': 'You will need: CU, deductible expense documents, tax code. We can help you with the compilation!',
+      'chatbotFAQ3Question': 'What projects do you have for young people?',
+      'chatbotFAQ3Answer': 'The MAFALDA project offers European mobility, training and skills development opportunities.',
+      'chatbotFAQ4Question': 'How can I become a member?',
+      'chatbotFAQ4Answer': 'From your profile click on "Become a WECOOP Member" and fill out the membership form.',
+      'chatbotFAQ5Question': 'How do I book an appointment?',
+      'chatbotFAQ5Answer': 'You can book directly from the app by clicking on "Book Appointment".',
+      'chatbotInputHint': 'Write a message...',
     },
     'es': {
       'appTitle': 'WECOOP',
@@ -597,8 +693,6 @@ class AppLocalizations {
       'additionalNotes': 'Notas adicionales',
       'startRequest': 'Iniciar solicitud',
       'touristVisaRequest': 'Solicitud de Visa Turística',
-      'taxMediation': 'Mediación Fiscal',
-      'accountingSupport': 'Soporte Contable',
       'selectFiscalService': 'Selecciona el servicio fiscal',
       'tax730Declaration': '730 - Declaración de la Renta',
       'tax730Description': 'Preparación del modelo 730 para empleados y pensionistas',
@@ -645,6 +739,56 @@ class AppLocalizations {
       'passaparolaService2': 'Apoyo Documental',
       'passaparolaService3': 'Orientación Legal',
       'passaparolaService4': 'Integración Social',
+      'chatbotTitle': 'Asistencia & FAQ',
+      'chatbotWelcome': '¡Hola! 👋 Soy el asistente virtual de WECOOP. ¿Cómo puedo ayudarte hoy?',
+      'chatbotServicesResponse': 'Ofrecemos varios servicios:\n\n• Acogida y Orientación\n• Mediación Fiscal\n• Apoyo Contable\n• Servicios para Migrantes\n\n¿Cuál te interesa?',
+      'chatbotProjectsResponse': 'Tenemos 4 macro-categorías de proyectos:\n\n🔵 Jóvenes (MAFALDA)\n🟣 Mujeres (WOMENTOR)\n🟢 Deporte (SPORTUNITY)\n🟠 Migrantes (PASSAPAROLA)\n\n¿Quieres saber más?',
+      'chatbotPermitResponse': '¿Necesitas el permiso de residencia? Podemos ayudarte con:\n\n• Trabajo Subordinado\n• Trabajo Autónomo\n• Estudio\n• Familia\n\nSelecciona el tipo que te interesa.',
+      'chatbotCitizenshipResponse': 'Para la ciudadanía italiana te ayudamos a:\n\n• Verificar los requisitos\n• Preparar la documentación\n• Presentar la solicitud\n\n¿Quieres iniciar la solicitud?',
+      'chatbotAsylumResponse': 'Te ayudamos con la solicitud de protección internacional. Es un proceso delicado y te guiaremos paso a paso.\n\n¿Quieres empezar?',
+      'chatbotTaxResponse': '¿Necesitas ayuda con el 730 u otros servicios fiscales?\n\nOfrecemos:\n• Declaración 730\n• Consultoría fiscal\n• Apoyo contable',
+      'chatbotAppointmentResponse': '¿Quieres reservar una cita? ¡Puedes hacerlo fácilmente desde nuestra app!',
+      'chatbotGreeting': '¡Hola! ¿Cómo puedo ayudarte hoy? 😊',
+      'chatbotThanksResponse': '¡De nada! Estoy aquí para ayudarte. ¿Hay algo más que pueda hacer por ti?',
+      'chatbotDefaultResponse': 'No estoy seguro de haber entendido. Puedes decirme:\n\n• "Servicios" para ver nuestros servicios\n• "Proyectos" para nuestros proyectos\n• "Permiso de residencia"\n• "Ciudadanía"\n• "730" para servicios fiscales\n• "Cita" para reservar\n\nO selecciona una pregunta a continuación:',
+      'chatbotGoToServices': 'Ir a servicios',
+      'chatbotRequestCitizenship': 'Solicitar Ciudadanía',
+      'chatbotStartRequest': 'Iniciar Solicitud',
+      'chatbotFiscalServices': 'Servicios Fiscales',
+      'chatbotBookNow': 'Reservar Ahora',
+      'chatbotWelcomeBtn': 'Acogida',
+      'chatbotFiscalBtn': 'Servicios Fiscales',
+      'chatbotMigrantsBtn': 'Servicios para Migrantes',
+      'chatbotWelcomeService': 'Acogida y Orientación',
+      'chatbotFiscalService': 'Mediación Fiscal',
+      'chatbotMigrantsService': 'Servicios para Migrantes',
+      'chatbotWelcomeDetail': 'El servicio de Acogida te ayuda con orientación y apoyo inicial. ¿Quieres más información?',
+      'chatbotGoToService': 'Ir al Servicio',
+      'chatbotYouthBtn': 'Jóvenes',
+      'chatbotWomenBtn': 'Mujeres',
+      'chatbotSportBtn': 'Deporte',
+      'chatbotMigrantsProjectBtn': 'Migrantes',
+      'chatbotYouthProjects': 'Proyectos para Jóvenes',
+      'chatbotWomenProjects': 'Proyectos para Mujeres',
+      'chatbotSportProjects': 'Proyectos Deportivos',
+      'chatbotMigrantsProjects': 'Proyectos para Migrantes',
+      'chatbotServicesQuick': 'Servicios',
+      'chatbotProjectsQuick': 'Proyectos',
+      'chatbotPermitQuick': 'Permiso de Residencia',
+      'chatbotCitizenshipQuick': 'Ciudadanía',
+      'chatbotAppointmentQuick': 'Cita',
+      'chatbotFAQTitle': '❓ Preguntas Frecuentes (FAQ)',
+      'chatbotFAQ1Question': '¿Cómo puedo solicitar el permiso de residencia?',
+      'chatbotFAQ1Answer': 'Ve a Servicios > Servicios para Migrantes > Permiso de Residencia y selecciona la categoría apropiada.',
+      'chatbotFAQ2Question': '¿Qué documentos se necesitan para el 730?',
+      'chatbotFAQ2Answer': 'Necesitarás: CU, documentos de gastos deducibles, código fiscal. ¡Podemos ayudarte con la compilación!',
+      'chatbotFAQ3Question': '¿Qué proyectos tienen para jóvenes?',
+      'chatbotFAQ3Answer': 'El proyecto MAFALDA ofrece oportunidades de movilidad europea, formación y desarrollo de competencias.',
+      'chatbotFAQ4Question': '¿Cómo puedo hacerme socio?',
+      'chatbotFAQ4Answer': 'Desde tu perfil haz clic en "Hazte Socio de WECOOP" y completa el formulario de adhesión.',
+      'chatbotFAQ5Question': '¿Cómo reservo una cita?',
+      'chatbotFAQ5Answer': 'Puedes reservar directamente desde la app haciendo clic en "Reservar Cita".',
+      'chatbotInputHint': 'Escribe un mensaje...',
     },
   };
 
@@ -860,6 +1004,58 @@ class AppLocalizations {
   String get passaparolaService2 => translate('passaparolaService2');
   String get passaparolaService3 => translate('passaparolaService3');
   String get passaparolaService4 => translate('passaparolaService4');
+  
+  // Chatbot translations
+  String get chatbotTitle => translate('chatbotTitle');
+  String get chatbotWelcome => translate('chatbotWelcome');
+  String get chatbotServicesResponse => translate('chatbotServicesResponse');
+  String get chatbotProjectsResponse => translate('chatbotProjectsResponse');
+  String get chatbotPermitResponse => translate('chatbotPermitResponse');
+  String get chatbotCitizenshipResponse => translate('chatbotCitizenshipResponse');
+  String get chatbotAsylumResponse => translate('chatbotAsylumResponse');
+  String get chatbotTaxResponse => translate('chatbotTaxResponse');
+  String get chatbotAppointmentResponse => translate('chatbotAppointmentResponse');
+  String get chatbotGreeting => translate('chatbotGreeting');
+  String get chatbotThanksResponse => translate('chatbotThanksResponse');
+  String get chatbotDefaultResponse => translate('chatbotDefaultResponse');
+  String get chatbotGoToServices => translate('chatbotGoToServices');
+  String get chatbotRequestCitizenship => translate('chatbotRequestCitizenship');
+  String get chatbotStartRequest => translate('chatbotStartRequest');
+  String get chatbotFiscalServices => translate('chatbotFiscalServices');
+  String get chatbotBookNow => translate('chatbotBookNow');
+  String get chatbotWelcomeBtn => translate('chatbotWelcomeBtn');
+  String get chatbotFiscalBtn => translate('chatbotFiscalBtn');
+  String get chatbotMigrantsBtn => translate('chatbotMigrantsBtn');
+  String get chatbotWelcomeService => translate('chatbotWelcomeService');
+  String get chatbotFiscalService => translate('chatbotFiscalService');
+  String get chatbotMigrantsService => translate('chatbotMigrantsService');
+  String get chatbotWelcomeDetail => translate('chatbotWelcomeDetail');
+  String get chatbotGoToService => translate('chatbotGoToService');
+  String get chatbotYouthBtn => translate('chatbotYouthBtn');
+  String get chatbotWomenBtn => translate('chatbotWomenBtn');
+  String get chatbotSportBtn => translate('chatbotSportBtn');
+  String get chatbotMigrantsProjectBtn => translate('chatbotMigrantsProjectBtn');
+  String get chatbotYouthProjects => translate('chatbotYouthProjects');
+  String get chatbotWomenProjects => translate('chatbotWomenProjects');
+  String get chatbotSportProjects => translate('chatbotSportProjects');
+  String get chatbotMigrantsProjects => translate('chatbotMigrantsProjects');
+  String get chatbotServicesQuick => translate('chatbotServicesQuick');
+  String get chatbotProjectsQuick => translate('chatbotProjectsQuick');
+  String get chatbotPermitQuick => translate('chatbotPermitQuick');
+  String get chatbotCitizenshipQuick => translate('chatbotCitizenshipQuick');
+  String get chatbotAppointmentQuick => translate('chatbotAppointmentQuick');
+  String get chatbotFAQTitle => translate('chatbotFAQTitle');
+  String get chatbotFAQ1Question => translate('chatbotFAQ1Question');
+  String get chatbotFAQ1Answer => translate('chatbotFAQ1Answer');
+  String get chatbotFAQ2Question => translate('chatbotFAQ2Question');
+  String get chatbotFAQ2Answer => translate('chatbotFAQ2Answer');
+  String get chatbotFAQ3Question => translate('chatbotFAQ3Question');
+  String get chatbotFAQ3Answer => translate('chatbotFAQ3Answer');
+  String get chatbotFAQ4Question => translate('chatbotFAQ4Question');
+  String get chatbotFAQ4Answer => translate('chatbotFAQ4Answer');
+  String get chatbotFAQ5Question => translate('chatbotFAQ5Question');
+  String get chatbotFAQ5Answer => translate('chatbotFAQ5Answer');
+  String get chatbotInputHint => translate('chatbotInputHint');
 }
 
 class _AppLocalizationsDelegate

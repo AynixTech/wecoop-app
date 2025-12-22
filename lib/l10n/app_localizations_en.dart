@@ -599,4 +599,171 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passaparolaService4 => 'Social Integration';
+
+  @override
+  String get chatbotTitle => 'Assistance & FAQ';
+
+  @override
+  String get chatbotWelcome =>
+      'Hello! 👋 I\'m the WECOOP virtual assistant. How can I help you today?';
+
+  @override
+  String get chatbotServicesResponse =>
+      'We offer several services:\n\n• Welcome and Orientation\n• Tax Mediation\n• Accounting Support\n• Migrant Services\n\nWhich one interests you?';
+
+  @override
+  String get chatbotProjectsResponse =>
+      'We have 4 macro-categories of projects:\n\n🔵 Youth (MAFALDA)\n🟣 Women (WOMENTOR)\n🟢 Sport (SPORTUNITY)\n🟠 Migrants (PASSAPAROLA)\n\nWould you like to know more?';
+
+  @override
+  String get chatbotPermitResponse =>
+      'Do you need a residence permit? We can help you with:\n\n• Employed Work\n• Self-Employment\n• Study\n• Family\n\nSelect the type that interests you.';
+
+  @override
+  String get chatbotCitizenshipResponse =>
+      'For Italian citizenship we help you:\n\n• Verify requirements\n• Prepare documentation\n• Submit the application\n\nWould you like to start the request?';
+
+  @override
+  String get chatbotAsylumResponse =>
+      'We help you with the international protection request. It\'s a delicate process and we will guide you step by step.\n\nWould you like to start?';
+
+  @override
+  String get chatbotTaxResponse =>
+      'Do you need help with the 730 or other tax services?\n\nWe offer:\n• 730 Declaration\n• Tax Consulting\n• Accounting Support';
+
+  @override
+  String get chatbotAppointmentResponse =>
+      'Would you like to book an appointment? You can easily do it from our app!';
+
+  @override
+  String get chatbotGreeting => 'Hello! How can I help you today? 😊';
+
+  @override
+  String get chatbotThanksResponse =>
+      'You\'re welcome! I\'m here to help. Is there anything else I can do for you?';
+
+  @override
+  String get chatbotDefaultResponse =>
+      'I\'m not sure I understood. You can tell me:\n\n• \"Services\" to see our services\n• \"Projects\" for our projects\n• \"Residence permit\"\n• \"Citizenship\"\n• \"730\" for tax services\n• \"Appointment\" to book\n\nOr select a question below:';
+
+  @override
+  String get chatbotGoToServices => 'Go to services';
+
+  @override
+  String get chatbotRequestCitizenship => 'Request Citizenship';
+
+  @override
+  String get chatbotStartRequest => 'Start Request';
+
+  @override
+  String get chatbotFiscalServices => 'Tax Services';
+
+  @override
+  String get chatbotBookNow => 'Book Now';
+
+  @override
+  String get chatbotWelcomeBtn => 'Welcome';
+
+  @override
+  String get chatbotFiscalBtn => 'Tax Services';
+
+  @override
+  String get chatbotMigrantsBtn => 'Migrant Services';
+
+  @override
+  String get chatbotWelcomeService => 'Welcome and Orientation';
+
+  @override
+  String get chatbotFiscalService => 'Tax Mediation';
+
+  @override
+  String get chatbotMigrantsService => 'Migrant Services';
+
+  @override
+  String get chatbotWelcomeDetail =>
+      'The Welcome service helps you with orientation and initial support. Would you like more information?';
+
+  @override
+  String get chatbotGoToService => 'Go to Service';
+
+  @override
+  String get chatbotYouthBtn => 'Youth';
+
+  @override
+  String get chatbotWomenBtn => 'Women';
+
+  @override
+  String get chatbotSportBtn => 'Sport';
+
+  @override
+  String get chatbotMigrantsProjectBtn => 'Migrants';
+
+  @override
+  String get chatbotYouthProjects => 'Youth Projects';
+
+  @override
+  String get chatbotWomenProjects => 'Women Projects';
+
+  @override
+  String get chatbotSportProjects => 'Sport Projects';
+
+  @override
+  String get chatbotMigrantsProjects => 'Migrant Projects';
+
+  @override
+  String get chatbotServicesQuick => 'Services';
+
+  @override
+  String get chatbotProjectsQuick => 'Projects';
+
+  @override
+  String get chatbotPermitQuick => 'Residence Permit';
+
+  @override
+  String get chatbotCitizenshipQuick => 'Citizenship';
+
+  @override
+  String get chatbotAppointmentQuick => 'Appointment';
+
+  @override
+  String get chatbotFAQTitle => '❓ Frequently Asked Questions (FAQ)';
+
+  @override
+  String get chatbotFAQ1Question => 'How can I request a residence permit?';
+
+  @override
+  String get chatbotFAQ1Answer =>
+      'Go to Services > Migrant Services > Residence Permit and select the appropriate category.';
+
+  @override
+  String get chatbotFAQ2Question => 'What documents are needed for the 730?';
+
+  @override
+  String get chatbotFAQ2Answer =>
+      'You will need: CU, deductible expense documents, tax code. We can help you with the compilation!';
+
+  @override
+  String get chatbotFAQ3Question =>
+      'What projects do you have for young people?';
+
+  @override
+  String get chatbotFAQ3Answer =>
+      'The MAFALDA project offers European mobility, training and skills development opportunities.';
+
+  @override
+  String get chatbotFAQ4Question => 'How can I become a member?';
+
+  @override
+  String get chatbotFAQ4Answer =>
+      'From your profile click on \"Become a WECOOP Member\" and fill out the membership form.';
+
+  @override
+  String get chatbotFAQ5Question => 'How do I book an appointment?';
+
+  @override
+  String get chatbotFAQ5Answer =>
+      'You can book directly from the app by clicking on \"Book Appointment\".';
+
+  @override
+  String get chatbotInputHint => 'Write a message...';
 }

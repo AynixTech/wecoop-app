@@ -602,4 +602,171 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get passaparolaService4 => 'Integrazione Sociale';
+
+  @override
+  String get chatbotTitle => 'Assistenza & FAQ';
+
+  @override
+  String get chatbotWelcome =>
+      'Ciao! 👋 Sono l\'assistente virtuale WECOOP. Come posso aiutarti oggi?';
+
+  @override
+  String get chatbotServicesResponse =>
+      'Offriamo diversi servizi:\n\n• Accoglienza e Orientamento\n• Mediazione Fiscale\n• Supporto Contabile\n• Servizi per Migranti\n\nQuale ti interessa?';
+
+  @override
+  String get chatbotProjectsResponse =>
+      'Abbiamo 4 macro-categorie di progetti:\n\n🔵 Giovani (MAFALDA)\n🟣 Donne (WOMENTOR)\n🟢 Sport (SPORTUNITY)\n🟠 Migranti (PASSAPAROLA)\n\nVuoi saperne di più?';
+
+  @override
+  String get chatbotPermitResponse =>
+      'Ti serve il permesso di soggiorno? Possiamo aiutarti con:\n\n• Lavoro Subordinato\n• Lavoro Autonomo\n• Studio\n• Famiglia\n\nSeleziona il tipo che ti interessa.';
+
+  @override
+  String get chatbotCitizenshipResponse =>
+      'Per la cittadinanza italiana ti aiutiamo a:\n\n• Verificare i requisiti\n• Preparare la documentazione\n• Presentare la domanda\n\nVuoi iniziare la richiesta?';
+
+  @override
+  String get chatbotAsylumResponse =>
+      'Ti aiutiamo con la richiesta di protezione internazionale. È un processo delicato e ti seguiremo passo passo.\n\nVuoi iniziare?';
+
+  @override
+  String get chatbotTaxResponse =>
+      'Ti serve aiuto con il 730 o altri servizi fiscali?\n\nOffriamo:\n• Dichiarazione 730\n• Consulenza fiscale\n• Supporto contabile';
+
+  @override
+  String get chatbotAppointmentResponse =>
+      'Vuoi prenotare un appuntamento? Puoi farlo facilmente dalla nostra app!';
+
+  @override
+  String get chatbotGreeting => 'Ciao! Come posso aiutarti oggi? 😊';
+
+  @override
+  String get chatbotThanksResponse =>
+      'Prego! Sono qui per aiutarti. C\'è altro che posso fare per te?';
+
+  @override
+  String get chatbotDefaultResponse =>
+      'Non sono sicuro di aver capito. Puoi dirmi:\n\n• \"Servizi\" per vedere i nostri servizi\n• \"Progetti\" per i nostri progetti\n• \"Permesso di soggiorno\"\n• \"Cittadinanza\"\n• \"730\" per servizi fiscali\n• \"Appuntamento\" per prenotare\n\nOppure seleziona una domanda qui sotto:';
+
+  @override
+  String get chatbotGoToServices => 'Vai ai servizi';
+
+  @override
+  String get chatbotRequestCitizenship => 'Richiedi Cittadinanza';
+
+  @override
+  String get chatbotStartRequest => 'Inizia Richiesta';
+
+  @override
+  String get chatbotFiscalServices => 'Servizi Fiscali';
+
+  @override
+  String get chatbotBookNow => 'Prenota Ora';
+
+  @override
+  String get chatbotWelcomeBtn => 'Accoglienza';
+
+  @override
+  String get chatbotFiscalBtn => 'Servizi Fiscali';
+
+  @override
+  String get chatbotMigrantsBtn => 'Servizi Migranti';
+
+  @override
+  String get chatbotWelcomeService => 'Accoglienza e Orientamento';
+
+  @override
+  String get chatbotFiscalService => 'Mediazione Fiscale';
+
+  @override
+  String get chatbotMigrantsService => 'Servizi per Migranti';
+
+  @override
+  String get chatbotWelcomeDetail =>
+      'Il servizio di Accoglienza ti aiuta con orientamento e supporto iniziale. Vuoi maggiori informazioni?';
+
+  @override
+  String get chatbotGoToService => 'Vai al Servizio';
+
+  @override
+  String get chatbotYouthBtn => 'Giovani';
+
+  @override
+  String get chatbotWomenBtn => 'Donne';
+
+  @override
+  String get chatbotSportBtn => 'Sport';
+
+  @override
+  String get chatbotMigrantsProjectBtn => 'Migranti';
+
+  @override
+  String get chatbotYouthProjects => 'Progetti Giovani';
+
+  @override
+  String get chatbotWomenProjects => 'Progetti Donne';
+
+  @override
+  String get chatbotSportProjects => 'Progetti Sport';
+
+  @override
+  String get chatbotMigrantsProjects => 'Progetti Migranti';
+
+  @override
+  String get chatbotServicesQuick => 'Servizi';
+
+  @override
+  String get chatbotProjectsQuick => 'Progetti';
+
+  @override
+  String get chatbotPermitQuick => 'Permesso Soggiorno';
+
+  @override
+  String get chatbotCitizenshipQuick => 'Cittadinanza';
+
+  @override
+  String get chatbotAppointmentQuick => 'Appuntamento';
+
+  @override
+  String get chatbotFAQTitle => '❓ Domande Frequenti (FAQ)';
+
+  @override
+  String get chatbotFAQ1Question =>
+      'Come posso richiedere il permesso di soggiorno?';
+
+  @override
+  String get chatbotFAQ1Answer =>
+      'Vai su Servizi > Servizi per Migranti > Permesso di Soggiorno e seleziona la categoria appropriata.';
+
+  @override
+  String get chatbotFAQ2Question => 'Quali documenti servono per il 730?';
+
+  @override
+  String get chatbotFAQ2Answer =>
+      'Ti serviranno: CU, documenti di spesa detraibili, codice fiscale. Possiamo aiutarti nella compilazione!';
+
+  @override
+  String get chatbotFAQ3Question => 'Che progetti avete per i giovani?';
+
+  @override
+  String get chatbotFAQ3Answer =>
+      'Il progetto MAFALDA offre opportunità di mobilità europea, formazione e sviluppo competenze.';
+
+  @override
+  String get chatbotFAQ4Question => 'Come posso diventare socio?';
+
+  @override
+  String get chatbotFAQ4Answer =>
+      'Dal tuo profilo clicca su \"Diventa Socio WECOOP\" e compila il modulo di adesione.';
+
+  @override
+  String get chatbotFAQ5Question => 'Come prenoto un appuntamento?';
+
+  @override
+  String get chatbotFAQ5Answer =>
+      'Puoi prenotare direttamente dall\'app cliccando su \"Prenota Appuntamento\".';
+
+  @override
+  String get chatbotInputHint => 'Scrivi un messaggio...';
 }

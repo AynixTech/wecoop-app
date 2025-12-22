@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'home/home_screen.dart';
 import 'calendar/calendar_screen.dart';
-import 'sportello/sportello_screen.dart';
+import 'sportello/chatbot_assistenza_screen.dart';
 import 'progetti/progetti_screen.dart';
 import 'profilo/profilo_screen.dart';
 
@@ -19,7 +19,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const CalendarScreen(),
-    const SportelloScreen(),
+    const ChatbotAssistenzaScreen(),
     const ProgettiScreen(),
     const ProfiloScreen(),
   ];

@@ -1,15 +1,25 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/post_model.dart';
 
 class WordpressService {
   static const String baseUrl = 'https://www.wecoop.org/wp-json/wp/v2';
+  static const storage = FlutterSecureStorage();
 
   // Recupera gli ultimi post con immagini
   Future<List<Post>> getPosts({int perPage = 5}) async {
+    // Ottiene la lingua corrente
+    final languageCode = await storage.read(key: 'language_code') ?? 'it';
+    
     // aggiungiamo _embed per avere l'immagine completa
     final url = Uri.parse('$baseUrl/posts?per_page=$perPage&_embed');
-    final response = await http.get(url);
+    final response = await http.get(
+      url,
+      headers: {
+        'Accept-Language': languageCode,
+      },
+    );
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);

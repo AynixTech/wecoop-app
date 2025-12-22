@@ -7,6 +7,24 @@ class EventiService {
   static const String baseUrl = 'https://www.wecoop.org/wp-json/wecoop/v1';
   static const storage = FlutterSecureStorage();
 
+  /// Ottiene gli headers comuni per tutte le richieste
+  static Future<Map<String, String>> _getHeaders({bool includeAuth = true}) async {
+    final languageCode = await storage.read(key: 'language_code') ?? 'it';
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept-Language': languageCode,
+    };
+    
+    if (includeAuth) {
+      final token = await storage.read(key: 'jwt_token');
+      if (token != null) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+    }
+    
+    return headers;
+  }
+
   /// Get lista eventi
   static Future<Map<String, dynamic>> getEventi({
     int page = 1,
@@ -27,14 +45,11 @@ class EventiService {
       };
 
       final uri = Uri.parse('$baseUrl/eventi').replace(queryParameters: queryParams);
-      final token = await storage.read(key: 'jwt_token');
+      final headers = await _getHeaders();
 
       final response = await http.get(
         uri,
-        headers: {
-          'Content-Type': 'application/json',
-          if (token != null) 'Authorization': 'Bearer $token',
-        },
+        headers: headers,
       ).timeout(const Duration(seconds: 30));
 
       print('GET $uri - Status: ${response.statusCode}');
@@ -67,14 +82,11 @@ class EventiService {
   static Future<Map<String, dynamic>> getEvento(int eventoId) async {
     try {
       final uri = Uri.parse('$baseUrl/eventi/$eventoId');
-      final token = await storage.read(key: 'jwt_token');
+      final headers = await _getHeaders();
 
       final response = await http.get(
         uri,
-        headers: {
-          'Content-Type': 'application/json',
-          if (token != null) 'Authorization': 'Bearer $token',
-        },
+        headers: headers,
       ).timeout(const Duration(seconds: 30));
 
       print('GET $uri - Status: ${response.statusCode}');
@@ -127,12 +139,11 @@ class EventiService {
         if (note != null) 'note': note,
       };
 
+      final headers = await _getHeaders();
+      
       final response = await http.post(
         uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+        headers: headers,
         body: jsonEncode(body),
       ).timeout(const Duration(seconds: 30));
 
@@ -176,12 +187,11 @@ class EventiService {
 
       final uri = Uri.parse('$baseUrl/eventi/$eventoId/iscrizione');
 
+      final headers = await _getHeaders();
+      
       final response = await http.delete(
         uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+        headers: headers,
       ).timeout(const Duration(seconds: 30));
 
       print('DELETE $uri - Status: ${response.statusCode}');
@@ -222,12 +232,11 @@ class EventiService {
 
       final uri = Uri.parse('$baseUrl/miei-eventi');
 
+      final headers = await _getHeaders();
+      
       final response = await http.get(
         uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+        headers: headers,
       ).timeout(const Duration(seconds: 30));
 
       print('GET $uri - Status: ${response.statusCode}');

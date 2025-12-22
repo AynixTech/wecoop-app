@@ -139,7 +139,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                   children: [
                     const Icon(Icons.check_circle, color: Colors.green, size: 32),
                     const SizedBox(width: 12),
-                    Text(l10n.requestSent),
+                    Expanded(child: Text(l10n.requestSent)),
                   ],
                 ),
                 content: Text(

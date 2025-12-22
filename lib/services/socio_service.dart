@@ -8,6 +8,24 @@ class SocioService {
   static const String baseUrl = 'https://www.wecoop.org/wp-json/wecoop/v1';
   static const storage = FlutterSecureStorage();
 
+  /// Ottiene gli headers comuni per tutte le richieste
+  static Future<Map<String, String>> _getHeaders({bool includeAuth = true}) async {
+    final languageCode = await storage.read(key: 'language_code') ?? 'it';
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept-Language': languageCode,
+    };
+    
+    if (includeAuth) {
+      final token = await storage.read(key: 'jwt_token');
+      if (token != null) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+    }
+    
+    return headers;
+  }
+
   /// Verifica se l'utente è un socio attivo (PUBBLICO)
   /// GET /soci/verifica/{email}
   static Future<bool> isSocio() async {
@@ -111,10 +129,11 @@ class SocioService {
 
       print('Body: $body');
 
+      final headers = await _getHeaders(includeAuth: false);
       final response = await http
           .post(
             Uri.parse(url),
-            headers: {'Content-Type': 'application/json'},
+            headers: headers,
             body: body,
           )
           .timeout(const Duration(seconds: 30));
@@ -268,8 +287,9 @@ class SocioService {
       final url = '$baseUrl/soci/me';
       print('🔄 Chiamata GET /soci/me...');
 
+      final headers = await _getHeaders();
       final response = await http
-          .get(Uri.parse(url), headers: {'Authorization': 'Bearer $token'})
+          .get(Uri.parse(url), headers: headers)
           .timeout(const Duration(seconds: 30));
 
       print('📥 GET /soci/me status: ${response.statusCode}');
@@ -323,8 +343,9 @@ class SocioService {
       ).replace(queryParameters: queryParams);
       print('🔄 Chiamata GET /soci...');
 
+      final headers = await _getHeaders();
       final response = await http
-          .get(uri, headers: {'Authorization': 'Bearer $token'})
+          .get(uri, headers: headers)
           .timeout(const Duration(seconds: 30));
 
       print('📥 GET /soci status: ${response.statusCode}');
@@ -372,8 +393,9 @@ class SocioService {
       ).replace(queryParameters: queryParams);
       print('🔄 Chiamata GET /mie-richieste...');
 
+      final headers = await _getHeaders();
       final response = await http
-          .get(uri, headers: {'Authorization': 'Bearer $token'})
+          .get(uri, headers: headers)
           .timeout(const Duration(seconds: 30));
 
       print('📥 GET /mie-richieste status: ${response.statusCode}');
@@ -415,8 +437,9 @@ class SocioService {
       final url = '$baseUrl/richiesta-servizio/$id';
       print('🔄 Chiamata GET /richiesta-servizio/$id...');
 
+      final headers = await _getHeaders();
       final response = await http
-          .get(Uri.parse(url), headers: {'Authorization': 'Bearer $token'})
+          .get(Uri.parse(url), headers: headers)
           .timeout(const Duration(seconds: 30));
 
       print('📥 GET /richiesta-servizio/$id status: ${response.statusCode}');

@@ -4,16 +4,17 @@ import '../../models/evento_model.dart';
 import '../../services/eventi_service.dart';
 
 class EventoDetailScreen extends StatefulWidget {
-  final Evento evento;
+  final int eventoId;
+  final Evento? evento;
 
-  const EventoDetailScreen({super.key, required this.evento});
+  const EventoDetailScreen({super.key, required this.eventoId, this.evento});
 
   @override
   State<EventoDetailScreen> createState() => _EventoDetailScreenState();
 }
 
 class _EventoDetailScreenState extends State<EventoDetailScreen> {
-  late Evento _evento;
+  Evento? _evento;
   bool _isLoading = false;
 
   @override
@@ -24,21 +25,32 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
   }
 
   Future<void> _caricaDettagli() async {
-    final result = await EventiService.getEvento(_evento.id);
+    setState(() {
+      _isLoading = true;
+    });
+    
+    final result = await EventiService.getEvento(widget.eventoId);
     
     if (result['success'] == true && mounted) {
       setState(() {
-        _evento = result['evento'];
+        _evento = result['evento'] as Evento?;
+        _isLoading = false;
+      });
+    } else if (mounted) {
+      setState(() {
+        _isLoading = false;
       });
     }
   }
 
   Future<void> _iscriviEvento() async {
+    if (_evento == null) return;
+    
     if (mounted) {
       setState(() => _isLoading = true);
     }
 
-    final result = await EventiService.iscriviEvento(eventoId: _evento.id);
+    final result = await EventiService.iscriviEvento(eventoId: _evento!.id);
 
     if (mounted) {
       setState(() => _isLoading = false);
@@ -78,11 +90,13 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
 
     if (conferma != true) return;
 
+    if (_evento == null) return;
+
     if (mounted) {
       setState(() => _isLoading = true);
     }
 
-    final result = await EventiService.cancellaIscrizione(_evento.id);
+    final result = await EventiService.cancellaIscrizione(_evento!.id);
 
     if (mounted) {
       setState(() => _isLoading = false);
@@ -109,7 +123,14 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final dataEvento = DateTime.tryParse(_evento.dataInizio);
+    if (_evento == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Caricamento...')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final dataEvento = DateTime.tryParse(_evento!.dataInizio);
     final isPassato = dataEvento != null && dataEvento.isBefore(DateTime.now());
 
     return Scaffold(
@@ -119,12 +140,12 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
             expandedHeight: 300,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
-              background: _evento.immagineCopertina != null
+              background: _evento!.immagineCopertina != null
                   ? Stack(
                       fit: StackFit.expand,
                       children: [
                         Image.network(
-                          _evento.immagineCopertina!,
+                          _evento!.immagineCopertina!,
                           fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) => Container(
                             color: const Color(0xFFE3F2FD),
@@ -150,7 +171,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                       child: const Icon(Icons.event, size: 100, color: Color(0xFF2196F3)),
                     ),
               title: Text(
-                _evento.titolo,
+                _evento!.titolo,
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -172,7 +193,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (_evento.categoria != null)
+                  if (_evento!.categoria != null)
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
@@ -180,7 +201,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        _evento.categoria!.toUpperCase(),
+                        _evento!.categoria!.toUpperCase(),
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -209,49 +230,49 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                         _buildInfoRow(
                           Icons.calendar_today,
                           'Data',
-                          _formatData(_evento.dataInizio, _evento.oraInizio),
+                          _formatData(_evento!.dataInizio, _evento!.oraInizio),
                         ),
-                        if (_evento.dataFine != null) ...[
+                        if (_evento!.dataFine != null) ...[
                           const Divider(height: 24),
                           _buildInfoRow(
                             Icons.event_available,
                             'Fine',
-                            _formatData(_evento.dataFine!, _evento.oraFine),
+                            _formatData(_evento!.dataFine!, _evento!.oraFine),
                           ),
                         ],
                         const Divider(height: 24),
                         _buildInfoRow(
-                          _evento.online ? Icons.videocam : Icons.location_on,
+                          _evento!.online ? Icons.videocam : Icons.location_on,
                           'Luogo',
-                          _evento.online
+                          _evento!.online
                               ? 'Online'
-                              : '${_evento.luogo ?? ''}\n${_evento.indirizzo ?? ''}\n${_evento.citta ?? ''}'.trim(),
-                          onTap: _evento.online && _evento.linkOnline != null
-                              ? () => _apriLink(_evento.linkOnline!)
+                              : '${_evento!.luogo ?? ''}\n${_evento!.indirizzo ?? ''}\n${_evento!.citta ?? ''}'.trim(),
+                          onTap: _evento!.online && _evento!.linkOnline != null
+                              ? () => _apriLink(_evento!.linkOnline!)
                               : null,
                         ),
-                        if (_evento.richiedeIscrizione) ...[
+                        if (_evento!.richiedeIscrizione) ...[
                           const Divider(height: 24),
                           _buildInfoRow(
                             Icons.people,
                             'Partecipanti',
-                            '${_evento.partecipantiCount}/${_evento.maxPartecipanti > 0 ? _evento.maxPartecipanti : '∞'}',
+                            '${_evento!.partecipantiCount}/${_evento!.maxPartecipanti > 0 ? _evento!.maxPartecipanti : '∞'}',
                           ),
                         ],
-                        if (_evento.prezzo > 0) ...[
+                        if (_evento!.prezzo > 0) ...[
                           const Divider(height: 24),
                           _buildInfoRow(
                             Icons.euro,
                             'Prezzo',
-                            _evento.prezzoFormattato,
+                            _evento!.prezzoFormattato,
                           ),
                         ],
-                        if (_evento.organizzatore != null) ...[
+                        if (_evento!.organizzatore != null) ...[
                           const Divider(height: 24),
                           _buildInfoRow(
                             Icons.person,
                             'Organizzatore',
-                            _evento.organizzatore!,
+                            _evento!.organizzatore!,
                           ),
                         ],
                       ],
@@ -267,11 +288,11 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    _evento.descrizione,
+                    _evento!.descrizione,
                     style: TextStyle(fontSize: 15, color: Colors.grey.shade700, height: 1.5),
                   ),
                   
-                  if (_evento.programma != null && _evento.programma!.isNotEmpty) ...[
+                  if (_evento!.programma != null && _evento!.programma!.isNotEmpty) ...[
                     const SizedBox(height: 24),
                     const Text(
                       'Programma',
@@ -279,12 +300,12 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      _evento.programma!,
+                      _evento!.programma!,
                       style: TextStyle(fontSize: 15, color: Colors.grey.shade700, height: 1.5),
                     ),
                   ],
                   
-                  if (_evento.galleria.isNotEmpty) ...[
+                  if (_evento!.galleria.isNotEmpty) ...[
                     const SizedBox(height: 24),
                     const Text(
                       'Galleria',
@@ -295,9 +316,9 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                       height: 120,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: _evento.galleria.length,
+                        itemCount: _evento!.galleria.length,
                         itemBuilder: (context, index) {
-                          final img = _evento.galleria[index];
+                          final img = _evento!.galleria[index];
                           return Padding(
                             padding: const EdgeInsets.only(right: 8),
                             child: ClipRRect(
@@ -322,7 +343,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: !isPassato && _evento.richiedeIscrizione
+      bottomNavigationBar: !isPassato && _evento!.richiedeIscrizione
           ? SafeArea(
               child: Container(
                 padding: const EdgeInsets.all(16),
@@ -336,7 +357,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                     ),
                   ],
                 ),
-                child: _evento.sonoIscritto
+                child: _evento!.sonoIscritto
                     ? OutlinedButton(
                         onPressed: _isLoading ? null : _cancellaIscrizione,
                         style: OutlinedButton.styleFrom(
@@ -356,7 +377,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                               ),
                       )
                     : ElevatedButton(
-                        onPressed: _isLoading || _evento.postiDisponibili == 0
+                        onPressed: _isLoading || _evento!.postiDisponibili == 0
                             ? null
                             : _iscriviEvento,
                         style: ElevatedButton.styleFrom(
@@ -372,7 +393,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                                 child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                               )
                             : Text(
-                                _evento.postiDisponibili == 0 ? 'POSTI ESAURITI' : 'Iscriviti',
+                                _evento!.postiDisponibili == 0 ? 'POSTI ESAURITI' : 'Iscriviti',
                                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                       ),

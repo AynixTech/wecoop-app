@@ -127,7 +127,10 @@ class _EventiScreenState extends State<EventiScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => EventoDetailScreen(evento: _eventi[index]),
+                builder: (context) => EventoDetailScreen(
+                  eventoId: _eventi[index].id,
+                  evento: _eventi[index],
+                ),
               ),
             ).then((_) => _caricaEventi());
           },

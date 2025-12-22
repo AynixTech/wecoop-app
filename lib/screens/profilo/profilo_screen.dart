@@ -39,6 +39,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   void initState() {
     super.initState();
     _loadUserData();
+    _loadMieiEventi();
   }
 
   Future<void> _loadUserData() async {
@@ -59,6 +60,33 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
         selectedLanguageCode = langCode ?? 'it';
         selectedInterest = interest ?? 'culture';
       });
+    }
+  }
+
+  Future<void> _loadMieiEventi() async {
+    if (!mounted) return;
+
+    setState(() {
+      _isLoadingEventi = true;
+    });
+
+    try {
+      final response = await EventiService.getMieiEventi();
+      final eventiList = (response['eventi'] as List?)
+          ?.map((e) => Evento.fromJson(e as Map<String, dynamic>))
+          .toList() ?? [];
+      if (mounted) {
+        setState(() {
+          _mieiEventi = eventiList;
+          _isLoadingEventi = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoadingEventi = false;
+        });
+      }
     }
   }
 
@@ -244,6 +272,179 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                         ),
                       ),
                     ],
+                  ],
+                ),
+              ),
+            ),
+
+            const Divider(height: 32, thickness: 1),
+
+            // Sezione I miei eventi
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.event,
+                          color: Color(0xFF2196F3),
+                          size: 24,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'I miei eventi',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    if (_isLoadingEventi)
+                      const Padding(
+                        padding: EdgeInsets.all(20),
+                        child: CircularProgressIndicator(),
+                      )
+                    else if (_mieiEventi.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Text(
+                          'Non sei iscritto a nessun evento',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey.shade600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      )
+                    else
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: _mieiEventi.length,
+                        separatorBuilder: (_, __) => const Divider(height: 16),
+                        itemBuilder: (context, index) {
+                          final evento = _mieiEventi[index];
+                          return InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EventoDetailScreen(
+                                    eventoId: evento.id,
+                                  ),
+                                ),
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(8),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: Row(
+                                children: [
+                                  if (evento.immagineCopertina != null && evento.immagineCopertina!.isNotEmpty)
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.network(
+                                        evento.immagineCopertina!,
+                                        width: 60,
+                                        height: 60,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) => Container(
+                                          width: 60,
+                                          height: 60,
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF2196F3).withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: const Icon(
+                                            Icons.event,
+                                            color: Color(0xFF2196F3),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  else
+                                    Container(
+                                      width: 60,
+                                      height: 60,
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF2196F3).withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Icon(
+                                        Icons.event,
+                                        color: Color(0xFF2196F3),
+                                      ),
+                                    ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          evento.titolo,
+                                          style: theme.textTheme.bodyMedium?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.calendar_today,
+                                              size: 14,
+                                              color: Colors.grey.shade600,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              evento.dataInizio,
+                                              style: theme.textTheme.bodySmall?.copyWith(
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
+                                            if (evento.luogo != null) ...[
+                                              const SizedBox(width: 12),
+                                              Icon(
+                                                Icons.location_on,
+                                                size: 14,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Expanded(
+                                                child: Text(
+                                                  evento.luogo!,
+                                                  style: theme.textTheme.bodySmall?.copyWith(
+                                                    color: Colors.grey.shade600,
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 16,
+                                    color: Colors.grey,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                   ],
                 ),
               ),

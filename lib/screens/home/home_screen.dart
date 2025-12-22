@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import '../../models/post_model.dart';
+import '../../models/evento_model.dart';
 import '../../services/wordpress_service.dart';
+import '../../services/eventi_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../servizi/accoglienza_screen.dart';
 import '../servizi/mediazione_fiscale_screen.dart';
@@ -73,14 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const _ServicesSection(),
               const SizedBox(height: 24),
 
-              _SectionWithHorizontalCards(
-                title: '📅 ${l10n.upcomingEvents}',
-                items: const [
-                  {'title': 'Cena Interculturale', 'subtitle': '3 Ago'},
-                  {'title': 'Laboratorio di cucito', 'subtitle': '5 Ago'},
-                  {'title': 'Corso di italiano', 'subtitle': '7 Ago'},
-                ],
-              ),
+              const _UpcomingEventsSection(),
 
               const SizedBox(height: 24),
 
@@ -271,38 +266,6 @@ class _GreetingSection extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           l10n.welcome,
-        ),
-      ],
-    );
-  }
-}
-
-class _SectionWithHorizontalCards extends StatelessWidget {
-  final String title;
-  final List<Map<String, String>> items;
-  const _SectionWithHorizontalCards({required this.title, required this.items});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _SectionTitle(title: title),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 200,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: items.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 16),
-            itemBuilder: (context, index) {
-              final item = items[index];
-              return _InfoCard(
-                title: item['title'] ?? '',
-                subtitle: item['subtitle'] ?? '',
-              );
-            },
-          ),
         ),
       ],
     );
@@ -754,6 +717,104 @@ class _LatestPostsSectionState extends State<_LatestPostsSection> {
                     subtitle: post.excerpt,
                     imageUrl: post.imageUrl,
                     link: post.link,
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _UpcomingEventsSection extends StatefulWidget {
+  const _UpcomingEventsSection();
+
+  @override
+  State<_UpcomingEventsSection> createState() => _UpcomingEventsSectionState();
+}
+
+class _UpcomingEventsSectionState extends State<_UpcomingEventsSection> {
+  late Future<List<Evento>> eventiFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    eventiFuture = _loadEventi();
+  }
+
+  Future<List<Evento>> _loadEventi() async {
+    try {
+      final result = await EventiService.getEventi(
+        stato: 'futuro',
+        perPage: 5,
+      );
+      if (result['success'] == true && result['eventi'] != null) {
+        return result['eventi'] as List<Evento>;
+      }
+      return [];
+    } catch (e) {
+      print('Errore caricamento eventi: $e');
+      return [];
+    }
+  }
+
+  String _formatData(String dataStr) {
+    try {
+      final data = DateTime.parse(dataStr);
+      final mesi = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
+      return '${data.day} ${mesi[data.month - 1]}';
+    } catch (e) {
+      return dataStr;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionTitle(title: '📅 ${l10n.upcomingEvents}'),
+        const SizedBox(height: 12),
+        FutureBuilder<List<Evento>>(
+          future: eventiFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const SizedBox(
+                height: 200,
+                child: Center(child: CircularProgressIndicator()),
+              );
+            } else if (snapshot.hasError) {
+              return SizedBox(
+                height: 200,
+                child: Center(
+                  child: Text('${l10n.errorLoading}: ${snapshot.error}'),
+                ),
+              );
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return SizedBox(
+                height: 200,
+                child: Center(
+                  child: Text(l10n.noArticlesAvailable),
+                ),
+              );
+            }
+
+            final eventi = snapshot.data!;
+            return SizedBox(
+              height: 200,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: eventi.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 16),
+                itemBuilder: (context, index) {
+                  final evento = eventi[index];
+                  return _InfoCard(
+                    title: evento.titolo,
+                    subtitle: _formatData(evento.dataInizio),
+                    imageUrl: evento.immagineCopertina,
                   );
                 },
               ),

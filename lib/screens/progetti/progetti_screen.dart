@@ -13,8 +13,6 @@ class ProgettiScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n!.projects),
-
-        backgroundColor: Colors.deepPurple,
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -22,7 +20,7 @@ class ProgettiScreen extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Colors.deepPurple.shade50,
+              const Color(0xFF2196F3).withOpacity(0.1),
               Colors.white,
             ],
           ),

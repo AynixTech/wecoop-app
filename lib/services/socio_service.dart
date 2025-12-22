@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:async';
 import 'dart:io';
+import '../utils/html_utils.dart';
 
 class SocioService {
   static const String baseUrl = 'https://www.wecoop.org/wp-json/wecoop/v1';
@@ -49,7 +50,8 @@ class SocioService {
       print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final rawData = jsonDecode(response.body);
+        final data = decodeHtmlInMap(rawData);
         // Nuova API ritorna: {"success": true, "is_socio": true, "status": "attivo", "data_adesione": "2024-01-10"}
         return data['is_socio'] == true && data['status'] == 'attivo';
       }
@@ -77,7 +79,8 @@ class SocioService {
           .timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final rawData = jsonDecode(response.body);
+        final data = decodeHtmlInMap(rawData);
         // Se success è true ma is_socio è false, significa che c'è una richiesta pending
         // Quando approvata: is_socio=true, status=attivo
         return data['success'] == true && data['is_socio'] == false;
@@ -142,7 +145,8 @@ class SocioService {
       print('Response body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = jsonDecode(response.body);
+        final rawData = jsonDecode(response.body);
+        final data = decodeHtmlInMap(rawData);
         // Nuova API ritorna: {"success": true, "message": "...", "data": {"richiesta_id": 123, "nome": "...", "email": "...", "status": "pending"}}
         return {
           'success': data['success'] ?? true,
@@ -152,13 +156,15 @@ class SocioService {
           'status': data['data']?['status'] ?? 'pending',
         };
       } else if (response.statusCode == 400) {
-        final errorData = jsonDecode(response.body);
+        final rawData = jsonDecode(response.body);
+        final errorData = decodeHtmlInMap(rawData);
         return {
           'success': false,
           'message': errorData['message'] ?? 'Parametro mancante o non valido',
         };
       } else if (response.statusCode == 409) {
-        final errorData = jsonDecode(response.body);
+        final rawData = jsonDecode(response.body);
+        final errorData = decodeHtmlInMap(rawData);
         return {
           'success': false,
           'message':
@@ -166,7 +172,8 @@ class SocioService {
               'Esiste già una richiesta con questa email',
         };
       } else {
-        final errorData = jsonDecode(response.body);
+        final rawData = jsonDecode(response.body);
+        final errorData = decodeHtmlInMap(rawData);
         return {
           'success': false,
           'message':
@@ -295,7 +302,8 @@ class SocioService {
       print('📥 GET /soci/me status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
+        final rawData = jsonDecode(response.body);
+        final responseData = decodeHtmlInMap(rawData);
         // API ritorna: {"success": true, "data": {...tutti i campi socio...}}
         if (responseData['success'] == true && responseData['data'] != null) {
           return responseData['data'] as Map<String, dynamic>;
@@ -351,7 +359,8 @@ class SocioService {
       print('📥 GET /soci status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
+        final rawData = jsonDecode(response.body);
+        final responseData = decodeHtmlInMap(rawData);
         if (responseData['success'] == true && responseData['data'] != null) {
           return List<Map<String, dynamic>>.from(responseData['data']);
         }
@@ -401,7 +410,8 @@ class SocioService {
       print('📥 GET /mie-richieste status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
+        final rawData = jsonDecode(response.body);
+        final responseData = decodeHtmlInMap(rawData);
         if (responseData['success'] == true) {
           return {
             'success': true,
@@ -445,7 +455,8 @@ class SocioService {
       print('📥 GET /richiesta-servizio/$id status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
+        final rawData = jsonDecode(response.body);
+        final responseData = decodeHtmlInMap(rawData);
         if (responseData['success'] == true && responseData['data'] != null) {
           return responseData['data'] as Map<String, dynamic>;
         }

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/evento_model.dart';
+import '../utils/html_utils.dart';
 
 class EventiService {
   static const String baseUrl = 'https://www.wecoop.org/wp-json/wecoop/v1';
@@ -55,7 +56,8 @@ class EventiService {
       print('GET $uri - Status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final rawData = jsonDecode(response.body);
+        final data = decodeHtmlInMap(rawData);
         return {
           'success': true,
           'eventi': (data['eventi'] as List)
@@ -92,7 +94,8 @@ class EventiService {
       print('GET $uri - Status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final rawData = jsonDecode(response.body);
+        final data = decodeHtmlInMap(rawData);
         return {
           'success': true,
           'evento': Evento.fromJson(data),
@@ -150,7 +153,8 @@ class EventiService {
       print('POST $uri - Status: ${response.statusCode}');
       print('Response: ${response.body}');
 
-      final data = jsonDecode(response.body);
+      final rawData = jsonDecode(response.body);
+      final data = decodeHtmlInMap(rawData);
 
       if (response.statusCode == 200 && data['success'] == true) {
         return {
@@ -196,7 +200,8 @@ class EventiService {
 
       print('DELETE $uri - Status: ${response.statusCode}');
 
-      final data = jsonDecode(response.body);
+      final rawData = jsonDecode(response.body);
+      final data = decodeHtmlInMap(rawData);
 
       if (response.statusCode == 200 && data['success'] == true) {
         return {
@@ -242,7 +247,8 @@ class EventiService {
       print('GET $uri - Status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final rawData = jsonDecode(response.body);
+        final data = decodeHtmlInMap(rawData);
         return {
           'success': true,
           'eventi': (data['eventi'] as List)

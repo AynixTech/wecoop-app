@@ -314,7 +314,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'I miei eventi',
+                          l10n.myEvents,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -333,7 +333,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                         child: Column(
                           children: [
                             Text(
-                              'Non sei iscritto a nessun evento',
+                              l10n.notEnrolledInEvents,
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: Colors.grey.shade600,
                               ),
@@ -343,7 +343,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                             TextButton.icon(
                               onPressed: _loadMieiEventi,
                               icon: const Icon(Icons.refresh),
-                              label: const Text('Ricarica'),
+                              label: Text(l10n.reload),
                             ),
                           ],
                         ),

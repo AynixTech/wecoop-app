@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/evento_model.dart';
 import '../../services/eventi_service.dart';
+import '../../services/app_localizations.dart';
 
 class EventoDetailScreen extends StatefulWidget {
   final int eventoId;
@@ -50,6 +51,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
       setState(() => _isLoading = true);
     }
 
+    final l10n = AppLocalizations.of(context)!;
     final result = await EventiService.iscriviEvento(eventoId: _evento!.id);
 
     if (mounted) {
@@ -57,7 +59,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result['message'] ?? 'Operazione completata'),
+          content: Text(result['message'] ?? l10n.operationCompleted),
           backgroundColor: result['success'] == true ? Colors.green : Colors.red,
         ),
       );
@@ -69,20 +71,21 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
   }
 
   Future<void> _cancellaIscrizione() async {
+    final l10n = AppLocalizations.of(context)!;
     final conferma = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Conferma cancellazione'),
-        content: const Text('Sei sicuro di voler cancellare la tua iscrizione?'),
+        title: Text(l10n.confirmCancellation),
+        content: Text(l10n.confirmCancellationMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Cancella'),
+            child: Text(l10n.cancelEnrollment),
           ),
         ],
       ),
@@ -103,7 +106,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result['message'] ?? 'Operazione completata'),
+          content: Text(result['message'] ?? l10n.operationCompleted),
           backgroundColor: result['success'] == true ? Colors.green : Colors.red,
         ),
       );
@@ -123,9 +126,11 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_evento == null) {
+    final l10n = AppLocalizations.of(context)!;
+    
+    if (_isLoading || _evento == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Caricamento...')),
+        appBar: AppBar(title: Text(l10n.loading)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -229,23 +234,23 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                       children: [
                         _buildInfoRow(
                           Icons.calendar_today,
-                          'Data',
+                          l10n.date,
                           _formatData(_evento!.dataInizio, _evento!.oraInizio),
                         ),
                         if (_evento!.dataFine != null) ...[
                           const Divider(height: 24),
                           _buildInfoRow(
                             Icons.event_available,
-                            'Fine',
+                            l10n.end,
                             _formatData(_evento!.dataFine!, _evento!.oraFine),
                           ),
                         ],
                         const Divider(height: 24),
                         _buildInfoRow(
                           _evento!.online ? Icons.videocam : Icons.location_on,
-                          'Luogo',
+                          l10n.place,
                           _evento!.online
-                              ? 'Online'
+                              ? l10n.online
                               : '${_evento!.luogo ?? ''}\n${_evento!.indirizzo ?? ''}\n${_evento!.citta ?? ''}'.trim(),
                           onTap: _evento!.online && _evento!.linkOnline != null
                               ? () => _apriLink(_evento!.linkOnline!)
@@ -255,7 +260,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                           const Divider(height: 24),
                           _buildInfoRow(
                             Icons.people,
-                            'Partecipanti',
+                            l10n.participants,
                             '${_evento!.partecipantiCount}/${_evento!.maxPartecipanti > 0 ? _evento!.maxPartecipanti : '∞'}',
                           ),
                         ],
@@ -263,7 +268,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                           const Divider(height: 24),
                           _buildInfoRow(
                             Icons.euro,
-                            'Prezzo',
+                            l10n.price,
                             _evento!.prezzoFormattato,
                           ),
                         ],
@@ -271,7 +276,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                           const Divider(height: 24),
                           _buildInfoRow(
                             Icons.person,
-                            'Organizzatore',
+                            l10n.organizer,
                             _evento!.organizzatore!,
                           ),
                         ],
@@ -283,9 +288,9 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                   
                   // Descrizione
                   if (_evento!.descrizione.isNotEmpty) ...[
-                    const Text(
-                      'Descrizione',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    Text(
+                      l10n.descriptionLabel,
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 12),
                     Text(
@@ -296,9 +301,9 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                   
                   if (_evento!.programma != null && _evento!.programma!.isNotEmpty) ...[
                     const SizedBox(height: 24),
-                    const Text(
-                      'Programma',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    Text(
+                      l10n.program,
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 12),
                     Text(
@@ -309,9 +314,9 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                   
                   if (_evento!.galleria.isNotEmpty) ...[
                     const SizedBox(height: 24),
-                    const Text(
-                      'Galleria',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    Text(
+                      l10n.gallery,
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 12),
                     SizedBox(
@@ -373,9 +378,9 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                                 width: 20,
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               )
-                            : const Text(
-                                'Cancella iscrizione',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            : Text(
+                                l10n.cancelEnrollment,
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                       )
                     : ElevatedButton(
@@ -395,7 +400,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                                 child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                               )
                             : Text(
-                                (_evento!.postiDisponibili == 0 && _evento!.maxPartecipanti > 0) ? 'POSTI ESAURITI' : 'Iscriviti',
+                                (_evento!.postiDisponibili == 0 && _evento!.maxPartecipanti > 0) ? l10n.soldOut : l10n.enrollNow,
                                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                       ),
@@ -446,9 +451,10 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
 
   String _formatData(String dataStr, String? ora) {
     try {
+      final l10n = AppLocalizations.of(context)!;
       final data = DateTime.parse(dataStr);
-      final giorni = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
-      final mesi = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
+      final giorni = [l10n.monday, l10n.tuesday, l10n.wednesday, l10n.thursday, l10n.friday, l10n.saturday, l10n.sunday];
+      final mesi = [l10n.january, l10n.february, l10n.march, l10n.april, l10n.may, l10n.june, l10n.july, l10n.august, l10n.september, l10n.october, l10n.november, l10n.december];
       
       String result = '${giorni[data.weekday - 1]} ${data.day} ${mesi[data.month - 1]} ${data.year}';
       

@@ -20,6 +20,7 @@ class AppLocalizations {
       'user': 'Utente',
       'profile': 'Profilo',
       'home': 'Home',
+      'events': 'Eventi',
       'calendar': 'Richieste',
       'projects': 'Progetti',
       'services': 'Servizi',
@@ -100,6 +101,54 @@ class AppLocalizations {
       'additionalInfoPlaceholder': 'Eventuali informazioni aggiuntive',
       'privacyConsent': 'Accetto il trattamento dei dati personali',
       'sendRequest': 'Invia Richiesta',
+      'myEvents': 'I miei eventi',
+      'notEnrolledInEvents': 'Non sei iscritto a nessun evento',
+      'reload': 'Ricarica',
+      'allEvents': 'Tutti gli eventi',
+      'cultural': 'Culturali',
+      'sports': 'Sportivi',
+      'social': 'Sociali',
+      'retry': 'Riprova',
+      'noEventsAvailable': 'Nessun evento disponibile',
+      'enrolled': 'Iscritto',
+      'eventConcluded': 'EVENTO CONCLUSO',
+      'loading': 'Caricamento...',
+      'confirmCancellation': 'Conferma cancellazione',
+      'confirmCancellationMessage': 'Sei sicuro di voler cancellare la tua iscrizione?',
+      'cancelEnrollment': 'Cancella iscrizione',
+      'date': 'Data',
+      'end': 'Fine',
+      'place': 'Luogo',
+      'price': 'Prezzo',
+      'organizer': 'Organizzatore',
+      'descriptionLabel': 'Descrizione',
+      'program': 'Programma',
+      'gallery': 'Galleria',
+      'enrollNow': 'Iscriviti',
+      'soldOut': 'POSTI ESAURITI',
+      'monday': 'Lun',
+      'tuesday': 'Mar',
+      'wednesday': 'Mer',
+      'thursday': 'Gio',
+      'friday': 'Ven',
+      'saturday': 'Sab',
+      'sunday': 'Dom',
+      'january': 'Gen',
+      'february': 'Feb',
+      'march': 'Mar',
+      'april': 'Apr',
+      'may': 'Mag',
+      'june': 'Giu',
+      'july': 'Lug',
+      'august': 'Ago',
+      'september': 'Set',
+      'october': 'Ott',
+      'november': 'Nov',
+      'december': 'Dic',
+      'online': 'Online',
+      'locationToBeDefined': 'Luogo da definire',
+      'participants': 'partecipanti',
+      'spotsRemaining': 'posti rimasti',
       'sending': 'Invio in corso...',
       'fillAllFields': 'Compila tutti i campi',
       'bookingConfirmed': 'Prenotazione confermata!',
@@ -107,6 +156,12 @@ class AppLocalizations {
       'selectDate': 'Seleziona una data',
       'availableSlots': 'Orari disponibili',
       'book': 'Prenora',
+      'selectType': 'Seleziona la tipologia',
+      'residencePermit': 'Permesso di Soggiorno',
+      'checkRequirements': 'Verifica requisiti',
+      'familySection': 'Sezione Famiglia',
+      'incomeSection': 'Sezione Reddito',
+      'expensesSection': 'Sezione Spese',
       'compilation730': 'Compilazione 730',
       'data730SentSuccess': 'Dati 730 inviati con successo',
       'allFieldsRequired': 'Errore: tutti i campi sono obbligatori',
@@ -137,7 +192,6 @@ class AppLocalizations {
       'rejected': 'Rifiutato',
       'selectServiceYouNeed': 'Seleziona il servizio di cui hai bisogno',
       'guideStepByStep': 'Ti guideremo passo dopo passo per completare la tua richiesta',
-      'residencePermit': 'Permesso di Soggiorno',
       'residencePermitDesc': 'Richiesta, rinnovo e informazioni',
       'citizenship': 'Cittadinanza',
       'citizenshipDesc': 'Richiesta cittadinanza italiana',
@@ -152,7 +206,6 @@ class AppLocalizations {
       'toAccessServicesBecomeMember': 'Per accedere ai servizi di {serviceName} devi essere socio di WECOOP.',
       'becomeMemberToAccess': 'Diventa socio per accedere a:',
       'whyBecomeMember': 'Perché diventare socio?',
-      'operationCompleted': 'Operazione completata',
       'fiscalCodeMustBe16Chars': 'Il codice fiscale deve essere di 16 caratteri',
       'birthPlace': 'Luogo di Nascita',
       'invalidPostalCode': 'CAP non valido',
@@ -351,6 +404,7 @@ class AppLocalizations {
       'user': 'User',
       'profile': 'Profile',
       'home': 'Home',
+      'events': 'Events',
       'calendar': 'Requests',
       'projects': 'Projects',
       'services': 'Services',
@@ -431,6 +485,54 @@ class AppLocalizations {
       'additionalInfoPlaceholder': 'Any additional information',
       'privacyConsent': 'I accept the processing of personal data',
       'sendRequest': 'Send Request',
+      'myEvents': 'My events',
+      'notEnrolledInEvents': 'You are not enrolled in any event',
+      'reload': 'Reload',
+      'allEvents': 'All events',
+      'cultural': 'Cultural',
+      'sports': 'Sports',
+      'social': 'Social',
+      'retry': 'Retry',
+      'noEventsAvailable': 'No events available',
+      'enrolled': 'Enrolled',
+      'eventConcluded': 'EVENT CONCLUDED',
+      'loading': 'Loading...',
+      'confirmCancellation': 'Confirm cancellation',
+      'confirmCancellationMessage': 'Are you sure you want to cancel your enrollment?',
+      'cancelEnrollment': 'Cancel enrollment',
+      'date': 'Date',
+      'end': 'End',
+      'place': 'Place',
+      'price': 'Price',
+      'organizer': 'Organizer',
+      'descriptionLabel': 'Description',
+      'program': 'Program',
+      'gallery': 'Gallery',
+      'enrollNow': 'Enroll',
+      'soldOut': 'SOLD OUT',
+      'monday': 'Mon',
+      'tuesday': 'Tue',
+      'wednesday': 'Wed',
+      'thursday': 'Thu',
+      'friday': 'Fri',
+      'saturday': 'Sat',
+      'sunday': 'Sun',
+      'january': 'Jan',
+      'february': 'Feb',
+      'march': 'Mar',
+      'april': 'Apr',
+      'may': 'May',
+      'june': 'Jun',
+      'july': 'Jul',
+      'august': 'Aug',
+      'september': 'Sep',
+      'october': 'Oct',
+      'november': 'Nov',
+      'december': 'Dec',
+      'online': 'Online',
+      'locationToBeDefined': 'Location to be defined',
+      'participants': 'participants',
+      'spotsRemaining': 'spots remaining',
       'sending': 'Sending...',
       'fillAllFields': 'Fill all fields',
       'bookingConfirmed': 'Booking confirmed!',
@@ -438,6 +540,12 @@ class AppLocalizations {
       'selectDate': 'Select a date',
       'availableSlots': 'Available slots',
       'book': 'Book',
+      'selectType': 'Select type',
+      'residencePermit': 'Residence Permit',
+      'checkRequirements': 'Check requirements',
+      'familySection': 'Family Section',
+      'incomeSection': 'Income Section',
+      'expensesSection': 'Expenses Section',
       'compilation730': '730 Tax Filing',
       'data730SentSuccess': '730 data sent successfully',
       'allFieldsRequired': 'Error: all fields are required',
@@ -458,7 +566,6 @@ class AppLocalizations {
       'rejected': 'Rejected',
       'selectServiceYouNeed': 'Select the service you need',
       'guideStepByStep': 'We will guide you step by step to complete your request',
-      'residencePermit': 'Residence Permit',
       'residencePermitDesc': 'Application, renewal and information',
       'citizenship': 'Citizenship',
       'citizenshipDesc': 'Italian citizenship application',
@@ -483,7 +590,6 @@ class AppLocalizations {
       'toAccessServicesBecomeMember': 'To access {serviceName} services you must be a WECOOP member.',
       'becomeMemberToAccess': 'Become a member to access:',
       'whyBecomeMember': 'Why become a member?',
-      'operationCompleted': 'Operation completed',
       'fiscalCodeMustBe16Chars': 'Tax ID must be 16 characters',
       'birthPlace': 'Place of Birth',
       'invalidPostalCode': 'Invalid postal code',
@@ -682,6 +788,7 @@ class AppLocalizations {
       'user': 'Usuario',
       'profile': 'Perfil',
       'home': 'Inicio',
+      'events': 'Eventos',
       'calendar': 'Solicitudes',
       'projects': 'Proyectos',
       'services': 'Servicios',
@@ -762,6 +869,54 @@ class AppLocalizations {
       'additionalInfoPlaceholder': 'Cualquier información adicional',
       'privacyConsent': 'Acepto el tratamiento de datos personales',
       'sendRequest': 'Enviar Solicitud',
+      'myEvents': 'Mis eventos',
+      'notEnrolledInEvents': 'No estás inscrito en ningún evento',
+      'reload': 'Recargar',
+      'allEvents': 'Todos los eventos',
+      'cultural': 'Culturales',
+      'sports': 'Deportivos',
+      'social': 'Sociales',
+      'retry': 'Reintentar',
+      'noEventsAvailable': 'No hay eventos disponibles',
+      'enrolled': 'Inscrito',
+      'eventConcluded': 'EVENTO CONCLUIDO',
+      'loading': 'Cargando...',
+      'confirmCancellation': 'Confirmar cancelación',
+      'confirmCancellationMessage': '¿Estás seguro de que quieres cancelar tu inscripción?',
+      'cancelEnrollment': 'Cancelar inscripción',
+      'date': 'Fecha',
+      'end': 'Fin',
+      'place': 'Lugar',
+      'price': 'Precio',
+      'organizer': 'Organizador',
+      'descriptionLabel': 'Descripción',
+      'program': 'Programa',
+      'gallery': 'Galería',
+      'enrollNow': 'Inscribirse',
+      'soldOut': 'ENTRADAS AGOTADAS',
+      'monday': 'Lun',
+      'tuesday': 'Mar',
+      'wednesday': 'Mié',
+      'thursday': 'Jue',
+      'friday': 'Vie',
+      'saturday': 'Sáb',
+      'sunday': 'Dom',
+      'january': 'Ene',
+      'february': 'Feb',
+      'march': 'Mar',
+      'april': 'Abr',
+      'may': 'May',
+      'june': 'Jun',
+      'july': 'Jul',
+      'august': 'Ago',
+      'september': 'Sep',
+      'october': 'Oct',
+      'november': 'Nov',
+      'december': 'Dic',
+      'online': 'En línea',
+      'locationToBeDefined': 'Lugar por definir',
+      'participants': 'participantes',
+      'spotsRemaining': 'lugares restantes',
       'sending': 'Enviando...',
       'fillAllFields': 'Completa todos los campos',
       'bookingConfirmed': '¡Reserva confirmada!',
@@ -769,6 +924,12 @@ class AppLocalizations {
       'selectDate': 'Selecciona una fecha',
       'availableSlots': 'Horarios disponibles',
       'book': 'Reservar',
+      'selectType': 'Selecciona el tipo',
+      'residencePermit': 'Permiso de Residencia',
+      'checkRequirements': 'Verificar requisitos',
+      'familySection': 'Sección Familia',
+      'incomeSection': 'Sección Ingresos',
+      'expensesSection': 'Sección Gastos',
       'compilation730': 'Compilación 730',
       'data730SentSuccess': 'Datos 730 enviados con éxito',
       'allFieldsRequired': 'Error: todos los campos son obligatorios',
@@ -789,7 +950,6 @@ class AppLocalizations {
       'rejected': 'Rechazado',
       'selectServiceYouNeed': 'Selecciona el servicio que necesitas',
       'guideStepByStep': 'Te guiaremos paso a paso para completar tu solicitud',
-      'residencePermit': 'Permiso de Residencia',
       'residencePermitDesc': 'Solicitud, renovación e información',
       'citizenship': 'Ciudadanía',
       'citizenshipDesc': 'Solicitud de ciudadanía italiana',
@@ -1019,6 +1179,7 @@ class AppLocalizations {
   String get user => translate('user');
   String get profile => translate('profile');
   String get home => translate('home');
+  String get events => translate('events');
   String get calendar => translate('calendar');
   String get projects => translate('projects');
   String get services => translate('services');
@@ -1099,6 +1260,21 @@ class AppLocalizations {
   String get additionalInfoPlaceholder => translate('additionalInfoPlaceholder');
   String get privacyConsent => translate('privacyConsent');
   String get sendRequest => translate('sendRequest');
+  String get myEvents => translate('myEvents');
+  String get notEnrolledInEvents => translate('notEnrolledInEvents');
+  String get reload => translate('reload');
+  String get allEvents => translate('allEvents');
+  String get cultural => translate('cultural');
+  String get sports => translate('sports');
+  String get social => translate('social');
+  String get retry => translate('retry');
+  String get noEventsAvailable => translate('noEventsAvailable');
+  String get enrolled => translate('enrolled');
+  String get eventConcluded => translate('eventConcluded');
+  String get online => translate('online');
+  String get locationToBeDefined => translate('locationToBeDefined');
+  String get participants => translate('participants');
+  String get spotsRemaining => translate('spotsRemaining');
   String get sending => translate('sending');
   String get fillAllFields => translate('fillAllFields');
   String get bookingConfirmed => translate('bookingConfirmed');
@@ -1288,6 +1464,46 @@ class AppLocalizations {
   String get passaparolaService2 => translate('passaparolaService2');
   String get passaparolaService3 => translate('passaparolaService3');
   String get passaparolaService4 => translate('passaparolaService4');
+  
+  // Event detail translations
+  String get loading => translate('loading');
+  String get confirmCancellation => translate('confirmCancellation');
+  String get confirmCancellationMessage => translate('confirmCancellationMessage');
+  String get cancelEnrollment => translate('cancelEnrollment');
+  String get date => translate('date');
+  String get end => translate('end');
+  String get place => translate('place');
+  String get price => translate('price');
+  String get organizer => translate('organizer');
+  String get descriptionLabel => translate('descriptionLabel');
+  String get program => translate('program');
+  String get gallery => translate('gallery');
+  String get enrollNow => translate('enrollNow');
+  String get soldOut => translate('soldOut');
+  String get monday => translate('monday');
+  String get tuesday => translate('tuesday');
+  String get wednesday => translate('wednesday');
+  String get thursday => translate('thursday');
+  String get friday => translate('friday');
+  String get saturday => translate('saturday');
+  String get sunday => translate('sunday');
+  String get january => translate('january');
+  String get february => translate('february');
+  String get march => translate('march');
+  String get april => translate('april');
+  String get may => translate('may');
+  String get june => translate('june');
+  String get july => translate('july');
+  String get august => translate('august');
+  String get september => translate('september');
+  String get october => translate('october');
+  String get november => translate('november');
+  String get december => translate('december');
+  String get selectType => translate('selectType');
+  String get checkRequirements => translate('checkRequirements');
+  String get familySection => translate('familySection');
+  String get incomeSection => translate('incomeSection');
+  String get expensesSection => translate('expensesSection');
   
   // Chatbot translations
   String get chatbotTitle => translate('chatbotTitle');

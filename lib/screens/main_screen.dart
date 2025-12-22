@@ -52,9 +52,9 @@ class _MainScreenState extends State<MainScreen> {
         type: BottomNavigationBarType.fixed,
         items: [
           BottomNavigationBarItem(icon: const Icon(Icons.home), label: l10n.home),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.event),
-            label: 'Eventi',
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.event),
+            label: l10n.events,
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.assignment),

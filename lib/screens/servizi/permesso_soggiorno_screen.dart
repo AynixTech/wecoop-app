@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/app_localizations.dart';
 import 'richiesta_form_screen.dart';
 
 class PermessoSoggiornoScreen extends StatelessWidget {
@@ -6,17 +7,18 @@ class PermessoSoggiornoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Permesso di Soggiorno')),
+      appBar: AppBar(title: Text(l10n.residencePermit)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Seleziona la tipologia',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                l10n.selectType,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 24),
               _OptionCard(

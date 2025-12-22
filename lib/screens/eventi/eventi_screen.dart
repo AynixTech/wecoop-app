@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/evento_model.dart';
 import '../../services/eventi_service.dart';
+import '../../services/app_localizations.dart';
 import 'evento_detail_screen.dart';
 
 class EventiScreen extends StatefulWidget {
@@ -49,9 +50,11 @@ class _EventiScreenState extends State<EventiScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Eventi'),
+        title: Text(l10n.events),
         actions: [
           PopupMenuButton<String>(
             icon: const Icon(Icons.filter_list),
@@ -62,11 +65,11 @@ class _EventiScreenState extends State<EventiScreen> {
               _caricaEventi();
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(value: 'tutti', child: Text('Tutti gli eventi')),
-              const PopupMenuItem(value: 'culturale', child: Text('Culturali')),
-              const PopupMenuItem(value: 'sportivo', child: Text('Sportivi')),
-              const PopupMenuItem(value: 'formazione', child: Text('Formazione')),
-              const PopupMenuItem(value: 'sociale', child: Text('Sociali')),
+              PopupMenuItem(value: 'tutti', child: Text(l10n.allEvents)),
+              PopupMenuItem(value: 'culturale', child: Text(l10n.cultural)),
+              PopupMenuItem(value: 'sportivo', child: Text(l10n.sports)),
+              PopupMenuItem(value: 'formazione', child: Text(l10n.training)),
+              PopupMenuItem(value: 'sociale', child: Text(l10n.social)),
             ],
           ),
         ],
@@ -79,6 +82,8 @@ class _EventiScreenState extends State<EventiScreen> {
   }
 
   Widget _buildBody() {
+    final l10n = AppLocalizations.of(context)!;
+    
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -94,7 +99,7 @@ class _EventiScreenState extends State<EventiScreen> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _caricaEventi,
-              child: const Text('Riprova'),
+              child: Text(l10n.retry),
             ),
           ],
         ),
@@ -109,7 +114,7 @@ class _EventiScreenState extends State<EventiScreen> {
             Icon(Icons.event_busy, size: 64, color: Colors.grey.shade400),
             const SizedBox(height: 16),
             Text(
-              'Nessun evento disponibile',
+              l10n.noEventsAvailable,
               style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
             ),
           ],
@@ -148,6 +153,7 @@ class _EventoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final dataEvento = DateTime.tryParse(evento.dataInizio);
     final isPassato = dataEvento != null && dataEvento.isBefore(DateTime.now());
 
@@ -187,14 +193,14 @@ class _EventoCard extends StatelessWidget {
                             color: Colors.green,
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.check_circle, color: Colors.white, size: 16),
-                              SizedBox(width: 4),
+                              const Icon(Icons.check_circle, color: Colors.white, size: 16),
+                              const SizedBox(width: 4),
                               Text(
-                                'Iscritto',
-                                style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                                l10n.enrolled,
+                                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -207,10 +213,10 @@ class _EventoCard extends StatelessWidget {
                             color: Colors.black.withOpacity(0.5),
                             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Text(
-                              'EVENTO CONCLUSO',
-                              style: TextStyle(
+                              l10n.eventConcluded,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -275,8 +281,8 @@ class _EventoCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           evento.online
-                              ? 'Online'
-                              : evento.luogo ?? evento.citta ?? 'Luogo da definire',
+                              ? l10n.online
+                              : evento.luogo ?? evento.citta ?? l10n.locationToBeDefined,
                           style: const TextStyle(fontSize: 14),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -291,14 +297,14 @@ class _EventoCard extends StatelessWidget {
                         const Icon(Icons.people, size: 16, color: Color(0xFF2196F3)),
                         const SizedBox(width: 8),
                         Text(
-                          '${evento.partecipantiCount}/${evento.maxPartecipanti > 0 ? evento.maxPartecipanti : '∞'} partecipanti',
+                          '${evento.partecipantiCount}/${evento.maxPartecipanti > 0 ? evento.maxPartecipanti : '∞'} ${l10n.participants}',
                           style: const TextStyle(fontSize: 14),
                         ),
                         if (evento.postiDisponibili > 0 && evento.postiDisponibili <= 5)
                           Padding(
                             padding: const EdgeInsets.only(left: 8),
                             child: Text(
-                              '(${evento.postiDisponibili} posti rimasti)',
+                              '(${evento.postiDisponibili} ${l10n.spotsRemaining})',
                               style: const TextStyle(fontSize: 12, color: Colors.orange, fontWeight: FontWeight.bold),
                             ),
                           ),

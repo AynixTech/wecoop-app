@@ -57,9 +57,9 @@ class _Compilazione730ScreenState extends State<Compilazione730Screen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Sezione Famiglia',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Text(
+              l10n.familySection,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             TextField(
@@ -75,9 +75,9 @@ class _Compilazione730ScreenState extends State<Compilazione730Screen> {
             ),
             const SizedBox(height: 16),
 
-            const Text(
-              'Sezione Reddito',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Text(
+              l10n.incomeSection,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             TextField(
@@ -94,9 +94,9 @@ class _Compilazione730ScreenState extends State<Compilazione730Screen> {
             ),
             const SizedBox(height: 16),
 
-            const Text(
-              'Sezione Spese',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Text(
+              l10n.expensesSection,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             TextField(

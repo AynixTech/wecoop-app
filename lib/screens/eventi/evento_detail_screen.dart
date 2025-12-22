@@ -343,7 +343,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: !isPassato && _evento!.richiedeIscrizione
+      bottomNavigationBar: _evento!.richiedeIscrizione && !isPassato
           ? SafeArea(
               child: Container(
                 padding: const EdgeInsets.all(16),

@@ -19,7 +19,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
   bool _isSubmitting = false;
 
   // 🧪 FLAG DEBUG: Imposta a true per precompilare i campi con dati di test
-  static const bool _useTestData = true;
+  static const bool _useTestData = false;
 
   // Controllers per i campi del form
   final _nomeController = TextEditingController();
@@ -53,7 +53,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
     _cittaController.text = 'Milano';
     _capController.text = '20100';
     _telefonoController.text = '+39 3891733185';
-    _emailController.text = 'jordanavila1394gmail.com';
+    _emailController.text = 'jordanavila1394@gmail.com';
     _professioneController.text = 'Ingegnere';
     _noteController.text = 'Voglio contribuire alla cooperativa sociale';
   }

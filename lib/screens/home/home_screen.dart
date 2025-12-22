@@ -32,14 +32,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _loadUserData() async {
+    final fullName = await storage.read(key: 'full_name');
     final displayName = await storage.read(key: 'user_display_name');
     final nicename = await storage.read(key: 'user_nicename');
     final email = await storage.read(key: 'user_email');
 
-    // Usa il display name se disponibile, altrimenti nicename, altrimenti nome dall'email
+    // Priorità: full_name (nome + cognome) > display_name > nicename > email
     String finalName = 'Utente';
 
-    if (displayName != null && displayName.isNotEmpty) {
+    if (fullName != null && fullName.isNotEmpty) {
+      finalName = fullName;
+    } else if (displayName != null && displayName.isNotEmpty) {
       finalName = displayName;
     } else if (nicename != null && nicename.isNotEmpty) {
       finalName = nicename;

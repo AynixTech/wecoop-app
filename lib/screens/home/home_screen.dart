@@ -8,6 +8,7 @@ import '../servizi/accoglienza_screen.dart';
 import '../servizi/mediazione_fiscale_screen.dart';
 import '../servizi/supporto_contabile_screen.dart';
 import '../servizi/servizi_gate_screen.dart';
+import '../progetti/project_category_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -81,14 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(height: 24),
 
-              _SectionWithHorizontalCards(
-                title: '🤝 ${l10n.activeProjects}',
-                items: const [
-                  {'title': 'MAFALDA', 'subtitle': 'Giovani e inclusione'},
-                  {'title': 'WOMENTOR', 'subtitle': 'Mentoring tra donne'},
-                  {'title': 'SPORTUNITY', 'subtitle': 'Sport e comunità'},
-                ],
-              ),
+              _ActiveProjectsSection(),
 
               const SizedBox(height: 24),
 
@@ -102,6 +96,158 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ActiveProjectsSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
+    final categories = [
+      {
+        'key': 'giovani',
+        'name': l10n.youthCategory,
+        'icon': Icons.school,
+        'color': Colors.blue,
+        'projects': [
+          {
+            'name': 'MAFALDA',
+            'description': l10n.mafaldaDescription,
+            'services': [
+              l10n.mafaldaService1,
+              l10n.mafaldaService2,
+              l10n.mafaldaService3,
+              l10n.mafaldaService4,
+            ],
+          },
+        ],
+      },
+      {
+        'key': 'donne',
+        'name': l10n.womenCategory,
+        'icon': Icons.people,
+        'color': Colors.purple,
+        'projects': [
+          {
+            'name': 'WOMENTOR',
+            'description': l10n.womentorDescription,
+            'services': [
+              l10n.womentorService1,
+              l10n.womentorService2,
+              l10n.womentorService3,
+              l10n.womentorService4,
+            ],
+          },
+        ],
+      },
+      {
+        'key': 'sport',
+        'name': l10n.sportsCategory,
+        'icon': Icons.sports_soccer,
+        'color': Colors.green,
+        'projects': [
+          {
+            'name': 'SPORTUNITY',
+            'description': l10n.sportunityDescription,
+            'services': [
+              l10n.sportunityService1,
+              l10n.sportunityService2,
+              l10n.sportunityService3,
+              l10n.sportunityService4,
+            ],
+          },
+        ],
+      },
+      {
+        'key': 'migranti',
+        'name': l10n.migrantsCategory,
+        'icon': Icons.support_agent,
+        'color': Colors.orange,
+        'projects': [
+          {
+            'name': 'PASSAPAROLA',
+            'description': l10n.passaparolaDescription,
+            'services': [
+              l10n.passaparolaService1,
+              l10n.passaparolaService2,
+              l10n.passaparolaService3,
+              l10n.passaparolaService4,
+            ],
+          },
+        ],
+      },
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionTitle(title: '🤝 ${l10n.activeProjects}'),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 110,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: categories.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              final category = categories[index];
+              return InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProjectCategoryDetailScreen(
+                        categoryKey: category['key'] as String,
+                        categoryName: category['name'] as String,
+                        categoryIcon: category['icon'] as IconData,
+                        categoryColor: category['color'] as Color,
+                        projects: category['projects'] as List<Map<String, dynamic>>,
+                      ),
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  width: 140,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        (category['color'] as Color).withOpacity(0.7),
+                        category['color'] as Color,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        category['icon'] as IconData,
+                        size: 40,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        category['name'] as String,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }

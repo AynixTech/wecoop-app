@@ -769,4 +769,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get chatbotInputHint => 'Escribe un mensaje...';
+
+  @override
+  String get alreadyRegisteredLogin => 'Si ya estás registrado, inicia sesión';
+
+  @override
+  String get continueWithoutLogin => 'Continuar sin iniciar sesión';
 }

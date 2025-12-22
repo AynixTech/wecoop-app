@@ -1533,6 +1533,18 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Scrivi un messaggio...'**
   String get chatbotInputHint;
+
+  /// No description provided for @alreadyRegisteredLogin.
+  ///
+  /// In it, this message translates to:
+  /// **'Se sei già registrato effettua il login'**
+  String get alreadyRegisteredLogin;
+
+  /// No description provided for @continueWithoutLogin.
+  ///
+  /// In it, this message translates to:
+  /// **'Continua senza loggarti'**
+  String get continueWithoutLogin;
 }
 
 class _AppLocalizationsDelegate

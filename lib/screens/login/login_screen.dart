@@ -155,6 +155,8 @@ class _LoginScreenState extends State<LoginScreen> {
         await storage.write(key: 'provincia', value: data['provincia']);
         await storage.write(key: 'telefono', value: data['telefono']);
         await storage.write(key: 'professione', value: data['professione']);
+        await storage.write(key: 'paese_origine', value: data['paese_origine']);
+        await storage.write(key: 'nazionalita', value: data['nazionalita']);
         await storage.write(key: 'stato_socio', value: data['status_socio']);
         await storage.write(
           key: 'data_iscrizione',
@@ -187,6 +189,8 @@ class _LoginScreenState extends State<LoginScreen> {
         print('Tessera: ${data['numero_tessera']}');
         print('Anni socio: ${data['anni_socio']}');
         print('Quota pagata: ${data['quota_pagata']}');
+        print('Paese origine: ${data['paese_origine']}');
+        print('Nazionalità: ${data['nazionalita']}');
       } else if (response.statusCode == 404) {
         print('⚠️ Utente non trovato come socio nel database');
         print('⚠️ Response: ${response.body}');

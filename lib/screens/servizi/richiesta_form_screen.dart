@@ -57,6 +57,8 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       final dataNascita = await _storage.read(key: 'data_nascita');
       final luogoNascita = await _storage.read(key: 'luogo_nascita');
       final professione = await _storage.read(key: 'professione');
+      final paeseOrigine = await _storage.read(key: 'paese_origine');
+      final nazionalita = await _storage.read(key: 'nazionalita');
 
       print('=== DEBUG PRECOMPILAZIONE ===');
       print('fullName: $fullName');
@@ -66,6 +68,10 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       print('indirizzo: $indirizzo');
       print('cap: $cap');
       print('codice_fiscale: $codiceFiscale');
+      print('data_nascita: $dataNascita');
+      print('luogo_nascita: $luogoNascita');
+      print('paese_origine: $paeseOrigine');
+      print('nazionalita: $nazionalita');
 
       // Mappa i dati ai campi del form
       final prefilledData = <String, String>{};
@@ -127,12 +133,28 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       if (luogoNascita != null) {
         prefilledData['Luogo di nascita'] = luogoNascita;
       }
-
       // Professione
       if (professione != null) {
         prefilledData['Professione'] = professione;
       }
 
+      // Paese di origine/provenienza (priorità a paese_origine)
+      final paese = paeseOrigine ?? nazionalita;
+      if (paese != null) {
+        prefilledData['Paese di provenienza'] = paese;
+        prefilledData['Paese di origine'] = paese;
+        prefilledData['Country of origin'] = paese;
+        prefilledData['País de origen'] = paese;
+      }
+
+      // Nazionalità
+      if (nazionalita != null) {
+        prefilledData['Nazionalità'] = nazionalita;
+        prefilledData['Nationality'] = nazionalita;
+        prefilledData['Nacionalidad'] = nazionalita;
+      }
+
+      print('Dati precompilati: $prefilledData');
       print('Dati precompilati: $prefilledData');
 
       // Crea i controller per ogni campo con i valori precompilati
@@ -412,8 +434,10 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       'Paese di provenienza': 'paese_provenienza',
       'Paese di nascita': 'paese_nascita',
       'Paese nascita': 'paese_nascita',
-      'Paese di origine': 'paese_origine',
-      'Paese origine': 'paese_origine',
+      'Paese di origine': 'paese_provenienza',
+      'Paese origine': 'paese_provenienza',
+      'Country of origin': 'paese_provenienza',
+      'País de origen': 'paese_provenienza',
       'Tipo di contratto': 'tipo_contratto',
       'Tipo contratto': 'tipo_contratto',
       'Nome azienda': 'nome_azienda',

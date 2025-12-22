@@ -5,6 +5,7 @@ import 'calendar/calendar_screen.dart';
 import 'sportello/chatbot_assistenza_screen.dart';
 import 'progetti/progetti_screen.dart';
 import 'profilo/profilo_screen.dart';
+import 'eventi/eventi_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -18,6 +19,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
+    const EventiScreen(),
     const CalendarScreen(),
     const ChatbotAssistenzaScreen(),
     const ProgettiScreen(),
@@ -44,12 +46,16 @@ class _MainScreenState extends State<MainScreen> {
       body: IndexedStack(index: _selectedIndex, children: _screens),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: const Color(0xFF2196F3),
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
         items: [
           BottomNavigationBarItem(icon: const Icon(Icons.home), label: l10n.home),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.event),
+            label: 'Eventi',
+          ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.assignment),
             label: l10n.calendar,

@@ -4,6 +4,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import '../../services/locale_provider.dart';
 import '../../services/app_localizations.dart';
+import '../../services/eventi_service.dart';
+import '../../models/evento_model.dart';
+import '../eventi/evento_detail_screen.dart';
 
 final storage = FlutterSecureStorage();
 
@@ -22,6 +25,9 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
 
   String selectedLanguageCode = 'it';
   String selectedInterest = 'culture';
+  
+  List<Evento> _mieiEventi = [];
+  bool _isLoadingEventi = false;
 
   final List<String> participationHistory = [
     'Evento culturale - 15 Marzo 2025',

@@ -66,16 +66,27 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
 
     try {
       final response = await EventiService.getMieiEventi();
-      final eventiList = (response['eventi'] as List?)
-          ?.map((e) => Evento.fromJson(e as Map<String, dynamic>))
-          .toList() ?? [];
-      if (mounted) {
-        setState(() {
-          _mieiEventi = eventiList;
-          _isLoadingEventi = false;
-        });
+      print('Response getMieiEventi: $response');
+      
+      if (response['success'] == true) {
+        final eventiList = (response['eventi'] as List?)?.cast<Evento>() ?? [];
+        print('Eventi caricati: ${eventiList.length}');
+        if (mounted) {
+          setState(() {
+            _mieiEventi = eventiList;
+            _isLoadingEventi = false;
+          });
+        }
+      } else {
+        print('Errore nel caricamento eventi: ${response['message']}');
+        if (mounted) {
+          setState(() {
+            _isLoadingEventi = false;
+          });
+        }
       }
     } catch (e) {
+      print('Errore getMieiEventi: $e');
       if (mounted) {
         setState(() {
           _isLoadingEventi = false;
@@ -309,12 +320,22 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                     else if (_mieiEventi.isEmpty)
                       Padding(
                         padding: const EdgeInsets.all(20),
-                        child: Text(
-                          'Non sei iscritto a nessun evento',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey.shade600,
-                          ),
-                          textAlign: TextAlign.center,
+                        child: Column(
+                          children: [
+                            Text(
+                              'Non sei iscritto a nessun evento',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: Colors.grey.shade600,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 12),
+                            TextButton.icon(
+                              onPressed: _loadMieiEventi,
+                              icon: const Icon(Icons.refresh),
+                              label: const Text('Ricarica'),
+                            ),
+                          ],
                         ),
                       )
                     else

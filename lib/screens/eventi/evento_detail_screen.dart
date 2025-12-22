@@ -282,15 +282,17 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                   const SizedBox(height: 24),
                   
                   // Descrizione
-                  const Text(
-                    'Descrizione',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    _evento!.descrizione,
-                    style: TextStyle(fontSize: 15, color: Colors.grey.shade700, height: 1.5),
-                  ),
+                  if (_evento!.descrizione.isNotEmpty) ...[
+                    const Text(
+                      'Descrizione',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      _evento!.descrizione,
+                      style: TextStyle(fontSize: 15, color: Colors.grey.shade700, height: 1.5),
+                    ),
+                  ],
                   
                   if (_evento!.programma != null && _evento!.programma!.isNotEmpty) ...[
                     const SizedBox(height: 24),
@@ -377,7 +379,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                               ),
                       )
                     : ElevatedButton(
-                        onPressed: _isLoading || _evento!.postiDisponibili == 0
+                        onPressed: _isLoading || (_evento!.postiDisponibili == 0 && _evento!.maxPartecipanti > 0)
                             ? null
                             : _iscriviEvento,
                         style: ElevatedButton.styleFrom(
@@ -393,7 +395,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                                 child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                               )
                             : Text(
-                                _evento!.postiDisponibili == 0 ? 'POSTI ESAURITI' : 'Iscriviti',
+                                (_evento!.postiDisponibili == 0 && _evento!.maxPartecipanti > 0) ? 'POSTI ESAURITI' : 'Iscriviti',
                                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                       ),

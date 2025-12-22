@@ -11,6 +11,8 @@ import '../servizi/mediazione_fiscale_screen.dart';
 import '../servizi/supporto_contabile_screen.dart';
 import '../servizi/servizi_gate_screen.dart';
 import '../progetti/project_category_detail_screen.dart';
+import '../eventi/evento_detail_screen.dart';
+import '../../widgets/language_selector.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -60,6 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text(l10n.appTitle),
         actions: [
+          const LanguageSelector(),
           IconButton(icon: const Icon(Icons.notifications), onPressed: () {}),
         ],
       ),
@@ -277,12 +280,14 @@ class _InfoCard extends StatelessWidget {
   final String subtitle;
   final String? imageUrl;
   final String? link;
+  final VoidCallback? onTap;
 
   const _InfoCard({
     required this.title,
     required this.subtitle,
     this.imageUrl,
     this.link,
+    this.onTap,
   });
 
   void _openLink() async {
@@ -299,7 +304,7 @@ class _InfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: _openLink,
+      onTap: onTap ?? (link != null ? _openLink : null),
       borderRadius: BorderRadius.circular(16),
       child: Container(
         width: 200,
@@ -815,6 +820,17 @@ class _UpcomingEventsSectionState extends State<_UpcomingEventsSection> {
                     title: evento.titolo,
                     subtitle: _formatData(evento.dataInizio),
                     imageUrl: evento.immagineCopertina,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EventoDetailScreen(
+                            eventoId: evento.id,
+                            evento: evento,
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
               ),

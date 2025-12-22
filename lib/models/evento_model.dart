@@ -62,8 +62,23 @@ class Evento {
   });
 
   factory Evento.fromJson(Map<String, dynamic> json) {
+    int parseInt(dynamic value) {
+      if (value == null) return 0;
+      if (value is int) return value;
+      if (value is String) return int.tryParse(value) ?? 0;
+      return 0;
+    }
+
+    bool parseBool(dynamic value) {
+      if (value == null) return false;
+      if (value is bool) return value;
+      if (value is String) return value.toLowerCase() == 'true' || value == '1';
+      if (value is int) return value != 0;
+      return false;
+    }
+
     return Evento(
-      id: json['id'] ?? 0,
+      id: parseInt(json['id']),
       titolo: json['titolo'] ?? '',
       slug: json['slug'] ?? '',
       descrizione: json['descrizione'] ?? '',
@@ -71,15 +86,15 @@ class Evento {
       dataFine: json['data_fine'],
       oraInizio: json['ora_inizio'],
       oraFine: json['ora_fine'],
-      online: json['online'] ?? false,
+      online: parseBool(json['online']),
       luogo: json['luogo'],
       indirizzo: json['indirizzo'],
       citta: json['citta'],
       linkOnline: json['link_online'],
-      maxPartecipanti: json['max_partecipanti'] ?? 0,
-      partecipantiCount: json['partecipanti_count'] ?? 0,
-      postiDisponibili: json['posti_disponibili'] ?? 0,
-      richiedeIscrizione: json['richiede_iscrizione'] ?? false,
+      maxPartecipanti: parseInt(json['max_partecipanti']),
+      partecipantiCount: parseInt(json['partecipanti_count']),
+      postiDisponibili: parseInt(json['posti_disponibili']),
+      richiedeIscrizione: parseBool(json['richiede_iscrizione']),
       prezzo: (json['prezzo'] ?? 0.0).toDouble(),
       prezzoFormattato: json['prezzo_formattato'] ?? '€ 0,00',
       organizzatore: json['organizzatore'],
@@ -92,7 +107,7 @@ class Evento {
               ?.map((e) => GalleriaImmagine.fromJson(e))
               .toList() ??
           [],
-      sonoIscritto: json['sono_iscritto'] ?? false,
+      sonoIscritto: parseBool(json['sono_iscritto']),
       programma: json['programma'],
       dataPubblicazione: json['data_pubblicazione'],
     );

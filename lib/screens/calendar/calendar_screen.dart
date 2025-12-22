@@ -3,6 +3,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../services/socio_service.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   List<Map<String, dynamic>> _tutteRichieste = [];
   String? _filtroStato;
   bool _localeInitialized = false;
+  final storage = const FlutterSecureStorage();
 
   List<Map<String, dynamic>> _filtriStato = [];
 
@@ -39,6 +41,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Future<void> _caricaRichieste() async {
+    // Verifica se l'utente è loggato
+    final token = await storage.read(key: 'jwt_token');
+    if (token == null) {
+      // Utente non loggato, non caricare richieste
+      if (mounted) {
+        setState(() {
+          _tutteRichieste = [];
+          _isLoading = false;
+        });
+      }
+      return;
+    }
+
     if (mounted) {
       setState(() => _isLoading = true);
     }
@@ -63,25 +78,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
         if (mounted) {
           setState(() => _isLoading = false);
         }
-        if (mounted) {
-          final l10n = AppLocalizations.of(context)!;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result['message'] ?? l10n.errorLoadingData),
-            ),
-          );
+        // Non mostrare errore se l'utente non è loggato
+        if (result['message']?.contains('login') != true) {
+          if (mounted) {
+            final l10n = AppLocalizations.of(context)!;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(result['message'] ?? l10n.errorLoadingData),
+              ),
+            );
+          }
         }
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
       }
-      if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${l10n.error}: ${e.toString()}')));
-      }
+      // Non mostrare errore generico, l'utente potrebbe non essere loggato
+      print('Errore caricamento richieste: $e');
     }
   }
 

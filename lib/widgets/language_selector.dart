@@ -3,24 +3,31 @@ import 'package:provider/provider.dart';
 import '../services/locale_provider.dart';
 
 class LanguageSelector extends StatelessWidget {
-  final bool showLabel;
-  final Color? iconColor;
-
-  const LanguageSelector({
-    super.key,
-    this.showLabel = false,
-    this.iconColor,
-  });
+  const LanguageSelector({super.key});
 
   @override
   Widget build(BuildContext context) {
     final localeProvider = Provider.of<LocaleProvider>(context);
     final currentLocale = localeProvider.locale.languageCode;
 
+    // Mappa le lingue alle loro icone
+    String getLanguageIcon(String code) {
+      switch (code) {
+        case 'it':
+          return '🇮🇹';
+        case 'en':
+          return '🇬🇧';
+        case 'es':
+          return '🇪🇸';
+        default:
+          return '🌐';
+      }
+    }
+
     return PopupMenuButton<String>(
-      icon: Icon(
-        Icons.language,
-        color: iconColor ?? Theme.of(context).iconTheme.color,
+      icon: Text(
+        getLanguageIcon(currentLocale),
+        style: const TextStyle(fontSize: 24),
       ),
       tooltip: 'Cambia lingua',
       onSelected: (String languageCode) {

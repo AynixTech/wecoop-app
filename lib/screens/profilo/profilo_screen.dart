@@ -60,17 +60,28 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   Future<void> _loadMieiEventi() async {
     if (!mounted) return;
 
+    // Verifica se l'utente è loggato
+    final token = await storage.read(key: 'jwt_token');
+    if (token == null) {
+      // Utente non loggato, non caricare eventi
+      if (mounted) {
+        setState(() {
+          _mieiEventi = [];
+          _isLoadingEventi = false;
+        });
+      }
+      return;
+    }
+
     setState(() {
       _isLoadingEventi = true;
     });
 
     try {
       final response = await EventiService.getMieiEventi();
-      print('Response getMieiEventi: $response');
       
       if (response['success'] == true) {
         final eventiList = (response['eventi'] as List?)?.cast<Evento>() ?? [];
-        print('Eventi caricati: ${eventiList.length}');
         if (mounted) {
           setState(() {
             _mieiEventi = eventiList;
@@ -78,7 +89,6 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
           });
         }
       } else {
-        print('Errore nel caricamento eventi: ${response['message']}');
         if (mounted) {
           setState(() {
             _isLoadingEventi = false;

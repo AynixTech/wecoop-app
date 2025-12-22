@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/app_localizations.dart';
 import 'richiesta_form_screen.dart';
 
 class SupportoContabileScreen extends StatelessWidget {
@@ -6,82 +7,84 @@ class SupportoContabileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
-      appBar: AppBar(title: const Text('Supporto Contabile')),
+      appBar: AppBar(title: Text(l10n.accountingSupport)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Gestione Partita IVA e Contabilità',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                l10n.vatManagementAccounting,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 24),
               _OptionCard(
                 icon: Icons.add_business,
-                title: 'Aprire Partita IVA',
-                description: 'Apertura nuova partita IVA',
+                title: l10n.openVatNumber,
+                description: l10n.openingNewVat,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder:
                           (context) => RichiestaFormScreen(
-                            servizio: 'Supporto Contabile',
-                            categoria: 'Aprire Partita IVA',
-                            campi: const [
+                            servizio: l10n.accountingSupport,
+                            categoria: l10n.openVatNumber,
+                            campi: [
                               {
-                                'label': 'Nome completo',
+                                'label': l10n.fullName,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Codice fiscale',
+                                'label': l10n.fiscalCode,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Data di nascita',
+                                'label': l10n.dateOfBirth,
                                 'type': 'date',
                                 'required': true,
                               },
                               {
-                                'label': 'Indirizzo di residenza',
+                                'label': l10n.residenceAddress,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Tipo di attività',
+                                'label': l10n.businessType,
                                 'type': 'select',
                                 'options': [
-                                  'Commercio',
-                                  'Servizi',
-                                  'Artigianato',
-                                  'Libera professione',
-                                  'Altro',
+                                  l10n.trade,
+                                  l10n.servicesActivity,
+                                  l10n.craftsmanship,
+                                  l10n.freelance,
+                                  l10n.other,
                                 ],
                                 'required': true,
                               },
                               {
-                                'label': 'Descrizione attività',
+                                'label': l10n.businessDescription,
                                 'type': 'textarea',
                                 'required': true,
                               },
                               {
-                                'label': 'Regime fiscale previsto',
+                                'label': l10n.expectedTaxRegime,
                                 'type': 'select',
                                 'options': [
-                                  'Forfettario',
-                                  'Semplificato',
-                                  'Ordinario',
-                                  'Non so',
+                                  l10n.flatRate,
+                                  l10n.simplified,
+                                  l10n.ordinary,
+                                  l10n.dontKnow,
                                 ],
                                 'required': true,
                               },
                               {
-                                'label': 'Fatturato annuo previsto (€)',
+                                'label': l10n.expectedAnnualRevenue,
                                 'type': 'number',
                                 'required': false,
                               },
@@ -94,52 +97,51 @@ class SupportoContabileScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _OptionCard(
                 icon: Icons.settings,
-                title: 'Gestire la Partita IVA',
-                description:
-                    'Contabilità ordinaria, fatturazione, registrazioni',
+                title: l10n.manageVatNumber,
+                description: l10n.ordinaryAccountingInvoicing,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder:
                           (context) => RichiestaFormScreen(
-                            servizio: 'Supporto Contabile',
-                            categoria: 'Gestire Partita IVA',
-                            campi: const [
+                            servizio: l10n.accountingSupport,
+                            categoria: l10n.manageVatNumber,
+                            campi: [
                               {
-                                'label': 'Nome/Ragione sociale',
+                                'label': l10n.companyName,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Partita IVA',
+                                'label': l10n.vatNumber,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Tipo di supporto richiesto',
+                                'label': l10n.supportTypeRequired,
                                 'type': 'select',
                                 'options': [
-                                  'Fatturazione elettronica',
-                                  'Registrazione fatture',
-                                  'Gestione prima nota',
-                                  'Bilancio annuale',
-                                  'Consulenza generale',
+                                  l10n.electronicInvoicing,
+                                  l10n.invoiceRegistration,
+                                  l10n.journalManagement,
+                                  l10n.annualBalance,
+                                  l10n.generalConsulting,
                                 ],
                                 'required': true,
                               },
                               {
-                                'label': 'Regime fiscale attuale',
+                                'label': l10n.currentTaxRegime,
                                 'type': 'select',
                                 'options': [
-                                  'Forfettario',
-                                  'Semplificato',
-                                  'Ordinario',
+                                  l10n.flatRate,
+                                  l10n.simplified,
+                                  l10n.ordinary,
                                 ],
                                 'required': true,
                               },
                               {
-                                'label': 'Descrivi la tua esigenza',
+                                'label': l10n.describeYourNeed,
                                 'type': 'textarea',
                                 'required': true,
                               },
@@ -152,52 +154,52 @@ class SupportoContabileScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _OptionCard(
                 icon: Icons.account_balance,
-                title: 'Tasse e Contributi',
-                description: 'F24, INPS, scadenze fiscali',
+                title: l10n.taxesContributions,
+                description: l10n.f24InpsTaxDeadlines,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder:
                           (context) => RichiestaFormScreen(
-                            servizio: 'Supporto Contabile',
-                            categoria: 'Tasse e Contributi',
-                            campi: const [
+                            servizio: l10n.accountingSupport,
+                            categoria: l10n.taxesContributions,
+                            campi: [
                               {
-                                'label': 'Nome/Ragione sociale',
+                                'label': l10n.companyName,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Partita IVA',
+                                'label': l10n.vatNumber,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Tipo di adempimento',
+                                'label': l10n.complianceType,
                                 'type': 'select',
                                 'options': [
-                                  'Pagamento IVA',
-                                  'Contributi INPS',
-                                  'Acconto imposte',
-                                  'Saldo imposte',
-                                  'Altro',
+                                  l10n.vatPayment,
+                                  l10n.inpsContributions,
+                                  l10n.advanceTaxes,
+                                  l10n.taxBalance,
+                                  l10n.other,
                                 ],
                                 'required': true,
                               },
                               {
-                                'label': 'Periodo di riferimento',
+                                'label': l10n.referencePeriod,
                                 'type': 'select',
                                 'options': [
-                                  'Trimestrale',
-                                  'Mensile',
-                                  'Annuale',
-                                  'Altro',
+                                  l10n.quarterly,
+                                  l10n.monthly,
+                                  l10n.annual,
+                                  l10n.other,
                                 ],
                                 'required': true,
                               },
                               {
-                                'label': 'Descrizione',
+                                'label': l10n.description,
                                 'type': 'textarea',
                                 'required': false,
                               },
@@ -210,52 +212,52 @@ class SupportoContabileScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _OptionCard(
                 icon: Icons.help_outline,
-                title: 'Chiarimenti e Consulenza',
-                description: 'Domande e supporto fiscale/contabile',
+                title: l10n.clarificationsConsulting,
+                description: l10n.questionsAccountingSupport,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder:
                           (context) => RichiestaFormScreen(
-                            servizio: 'Supporto Contabile',
-                            categoria: 'Consulenza',
-                            campi: const [
+                            servizio: l10n.accountingSupport,
+                            categoria: l10n.clarificationsConsulting,
+                            campi: [
                               {
-                                'label': 'Nome completo',
+                                'label': l10n.fullName,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Email',
+                                'label': l10n.email,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Telefono',
+                                'label': l10n.phone,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Hai già partita IVA?',
+                                'label': l10n.haveVatNumber,
                                 'type': 'select',
-                                'options': ['Sì', 'No'],
+                                'options': [l10n.yes, l10n.no],
                                 'required': true,
                               },
                               {
-                                'label': 'Argomento della consulenza',
+                                'label': l10n.consultingTopic,
                                 'type': 'select',
                                 'options': [
-                                  'Aspetti fiscali',
-                                  'Aspetti contributivi',
-                                  'Regime fiscale',
-                                  'Detrazioni/Deduzioni',
-                                  'Altro',
+                                  l10n.taxAspects,
+                                  l10n.contributionAspects,
+                                  l10n.taxRegime,
+                                  l10n.deductionsDeductions,
+                                  l10n.other,
                                 ],
                                 'required': true,
                               },
                               {
-                                'label': 'Descrivi la tua domanda',
+                                'label': l10n.describeYourQuestion,
                                 'type': 'textarea',
                                 'required': true,
                               },
@@ -268,44 +270,44 @@ class SupportoContabileScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _OptionCard(
                 icon: Icons.close_fullscreen,
-                title: 'Chiudere o Cambiare Attività',
-                description: 'Cessazione o modifica attività',
+                title: l10n.closeChangeActivity,
+                description: l10n.businessTerminationModification,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder:
                           (context) => RichiestaFormScreen(
-                            servizio: 'Supporto Contabile',
-                            categoria: 'Chiudere/Cambiare Attività',
-                            campi: const [
+                            servizio: l10n.accountingSupport,
+                            categoria: l10n.closeChangeActivity,
+                            campi: [
                               {
-                                'label': 'Nome/Ragione sociale',
+                                'label': l10n.companyName,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Partita IVA',
+                                'label': l10n.vatNumber,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Cosa vuoi fare?',
+                                'label': l10n.whatDoYouWantToDo,
                                 'type': 'select',
                                 'options': [
-                                  'Chiudere partita IVA',
-                                  'Cambiare attività',
-                                  'Cambiare regime fiscale',
+                                  l10n.closeVatNumber,
+                                  l10n.changeActivity,
+                                  l10n.changeTaxRegime,
                                 ],
                                 'required': true,
                               },
                               {
-                                'label': 'Data prevista',
+                                'label': l10n.expectedDate,
                                 'type': 'date',
                                 'required': true,
                               },
                               {
-                                'label': 'Motivazione',
+                                'label': l10n.reason,
                                 'type': 'textarea',
                                 'required': true,
                               },

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../l10n/app_localizations.dart';
+import '../../services/app_localizations.dart';
 import 'richiesta_form_screen.dart';
 
 class AsiloPoliticoScreen extends StatelessWidget {

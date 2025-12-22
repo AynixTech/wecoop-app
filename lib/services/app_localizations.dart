@@ -92,6 +92,7 @@ class AppLocalizations {
       'contactInfo': 'Contatti',
       'phone': 'Telefono',
       'address': 'Indirizzo',
+      'residenceAddress': 'Indirizzo di residenza',
       'city': 'Città',
       'province': 'Provincia',
       'postalCode': 'CAP',
@@ -174,7 +175,74 @@ class AppLocalizations {
       'hasFamilyInItaly': 'Hai familiari in Italia?',
       'additionalNotes': 'Note aggiuntive',
       'startRequest': 'Inizia la richiesta',
-      'touristVisaRequest': 'Richiesta Visa per Turismo',
+      'touristVisaRequest': 'Richiesta Visto Turistico',
+      'touristVisaCategory': 'Visto turistico',
+      'nationality': 'Nazionalità',
+      'passportNumber': 'Numero passaporto',
+      'expectedArrivalDate': 'Data arrivo prevista',
+      'expectedDepartureDate': 'Data partenza prevista',
+      'travelReason': 'Motivo del viaggio',
+      'tourism': 'Turismo',
+      'familyVisit': 'Visita famiglia',
+      'business': 'Affari',
+      'accommodationAddressItaly': 'Indirizzo di soggiorno in Italia',
+      'fillRequest': 'Compila richiesta',
+      'vatManagementAccounting': 'Gestione Partita IVA e Contabilità',
+      'openVatNumber': 'Aprire Partita IVA',
+      'openingNewVat': 'Apertura nuova partita IVA',
+      'manageVatNumber': 'Gestire la Partita IVA',
+      'ordinaryAccountingInvoicing': 'Contabilità ordinaria, fatturazione, registrazioni',
+      'taxesContributions': 'Tasse e Contributi',
+      'f24InpsTaxDeadlines': 'F24, INPS, scadenze fiscali',
+      'clarificationsConsulting': 'Chiarimenti e Consulenza',
+      'questionsAccountingSupport': 'Domande e supporto fiscale/contabile',
+      'closeChangeActivity': 'Chiudere o Cambiare Attività',
+      'businessTerminationModification': 'Cessazione o modifica attività',
+      'businessType': 'Tipo di attività',
+      'trade': 'Commercio',
+      'servicesActivity': 'Servizi',
+      'craftsmanship': 'Artigianato',
+      'freelance': 'Libera professione',
+      'businessDescription': 'Descrizione attività',
+      'expectedTaxRegime': 'Regime fiscale previsto',
+      'flatRate': 'Forfettario',
+      'simplified': 'Semplificato',
+      'ordinary': 'Ordinario',
+      'dontKnow': 'Non so',
+      'expectedAnnualRevenue': 'Fatturato annuo previsto (€)',
+      'companyName': 'Nome/Ragione sociale',
+      'vatNumber': 'Partita IVA',
+      'supportTypeRequired': 'Tipo di supporto richiesto',
+      'electronicInvoicing': 'Fatturazione elettronica',
+      'invoiceRegistration': 'Registrazione fatture',
+      'journalManagement': 'Gestione prima nota',
+      'annualBalance': 'Bilancio annuale',
+      'generalConsulting': 'Consulenza generale',
+      'currentTaxRegime': 'Regime fiscale attuale',
+      'describeYourNeed': 'Descrivi la tua esigenza',
+      'complianceType': 'Tipo di adempimento',
+      'vatPayment': 'Pagamento IVA',
+      'inpsContributions': 'Contributi INPS',
+      'advanceTaxes': 'Acconto imposte',
+      'taxBalance': 'Saldo imposte',
+      'referencePeriod': 'Periodo di riferimento',
+      'quarterly': 'Trimestrale',
+      'monthly': 'Mensile',
+      'annual': 'Annuale',
+      'description': 'Descrizione',
+      'haveVatNumber': 'Hai già partita IVA?',
+      'consultingTopic': 'Argomento della consulenza',
+      'taxAspects': 'Aspetti fiscali',
+      'contributionAspects': 'Aspetti contributivi',
+      'taxRegime': 'Regime fiscale',
+      'deductionsDeductions': 'Detrazioni/Deduzioni',
+      'describeYourQuestion': 'Descrivi la tua domanda',
+      'whatDoYouWantToDo': 'Cosa vuoi fare?',
+      'closeVatNumber': 'Chiudere partita IVA',
+      'changeActivity': 'Cambiare attività',
+      'changeTaxRegime': 'Cambiare regime fiscale',
+      'expectedDate': 'Data prevista',
+      'reason': 'Motivazione',
       'selectFiscalService': 'Seleziona il servizio fiscale',
       'tax730Declaration': '730 - Dichiarazione dei Redditi',
       'tax730Description': 'Compilazione modello 730 per dipendenti e pensionati',
@@ -355,6 +423,7 @@ class AppLocalizations {
       'contactInfo': 'Contact Information',
       'phone': 'Phone',
       'address': 'Address',
+      'residenceAddress': 'Residence address',
       'city': 'City',
       'province': 'Province',
       'postalCode': 'Postal Code',
@@ -438,6 +507,73 @@ class AppLocalizations {
       'additionalNotes': 'Additional notes',
       'startRequest': 'Start request',
       'touristVisaRequest': 'Tourist Visa Request',
+      'touristVisaCategory': 'Tourist visa',
+      'nationality': 'Nationality',
+      'passportNumber': 'Passport number',
+      'expectedArrivalDate': 'Expected arrival date',
+      'expectedDepartureDate': 'Expected departure date',
+      'travelReason': 'Reason for travel',
+      'tourism': 'Tourism',
+      'familyVisit': 'Family visit',
+      'business': 'Business',
+      'accommodationAddressItaly': 'Accommodation address in Italy',
+      'fillRequest': 'Fill out request',
+      'vatManagementAccounting': 'VAT Management and Accounting',
+      'openVatNumber': 'Open VAT Number',
+      'openingNewVat': 'Opening new VAT number',
+      'manageVatNumber': 'Manage VAT Number',
+      'ordinaryAccountingInvoicing': 'Ordinary accounting, invoicing, registrations',
+      'taxesContributions': 'Taxes and Contributions',
+      'f24InpsTaxDeadlines': 'F24, INPS, tax deadlines',
+      'clarificationsConsulting': 'Clarifications and Consulting',
+      'questionsAccountingSupport': 'Questions and tax/accounting support',
+      'closeChangeActivity': 'Close or Change Activity',
+      'businessTerminationModification': 'Business termination or modification',
+      'businessType': 'Type of business',
+      'trade': 'Trade',
+      'servicesActivity': 'Services',
+      'craftsmanship': 'Craftsmanship',
+      'freelance': 'Freelance',
+      'businessDescription': 'Business description',
+      'expectedTaxRegime': 'Expected tax regime',
+      'flatRate': 'Flat rate',
+      'simplified': 'Simplified',
+      'ordinary': 'Ordinary',
+      'dontKnow': 'I don\'t know',
+      'expectedAnnualRevenue': 'Expected annual revenue (€)',
+      'companyName': 'Company name',
+      'vatNumber': 'VAT number',
+      'supportTypeRequired': 'Type of support required',
+      'electronicInvoicing': 'Electronic invoicing',
+      'invoiceRegistration': 'Invoice registration',
+      'journalManagement': 'Journal management',
+      'annualBalance': 'Annual balance',
+      'generalConsulting': 'General consulting',
+      'currentTaxRegime': 'Current tax regime',
+      'describeYourNeed': 'Describe your need',
+      'complianceType': 'Type of compliance',
+      'vatPayment': 'VAT payment',
+      'inpsContributions': 'INPS contributions',
+      'advanceTaxes': 'Advance taxes',
+      'taxBalance': 'Tax balance',
+      'referencePeriod': 'Reference period',
+      'quarterly': 'Quarterly',
+      'monthly': 'Monthly',
+      'annual': 'Annual',
+      'description': 'Description',
+      'haveVatNumber': 'Do you already have a VAT number?',
+      'consultingTopic': 'Consulting topic',
+      'taxAspects': 'Tax aspects',
+      'contributionAspects': 'Contribution aspects',
+      'taxRegime': 'Tax regime',
+      'deductionsDeductions': 'Deductions/Deductions',
+      'describeYourQuestion': 'Describe your question',
+      'whatDoYouWantToDo': 'What do you want to do?',
+      'closeVatNumber': 'Close VAT number',
+      'changeActivity': 'Change activity',
+      'changeTaxRegime': 'Change tax regime',
+      'expectedDate': 'Expected date',
+      'reason': 'Reason',
       'selectFiscalService': 'Select tax service',
       'tax730Declaration': '730 - Income Tax Return',
       'tax730Description': 'Form 730 preparation for employees and pensioners',
@@ -618,6 +754,7 @@ class AppLocalizations {
       'contactInfo': 'Información de Contacto',
       'phone': 'Teléfono',
       'address': 'Dirección',
+      'residenceAddress': 'Dirección de residencia',
       'city': 'Ciudad',
       'province': 'Provincia',
       'postalCode': 'Código Postal',
@@ -701,6 +838,73 @@ class AppLocalizations {
       'additionalNotes': 'Notas adicionales',
       'startRequest': 'Iniciar solicitud',
       'touristVisaRequest': 'Solicitud de Visa Turística',
+      'touristVisaCategory': 'Visa turística',
+      'nationality': 'Nacionalidad',
+      'passportNumber': 'Número de pasaporte',
+      'expectedArrivalDate': 'Fecha de llegada prevista',
+      'expectedDepartureDate': 'Fecha de salida prevista',
+      'travelReason': 'Motivo del viaje',
+      'tourism': 'Turismo',
+      'familyVisit': 'Visita familiar',
+      'business': 'Negocios',
+      'accommodationAddressItaly': 'Dirección de alojamiento en Italia',
+      'fillRequest': 'Completar solicitud',
+      'vatManagementAccounting': 'Gestión de IVA y Contabilidad',
+      'openVatNumber': 'Abrir Número de IVA',
+      'openingNewVat': 'Apertura de nuevo número de IVA',
+      'manageVatNumber': 'Gestionar Número de IVA',
+      'ordinaryAccountingInvoicing': 'Contabilidad ordinaria, facturación, registros',
+      'taxesContributions': 'Impuestos y Contribuciones',
+      'f24InpsTaxDeadlines': 'F24, INPS, plazos fiscales',
+      'clarificationsConsulting': 'Aclaraciones y Consultoría',
+      'questionsAccountingSupport': 'Preguntas y soporte fiscal/contable',
+      'closeChangeActivity': 'Cerrar o Cambiar Actividad',
+      'businessTerminationModification': 'Cese o modificación de actividad',
+      'businessType': 'Tipo de actividad',
+      'trade': 'Comercio',
+      'servicesActivity': 'Servicios',
+      'craftsmanship': 'Artesanía',
+      'freelance': 'Profesión libre',
+      'businessDescription': 'Descripción de la actividad',
+      'expectedTaxRegime': 'Régimen fiscal previsto',
+      'flatRate': 'Forfetario',
+      'simplified': 'Simplificado',
+      'ordinary': 'Ordinario',
+      'dontKnow': 'No lo sé',
+      'expectedAnnualRevenue': 'Facturación anual prevista (€)',
+      'companyName': 'Nombre/Razón social',
+      'vatNumber': 'Número de IVA',
+      'supportTypeRequired': 'Tipo de soporte requerido',
+      'electronicInvoicing': 'Facturación electrónica',
+      'invoiceRegistration': 'Registro de facturas',
+      'journalManagement': 'Gestión de libro diario',
+      'annualBalance': 'Balance anual',
+      'generalConsulting': 'Consultoría general',
+      'currentTaxRegime': 'Régimen fiscal actual',
+      'describeYourNeed': 'Describe tu necesidad',
+      'complianceType': 'Tipo de cumplimiento',
+      'vatPayment': 'Pago de IVA',
+      'inpsContributions': 'Contribuciones INPS',
+      'advanceTaxes': 'Anticipo de impuestos',
+      'taxBalance': 'Saldo de impuestos',
+      'referencePeriod': 'Período de referencia',
+      'quarterly': 'Trimestral',
+      'monthly': 'Mensual',
+      'annual': 'Anual',
+      'description': 'Descripción',
+      'haveVatNumber': '¿Ya tienes número de IVA?',
+      'consultingTopic': 'Tema de consultoría',
+      'taxAspects': 'Aspectos fiscales',
+      'contributionAspects': 'Aspectos contributivos',
+      'taxRegime': 'Régimen fiscal',
+      'deductionsDeductions': 'Deducciones/Deducciones',
+      'describeYourQuestion': 'Describe tu pregunta',
+      'whatDoYouWantToDo': '¿Qué quieres hacer?',
+      'closeVatNumber': 'Cerrar número de IVA',
+      'changeActivity': 'Cambiar actividad',
+      'changeTaxRegime': 'Cambiar régimen fiscal',
+      'expectedDate': 'Fecha prevista',
+      'reason': 'Motivo',
       'selectFiscalService': 'Selecciona el servicio fiscal',
       'tax730Declaration': '730 - Declaración de la Renta',
       'tax730Description': 'Preparación del modelo 730 para empleados y pensionistas',
@@ -887,6 +1091,7 @@ class AppLocalizations {
   String get contactInfo => translate('contactInfo');
   String get phone => translate('phone');
   String get address => translate('address');
+  String get residenceAddress => translate('residenceAddress');
   String get city => translate('city');
   String get province => translate('province');
   String get postalCode => translate('postalCode');
@@ -970,6 +1175,73 @@ class AppLocalizations {
   String get additionalNotes => translate('additionalNotes');
   String get startRequest => translate('startRequest');
   String get touristVisaRequest => translate('touristVisaRequest');
+  String get touristVisaCategory => translate('touristVisaCategory');
+  String get nationality => translate('nationality');
+  String get passportNumber => translate('passportNumber');
+  String get expectedArrivalDate => translate('expectedArrivalDate');
+  String get expectedDepartureDate => translate('expectedDepartureDate');
+  String get travelReason => translate('travelReason');
+  String get tourism => translate('tourism');
+  String get familyVisit => translate('familyVisit');
+  String get business => translate('business');
+  String get accommodationAddressItaly => translate('accommodationAddressItaly');
+  String get fillRequest => translate('fillRequest');
+  String get vatManagementAccounting => translate('vatManagementAccounting');
+  String get openVatNumber => translate('openVatNumber');
+  String get openingNewVat => translate('openingNewVat');
+  String get manageVatNumber => translate('manageVatNumber');
+  String get ordinaryAccountingInvoicing => translate('ordinaryAccountingInvoicing');
+  String get taxesContributions => translate('taxesContributions');
+  String get f24InpsTaxDeadlines => translate('f24InpsTaxDeadlines');
+  String get clarificationsConsulting => translate('clarificationsConsulting');
+  String get questionsAccountingSupport => translate('questionsAccountingSupport');
+  String get closeChangeActivity => translate('closeChangeActivity');
+  String get businessTerminationModification => translate('businessTerminationModification');
+  String get businessType => translate('businessType');
+  String get trade => translate('trade');
+  String get servicesActivity => translate('servicesActivity');
+  String get craftsmanship => translate('craftsmanship');
+  String get freelance => translate('freelance');
+  String get businessDescription => translate('businessDescription');
+  String get expectedTaxRegime => translate('expectedTaxRegime');
+  String get flatRate => translate('flatRate');
+  String get simplified => translate('simplified');
+  String get ordinary => translate('ordinary');
+  String get dontKnow => translate('dontKnow');
+  String get expectedAnnualRevenue => translate('expectedAnnualRevenue');
+  String get companyName => translate('companyName');
+  String get vatNumber => translate('vatNumber');
+  String get supportTypeRequired => translate('supportTypeRequired');
+  String get electronicInvoicing => translate('electronicInvoicing');
+  String get invoiceRegistration => translate('invoiceRegistration');
+  String get journalManagement => translate('journalManagement');
+  String get annualBalance => translate('annualBalance');
+  String get generalConsulting => translate('generalConsulting');
+  String get currentTaxRegime => translate('currentTaxRegime');
+  String get describeYourNeed => translate('describeYourNeed');
+  String get complianceType => translate('complianceType');
+  String get vatPayment => translate('vatPayment');
+  String get inpsContributions => translate('inpsContributions');
+  String get advanceTaxes => translate('advanceTaxes');
+  String get taxBalance => translate('taxBalance');
+  String get referencePeriod => translate('referencePeriod');
+  String get quarterly => translate('quarterly');
+  String get monthly => translate('monthly');
+  String get annual => translate('annual');
+  String get description => translate('description');
+  String get haveVatNumber => translate('haveVatNumber');
+  String get consultingTopic => translate('consultingTopic');
+  String get taxAspects => translate('taxAspects');
+  String get contributionAspects => translate('contributionAspects');
+  String get taxRegime => translate('taxRegime');
+  String get deductionsDeductions => translate('deductionsDeductions');
+  String get describeYourQuestion => translate('describeYourQuestion');
+  String get whatDoYouWantToDo => translate('whatDoYouWantToDo');
+  String get closeVatNumber => translate('closeVatNumber');
+  String get changeActivity => translate('changeActivity');
+  String get changeTaxRegime => translate('changeTaxRegime');
+  String get expectedDate => translate('expectedDate');
+  String get reason => translate('reason');
   String get selectFiscalService => translate('selectFiscalService');
   String get tax730Declaration => translate('tax730Declaration');
   String get tax730Description => translate('tax730Description');

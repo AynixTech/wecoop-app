@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import '../../services/socio_service.dart';
 
@@ -60,7 +60,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, dynamic> _formData = {};
   final Map<String, TextEditingController> _controllers = {};
-  final _storage = const FlutterSecureStorage();
+  final _storage = SecureStorageService();
   bool _isSubmitting = false;
   bool _isLoading = true;
 

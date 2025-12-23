@@ -1,13 +1,13 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'dart:async';
 import 'dart:io';
 import '../utils/html_utils.dart';
 
 class SocioService {
   static const String baseUrl = 'https://www.wecoop.org/wp-json/wecoop/v1';
-  static const storage = FlutterSecureStorage();
+  static final storage = SecureStorageService();
 
   /// Ottiene gli headers comuni per tutte le richieste
   static Future<Map<String, String>> _getHeaders({bool includeAuth = true}) async {

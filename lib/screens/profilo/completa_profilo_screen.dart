@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wecoop_app/services/secure_storage_service.dart';
 import '../../services/app_localizations.dart';
 import '../../services/socio_service.dart';
 import 'dart:io';
@@ -15,7 +15,7 @@ class CompletaProfiloScreen extends StatefulWidget {
 
 class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _storage = const FlutterSecureStorage();
+  final _storage = SecureStorageService();
   bool _isSubmitting = false;
   bool _isLoading = true;
   int _currentStep = 0;

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/push_notification_service.dart';
 import '../../widgets/language_selector.dart';
@@ -17,7 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController prefixController = TextEditingController(text: '+39');
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final storage = const FlutterSecureStorage();
+  final storage = SecureStorageService();
   bool rememberPassword = false;
   bool isLoading = false;
 
@@ -177,47 +177,59 @@ class _LoginScreenState extends State<LoginScreen> {
 
         // Salva tutti i dati dell'utente socio
         // Salva sia socio_id (ID tabella soci) che user_id (ID WordPress)
-        await storage.write(key: 'socio_id', value: data['id']?.toString());
+        if (data['id'] != null) {
+          await storage.write(key: 'socio_id', value: data['id'].toString());
+        }
         if (data['user_id'] != null) {
           await storage.write(
             key: 'user_id',
             value: data['user_id'].toString(),
           );
         }
-        await storage.write(key: 'first_name', value: data['nome']);
-        await storage.write(key: 'last_name', value: data['cognome']);
-        await storage.write(
-          key: 'codice_fiscale',
-          value: data['codice_fiscale'],
-        );
-        await storage.write(key: 'data_nascita', value: data['data_nascita']);
-        await storage.write(key: 'luogo_nascita', value: data['luogo_nascita']);
-        await storage.write(key: 'indirizzo', value: data['indirizzo']);
-        await storage.write(key: 'citta', value: data['citta']);
-        await storage.write(key: 'cap', value: data['cap']);
-        await storage.write(key: 'provincia', value: data['provincia']);
-        await storage.write(key: 'telefono', value: data['telefono']);
-        await storage.write(key: 'professione', value: data['professione']);
-        await storage.write(key: 'paese_origine', value: data['paese_origine']);
-        await storage.write(key: 'nazionalita', value: data['nazionalita']);
-        await storage.write(key: 'stato_socio', value: data['status_socio']);
-        await storage.write(
-          key: 'data_iscrizione',
-          value: data['data_adesione'],
-        );
-        await storage.write(
-          key: 'tessera_numero',
-          value: data['numero_tessera'],
-        );
-        await storage.write(key: 'tessera_url', value: data['tessera_url']);
-        await storage.write(
-          key: 'quota_pagata',
-          value: data['quota_pagata']?.toString(),
-        );
-        await storage.write(
-          key: 'anni_socio',
-          value: data['anni_socio']?.toString(),
-        );
+        if (data['nome'] != null) await storage.write(key: 'first_name', value: data['nome']);
+        if (data['cognome'] != null) await storage.write(key: 'last_name', value: data['cognome']);
+        if (data['codice_fiscale'] != null) {
+          await storage.write(
+            key: 'codice_fiscale',
+            value: data['codice_fiscale'],
+          );
+        }
+        if (data['data_nascita'] != null) await storage.write(key: 'data_nascita', value: data['data_nascita']);
+        if (data['luogo_nascita'] != null) await storage.write(key: 'luogo_nascita', value: data['luogo_nascita']);
+        if (data['indirizzo'] != null) await storage.write(key: 'indirizzo', value: data['indirizzo']);
+        if (data['citta'] != null) await storage.write(key: 'citta', value: data['citta']);
+        if (data['cap'] != null) await storage.write(key: 'cap', value: data['cap']);
+        if (data['provincia'] != null) await storage.write(key: 'provincia', value: data['provincia']);
+        if (data['telefono'] != null) await storage.write(key: 'telefono', value: data['telefono']);
+        if (data['professione'] != null) await storage.write(key: 'professione', value: data['professione']);
+        if (data['paese_origine'] != null) await storage.write(key: 'paese_origine', value: data['paese_origine']);
+        if (data['nazionalita'] != null) await storage.write(key: 'nazionalita', value: data['nazionalita']);
+        if (data['status_socio'] != null) await storage.write(key: 'stato_socio', value: data['status_socio']);
+        if (data['data_adesione'] != null) {
+          await storage.write(
+            key: 'data_iscrizione',
+            value: data['data_adesione'],
+          );
+        }
+        if (data['numero_tessera'] != null) {
+          await storage.write(
+            key: 'tessera_numero',
+            value: data['numero_tessera'],
+          );
+        }
+        if (data['tessera_url'] != null) await storage.write(key: 'tessera_url', value: data['tessera_url']);
+        if (data['quota_pagata'] != null) {
+          await storage.write(
+            key: 'quota_pagata',
+            value: data['quota_pagata'].toString(),
+          );
+        }
+        if (data['anni_socio'] != null) {
+          await storage.write(
+            key: 'anni_socio',
+            value: data['anni_socio'].toString(),
+          );
+        }
 
         // Crea nome completo
         final nome = data['nome'] ?? '';

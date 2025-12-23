@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:provider/provider.dart';
 import '../../services/locale_provider.dart';
 import '../../services/app_localizations.dart';
@@ -11,7 +11,7 @@ import '../../models/evento_model.dart';
 import '../eventi/evento_detail_screen.dart';
 import 'completa_profilo_screen.dart';
 
-final storage = FlutterSecureStorage();
+final storage = SecureStorageService();
 
 class ProfiloScreen extends StatefulWidget {
   const ProfiloScreen({super.key});

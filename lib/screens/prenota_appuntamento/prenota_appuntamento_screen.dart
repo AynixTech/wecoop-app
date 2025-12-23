@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
@@ -12,7 +12,7 @@ class PrenotaAppuntamentoScreen extends StatefulWidget {
 }
 
 class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
-  final storage = FlutterSecureStorage();
+  final storage = SecureStorageService();
   List appuntamenti = [];
   int? selectedAppuntamentoId;
   String? selectedOrario;

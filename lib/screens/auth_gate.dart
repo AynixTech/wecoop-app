@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'login/login_screen.dart';
 
 class AuthGate extends StatelessWidget {
@@ -7,7 +7,7 @@ class AuthGate extends StatelessWidget {
 
   AuthGate({super.key, required this.protectedScreen});
 
-  final storage = FlutterSecureStorage();
+  final storage = SecureStorageService();
 
   Future<bool> _checkLogin() async {
     final token = await storage.read(key: 'jwt_token');

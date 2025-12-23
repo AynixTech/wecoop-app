@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import '../../services/socio_service.dart';
 import 'adesione_socio_screen.dart';
@@ -21,7 +21,7 @@ class ServiziGateScreen extends StatefulWidget {
 }
 
 class _ServiziGateScreenState extends State<ServiziGateScreen> {
-  final _storage = const FlutterSecureStorage();
+  final _storage = SecureStorageService();
   bool _isLoading = true;
   bool _hasRichiestaInAttesa = false;
   bool _shouldShowLogin = false;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'dart:ui' as ui;
 
 class LocaleProvider extends ChangeNotifier {
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final SecureStorageService _storage = SecureStorageService();
   Locale _locale = const Locale('it');
 
   Locale get locale => _locale;

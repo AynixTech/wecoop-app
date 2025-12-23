@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -13,7 +13,7 @@ class PushNotificationDebugScreen extends StatefulWidget {
 }
 
 class _PushNotificationDebugScreenState extends State<PushNotificationDebugScreen> {
-  final storage = const FlutterSecureStorage();
+  final storage = SecureStorageService();
   
   String? jwtToken;
   String? fcmToken;

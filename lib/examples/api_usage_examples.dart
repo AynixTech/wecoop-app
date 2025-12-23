@@ -40,23 +40,30 @@ Future<void> inviaRichiestaAdesione(BuildContext context) async {
   final result = await SocioService.richiestaAdesioneSocio(
     nome: 'Mario',
     cognome: 'Rossi',
+    prefix: '+39', // Prefisso internazionale separato
+    telefono: '3331234567', // Numero senza prefisso
+    nazionalita: 'IT', // Codice ISO 3166-1 alpha-2 (IT, EC, ES, PE, etc.)
+    email: 'mario.rossi@example.com', // Email per ricevere credenziali
+    privacyAccepted: true,
+    // Campi opzionali
     codiceFiscale: 'RSSMRA90A15H501X',
     dataNascita: '1990-01-15',
     luogoNascita: 'Roma',
     indirizzo: 'Via Roma 123',
     citta: 'Milano',
     cap: '20100',
-    telefono: '+39 333 1234567',
-    email: 'mario.rossi@example.com',
     professione: 'Ingegnere',
     provincia: 'MI',
-    motivazione: 'Voglio contribuire alla cooperativa',
   );
 
   if (result['success'] == true) {
     print('✅ Richiesta inviata!');
-    print('ID Richiesta: ${result['richiesta_id']}');
-    print('Status: ${result['status']}'); // "pending"
+    print('Username (telefono completo): ${result['username']}'); // Es: 393331234567
+    print('Password: ${result['password']}'); // Password generata
+    print('Email inviata a: mario.rossi@example.com');
+    print('Tessera URL: ${result['tessera_url']}');
+    // IMPORTANTE: Le credenziali sono state inviate via email all'utente!
+    // Username = prefix + telefono (solo numeri, es: +39 3331234567 → 393331234567)
     
     // Mostra dialog successo
     showDialog(
@@ -265,7 +272,7 @@ Future<void> getListaSoci() async {
   
   print('Totale soci attivi: ${sociAttivi.length}');
   for (var socio in sociAttivi) {
-    print('${socio['nome']} ${socio['cognome']} - ${socio['email']}');
+    print('${socio['nome']} ${socio['cognome']} - Username: ${socio['username']} - ${socio['email']}');
   }
   
   // Ricerca per nome

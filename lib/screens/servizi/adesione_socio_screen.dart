@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:wecoop_app/services/app_localizations.dart';
 import '../../services/socio_service.dart';
 import '../login/login_screen.dart';
@@ -15,63 +12,68 @@ class AdesioneSocioScreen extends StatefulWidget {
 
 class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _storage = const FlutterSecureStorage();
   bool _isSubmitting = false;
 
-  // 🧪 FLAG DEBUG: Imposta a true per precompilare i campi con dati di test
-  static const bool _useTestData = false;
-
-  // Controllers per i campi del form
+  // Controllers per i campi OBBLIGATORI
   final _nomeController = TextEditingController();
   final _cognomeController = TextEditingController();
+  final _prefissoController = TextEditingController(text: '+39');
+  final _telefonoController = TextEditingController();
+  final _emailController = TextEditingController();
+  String? _selectedNazionalita;
+  bool _privacyAccepted = false;
+  
+  // Controllers per i campi OPZIONALI
   final _codiceFiscaleController = TextEditingController();
   final _dataNascitaController = TextEditingController();
   final _luogoNascitaController = TextEditingController();
   final _indirizzoController = TextEditingController();
   final _cittaController = TextEditingController();
   final _capController = TextEditingController();
-  final _telefonoController = TextEditingController();
-  final _emailController = TextEditingController();
+  final _provinciaController = TextEditingController();
   final _professioneController = TextEditingController();
-  final _noteController = TextEditingController();
+  
+  // Lista nazionalità (ISO 3166-1 alpha-2)
+  static const List<Map<String, String>> _nazionalita = [
+    {'code': 'EC', 'name': '🇪🇨 Ecuador'},
+    {'code': 'PE', 'name': '🇵🇪 Perù'},
+    {'code': 'IT', 'name': '🇮🇹 Italia'},
+    {'code': 'ES', 'name': '🇪🇸 Spagna'},
+    {'code': 'FR', 'name': '🇫🇷 Francia'},
+    {'code': 'DE', 'name': '🇩🇪 Germania'},
+    {'code': 'GB', 'name': '🇬🇧 Regno Unito'},
+    {'code': 'US', 'name': '🇺🇸 Stati Uniti'},
+    {'code': 'BR', 'name': '🇧🇷 Brasile'},
+    {'code': 'AR', 'name': '🇦🇷 Argentina'},
+    {'code': 'CO', 'name': '🇨🇴 Colombia'},
+    {'code': 'VE', 'name': '🇻🇪 Venezuela'},
+    {'code': 'RO', 'name': '🇷🇴 Romania'},
+    {'code': 'PL', 'name': '🇵🇱 Polonia'},
+    {'code': 'UA', 'name': '🇺🇦 Ucraina'},
+    {'code': 'MA', 'name': '🇲🇦 Marocco'},
+    {'code': 'AL', 'name': '🇦🇱 Albania'},
+    {'code': 'PH', 'name': '🇵🇭 Filippine'},
+    {'code': 'CN', 'name': '🇨🇳 Cina'},
+    {'code': 'IN', 'name': '🇮🇳 India'},
+  ];
 
-  @override
-  void initState() {
-    super.initState();
-    if (_useTestData) {
-      _loadTestData();
-    }
-  }
 
-  void _loadTestData() {
-    _nomeController.text = 'Jordan';
-    _cognomeController.text = 'Avila';
-    _codiceFiscaleController.text = 'VLGGGN94L13Z605E';
-    _dataNascitaController.text = '13/07/1994';
-    _luogoNascitaController.text = 'Roma';
-    _indirizzoController.text = 'Via Roma 123';
-    _cittaController.text = 'Milano';
-    _capController.text = '20100';
-    _telefonoController.text = '+39 3891733185';
-    _emailController.text = 'jordanavila1394@gmail.com';
-    _professioneController.text = 'Ingegnere';
-    _noteController.text = 'Voglio contribuire alla cooperativa sociale';
-  }
 
   @override
   void dispose() {
     _nomeController.dispose();
     _cognomeController.dispose();
+    _prefissoController.dispose();
+    _telefonoController.dispose();
+    _emailController.dispose();
     _codiceFiscaleController.dispose();
     _dataNascitaController.dispose();
     _luogoNascitaController.dispose();
     _indirizzoController.dispose();
     _cittaController.dispose();
     _capController.dispose();
-    _telefonoController.dispose();
-    _emailController.dispose();
+    _provinciaController.dispose();
     _professioneController.dispose();
-    _noteController.dispose();
     super.dispose();
   }
 
@@ -79,37 +81,64 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
+    
+    if (_selectedNazionalita == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Seleziona la nazionalità'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    
+    if (!_privacyAccepted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.translate('privacyRequired')),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     setState(() {
       _isSubmitting = true;
     });
 
-    // Prima controlla se l'email è già registrata
-    final email = _emailController.text.trim();
-    final emailExists = await _checkEmailExists(email);
-
-    if (emailExists) {
-      setState(() {
-        _isSubmitting = false;
-      });
-      if (!mounted) return;
-      _showEmailExistsDialog();
-      return;
-    }
-
     final result = await SocioService.richiestaAdesioneSocio(
       nome: _nomeController.text.trim(),
       cognome: _cognomeController.text.trim(),
-      codiceFiscale: _codiceFiscaleController.text.trim().toUpperCase(),
-      dataNascita: _dataNascitaController.text.trim(),
-      luogoNascita: _luogoNascitaController.text.trim(),
-      indirizzo: _indirizzoController.text.trim(),
-      citta: _cittaController.text.trim(),
-      cap: _capController.text.trim(),
+      prefix: _prefissoController.text.trim(),
       telefono: _telefonoController.text.trim(),
+      nazionalita: _selectedNazionalita!,
       email: _emailController.text.trim(),
-      professione: _professioneController.text.trim(),
-      motivazione: _noteController.text.trim(),
+      privacyAccepted: _privacyAccepted,
+      // Campi opzionali
+      codiceFiscale: _codiceFiscaleController.text.trim().isNotEmpty
+          ? _codiceFiscaleController.text.trim().toUpperCase()
+          : null,
+      dataNascita: _dataNascitaController.text.trim().isNotEmpty
+          ? _dataNascitaController.text.trim()
+          : null,
+      luogoNascita: _luogoNascitaController.text.trim().isNotEmpty
+          ? _luogoNascitaController.text.trim()
+          : null,
+      indirizzo: _indirizzoController.text.trim().isNotEmpty
+          ? _indirizzoController.text.trim()
+          : null,
+      citta: _cittaController.text.trim().isNotEmpty
+          ? _cittaController.text.trim()
+          : null,
+      cap: _capController.text.trim().isNotEmpty
+          ? _capController.text.trim()
+          : null,
+      provincia: _provinciaController.text.trim().isNotEmpty
+          ? _provinciaController.text.trim()
+          : null,
+      professione: _professioneController.text.trim().isNotEmpty
+          ? _professioneController.text.trim()
+          : null,
     );
 
     setState(() {
@@ -122,11 +151,12 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
     final message = result['message'] ?? 'Operazione completata';
 
     if (success) {
-      // Salva l'email localmente per verifiche future
-      final email = _emailController.text.trim();
-      await _storage.write(key: 'pending_socio_email', value: email);
-
       if (!mounted) return;
+      
+      // Mostra dialog con credenziali generate
+      final username = result['username'] ?? 'N/A';
+      final password = result['password'] ?? 'N/A';
+      final email = _emailController.text.trim();
 
       showDialog(
         context: context,
@@ -139,22 +169,118 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                   children: [
                     const Icon(Icons.check_circle, color: Colors.green, size: 32),
                     const SizedBox(width: 12),
-                    Expanded(child: Text(l10n.requestSent)),
+                    Expanded(child: Text(l10n.registrationCompleted)),
                   ],
                 ),
-                content: Text(
-                  message +
-                      '\n\n${l10n.requestReceived}',
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.blue.shade200),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.email, color: Colors.blue.shade700),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              email.isNotEmpty 
+                                ? 'Abbiamo inviato le credenziali a: $email'
+                                : 'Credenziali inviate via email',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.saveTheseCredentials,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.red,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Usa queste credenziali per accedere',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${l10n.username} (Telefono completo)',
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  SelectableText(
+                                    username,
+                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    l10n.password,
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  SelectableText(
+                                    password,
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
                 actions: [
-                  TextButton(
+                  ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pop(); // Chiudi dialog
-                      Navigator.of(
-                        context,
-                      ).pop(); // Torna alla schermata precedente
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
                     },
-                    child: Text(l10n.ok),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: Text(l10n.iHaveSaved),
                   ),
                 ],
               );
@@ -183,71 +309,6 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
             ),
       );
     }
-  }
-
-  /// Controlla se l'email esiste già nel sistema
-  Future<bool> _checkEmailExists(String email) async {
-    try {
-      // Chiama direttamente l'endpoint di verifica
-      final encodedEmail = Uri.encodeComponent(email);
-      final url = '${SocioService.baseUrl}/soci/verifica/$encodedEmail';
-
-      final response = await http
-          .get(Uri.parse(url))
-          .timeout(const Duration(seconds: 30));
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        // Se is_socio è true, l'email esiste già
-        return data['is_socio'] == true;
-      }
-      return false;
-    } catch (e) {
-      print('Errore controllo email: $e');
-      return false;
-    }
-  }
-
-  /// Mostra dialog quando l'email esiste già
-  void _showEmailExistsDialog() {
-    final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Row(
-              children: [
-                const Icon(Icons.info_outline, color: Colors.blue, size: 32),
-                const SizedBox(width: 12),
-                Expanded(child: Text(l10n.emailAlreadyRegistered)),
-              ],
-            ),
-            content: Text(l10n.emailExistsMessage),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Chiudi dialog
-                  Navigator.of(context).pop(); // Chiudi form adesione
-                  // Vai al login
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
-                ),
-                child: Text(l10n.goToLogin),
-              ),
-            ],
-          ),
-    );
   }
 
   @override
@@ -308,11 +369,16 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                       const SizedBox(height: 24),
 
                       Text(
-                        l10n.personalInfo,
+                        '${l10n.personalInfo} *',
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Campi obbligatori per la registrazione',
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                       const SizedBox(height: 16),
 
@@ -323,10 +389,15 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                           border: const OutlineInputBorder(),
                         ),
                         validator:
-                            (value) =>
-                                value?.isEmpty ?? true
-                                    ? l10n.fillAllFields
-                                    : null,
+                            (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return l10n.fillAllFields;
+                              }
+                              if (value.trim().length < 2) {
+                                return 'Nome troppo corto';
+                              }
+                              return null;
+                            },
                       ),
                       const SizedBox(height: 12),
 
@@ -337,130 +408,64 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                           border: const OutlineInputBorder(),
                         ),
                         validator:
-                            (value) =>
-                                value?.isEmpty ?? true
-                                    ? l10n.fillAllFields
-                                    : null,
+                            (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return l10n.fillAllFields;
+                              }
+                              if (value.trim().length < 2) {
+                                return 'Cognome troppo corto';
+                              }
+                              return null;
+                            },
                       ),
                       const SizedBox(height: 12),
 
-                      TextFormField(
-                        controller: _codiceFiscaleController,
-                        decoration: InputDecoration(
-                          labelText: '${l10n.fiscalCode} *',
-                          border: const OutlineInputBorder(),
-                        ),
-                        textCapitalization: TextCapitalization.characters,
-                        validator: (value) {
-                          if (value?.isEmpty ?? true) {
-                            return l10n.fillAllFields;
-                          }
-                          if (value!.length != 16) {
-                            return 'Il codice fiscale deve essere di 16 caratteri';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 12),
-
-                      TextFormField(
-                        controller: _dataNascitaController,
-                        decoration: InputDecoration(
-                          labelText: '${l10n.birthDate} *',
-                          border: const OutlineInputBorder(),
-                          hintText: l10n.dateFormat,
-                          suffixIcon: const Icon(Icons.calendar_today),
-                        ),
-                        readOnly: true,
-                        onTap: () async {
-                          final date = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime(1990),
-                            firstDate: DateTime(1900),
-                            lastDate: DateTime.now(),
-                          );
-                          if (date != null) {
-                            _dataNascitaController.text =
-                                '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
-                          }
-                        },
-                        validator:
-                            (value) =>
-                                value?.isEmpty ?? true
-                                    ? l10n.fillAllFields
-                                    : null,
-                      ),
-                      const SizedBox(height: 12),
-
-                      TextFormField(
-                        controller: _luogoNascitaController,
-                        decoration: const InputDecoration(
-                          labelText: 'Luogo di Nascita *',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator:
-                            (value) =>
-                                value?.isEmpty ?? true
-                                    ? l10n.fillAllFields
-                                    : null,
-                      ),
-                      const SizedBox(height: 24),
-
-                      const Text(
-                        'Residenza',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      TextFormField(
-                        controller: _indirizzoController,
-                        decoration: InputDecoration(
-                          labelText: '${l10n.address} *',
-                          border: const OutlineInputBorder(),
-                        ),
-                        validator:
-                            (value) =>
-                                value?.isEmpty ?? true
-                                    ? l10n.fillAllFields
-                                    : null,
-                      ),
-                      const SizedBox(height: 12),
-
+                      // Telefono con prefisso
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            flex: 2,
+                          SizedBox(
+                            width: 100,
                             child: TextFormField(
-                              controller: _cittaController,
-                              decoration: InputDecoration(
-                                labelText: '${l10n.city} *',
-                                border: const OutlineInputBorder(),
+                              controller: _prefissoController,
+                              decoration: const InputDecoration(
+                                labelText: 'Prefisso *',
+                                border: OutlineInputBorder(),
+                                hintText: '+39',
+                                prefixIcon: Icon(Icons.public),
                               ),
-                              validator:
-                                  (value) =>
-                                      value?.isEmpty ?? true
-                                          ? l10n.fillAllFields
-                                          : null,
+                              keyboardType: TextInputType.phone,
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Req.';
+                                }
+                                if (!value.startsWith('+')) {
+                                  return '+?';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: TextFormField(
-                              controller: _capController,
+                              controller: _telefonoController,
                               decoration: InputDecoration(
-                                labelText: '${l10n.postalCode} *',
+                                labelText: '${l10n.phone} *',
                                 border: const OutlineInputBorder(),
+                                prefixIcon: const Icon(Icons.phone),
+                                hintText: '333 1234567',
+                                helperText: 'Username = prefisso + numero',
+                                helperStyle: const TextStyle(fontSize: 10),
                               ),
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.phone,
                               validator: (value) {
-                                if (value?.isEmpty ?? true) {
+                                if (value == null || value.trim().isEmpty) {
                                   return l10n.fillAllFields;
                                 }
-                                if (value!.length != 5) {
-                                  return 'CAP non valido';
+                                final cleaned = value.replaceAll(RegExp(r'[^\d]'), '');
+                                if (cleaned.length < 8) {
+                                  return 'Numero troppo corto';
                                 }
                                 return null;
                               },
@@ -468,30 +473,33 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 12),
 
-                      Text(
-                        l10n.contactInfo,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                      DropdownButtonFormField<String>(
+                        value: _selectedNazionalita,
+                        decoration: const InputDecoration(
+                          labelText: 'Nazionalità *',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.public),
+                          helperText: 'Seleziona il tuo paese di origine',
                         ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      TextFormField(
-                        controller: _telefonoController,
-                        decoration: InputDecoration(
-                          labelText: '${l10n.phone} *',
-                          border: const OutlineInputBorder(),
-                          prefixIcon: const Icon(Icons.phone),
-                        ),
-                        keyboardType: TextInputType.phone,
-                        validator:
-                            (value) =>
-                                value?.isEmpty ?? true
-                                    ? l10n.fillAllFields
-                                    : null,
+                        items: _nazionalita.map((country) {
+                          return DropdownMenuItem<String>(
+                            value: country['code'],
+                            child: Text(country['name']!),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedNazionalita = value;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Seleziona la nazionalità';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 12),
 
@@ -501,72 +509,168 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                           labelText: '${l10n.email} *',
                           border: const OutlineInputBorder(),
                           prefixIcon: const Icon(Icons.email),
+                          hintText: 'esempio@email.com',
                         ),
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
-                          if (value?.isEmpty ?? true) {
+                          if (value == null || value.trim().isEmpty) {
                             return l10n.fillAllFields;
                           }
-                          if (!value!.contains('@')) {
+                          final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                          if (!emailRegex.hasMatch(value)) {
                             return 'Email non valida';
                           }
                           return null;
                         },
                       ),
-                      const SizedBox(height: 24),
-
-                      Text(
-                        l10n.additionalInfo,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
                       const SizedBox(height: 16),
 
-                      TextFormField(
-                        controller: _professioneController,
-                        decoration: const InputDecoration(
-                          labelText: 'Professione (opzionale)',
-                          border: OutlineInputBorder(),
+                      // Privacy Checkbox
+                      CheckboxListTile(
+                        value: _privacyAccepted,
+                        onChanged: (value) {
+                          setState(() {
+                            _privacyAccepted = value ?? false;
+                          });
+                        },
+                        title: const Text(
+                          'Accetto il trattamento dei dati personali *',
+                          style: TextStyle(fontSize: 14),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-
-                      TextFormField(
-                        controller: _noteController,
-                        decoration: InputDecoration(
-                          labelText: 'Note (opzionale)',
-                          border: const OutlineInputBorder(),
-                          hintText: l10n.additionalInfoPlaceholder,
+                        subtitle: const Text(
+                          'I tuoi dati saranno trattati secondo la normativa sulla privacy',
+                          style: TextStyle(fontSize: 11, color: Colors.grey),
                         ),
-                        maxLines: 3,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        contentPadding: EdgeInsets.zero,
                       ),
                       const SizedBox(height: 24),
 
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.blue.shade200),
+                      // Campi Opzionali
+                      ExpansionTile(
+                        title: Text(
+                          '${l10n.additionalInfo} (opzionale)',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.privacy_tip_outlined,
-                              color: Colors.blue.shade700,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            const Expanded(
-                              child: Text(
-                                'I tuoi dati saranno trattati secondo la normativa sulla privacy',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                            ),
-                          ],
+                        subtitle: const Text(
+                          'Compila per velocizzare il completamento del profilo',
+                          style: TextStyle(fontSize: 12),
                         ),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              children: [
+                                TextFormField(
+                                  controller: _codiceFiscaleController,
+                                  decoration: InputDecoration(
+                                    labelText: l10n.fiscalCode,
+                                    border: const OutlineInputBorder(),
+                                  ),
+                                  textCapitalization: TextCapitalization.characters,
+                                  validator: (value) {
+                                    if (value != null && value.isNotEmpty && value.length != 16) {
+                                      return 'Il codice fiscale deve essere di 16 caratteri';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 12),
+                                TextFormField(
+                                  controller: _dataNascitaController,
+                                  decoration: InputDecoration(
+                                    labelText: l10n.birthDate,
+                                    border: const OutlineInputBorder(),
+                                    hintText: l10n.dateFormat,
+                                    suffixIcon: const Icon(Icons.calendar_today),
+                                  ),
+                                  readOnly: true,
+                                  onTap: () async {
+                                    final date = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime(1990),
+                                      firstDate: DateTime(1900),
+                                      lastDate: DateTime.now(),
+                                    );
+                                    if (date != null) {
+                                      _dataNascitaController.text =
+                                          '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+                                    }
+                                  },
+                                ),
+                                const SizedBox(height: 12),
+                                TextFormField(
+                                  controller: _luogoNascitaController,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Luogo di Nascita',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                TextFormField(
+                                  controller: _indirizzoController,
+                                  decoration: InputDecoration(
+                                    labelText: l10n.address,
+                                    border: const OutlineInputBorder(),
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 2,
+                                      child: TextFormField(
+                                        controller: _cittaController,
+                                        decoration: InputDecoration(
+                                          labelText: l10n.city,
+                                          border: const OutlineInputBorder(),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: TextFormField(
+                                        controller: _capController,
+                                        decoration: InputDecoration(
+                                          labelText: l10n.postalCode,
+                                          border: const OutlineInputBorder(),
+                                        ),
+                                        keyboardType: TextInputType.number,
+                                        validator: (value) {
+                                          if (value != null && value.isNotEmpty && value.length != 5) {
+                                            return 'CAP non valido';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                TextFormField(
+                                  controller: _provinciaController,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Provincia',
+                                    border: OutlineInputBorder(),
+                                    hintText: 'Es: MI, RM, TO',
+                                  ),
+                                  textCapitalization: TextCapitalization.characters,
+                                ),
+                                const SizedBox(height: 12),
+                                TextFormField(
+                                  controller: _professioneController,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Professione',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

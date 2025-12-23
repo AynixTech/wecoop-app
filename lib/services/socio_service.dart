@@ -93,20 +93,26 @@ class SocioService {
   }
 
   /// Invia richiesta di adesione come socio (PUBBLICO - no auth richiesta)
+  /// POST /soci/richiesta
+  /// CAMPI OBBLIGATORI (7): nome, cognome, prefix, telefono, nazionalita, email, privacy_accepted
+  /// CAMPI OPZIONALI: tutti gli altri
+  /// Username generato: prefix + telefono (solo numeri, es: +39 3331234567 → 393331234567)
   static Future<Map<String, dynamic>> richiestaAdesioneSocio({
     required String nome,
     required String cognome,
-    required String codiceFiscale,
-    required String dataNascita,
-    required String luogoNascita,
-    required String indirizzo,
-    required String citta,
-    required String cap,
+    required String prefix,
     required String telefono,
+    required String nazionalita,
     required String email,
-    String? professione,
+    required bool privacyAccepted,
+    String? codiceFiscale,
+    String? dataNascita,
+    String? luogoNascita,
+    String? indirizzo,
+    String? citta,
+    String? cap,
     String? provincia,
-    String? motivazione,
+    String? professione,
   }) async {
     try {
       final url = '$baseUrl/soci/richiesta';
@@ -114,22 +120,27 @@ class SocioService {
       print('=== INVIANDO RICHIESTA ADESIONE SOCIO ===');
       print('URL: $url');
 
-      final body = jsonEncode({
+      final Map<String, dynamic> bodyData = {
         'nome': nome,
         'cognome': cognome,
-        'codice_fiscale': codiceFiscale,
-        'data_nascita': dataNascita,
-        'luogo_nascita': luogoNascita,
-        'indirizzo': indirizzo,
-        'citta': citta,
-        'cap': cap,
-        'provincia': provincia ?? '',
+        'prefix': prefix,
         'telefono': telefono,
+        'nazionalita': nazionalita.toUpperCase(), // Assicura maiuscolo ISO (IT, EC, ES)
         'email': email,
-        'professione': professione ?? '',
-        'motivazione': motivazione ?? 'Richiesta di adesione alla cooperativa',
-      });
+        'privacy_accepted': privacyAccepted,
+      };
 
+      // Aggiungi campi opzionali solo se valorizzati
+      if (codiceFiscale != null && codiceFiscale.isNotEmpty) bodyData['codice_fiscale'] = codiceFiscale;
+      if (dataNascita != null && dataNascita.isNotEmpty) bodyData['data_nascita'] = dataNascita;
+      if (luogoNascita != null && luogoNascita.isNotEmpty) bodyData['luogo_nascita'] = luogoNascita;
+      if (indirizzo != null && indirizzo.isNotEmpty) bodyData['indirizzo'] = indirizzo;
+      if (citta != null && citta.isNotEmpty) bodyData['citta'] = citta;
+      if (cap != null && cap.isNotEmpty) bodyData['cap'] = cap;
+      if (provincia != null && provincia.isNotEmpty) bodyData['provincia'] = provincia;
+      if (professione != null && professione.isNotEmpty) bodyData['professione'] = professione;
+
+      final body = jsonEncode(bodyData);
       print('Body: $body');
 
       final headers = await _getHeaders(includeAuth: false);
@@ -147,13 +158,14 @@ class SocioService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final rawData = jsonDecode(response.body);
         final data = decodeHtmlInMap(rawData);
-        // Nuova API ritorna: {"success": true, "message": "...", "data": {"richiesta_id": 123, "nome": "...", "email": "...", "status": "pending"}}
+        // Nuova API ritorna: {"success": true, "message": "...", "data": {"username": "socio_123", "password": "abc123", "tessera_url": "..."}}
         return {
           'success': data['success'] ?? true,
           'message':
-              data['message'] ?? 'Richiesta di adesione inviata con successo',
-          'richiesta_id': data['data']?['richiesta_id'],
-          'status': data['data']?['status'] ?? 'pending',
+              data['message'] ?? 'Registrazione completata con successo',
+          'username': data['data']?['username'],
+          'password': data['data']?['password'],
+          'tessera_url': data['data']?['tessera_url'],
         };
       } else if (response.statusCode == 400) {
         final rawData = jsonDecode(response.body);
@@ -169,7 +181,7 @@ class SocioService {
           'success': false,
           'message':
               errorData['message'] ??
-              'Esiste già una richiesta con questa email',
+              'Esiste già una registrazione con questo telefono o email',
         };
       } else {
         final rawData = jsonDecode(response.body);
@@ -322,6 +334,8 @@ class SocioService {
 
   /// Ottieni lista dei soci (AUTENTICATO - solo admin)
   /// GET /soci
+  /// Restituisce array con: id, nome, cognome, email, telefono, username, status, etc.
+  /// NOTA: username = numero di telefono completo (es: +393331234567)
   static Future<List<Map<String, dynamic>>> getSoci({
     String status = 'attivo',
     int perPage = 50,

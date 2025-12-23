@@ -8,6 +8,8 @@ import 'package:wecoop_app/services/locale_provider.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'screens/main_screen.dart';
 import 'screens/login/login_screen.dart';
+import 'screens/login/forgot_password_screen.dart';
+import 'screens/profilo/change_password_screen.dart';
 
 class WECOOPApp extends StatelessWidget {
   const WECOOPApp({super.key});
@@ -100,6 +102,8 @@ class WECOOPApp extends StatelessWidget {
           routes: {
             '/home': (context) => const MainScreen(),
             '/login': (context) => const LoginScreen(),
+            '/forgot-password': (context) => const ForgotPasswordScreen(),
+            '/change-password': (context) => const ChangePasswordScreen(),
             '/prenotaAppuntamento': (context) => PrenotaAppuntamentoScreen(),
             '/compila730':
                 (context) =>

@@ -130,10 +130,10 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   void _logout(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
 
-    // Salva l'email prima di fare logout per poterla ricaricare
-    final currentEmail = await storage.read(key: 'user_email');
-    if (currentEmail != null) {
-      await storage.write(key: 'last_login_email', value: currentEmail);
+    // Salva el teléfono antes de hacer logout para poder recargarlo
+    final currentPhone = await storage.read(key: 'telefono');
+    if (currentPhone != null) {
+      await storage.write(key: 'last_login_phone', value: currentPhone);
     }
 
     // Cancella token e credenziali
@@ -141,7 +141,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     await storage.delete(key: 'user_email');
     await storage.delete(key: 'user_display_name');
     await storage.delete(key: 'user_nicename');
-    await storage.delete(key: 'saved_email');
+    await storage.delete(key: 'saved_phone');
     await storage.delete(key: 'saved_password');
     await storage.delete(key: 'carta_id');
 
@@ -167,7 +167,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     await storage.delete(key: 'quota_pagata');
     await storage.delete(key: 'anni_socio');
 
-    // NON cancellare last_login_email - serve per precompilare il login
+    // NON cancellare last_login_phone - serve per precompilare il login
 
     print('Utente disconnesso');
     ScaffoldMessenger.of(
@@ -614,6 +614,33 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
               onChanged: (value) {
                 if (value != null) {
                   _saveInterest(value);
+                }
+              },
+            ),
+
+            const Divider(height: 32, thickness: 1),
+
+            // Sicurezza - Cambia Password
+            ListTile(
+              leading: const Icon(Icons.security, color: Colors.blue),
+              title: Text(
+                l10n.translate('changePassword'),
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+              subtitle: Text(
+                l10n.translate('updateYourPassword'),
+                style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () async {
+                final result = await Navigator.pushNamed(context, '/change-password');
+                if (result == true && mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(l10n.translate('passwordChangedSuccess')),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
                 }
               },
             ),

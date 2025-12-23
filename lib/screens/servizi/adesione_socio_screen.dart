@@ -84,8 +84,8 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
     
     if (_selectedNazionalita == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Seleziona la nazionalità'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.translate('selectNationality')),
           backgroundColor: Colors.red,
         ),
       );
@@ -190,8 +190,8 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                           Expanded(
                             child: Text(
                               email.isNotEmpty 
-                                ? 'Abbiamo inviato le credenziali a: $email'
-                                : 'Credenziali inviate via email',
+                                ? '${l10n.translate('credentialsSentTo')} $email'
+                                : l10n.translate('credentialsSentViaEmail'),
                               style: const TextStyle(fontSize: 12),
                             ),
                           ),
@@ -208,9 +208,9 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Usa queste credenziali per accedere',
-                      style: TextStyle(fontSize: 12),
+                    Text(
+                      l10n.translate('useTheseCredentials'),
+                      style: const TextStyle(fontSize: 12),
                     ),
                     const SizedBox(height: 16),
                     Container(
@@ -229,7 +229,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    '${l10n.username} (Telefono completo)',
+                                    '${l10n.username} (${l10n.translate('fullPhoneNumber')})',
                                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                                   ),
                                   const SizedBox(height: 4),
@@ -345,9 +345,9 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                   color: Colors.amber.shade700,
                                 ),
                                 const SizedBox(width: 8),
-                                const Text(
-                                  'Perché diventare socio?',
-                                  style: TextStyle(
+                                Text(
+                                  l10n.whyBecomeMember,
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -355,13 +355,13 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                               ],
                             ),
                             const SizedBox(height: 12),
-                            const Text(
-                              '• Accesso a tutti i servizi di assistenza\n'
-                              '• Supporto dedicato per pratiche burocratiche\n'
-                              '• Consulenza fiscale e contabile\n'
-                              '• Partecipazione a eventi e progetti\n'
-                              '• Rete di supporto e comunità',
-                              style: TextStyle(fontSize: 14),
+                            Text(
+                              '• ${l10n.translate('accessToAllServices')}\n'
+                              '• ${l10n.translate('dedicatedSupport')}\n'
+                              '• ${l10n.translate('fiscalConsultancy')}\n'
+                              '• ${l10n.translate('eventsParticipation')}\n'
+                              '• ${l10n.translate('supportNetwork')}',
+                              style: const TextStyle(fontSize: 14),
                             ),
                           ],
                         ),
@@ -376,9 +376,9 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Campi obbligatori per la registrazione',
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      Text(
+                        l10n.translate('requiredFieldsForRegistration'),
+                        style: const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                       const SizedBox(height: 16),
 
@@ -394,7 +394,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                 return l10n.fillAllFields;
                               }
                               if (value.trim().length < 2) {
-                                return 'Nome troppo corto';
+                                return l10n.translate('nameTooShort');
                               }
                               return null;
                             },
@@ -413,7 +413,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                 return l10n.fillAllFields;
                               }
                               if (value.trim().length < 2) {
-                                return 'Cognome troppo corto';
+                                return l10n.translate('surnameTooShort');
                               }
                               return null;
                             },
@@ -428,16 +428,16 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                             width: 100,
                             child: TextFormField(
                               controller: _prefissoController,
-                              decoration: const InputDecoration(
-                                labelText: 'Prefisso *',
-                                border: OutlineInputBorder(),
+                              decoration: InputDecoration(
+                                labelText: '${l10n.translate('prefix')} *',
+                                border: const OutlineInputBorder(),
                                 hintText: '+39',
-                                prefixIcon: Icon(Icons.public),
+                                prefixIcon: const Icon(Icons.public),
                               ),
                               keyboardType: TextInputType.phone,
                               validator: (value) {
                                 if (value == null || value.trim().isEmpty) {
-                                  return 'Req.';
+                                  return l10n.translate('required');
                                 }
                                 if (!value.startsWith('+')) {
                                   return '+?';
@@ -455,7 +455,6 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                 border: const OutlineInputBorder(),
                                 prefixIcon: const Icon(Icons.phone),
                                 hintText: '333 1234567',
-                                helperText: 'Username = prefisso + numero',
                                 helperStyle: const TextStyle(fontSize: 10),
                               ),
                               keyboardType: TextInputType.phone,
@@ -465,7 +464,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                 }
                                 final cleaned = value.replaceAll(RegExp(r'[^\d]'), '');
                                 if (cleaned.length < 8) {
-                                  return 'Numero troppo corto';
+                                  return l10n.translate('numberTooShort');
                                 }
                                 return null;
                               },
@@ -477,11 +476,11 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
 
                       DropdownButtonFormField<String>(
                         value: _selectedNazionalita,
-                        decoration: const InputDecoration(
-                          labelText: 'Nazionalità *',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.public),
-                          helperText: 'Seleziona il tuo paese di origine',
+                        decoration: InputDecoration(
+                          labelText: '${l10n.translate('nationality')} *',
+                          border: const OutlineInputBorder(),
+                          prefixIcon: const Icon(Icons.public),
+                          helperText: l10n.translate('selectYourCountryOfOrigin'),
                         ),
                         items: _nazionalita.map((country) {
                           return DropdownMenuItem<String>(
@@ -496,7 +495,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                         },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Seleziona la nazionalità';
+                            return l10n.translate('selectNationality');
                           }
                           return null;
                         },
@@ -518,7 +517,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                           }
                           final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
                           if (!emailRegex.hasMatch(value)) {
-                            return 'Email non valida';
+                            return l10n.translate('invalidEmail');
                           }
                           return null;
                         },
@@ -533,13 +532,13 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                             _privacyAccepted = value ?? false;
                           });
                         },
-                        title: const Text(
-                          'Accetto il trattamento dei dati personali *',
-                          style: TextStyle(fontSize: 14),
+                        title: Text(
+                          l10n.translate('iAcceptDataProcessing'),
+                          style: const TextStyle(fontSize: 14),
                         ),
-                        subtitle: const Text(
-                          'I tuoi dati saranno trattati secondo la normativa sulla privacy',
-                          style: TextStyle(fontSize: 11, color: Colors.grey),
+                        subtitle: Text(
+                          l10n.translate('dataWillBeProcessed'),
+                          style: const TextStyle(fontSize: 11, color: Colors.grey),
                         ),
                         controlAffinity: ListTileControlAffinity.leading,
                         contentPadding: EdgeInsets.zero,
@@ -555,9 +554,9 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        subtitle: const Text(
-                          'Compila per velocizzare il completamento del profilo',
-                          style: TextStyle(fontSize: 12),
+                        subtitle: Text(
+                          l10n.translate('fillToSpeedUp'),
+                          style: const TextStyle(fontSize: 12),
                         ),
                         children: [
                           Padding(
@@ -573,7 +572,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                   textCapitalization: TextCapitalization.characters,
                                   validator: (value) {
                                     if (value != null && value.isNotEmpty && value.length != 16) {
-                                      return 'Il codice fiscale deve essere di 16 caratteri';
+                                      return l10n.translate('fiscalCodeMustBe16Chars');
                                     }
                                     return null;
                                   },
@@ -604,9 +603,9 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                 const SizedBox(height: 12),
                                 TextFormField(
                                   controller: _luogoNascitaController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Luogo di Nascita',
-                                    border: OutlineInputBorder(),
+                                  decoration: InputDecoration(
+                                    labelText: l10n.translate('birthPlace'),
+                                    border: const OutlineInputBorder(),
                                   ),
                                 ),
                                 const SizedBox(height: 12),
@@ -641,7 +640,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                         keyboardType: TextInputType.number,
                                         validator: (value) {
                                           if (value != null && value.isNotEmpty && value.length != 5) {
-                                            return 'CAP non valido';
+                                            return l10n.translate('invalidPostalCode');
                                           }
                                           return null;
                                         },
@@ -652,19 +651,19 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                 const SizedBox(height: 12),
                                 TextFormField(
                                   controller: _provinciaController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Provincia',
-                                    border: OutlineInputBorder(),
-                                    hintText: 'Es: MI, RM, TO',
+                                  decoration: InputDecoration(
+                                    labelText: l10n.translate('province'),
+                                    border: const OutlineInputBorder(),
+                                    hintText: l10n.translate('provinceExample'),
                                   ),
                                   textCapitalization: TextCapitalization.characters,
                                 ),
                                 const SizedBox(height: 12),
                                 TextFormField(
                                   controller: _professioneController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Professione',
-                                    border: OutlineInputBorder(),
+                                  decoration: InputDecoration(
+                                    labelText: l10n.translate('profession'),
+                                    border: const OutlineInputBorder(),
                                   ),
                                 ),
                               ],
@@ -694,24 +693,24 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Pulsante per andare al login
-                    TextButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginScreen(),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.login),
-                      label: Text(
-                        l10n.translate('alreadyRegisteredLogin'),
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      style: TextButton.styleFrom(
-                        foregroundColor: const Color(0xFF2196F3),
-                      ),
-                    ),
+                    // TextButton.icon(
+                    //   onPressed: () {
+                    //     Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //         builder: (context) => const LoginScreen(),
+                    //       ),
+                    //     );
+                    //   },
+                    //   icon: const Icon(Icons.login),
+                    //   label: Text(
+                    //     l10n.translate('alreadyRegisteredLogin'),
+                    //     style: const TextStyle(fontSize: 14),
+                    //   ),
+                    //   style: TextButton.styleFrom(
+                    //     foregroundColor: const Color(0xFF2196F3),
+                    //   ),
+                    // ),
                     const SizedBox(height: 12),
                     // Pulsante di invio richiesta
                     ElevatedButton(

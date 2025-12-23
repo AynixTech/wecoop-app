@@ -618,5 +618,157 @@ class SocioService {
       };
     }
   }
+
+  /// Verifica se un username esiste
+  /// GET /soci/check-username?username={username}
+  static Future<Map<String, dynamic>> checkUsername(String username) async {
+    try {
+      final cleanUsername = username.trim().replaceAll(RegExp(r'[^\d]'), '');
+      final url = '$baseUrl/soci/check-username?username=$cleanUsername';
+      
+      print('📤 GET /soci/check-username?username=$cleanUsername');
+
+      final response = await http
+          .get(Uri.parse(url))
+          .timeout(const Duration(seconds: 30));
+
+      print('📥 Response status: ${response.statusCode}');
+      print('📥 Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        return {
+          'esiste': false,
+          'error': 'Errore verifica username: ${response.statusCode}',
+        };
+      }
+    } catch (e) {
+      print('❌ Errore verifica username: $e');
+      return {
+        'esiste': false,
+        'error': 'Errore di connessione: $e',
+      };
+    }
+  }
+
+  /// Reset password (password dimenticata)
+  /// POST /soci/reset-password
+  /// Body: {"telefono": "3891733185"} oppure {"email": "user@example.com"}
+  static Future<Map<String, dynamic>> resetPassword({
+    String? telefono,
+    String? email,
+  }) async {
+    try {
+      if (telefono == null && email == null) {
+        return {
+          'success': false,
+          'message': 'Fornisci almeno telefono o email',
+        };
+      }
+
+      final url = '$baseUrl/soci/reset-password';
+      final headers = await _getHeaders(includeAuth: false);
+      
+      final body = <String, dynamic>{};
+      if (telefono != null) {
+        // Pulisci il telefono da simboli
+        body['telefono'] = telefono.trim().replaceAll(RegExp(r'[^\d]'), '');
+      }
+      if (email != null) {
+        body['email'] = email.trim();
+      }
+
+      print('📤 POST /soci/reset-password');
+      print('📤 Body: $body');
+
+      final response = await http
+          .post(
+            Uri.parse(url),
+            headers: headers,
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 30));
+
+      print('📥 Response status: ${response.statusCode}');
+      print('📥 Response body: ${response.body}');
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return {
+          'success': true,
+          'message': data['message'] ?? 'Password resettata. Controlla la tua email.',
+          'email_sent_to': data['email_sent_to'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': data['message'] ?? 'Errore reset password',
+          'code': data['code'],
+        };
+      }
+    } catch (e) {
+      print('❌ Errore reset password: $e');
+      return {
+        'success': false,
+        'message': 'Errore di connessione: $e',
+      };
+    }
+  }
+
+  /// Cambia password (utente autenticato)
+  /// POST /soci/me/change-password
+  /// Body: {"old_password": "xxx", "new_password": "yyy"}
+  static Future<Map<String, dynamic>> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final url = '$baseUrl/soci/me/change-password';
+      final headers = await _getHeaders(includeAuth: true);
+      
+      final body = {
+        'old_password': oldPassword,
+        'new_password': newPassword,
+      };
+
+      print('📤 POST /soci/me/change-password');
+      // Non logghiamo le password per sicurezza
+      print('📤 Body: {old_password: ***, new_password: ***}');
+
+      final response = await http
+          .post(
+            Uri.parse(url),
+            headers: headers,
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 30));
+
+      print('📥 Response status: ${response.statusCode}');
+      print('📥 Response body: ${response.body}');
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return {
+          'success': true,
+          'message': data['message'] ?? 'Password cambiata con successo',
+        };
+      } else {
+        return {
+          'success': false,
+          'message': data['message'] ?? 'Errore cambio password',
+          'code': data['code'],
+        };
+      }
+    } catch (e) {
+      print('❌ Errore cambio password: $e');
+      return {
+        'success': false,
+        'message': 'Errore di connessione: $e',
+      };
+    }
+  }
 }
 

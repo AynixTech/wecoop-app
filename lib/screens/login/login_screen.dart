@@ -13,7 +13,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController emailController = TextEditingController();
+  final TextEditingController prefixController = TextEditingController(text: '+39');
+  final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final storage = const FlutterSecureStorage();
   bool rememberPassword = false;
@@ -22,14 +23,14 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _loadLastEmail();
+    _loadLastPhone();
   }
 
-  /// Carica l'ultima email usata per il login
-  Future<void> _loadLastEmail() async {
-    final lastEmail = await storage.read(key: 'last_login_email');
-    if (lastEmail != null && lastEmail.isNotEmpty) {
-      emailController.text = lastEmail;
+  /// Carga el último teléfono usado para el login
+  Future<void> _loadLastPhone() async {
+    final lastPhone = await storage.read(key: 'last_login_phone');
+    if (lastPhone != null && lastPhone.isNotEmpty) {
+      phoneController.text = lastPhone;
     }
   }
 
@@ -40,19 +41,28 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     }
 
-    final email = emailController.text.trim();
+    // El username es el número de teléfono completo (solo números)
+    // Ejemplo: +39 333 1234567 → 393331234567
+    var phone = phoneController.text.trim().replaceAll(RegExp(r'[^\d]'), '');
+    final prefix = prefixController.text.trim().replaceAll(RegExp(r'[^\d]'), ''); // Ej: +39 → 39
+    
+    // Si el número no empieza con el prefijo, lo agregamos
+    if (prefix.isNotEmpty && !phone.startsWith(prefix)) {
+      phone = prefix + phone;
+    }
+    
     final password = passwordController.text;
 
     final url = Uri.parse('https://www.wecoop.org/wp-json/jwt-auth/v1/token');
 
     print('Invio richiesta login a $url');
-    print('Credenziali: $email / $password');
+    print('Username (telefono): $phone');
 
     try {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'username': email, 'password': password}),
+        body: jsonEncode({'username': phone, 'password': password}),
       );
 
       print('Status code: ${response.statusCode}');
@@ -80,11 +90,11 @@ class _LoginScreenState extends State<LoginScreen> {
           print('💾 Salvato user_id: ${data['user_id']}');
         }
 
-        // Salva sempre l'ultima email usata
-        await storage.write(key: 'last_login_email', value: email);
+        // Salva sempre l'ultimo telefono usato (username)
+        await storage.write(key: 'last_login_phone', value: phone);
 
         if (rememberPassword) {
-          await storage.write(key: 'saved_email', value: email);
+          await storage.write(key: 'saved_phone', value: phone);
           await storage.write(key: 'saved_password', value: password);
         }
 
@@ -244,9 +254,36 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 40),
             Image.asset('assets/images/wecoop_logo.png', height: 120),
             const SizedBox(height: 32),
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(labelText: l10n.email),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 100,
+                  child: TextField(
+                    controller: prefixController,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      labelText: l10n.translate('prefix'),
+                      hintText: '+39',
+                      prefixIcon: const Icon(Icons.flag, size: 20),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: phoneController,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      labelText: l10n.translate('phoneNumber'),
+                      hintText: '3331234567',
+                      helperText: 'Ej: 3891733185',
+                      helperStyle: const TextStyle(fontSize: 11, color: Colors.grey),
+                      prefixIcon: const Icon(Icons.phone),
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             TextField(
@@ -290,6 +327,20 @@ class _LoginScreenState extends State<LoginScreen> {
                   : Text(l10n.login),
             ),
             const SizedBox(height: 16),
+            
+            // Password Dimenticata
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/forgot-password');
+              },
+              child: Text(
+                l10n.translate('forgotPassword'),
+                style: const TextStyle(fontSize: 14),
+              ),
+            ),
+            
+            const SizedBox(height: 8),
+            
             TextButton.icon(
               onPressed: () {
                 Navigator.pushReplacementNamed(context, '/home');

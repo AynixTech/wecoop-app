@@ -14,23 +14,12 @@ class ProgettiScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(l10n!.projects),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              const Color(0xFF2196F3).withOpacity(0.1),
-              Colors.white,
-            ],
-          ),
-        ),
-        child: ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            final category = categories[index];
-            return Card(
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: categories.length,
+        itemBuilder: (context, index) {
+          final category = categories[index];
+          return Card(
               elevation: 4,
               margin: const EdgeInsets.only(bottom: 16),
               shape: RoundedRectangleBorder(
@@ -111,10 +100,8 @@ class ProgettiScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
-            );
-          },
-        ),
+              ));
+        },
       ),
     );
   }

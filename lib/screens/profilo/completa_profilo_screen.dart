@@ -17,6 +17,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
   final _formKey = GlobalKey<FormState>();
   final _storage = const FlutterSecureStorage();
   bool _isSubmitting = false;
+  bool _isLoading = true;
   int _currentStep = 0;
 
   // Controllers
@@ -40,33 +41,45 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
   }
 
   Future<void> _loadExistingData() async {
-    final userData = await SocioService.getMeData();
-    if (userData != null && userData['success'] == true) {
-      final data = userData['data'];
-      setState(() {
-        _emailController.text = data['email'] ?? '';
-        _codiceFiscaleController.text = data['codice_fiscale'] ?? '';
-        
-        // Converti data da YYYY-MM-DD a DD/MM/YYYY se presente
-        final dataNascita = data['data_nascita'] ?? '';
-        if (dataNascita.isNotEmpty && dataNascita.contains('-')) {
-          final parts = dataNascita.split('-');
-          if (parts.length == 3) {
-            _dataNascitaController.text = '${parts[2]}/${parts[1]}/${parts[0]}';
-          } else {
-            _dataNascitaController.text = dataNascita;
-          }
-        } else {
-          _dataNascitaController.text = dataNascita;
+    setState(() => _isLoading = true);
+    
+    try {
+      final userData = await SocioService.getMeData();
+      if (userData != null && userData['success'] == true) {
+        final data = userData['data'];
+        if (mounted) {
+          setState(() {
+            _emailController.text = data['email'] ?? '';
+            _codiceFiscaleController.text = data['codice_fiscale'] ?? '';
+            
+            // Converti data da YYYY-MM-DD a DD/MM/YYYY se presente
+            final dataNascita = data['data_nascita'] ?? '';
+            if (dataNascita.isNotEmpty && dataNascita.contains('-')) {
+              final parts = dataNascita.split('-');
+              if (parts.length == 3) {
+                _dataNascitaController.text = '${parts[2]}/${parts[1]}/${parts[0]}';
+              } else {
+                _dataNascitaController.text = dataNascita;
+              }
+            } else {
+              _dataNascitaController.text = dataNascita;
+            }
+            
+            _luogoNascitaController.text = data['luogo_nascita'] ?? '';
+            _indirizzoController.text = data['indirizzo'] ?? '';
+            _cittaController.text = data['citta'] ?? '';
+            _capController.text = data['cap'] ?? '';
+            _provinciaController.text = data['provincia'] ?? '';
+            _professioneController.text = data['professione'] ?? '';
+          });
         }
-        
-        _luogoNascitaController.text = data['luogo_nascita'] ?? '';
-        _indirizzoController.text = data['indirizzo'] ?? '';
-        _cittaController.text = data['citta'] ?? '';
-        _capController.text = data['cap'] ?? '';
-        _provinciaController.text = data['provincia'] ?? '';
-        _professioneController.text = data['professione'] ?? '';
-      });
+      }
+    } catch (e) {
+      print('Errore caricamento dati: $e');
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -202,7 +215,18 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
         title: Text(l10n.completeProfile),
         elevation: 0,
       ),
-      body: Form(
+      body: _isLoading
+          ? const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Caricamento dati...'),
+                ],
+              ),
+            )
+          : Form(
         key: _formKey,
         child: Stepper(
           currentStep: _currentStep,

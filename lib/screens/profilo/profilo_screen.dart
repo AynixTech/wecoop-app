@@ -643,7 +643,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              l10n.translate('updateYourPersonalData'),
+                              l10n.updateYourPersonalData,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: Colors.grey.shade600,
                               ),
@@ -665,28 +665,72 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
             const Divider(height: 32, thickness: 1),
 
             // Sicurezza - Cambia Password
-            ListTile(
-              leading: const Icon(Icons.security, color: Colors.blue),
-              title: Text(
-                l10n.translate('changePassword'),
-                style: const TextStyle(fontWeight: FontWeight.w500),
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Colors.blue.withOpacity(0.3)),
               ),
-              subtitle: Text(
-                l10n.translate('updateYourPassword'),
-                style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+              child: InkWell(
+                onTap: () async {
+                  final result = await Navigator.pushNamed(context, '/change-password');
+                  if (result == true && mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(l10n.translate('passwordChangedSuccess')),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                },
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(
+                          Icons.security,
+                          color: Colors.blue,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.translate('changePassword'),
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              l10n.translate('updateYourPassword'),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(
+                        Icons.arrow_forward_ios,
+                        color: Colors.blue,
+                        size: 18,
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () async {
-                final result = await Navigator.pushNamed(context, '/change-password');
-                if (result == true && mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(l10n.translate('passwordChangedSuccess')),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
-                }
-              },
             ),
 
             const Divider(height: 32, thickness: 1),

@@ -203,6 +203,7 @@ class AppLocalizations {
       'profileIncomplete': 'Profilo Incompleto',
       'completeProfileMessage': 'Completa i tuoi dati per accedere a tutti i servizi',
       'completeNow': 'Completa Ora',
+      'updateYourPersonalData': 'Aggiorna i tuoi dati personali',
       'personalData': 'Dati Personali',
       'documents': 'Documenti',
       'uploadDocumentsOptional': 'Carica i tuoi documenti (opzionale)',
@@ -692,6 +693,7 @@ class AppLocalizations {
       'profileIncomplete': 'Incomplete Profile',
       'completeProfileMessage': 'Complete your data to access all services',
       'completeNow': 'Complete Now',
+      'updateYourPersonalData': 'Update your personal data',
       'personalData': 'Personal Data',
       'documents': 'Documents',
       'uploadDocumentsOptional': 'Upload your documents (optional)',
@@ -1181,6 +1183,7 @@ class AppLocalizations {
       'profileIncomplete': 'Perfil Incompleto',
       'completeProfileMessage': 'Completa tus datos para acceder a todos los servicios',
       'completeNow': 'Completar Ahora',
+      'updateYourPersonalData': 'Actualiza tus datos personales',
       'personalData': 'Datos Personales',
       'documents': 'Documentos',
       'uploadDocumentsOptional': 'Sube tus documentos (opcional)',
@@ -1850,6 +1853,7 @@ class AppLocalizations {
   String get profileIncomplete => translate('profileIncomplete');
   String get completeProfileMessage => translate('completeProfileMessage');
   String get completeNow => translate('completeNow');
+  String get updateYourPersonalData => translate('updateYourPersonalData');
   String get personalData => translate('personalData');
   String get documents => translate('documents');
   String get uploadDocumentsOptional => translate('uploadDocumentsOptional');

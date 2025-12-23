@@ -3,6 +3,43 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import '../../services/socio_service.dart';
 
+/// Mappa dei codici ISO paese -> nome completo
+const Map<String, String> countryNames = {
+  'IT': 'Italia',
+  'EC': 'Ecuador',
+  'ES': 'España',
+  'CO': 'Colombia',
+  'PE': 'Perú',
+  'VE': 'Venezuela',
+  'AR': 'Argentina',
+  'BR': 'Brasil',
+  'CL': 'Chile',
+  'MX': 'México',
+  'US': 'United States',
+  'GB': 'United Kingdom',
+  'FR': 'France',
+  'DE': 'Germany',
+  'RO': 'Romania',
+  'PL': 'Polonia',
+  'UA': 'Ucraina',
+  'MA': 'Marocco',
+  'EG': 'Egitto',
+  'NG': 'Nigeria',
+  'GH': 'Ghana',
+  'SN': 'Senegal',
+  'CN': 'China',
+  'IN': 'India',
+  'PH': 'Filippine',
+  'BD': 'Bangladesh',
+  'PK': 'Pakistan',
+};
+
+/// Convierte código ISO a nombre completo del país
+String getCountryName(String? isoCode) {
+  if (isoCode == null || isoCode.isEmpty) return '';
+  return countryNames[isoCode.toUpperCase()] ?? isoCode;
+}
+
 class RichiestaFormScreen extends StatefulWidget {
   final String servizio;
   final String categoria;
@@ -139,19 +176,22 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       }
 
       // Paese di origine/provenienza (priorità a paese_origine)
+      // Converte codice ISO a nome completo (EC -> Ecuador, IT -> Italia, ecc.)
       final paese = paeseOrigine ?? nazionalita;
       if (paese != null) {
-        prefilledData['Paese di provenienza'] = paese;
-        prefilledData['Paese di origine'] = paese;
-        prefilledData['Country of origin'] = paese;
-        prefilledData['País de origen'] = paese;
+        final countryFullName = getCountryName(paese);
+        prefilledData['Paese di provenienza'] = countryFullName;
+        prefilledData['Paese di origine'] = countryFullName;
+        prefilledData['Country of origin'] = countryFullName;
+        prefilledData['País de origen'] = countryFullName;
       }
 
       // Nazionalità
       if (nazionalita != null) {
-        prefilledData['Nazionalità'] = nazionalita;
-        prefilledData['Nationality'] = nazionalita;
-        prefilledData['Nacionalidad'] = nazionalita;
+        final nationalityFullName = getCountryName(nazionalita);
+        prefilledData['Nazionalità'] = nationalityFullName;
+        prefilledData['Nationality'] = nationalityFullName;
+        prefilledData['Nacionalidad'] = nationalityFullName;
       }
 
       print('Dati precompilati: $prefilledData');

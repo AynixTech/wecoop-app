@@ -22,50 +22,50 @@ class PermessoSoggiornoScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               _OptionCard(
-                title: 'Per Lavoro Subordinato',
-                description: 'Contratto di lavoro dipendente',
+                title: l10n.forEmployment,
+                description: l10n.forEmploymentDesc,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder:
                           (context) => RichiestaFormScreen(
-                            servizio: 'Permesso di Soggiorno',
-                            categoria: 'Lavoro Subordinato',
-                            campi: const [
+                            servizio: l10n.residencePermit,
+                            categoria: l10n.forEmployment,
+                            campi: [
                               {
-                                'label': 'Nome completo',
+                                'label': l10n.fullName,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Data di nascita',
+                                'label': l10n.dateOfBirth,
                                 'type': 'date',
                                 'required': true,
                               },
                               {
-                                'label': 'Paese di provenienza',
+                                'label': l10n.countryOfOrigin,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Tipo di contratto',
+                                'label': l10n.contractType,
                                 'type': 'select',
-                                'options': ['Determinato', 'Indeterminato'],
+                                'options': [l10n.fixedTerm, l10n.permanentContract],
                                 'required': true,
                               },
                               {
-                                'label': 'Nome azienda',
+                                'label': l10n.companyName,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Durata contratto (mesi)',
+                                'label': l10n.contractDuration,
                                 'type': 'number',
                                 'required': true,
                               },
                               {
-                                'label': 'Note aggiuntive',
+                                'label': l10n.additionalNotes,
                                 'type': 'textarea',
                                 'required': false,
                               },
@@ -77,45 +77,45 @@ class PermessoSoggiornoScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               _OptionCard(
-                title: 'Per Lavoro Autonomo',
-                description: 'Attività in proprio o libera professione',
+                title: l10n.forSelfEmployment,
+                description: l10n.forSelfEmploymentDesc,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder:
                           (context) => RichiestaFormScreen(
-                            servizio: 'Permesso di Soggiorno',
-                            categoria: 'Lavoro Autonomo',
-                            campi: const [
+                            servizio: l10n.residencePermit,
+                            categoria: l10n.forSelfEmployment,
+                            campi: [
                               {
-                                'label': 'Nome completo',
+                                'label': l10n.fullName,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Data di nascita',
+                                'label': l10n.dateOfBirth,
                                 'type': 'date',
                                 'required': true,
                               },
                               {
-                                'label': 'Paese di provenienza',
+                                'label': l10n.countryOfOrigin,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Tipo di attività',
+                                'label': l10n.activityType,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Hai già partita IVA?',
+                                'label': l10n.haveVatNumber,
                                 'type': 'select',
-                                'options': ['Sì', 'No'],
+                                'options': [l10n.yes, l10n.no],
                                 'required': true,
                               },
                               {
-                                'label': 'Descrizione attività',
+                                'label': l10n.activityDescription,
                                 'type': 'textarea',
                                 'required': true,
                               },
@@ -127,50 +127,50 @@ class PermessoSoggiornoScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               _OptionCard(
-                title: 'Per Motivi Familiari',
-                description: 'Ricongiungimento familiare',
+                title: l10n.forFamilyReasons,
+                description: l10n.forFamilyReasonsDesc,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder:
                           (context) => RichiestaFormScreen(
-                            servizio: 'Permesso di Soggiorno',
-                            categoria: 'Motivi Familiari',
-                            campi: const [
+                            servizio: l10n.residencePermit,
+                            categoria: l10n.forFamilyReasons,
+                            campi: [
                               {
-                                'label': 'Nome completo',
+                                'label': l10n.fullName,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Data di nascita',
+                                'label': l10n.dateOfBirth,
                                 'type': 'date',
                                 'required': true,
                               },
                               {
-                                'label': 'Paese di provenienza',
+                                'label': l10n.countryOfOrigin,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Relazione con familiare',
+                                'label': l10n.relationshipWithFamily,
                                 'type': 'select',
                                 'options': [
-                                  'Coniuge',
-                                  'Figlio/a',
-                                  'Genitore',
-                                  'Altro',
+                                  l10n.spouse,
+                                  l10n.son,
+                                  l10n.parent,
+                                  l10n.other,
                                 ],
                                 'required': true,
                               },
                               {
-                                'label': 'Nome familiare in Italia',
+                                'label': l10n.familyNameInItaly,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Documento identità familiare',
+                                'label': l10n.familyIdDocument,
                                 'type': 'text',
                                 'required': true,
                               },
@@ -182,51 +182,51 @@ class PermessoSoggiornoScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               _OptionCard(
-                title: 'Per Studiare in Italia',
-                description: 'Iscrizione a corsi universitari o di formazione',
+                title: l10n.forStudy,
+                description: l10n.forStudyDesc,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder:
                           (context) => RichiestaFormScreen(
-                            servizio: 'Permesso di Soggiorno',
-                            categoria: 'Studio',
-                            campi: const [
+                            servizio: l10n.residencePermit,
+                            categoria: l10n.forStudy,
+                            campi: [
                               {
-                                'label': 'Nome completo',
+                                'label': l10n.fullName,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Data di nascita',
+                                'label': l10n.dateOfBirth,
                                 'type': 'date',
                                 'required': true,
                               },
                               {
-                                'label': 'Paese di provenienza',
+                                'label': l10n.countryOfOrigin,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Nome istituto/università',
+                                'label': l10n.institutionName,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': 'Tipo di corso',
+                                'label': l10n.courseType,
                                 'type': 'select',
                                 'options': [
-                                  'Laurea triennale',
-                                  'Laurea magistrale',
-                                  'Master',
-                                  'Dottorato',
-                                  'Altro',
+                                  l10n.bachelorDegree,
+                                  l10n.masterDegree,
+                                  l10n.master,
+                                  l10n.doctorate,
+                                  l10n.other,
                                 ],
                                 'required': true,
                               },
                               {
-                                'label': 'Anno di iscrizione',
+                                'label': l10n.enrollmentYear,
                                 'type': 'text',
                                 'required': true,
                               },

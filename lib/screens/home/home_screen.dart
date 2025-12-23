@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import '../../models/post_model.dart';
 import '../../models/evento_model.dart';
@@ -22,7 +22,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final storage = FlutterSecureStorage();
+  final storage = SecureStorageService();
   String userName = '...'; // valore iniziale
   bool isLoggedIn = false;
 

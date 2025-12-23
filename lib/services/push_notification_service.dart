@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wecoop_app/services/secure_storage_service.dart';
 
 /// Servizio per gestire le notifiche push Firebase
 class PushNotificationService {
@@ -12,7 +12,7 @@ class PushNotificationService {
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final SecureStorageService _storage = SecureStorageService();
   
   // Callback per navigazione
   Function(RemoteMessage)? onMessageTap;

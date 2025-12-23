@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wecoop_app/services/secure_storage_service.dart';
 import '../models/post_model.dart';
 import '../utils/html_utils.dart';
 
 class WordpressService {
   static const String baseUrl = 'https://www.wecoop.org/wp-json/wp/v2';
-  static const storage = FlutterSecureStorage();
+  static final storage = SecureStorageService();
 
   // Recupera gli ultimi post con immagini
   Future<List<Post>> getPosts({int perPage = 5}) async {

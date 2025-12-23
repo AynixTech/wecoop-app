@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/locale_provider.dart';
+import 'services/secure_storage_service.dart';
 import 'app.dart';
 
 // Handler per notifiche in background (deve essere top-level)
@@ -14,6 +15,13 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Verifica integrita' secure storage (pulisce se corrotto dopo reinstallazione)
+  final storageService = SecureStorageService();
+  final isStorageValid = await storageService.checkIntegrity();
+  if (!isStorageValid) {
+    print('⚠️ Storage corrotto rilevato e pulito automaticamente');
+  }
   
   // Inizializza Firebase
   await Firebase.initializeApp();

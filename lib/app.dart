@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -7,19 +8,86 @@ import 'package:wecoop_app/screens/prenota_appuntamento/prenota_appuntamento_scr
 import 'package:wecoop_app/screens/profilo/completa_profilo_screen.dart';
 import 'package:wecoop_app/services/locale_provider.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'package:wecoop_app/services/push_notification_service.dart';
 import 'screens/main_screen.dart';
 import 'screens/login/login_screen.dart';
 import 'screens/login/forgot_password_screen.dart';
 import 'screens/profilo/change_password_screen.dart';
 
-class WECOOPApp extends StatelessWidget {
+class WECOOPApp extends StatefulWidget {
   const WECOOPApp({super.key});
+
+  @override
+  State<WECOOPApp> createState() => _WECOOPAppState();
+}
+
+class _WECOOPAppState extends State<WECOOPApp> {
+  final PushNotificationService _pushService = PushNotificationService();
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _initializePushNotifications();
+  }
+
+  Future<void> _initializePushNotifications() async {
+    await _pushService.initialize();
+    
+    // Configura callback per navigazione
+    _pushService.onMessageTap = (RemoteMessage message) {
+      _handleNotificationNavigation(message.data);
+    };
+  }
+
+  void _handleNotificationNavigation(Map<String, dynamic> data) {
+    final screen = data['screen'] as String?;
+    final id = data['id'] as String?;
+
+    print('📍 Navigazione richiesta: $data');
+    print('Screen: $screen, ID: $id');
+
+    if (screen == null) return;
+
+    // Naviga alla schermata specificata
+    switch (screen) {
+      case 'EventDetail':
+        if (id != null) {
+          // TODO: Implementare navigazione a EventDetailScreen
+          print('🔄 Navigazione a EventDetail: $id');
+          // _navigatorKey.currentState?.pushNamed('/event/$id');
+        }
+        break;
+      
+      case 'ServiceDetail':
+        if (id != null) {
+          // TODO: Implementare navigazione a ServiceDetailScreen
+          print('🔄 Navigazione a ServiceDetail: $id');
+          // _navigatorKey.currentState?.pushNamed('/service/$id');
+        }
+        break;
+      
+      case 'Profile':
+        print('🔄 Navigazione a Profile');
+        _navigatorKey.currentState?.pushNamed('/home');
+        break;
+      
+      case 'Notifications':
+        print('🔄 Navigazione a Notifications');
+        _navigatorKey.currentState?.pushNamed('/home');
+        break;
+      
+      default:
+        print('🔄 Schermata sconosciuta: $screen');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<LocaleProvider>(
       builder: (context, localeProvider, child) {
         return MaterialApp(
+          navigatorKey: _navigatorKey,
           title: 'WECOOP',
           debugShowCheckedModeBanner: false,
           locale: localeProvider.locale,

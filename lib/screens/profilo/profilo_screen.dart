@@ -6,6 +6,7 @@ import '../../services/locale_provider.dart';
 import '../../services/app_localizations.dart';
 import '../../services/eventi_service.dart';
 import '../../services/socio_service.dart';
+import '../../services/push_notification_service.dart';
 import '../../models/evento_model.dart';
 import '../eventi/evento_detail_screen.dart';
 import 'completa_profilo_screen.dart';
@@ -134,6 +135,15 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     final currentPhone = await storage.read(key: 'telefono');
     if (currentPhone != null) {
       await storage.write(key: 'last_login_phone', value: currentPhone);
+    }
+
+    // Rimuovi FCM token dal backend prima di cancellare i dati locali
+    try {
+      await PushNotificationService().removeToken();
+      print('✅ FCM token rimosso dal backend');
+    } catch (e) {
+      print('⚠️ Errore rimozione FCM token: $e');
+      // Continua comunque con il logout
     }
 
     // Cancella token e credenziali

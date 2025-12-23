@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'package:wecoop_app/services/push_notification_service.dart';
 import '../../widgets/language_selector.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -100,6 +101,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
         // Recupera metadati utente
         await _fetchUserMeta(data['token'], data['user_nicename']);
+
+        // Inizializza push notifications (salverà FCM token automaticamente)
+        try {
+          await PushNotificationService().initialize();
+          print('✅ Push notifications inizializzate');
+        } catch (e) {
+          print('⚠️ Errore inizializzazione push notifications: $e');
+          // Non blocchiamo il login se fallisce l'inizializzazione delle notifiche
+        }
 
         if (mounted) {
           setState(() {

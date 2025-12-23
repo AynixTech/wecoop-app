@@ -5,8 +5,10 @@ import 'package:provider/provider.dart';
 import '../../services/locale_provider.dart';
 import '../../services/app_localizations.dart';
 import '../../services/eventi_service.dart';
+import '../../services/socio_service.dart';
 import '../../models/evento_model.dart';
 import '../eventi/evento_detail_screen.dart';
+import 'completa_profilo_screen.dart';
 
 final storage = FlutterSecureStorage();
 
@@ -22,6 +24,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   String userEmail = '...';
   String tesseraNumero = '...';
   String? tesseraUrl;
+  bool profiloCompleto = true; // Assume completo finché non verifichiamo
 
   String selectedLanguageCode = 'it';
   String selectedInterest = 'culture';
@@ -34,6 +37,25 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     super.initState();
     _loadUserData();
     _loadMieiEventi();
+    _checkProfiloCompleto();
+  }
+
+  Future<void> _checkProfiloCompleto() async {
+    try {
+      final userData = await SocioService.getMeData();
+      if (userData != null && userData['success'] == true) {
+        final isCompleto = userData['data']['profilo_completo'] ?? true;
+        if (mounted) {
+          setState(() {
+            profiloCompleto = isCompleto;
+          });
+        }
+        // Salva in storage
+        await storage.write(key: 'profilo_completo', value: isCompleto.toString());
+      }
+    } catch (e) {
+      print('Errore verifica profilo: $e');
+    }
   }
 
   Future<void> _loadUserData() async {
@@ -184,6 +206,74 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            // Banner Profilo Incompleto
+            if (!profiloCompleto)
+              Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.orange.shade200),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            l10n.profileIncomplete,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.orange.shade900,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.completeProfileMessage,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.orange.shade800,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const CompletaProfiloScreen(),
+                            ),
+                          );
+                          if (result == true) {
+                            // Aggiorna stato profilo
+                            _checkProfiloCompleto();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange.shade700,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(l10n.completeNow),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
             Center(
               child: CircleAvatar(
                 radius: 50,

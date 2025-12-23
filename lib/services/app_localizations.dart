@@ -162,6 +162,27 @@ class AppLocalizations {
       'familySection': 'Sezione Famiglia',
       'incomeSection': 'Sezione Reddito',
       'expensesSection': 'Sezione Spese',
+      'completeProfile': 'Completa il Profilo',
+      'profileIncomplete': 'Profilo Incompleto',
+      'completeProfileMessage': 'Completa i tuoi dati per accedere a tutti i servizi',
+      'completeNow': 'Completa Ora',
+      'personalData': 'Dati Personali',
+      'documents': 'Documenti',
+      'uploadDocumentsOptional': 'Carica i tuoi documenti (opzionale)',
+      'identityCard': 'Carta d\'Identità',
+      'fiscalCodeDocument': 'Codice Fiscale',
+      'requiredField': 'Campo obbligatorio',
+      'profession': 'Professione',
+      'next': 'Avanti',
+      'back': 'Indietro',
+      'complete': 'Completa',
+      'profileUpdatedSuccessfully': 'Profilo aggiornato con successo',
+      'registrationCompleted': 'Registrazione completata con successo!',
+      'saveTheseCredentials': 'Salva queste credenziali!',
+      'credentialsNeededToLogin': 'Servono per accedere all\'app',
+      'copyCredentials': 'Copia',
+      'iHaveSaved': 'Ho Salvato',
+      'welcomeToWecoop': 'Benvenuto in WECOOP!',
       'compilation730': 'Compilazione 730',
       'data730SentSuccess': 'Dati 730 inviati con successo',
       'allFieldsRequired': 'Errore: tutti i campi sono obbligatori',
@@ -546,6 +567,27 @@ class AppLocalizations {
       'familySection': 'Family Section',
       'incomeSection': 'Income Section',
       'expensesSection': 'Expenses Section',
+      'completeProfile': 'Complete Profile',
+      'profileIncomplete': 'Incomplete Profile',
+      'completeProfileMessage': 'Complete your data to access all services',
+      'completeNow': 'Complete Now',
+      'personalData': 'Personal Data',
+      'documents': 'Documents',
+      'uploadDocumentsOptional': 'Upload your documents (optional)',
+      'identityCard': 'Identity Card',
+      'fiscalCodeDocument': 'Tax ID',
+      'requiredField': 'Required field',
+      'profession': 'Profession',
+      'next': 'Next',
+      'back': 'Back',
+      'complete': 'Complete',
+      'profileUpdatedSuccessfully': 'Profile updated successfully',
+      'registrationCompleted': 'Registration completed successfully!',
+      'saveTheseCredentials': 'Save these credentials!',
+      'credentialsNeededToLogin': 'You need them to access the app',
+      'copyCredentials': 'Copy',
+      'iHaveSaved': 'I Have Saved',
+      'welcomeToWecoop': 'Welcome to WECOOP!',
       'compilation730': '730 Tax Filing',
       'data730SentSuccess': '730 data sent successfully',
       'allFieldsRequired': 'Error: all fields are required',
@@ -930,6 +972,27 @@ class AppLocalizations {
       'familySection': 'Sección Familia',
       'incomeSection': 'Sección Ingresos',
       'expensesSection': 'Sección Gastos',
+      'completeProfile': 'Completar Perfil',
+      'profileIncomplete': 'Perfil Incompleto',
+      'completeProfileMessage': 'Completa tus datos para acceder a todos los servicios',
+      'completeNow': 'Completar Ahora',
+      'personalData': 'Datos Personales',
+      'documents': 'Documentos',
+      'uploadDocumentsOptional': 'Sube tus documentos (opcional)',
+      'identityCard': 'Documento de Identidad',
+      'fiscalCodeDocument': 'Código Fiscal',
+      'requiredField': 'Campo obligatorio',
+      'profession': 'Profesión',
+      'next': 'Siguiente',
+      'back': 'Atrás',
+      'complete': 'Completar',
+      'profileUpdatedSuccessfully': 'Perfil actualizado correctamente',
+      'registrationCompleted': '¡Registro completado con éxito!',
+      'saveTheseCredentials': '¡Guarda estas credenciales!',
+      'credentialsNeededToLogin': 'Las necesitas para acceder a la app',
+      'copyCredentials': 'Copiar',
+      'iHaveSaved': 'He Guardado',
+      'welcomeToWecoop': '¡Bienvenido a WECOOP!',
       'compilation730': 'Compilación 730',
       'data730SentSuccess': 'Datos 730 enviados con éxito',
       'allFieldsRequired': 'Error: todos los campos son obligatorios',
@@ -1504,6 +1567,28 @@ class AppLocalizations {
   String get familySection => translate('familySection');
   String get incomeSection => translate('incomeSection');
   String get expensesSection => translate('expensesSection');
+  String get completeProfile => translate('completeProfile');
+  String get profileIncomplete => translate('profileIncomplete');
+  String get completeProfileMessage => translate('completeProfileMessage');
+  String get completeNow => translate('completeNow');
+  String get personalData => translate('personalData');
+  String get documents => translate('documents');
+  String get uploadDocumentsOptional => translate('uploadDocumentsOptional');
+  String get identityCard => translate('identityCard');
+  String get fiscalCodeDocument => translate('fiscalCodeDocument');
+  String get requiredField => translate('requiredField');
+  String get profession => translate('profession');
+  String get next => translate('next');
+  String get back => translate('back');
+  String get complete => translate('complete');
+  String get profileUpdatedSuccessfully => translate('profileUpdatedSuccessfully');
+  String get registrationCompleted => translate('registrationCompleted');
+  String get saveTheseCredentials => translate('saveTheseCredentials');
+  String get credentialsNeededToLogin => translate('credentialsNeededToLogin');
+  String get username => translate('username');
+  String get copyCredentials => translate('copyCredentials');
+  String get iHaveSaved => translate('iHaveSaved');
+  String get welcomeToWecoop => translate('welcomeToWecoop');
   
   // Chatbot translations
   String get chatbotTitle => translate('chatbotTitle');

@@ -474,4 +474,135 @@ class SocioService {
       return null;
     }
   }
+
+  /// Completa il profilo dell'utente loggato
+  /// POST /soci/me/completa-profilo
+  static Future<Map<String, dynamic>> completaProfilo({
+    String? email,
+    String? codiceFiscale,
+    String? dataNascita,
+    String? luogoNascita,
+    String? indirizzo,
+    String? citta,
+    String? cap,
+    String? provincia,
+    String? professione,
+  }) async {
+    try {
+      final headers = await _getHeaders(includeAuth: true);
+      final url = '$baseUrl/soci/me/completa-profilo';
+
+      final body = <String, dynamic>{};
+      if (email != null) body['email'] = email;
+      if (codiceFiscale != null) body['codice_fiscale'] = codiceFiscale;
+      if (dataNascita != null) body['data_nascita'] = dataNascita;
+      if (luogoNascita != null) body['luogo_nascita'] = luogoNascita;
+      if (indirizzo != null) body['indirizzo'] = indirizzo;
+      if (citta != null) body['citta'] = citta;
+      if (cap != null) body['cap'] = cap;
+      if (provincia != null) body['provincia'] = provincia;
+      if (professione != null) body['professione'] = professione;
+
+      print('📤 Completamento profilo su: $url');
+      print('📝 Dati: ${body.keys.join(", ")}');
+
+      final response = await http
+          .post(
+            Uri.parse(url),
+            headers: headers,
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 30));
+
+      print('📥 Response status: ${response.statusCode}');
+      final responseData = jsonDecode(response.body);
+
+      return responseData;
+    } catch (e) {
+      print('❌ Errore completamento profilo: $e');
+      return {
+        'success': false,
+        'message': 'Errore di connessione: $e',
+      };
+    }
+  }
+
+  /// Ottiene i dati dell'utente loggato
+  /// GET /soci/me
+  static Future<Map<String, dynamic>?> getMeData() async {
+    try {
+      final headers = await _getHeaders(includeAuth: true);
+      final url = '$baseUrl/soci/me';
+
+      print('📤 GET /soci/me');
+
+      final response = await http
+          .get(
+            Uri.parse(url),
+            headers: headers,
+          )
+          .timeout(const Duration(seconds: 30));
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+
+      return null;
+    } catch (e) {
+      print('❌ Errore GET /soci/me: $e');
+      return null;
+    }
+  }
+
+  /// Upload documento
+  /// POST /soci/me/upload-documento
+  static Future<Map<String, dynamic>> uploadDocumento(
+    File file,
+    String tipoDocumento,
+  ) async {
+    try {
+      final headers = await _getHeaders(includeAuth: true);
+      headers.remove('Content-Type'); // MultipartRequest gestisce il Content-Type
+
+      final url = '$baseUrl/soci/me/upload-documento';
+      final request = http.MultipartRequest('POST', Uri.parse(url));
+
+      // Aggiungi headers
+      headers.forEach((key, value) {
+        request.headers[key] = value;
+      });
+
+      // Aggiungi file
+      request.files.add(
+        await http.MultipartFile.fromPath('file', file.path),
+      );
+
+      // Aggiungi tipo documento
+      request.fields['tipo_documento'] = tipoDocumento;
+
+      print('📤 Upload documento: ${file.path.split('/').last}');
+      print('📝 Tipo: $tipoDocumento');
+
+      final streamedResponse = await request.send().timeout(const Duration(seconds: 60));
+      final response = await http.Response.fromStream(streamedResponse);
+
+      print('📥 Response status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        return {
+          'success': false,
+          'message': 'Errore upload: ${response.statusCode}',
+        };
+      }
+    } catch (e) {
+      print('❌ Errore upload documento: $e');
+      return {
+        'success': false,
+        'message': 'Errore di connessione: $e',
+      };
+    }
+  }
 }
+

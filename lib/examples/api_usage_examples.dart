@@ -98,10 +98,10 @@ Future<void> getUserData() async {
     print('Quota pagata: ${userData['quota_pagata']}');
     print('URL Tessera: ${userData['tessera_url']}');
     
-    // Usa i dati per precompilare form
-    final nomeCompleto = '${userData['nome']} ${userData['cognome']}';
-    final telefono = userData['telefono'];
-    final citta = userData['citta'];
+    // Usa i dati per precompilare form o mostrare nel profilo
+    print('Nome completo: ${userData['nome']} ${userData['cognome']}');
+    print('Telefono: ${userData['telefono']}');
+    print('Città: ${userData['citta']}');
   } else {
     print('❌ Impossibile ottenere dati utente (non autenticato o errore)');
   }

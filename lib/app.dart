@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:wecoop_app/screens/auth_gate.dart';
 import 'package:wecoop_app/screens/caf/compilazione_730_screen.dart';
 import 'package:wecoop_app/screens/prenota_appuntamento/prenota_appuntamento_screen.dart';
+import 'package:wecoop_app/screens/profilo/completa_profilo_screen.dart';
 import 'package:wecoop_app/services/locale_provider.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'screens/main_screen.dart';
@@ -104,6 +105,7 @@ class WECOOPApp extends StatelessWidget {
             '/login': (context) => const LoginScreen(),
             '/forgot-password': (context) => const ForgotPasswordScreen(),
             '/change-password': (context) => const ChangePasswordScreen(),
+            '/complete-profile': (context) => const CompletaProfiloScreen(),
             '/prenotaAppuntamento': (context) => PrenotaAppuntamentoScreen(),
             '/compila730':
                 (context) =>

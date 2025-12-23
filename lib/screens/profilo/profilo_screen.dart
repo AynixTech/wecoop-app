@@ -592,30 +592,74 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
               },
             ),
             const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: l10n.areaOfInterest,
-                border: const OutlineInputBorder(),
+            
+            // CTA Completa Profilo
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: theme.primaryColor.withOpacity(0.3)),
               ),
-              value: selectedInterest,
-              items: [
-                DropdownMenuItem(value: 'culture', child: Text(l10n.culture)),
-                DropdownMenuItem(value: 'sport', child: Text(l10n.sport)),
-                DropdownMenuItem(value: 'training', child: Text(l10n.training)),
-                DropdownMenuItem(
-                  value: 'volunteering',
-                  child: Text(l10n.volunteering),
+              child: InkWell(
+                onTap: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CompletaProfiloScreen(),
+                    ),
+                  );
+                  if (result == true) {
+                    _checkProfiloCompleto();
+                  }
+                },
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: theme.primaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(
+                          Icons.person_outline,
+                          color: theme.primaryColor,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.completeProfile,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: theme.primaryColor,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              l10n.translate('updateYourPersonalData'),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: theme.primaryColor,
+                        size: 18,
+                      ),
+                    ],
+                  ),
                 ),
-                DropdownMenuItem(
-                  value: 'socialServices',
-                  child: Text(l10n.socialServices),
-                ),
-              ],
-              onChanged: (value) {
-                if (value != null) {
-                  _saveInterest(value);
-                }
-              },
+              ),
             ),
 
             const Divider(height: 32, thickness: 1),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../services/app_localizations.dart';
 import '../../services/socio_service.dart';
@@ -45,7 +46,20 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
       setState(() {
         _emailController.text = data['email'] ?? '';
         _codiceFiscaleController.text = data['codice_fiscale'] ?? '';
-        _dataNascitaController.text = data['data_nascita'] ?? '';
+        
+        // Converti data da YYYY-MM-DD a DD/MM/YYYY se presente
+        final dataNascita = data['data_nascita'] ?? '';
+        if (dataNascita.isNotEmpty && dataNascita.contains('-')) {
+          final parts = dataNascita.split('-');
+          if (parts.length == 3) {
+            _dataNascitaController.text = '${parts[2]}/${parts[1]}/${parts[0]}';
+          } else {
+            _dataNascitaController.text = dataNascita;
+          }
+        } else {
+          _dataNascitaController.text = dataNascita;
+        }
+        
         _luogoNascitaController.text = data['luogo_nascita'] ?? '';
         _indirizzoController.text = data['indirizzo'] ?? '';
         _cittaController.text = data['citta'] ?? '';
@@ -89,10 +103,16 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
 
   Future<void> _uploadDocumenti() async {
     if (_cartaIdentita != null) {
-      await SocioService.uploadDocumento(_cartaIdentita!, 'carta_identita');
+      await SocioService.uploadDocumento(
+        file: _cartaIdentita!,
+        tipoDocumento: 'carta_identita',
+      );
     }
     if (_documentoCodiceFiscale != null) {
-      await SocioService.uploadDocumento(_documentoCodiceFiscale!, 'codice_fiscale');
+      await SocioService.uploadDocumento(
+        file: _documentoCodiceFiscale!,
+        tipoDocumento: 'codice_fiscale',
+      );
     }
   }
 
@@ -104,10 +124,24 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
     setState(() => _isSubmitting = true);
 
     try {
+      // Converti data da DD/MM/YYYY a YYYY-MM-DD per l'API
+      String? dataNascitaApi;
+      final dataInput = _dataNascitaController.text.trim();
+      if (dataInput.isNotEmpty && dataInput.contains('/')) {
+        final parts = dataInput.split('/');
+        if (parts.length == 3) {
+          dataNascitaApi = '${parts[2]}-${parts[1]}-${parts[0]}';
+        } else {
+          dataNascitaApi = dataInput;
+        }
+      } else if (dataInput.isNotEmpty) {
+        dataNascitaApi = dataInput;
+      }
+
       final result = await SocioService.completaProfilo(
         email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
         codiceFiscale: _codiceFiscaleController.text.trim().isEmpty ? null : _codiceFiscaleController.text.trim(),
-        dataNascita: _dataNascitaController.text.trim().isEmpty ? null : _dataNascitaController.text.trim(),
+        dataNascita: dataNascitaApi,
         luogoNascita: _luogoNascitaController.text.trim().isEmpty ? null : _luogoNascitaController.text.trim(),
         indirizzo: _indirizzoController.text.trim().isEmpty ? null : _indirizzoController.text.trim(),
         citta: _cittaController.text.trim().isEmpty ? null : _cittaController.text.trim(),
@@ -266,9 +300,44 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                       labelText: l10n.birthDate,
                       border: const OutlineInputBorder(),
                       prefixIcon: const Icon(Icons.calendar_today),
-                      hintText: 'YYYY-MM-DD',
+                      hintText: 'DD/MM/YYYY',
+                      helperText: 'Es: 13/07/1994',
                     ),
-                    keyboardType: TextInputType.datetime,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9/]')),
+                      LengthLimitingTextInputFormatter(10),
+                      _DateInputFormatter(),
+                    ],
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return null; // Campo opzionale
+                      }
+                      // Valida formato DD/MM/YYYY
+                      if (!RegExp(r'^\d{2}/\d{2}/\d{4}$').hasMatch(value)) {
+                        return 'Formato non valido (DD/MM/YYYY)';
+                      }
+                      // Valida che sia una data reale
+                      final parts = value.split('/');
+                      final day = int.tryParse(parts[0]);
+                      final month = int.tryParse(parts[1]);
+                      final year = int.tryParse(parts[2]);
+                      
+                      if (day == null || month == null || year == null) {
+                        return 'Data non valida';
+                      }
+                      if (day < 1 || day > 31) {
+                        return 'Giorno non valido';
+                      }
+                      if (month < 1 || month > 12) {
+                        return 'Mese non valido';
+                      }
+                      if (year < 1900 || year > DateTime.now().year) {
+                        return 'Anno non valido';
+                      }
+                      
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -436,6 +505,34 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+// Formatter per input data DD/MM/YYYY
+class _DateInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final text = newValue.text;
+    
+    // Rimuovi tutti i caratteri non numerici
+    final digitsOnly = text.replaceAll(RegExp(r'[^0-9]'), '');
+    
+    // Formatta automaticamente con /
+    String formatted = '';
+    for (int i = 0; i < digitsOnly.length && i < 8; i++) {
+      if (i == 2 || i == 4) {
+        formatted += '/';
+      }
+      formatted += digitsOnly[i];
+    }
+    
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
     );
   }
 }

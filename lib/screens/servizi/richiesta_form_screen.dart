@@ -113,66 +113,95 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       // Mappa i dati ai campi del form
       final prefilledData = <String, String>{};
 
-      // Nome completo
+      // Nome completo (italiano, inglese, spagnolo)
       if (fullName != null && fullName.isNotEmpty) {
         prefilledData['Nome completo'] = fullName;
         prefilledData['Nome e Cognome'] = fullName;
         prefilledData['Nome richiedente'] = fullName;
+        prefilledData['Full name'] = fullName;
+        prefilledData['Nombre completo'] = fullName;
       }
 
-      // Email
+      // Email (italiano, inglese, spagnolo)
       if (email != null) {
         prefilledData['Email'] = email;
         prefilledData['Email richiedente'] = email;
+        prefilledData['Correo'] = email;
       }
 
-      // Telefono
+      // Telefono (italiano, inglese, spagnolo)
       if (telefono != null) {
         prefilledData['Telefono'] = telefono;
         prefilledData['Telefono richiedente'] = telefono;
         prefilledData['Numero di telefono'] = telefono;
+        prefilledData['Phone'] = telefono;
+        prefilledData['Phone number'] = telefono;
+        prefilledData['Teléfono'] = telefono;
+        prefilledData['Número de teléfono'] = telefono;
       }
 
       // Città
       if (citta != null) {
         prefilledData['Città'] = citta;
         prefilledData['Città di residenza'] = citta;
+        prefilledData['City'] = citta;
+        prefilledData['Ciudad'] = citta;
       }
 
       // Indirizzo
       if (indirizzo != null) {
         prefilledData['Indirizzo'] = indirizzo;
         prefilledData['Indirizzo di residenza'] = indirizzo;
+        prefilledData['Address'] = indirizzo;
+        prefilledData['Dirección'] = indirizzo;
       }
 
       // CAP
       if (cap != null) {
         prefilledData['CAP'] = cap;
+        prefilledData['Postal Code'] = cap;
+        prefilledData['Código Postal'] = cap;
       }
 
       // Provincia
       if (provincia != null) {
         prefilledData['Provincia'] = provincia;
+        prefilledData['Province'] = provincia;
       }
 
       // Codice Fiscale
       if (codiceFiscale != null) {
         prefilledData['Codice Fiscale'] = codiceFiscale;
         prefilledData['Codice fiscale'] = codiceFiscale;
+        prefilledData['Tax Code'] = codiceFiscale;
+        prefilledData['Código Fiscal'] = codiceFiscale;
       }
 
-      // Data di nascita
-      if (dataNascita != null) {
-        prefilledData['Data di nascita'] = dataNascita;
+      // Data di nascita - Converti da YYYY-MM-DD a DD/MM/YYYY
+      if (dataNascita != null && dataNascita.isNotEmpty) {
+        String dataFormattata = dataNascita;
+        if (dataNascita.contains('-')) {
+          final parts = dataNascita.split('-');
+          if (parts.length == 3) {
+            dataFormattata = '${parts[2]}/${parts[1]}/${parts[0]}';
+          }
+        }
+        prefilledData['Data di nascita'] = dataFormattata;
+        prefilledData['Date of birth'] = dataFormattata;
+        prefilledData['Fecha de nacimiento'] = dataFormattata;
       }
 
       // Luogo di nascita
       if (luogoNascita != null) {
         prefilledData['Luogo di nascita'] = luogoNascita;
+        prefilledData['Place of birth'] = luogoNascita;
+        prefilledData['Lugar de nacimiento'] = luogoNascita;
       }
       // Professione
       if (professione != null) {
         prefilledData['Professione'] = professione;
+        prefilledData['Profession'] = professione;
+        prefilledData['Profesión'] = professione;
       }
 
       // Paese di origine/provenienza (priorità a paese_origine)

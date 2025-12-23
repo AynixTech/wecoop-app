@@ -491,8 +491,15 @@ class SocioService {
 
   /// Completa il profilo dell'utente loggato
   /// POST /soci/me/completa-profilo
+  /// Tutti i campi sono opzionali
+  /// Campi obbligatori per profilo completo (9): nome, cognome, email, telefono, 
+  /// citta, indirizzo, codice_fiscale, data_nascita, nazionalita
   static Future<Map<String, dynamic>> completaProfilo({
+    String? nome,
+    String? cognome,
     String? email,
+    String? telefono,
+    String? prefix,
     String? codiceFiscale,
     String? dataNascita,
     String? luogoNascita,
@@ -501,13 +508,19 @@ class SocioService {
     String? cap,
     String? provincia,
     String? professione,
+    String? paeseProvenienza,
+    String? nazionalita,
   }) async {
     try {
       final headers = await _getHeaders(includeAuth: true);
       final url = '$baseUrl/soci/me/completa-profilo';
 
       final body = <String, dynamic>{};
+      if (nome != null) body['nome'] = nome;
+      if (cognome != null) body['cognome'] = cognome;
       if (email != null) body['email'] = email;
+      if (telefono != null) body['telefono'] = telefono;
+      if (prefix != null) body['prefix'] = prefix;
       if (codiceFiscale != null) body['codice_fiscale'] = codiceFiscale;
       if (dataNascita != null) body['data_nascita'] = dataNascita;
       if (luogoNascita != null) body['luogo_nascita'] = luogoNascita;
@@ -516,6 +529,8 @@ class SocioService {
       if (cap != null) body['cap'] = cap;
       if (provincia != null) body['provincia'] = provincia;
       if (professione != null) body['professione'] = professione;
+      if (paeseProvenienza != null) body['paese_provenienza'] = paeseProvenienza;
+      if (nazionalita != null) body['nazionalita'] = nazionalita;
 
       print('📤 Completamento profilo su: $url');
       print('📝 Dati: ${body.keys.join(", ")}');
@@ -530,6 +545,25 @@ class SocioService {
 
       print('📥 Response status: ${response.statusCode}');
       final responseData = jsonDecode(response.body);
+
+      // Salva dati aggiornati in storage se successo
+      if (response.statusCode == 200) {
+        if (nome != null || cognome != null) {
+          await storage.write(key: 'full_name', value: '${nome ?? ''} ${cognome ?? ''}'.trim());
+        }
+        if (email != null) await storage.write(key: 'user_email', value: email);
+        if (telefono != null) await storage.write(key: 'telefono', value: telefono);
+        if (citta != null) await storage.write(key: 'citta', value: citta);
+        if (indirizzo != null) await storage.write(key: 'indirizzo', value: indirizzo);
+        if (cap != null) await storage.write(key: 'cap', value: cap);
+        if (provincia != null) await storage.write(key: 'provincia', value: provincia);
+        if (codiceFiscale != null) await storage.write(key: 'codice_fiscale', value: codiceFiscale);
+        if (dataNascita != null) await storage.write(key: 'data_nascita', value: dataNascita);
+        if (luogoNascita != null) await storage.write(key: 'luogo_nascita', value: luogoNascita);
+        if (professione != null) await storage.write(key: 'professione', value: professione);
+        if (paeseProvenienza != null) await storage.write(key: 'paese_origine', value: paeseProvenienza);
+        if (nazionalita != null) await storage.write(key: 'nazionalita', value: nazionalita);
+      }
 
       return responseData;
     } catch (e) {
@@ -570,10 +604,10 @@ class SocioService {
 
   /// Upload documento
   /// POST /soci/me/upload-documento
-  static Future<Map<String, dynamic>> uploadDocumento(
-    File file,
-    String tipoDocumento,
-  ) async {
+  static Future<Map<String, dynamic>> uploadDocumento({
+    required File file,
+    String tipoDocumento = 'carta_identita',
+  }) async {
     try {
       final headers = await _getHeaders(includeAuth: true);
       headers.remove('Content-Type'); // MultipartRequest gestisce il Content-Type
@@ -770,5 +804,54 @@ class SocioService {
       };
     }
   }
-}
 
+  /// Ottieni profilo completo utente corrente con tutti i dettagli
+  /// GET /soci/me
+  /// Ritorna: profilo_completo, campi_mancanti, percentuale_completamento, documenti, ecc.
+  static Future<Map<String, dynamic>> getProfiloCompleto() async {
+    try {
+      final url = '$baseUrl/soci/me';
+      final headers = await _getHeaders(includeAuth: true);
+
+      print('📤 GET $url');
+
+      final response = await http
+          .get(Uri.parse(url), headers: headers)
+          .timeout(const Duration(seconds: 30));
+
+      print('📥 Response status: ${response.statusCode}');
+      print('📥 Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final rawData = jsonDecode(response.body);
+        final data = decodeHtmlInMap(rawData);
+        
+        if (data['success'] == true && data['data'] != null) {
+          return {
+            'success': true,
+            'data': data['data'],
+          };
+        }
+      } else if (response.statusCode == 401) {
+        return {
+          'success': false,
+          'message': 'Non autenticato. Effettua il login.',
+          'code': 'not_logged_in',
+        };
+      }
+
+      final data = jsonDecode(response.body);
+      return {
+        'success': false,
+        'message': data['message'] ?? 'Errore recupero profilo',
+        'code': data['code'],
+      };
+    } catch (e) {
+      print('❌ Errore get profilo: $e');
+      return {
+        'success': false,
+        'message': 'Errore di connessione: $e',
+      };
+    }
+  }
+}

@@ -100,19 +100,29 @@ class PushNotificationService {
   /// Invia token FCM al backend WordPress
   Future<void> _sendTokenToBackend(String token) async {
     try {
+      print('🔄 Inizio invio FCM token al backend...');
+      
       // Recupera JWT token
       final jwtToken = await _storage.read(key: 'jwt_token');
       
       if (jwtToken == null) {
         print('⚠️ JWT token non trovato, impossibile salvare FCM token');
+        print('💡 Verifica che il login sia stato completato correttamente');
         return;
       }
+
+      print('✅ JWT token trovato: ${jwtToken.substring(0, 20)}...');
 
       // Ottieni info dispositivo
       final deviceInfo = await _getDeviceInfo();
 
+      final url = Uri.parse('$apiUrl/push/v1/token');
+      print('📡 POST $url');
+      print('📝 Headers: Authorization: Bearer ${jwtToken.substring(0, 20)}...');
+      print('📝 Body: {"token": "${token.substring(0, 20)}...", "device_info": "$deviceInfo"}');
+
       final response = await http.post(
-        Uri.parse('$apiUrl/push/v1/token'),
+        url,
         headers: {
           'Authorization': 'Bearer $jwtToken',
           'Content-Type': 'application/json',
@@ -121,16 +131,27 @@ class PushNotificationService {
           'token': token,
           'device_info': deviceInfo,
         }),
-      );
+      ).timeout(const Duration(seconds: 30));
+
+      print('📥 Response Status: ${response.statusCode}');
+      print('📥 Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         print('✅ FCM token salvato su backend: ${data['message']}');
+      } else if (response.statusCode == 401) {
+        print('❌ Errore 401: JWT token non valido o scaduto');
+        print('💡 L\'utente deve rifare il login');
+      } else if (response.statusCode == 404) {
+        print('❌ Errore 404: Endpoint /push/v1/token non trovato');
+        print('💡 Verifica che il plugin WordPress sia attivo');
       } else {
         print('❌ Errore salvataggio token: ${response.statusCode}');
+        print('📄 Response: ${response.body}');
       }
     } catch (e) {
       print('❌ Errore invio token a backend: $e');
+      print('💡 Verifica connessione internet e che il server sia raggiungibile');
     }
   }
 

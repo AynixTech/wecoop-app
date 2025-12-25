@@ -14,6 +14,7 @@ import 'screens/login/login_screen.dart';
 import 'screens/login/forgot_password_screen.dart';
 import 'screens/profilo/change_password_screen.dart';
 import 'screens/debug/push_notification_debug_screen.dart';
+import 'screens/debug/eventi_debug_screen.dart';
 
 class WECOOPApp extends StatefulWidget {
   const WECOOPApp({super.key});
@@ -180,6 +181,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
                 (context) =>
                     AuthGate(protectedScreen: const Compilazione730Screen()),
             '/debug-push': (context) => const PushNotificationDebugScreen(),
+            '/debug-eventi': (context) => const EventiDebugScreen(),
             // '/assegnoUnico': (context) => AuthGate(protectedScreen: const AssegnoUnicoScreen()),
           },
         );

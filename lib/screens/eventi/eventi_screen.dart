@@ -31,18 +31,40 @@ class _EventiScreenState extends State<EventiScreen> {
       });
     }
 
+    print('🔄 Caricamento eventi - Filtro categoria: ${_categoriaFiltro ?? "nessuno"}');
+
     final result = await EventiService.getEventi(
       perPage: 50,
       categoria: _categoriaFiltro,
     );
 
+    print('📥 Risultato getEventi: success=${result['success']}');
+    
     if (mounted) {
       setState(() {
         _isLoading = false;
         if (result['success'] == true) {
           _eventi = result['eventi'] as List<Evento>;
+          print('✅ ${_eventi.length} eventi caricati');
+          
+          // Log dettagliato per ogni evento
+          for (var i = 0; i < _eventi.length; i++) {
+            final evento = _eventi[i];
+            print('📌 Evento #$i: ${evento.titolo}');
+            print('   - ID: ${evento.id}');
+            print('   - Data: ${evento.dataInizio} ${evento.oraInizio ?? ""}');
+            print('   - Categoria: ${evento.categoria ?? "nessuna"}');
+            print('   - Immagine copertina: ${evento.immagineCopertina ?? "NESSUNA"}');
+            print('   - Luogo: ${evento.luogo ?? evento.citta ?? "non specificato"}');
+            print('   - Online: ${evento.online}');
+            print('   - Richiede iscrizione: ${evento.richiedeIscrizione}');
+            print('   - Sono iscritto: ${evento.sonoIscritto}');
+            print('   - Partecipanti: ${evento.partecipantiCount}/${evento.maxPartecipanti}');
+            print('   - Prezzo: ${evento.prezzoFormattato}');
+          }
         } else {
           _errorMessage = result['message'];
+          print('❌ Errore caricamento eventi: $_errorMessage');
         }
       });
     }
@@ -177,11 +199,33 @@ class _EventoCard extends StatelessWidget {
                       height: 180,
                       width: double.infinity,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        height: 180,
-                        color: const Color(0xFFE3F2FD),
-                        child: const Icon(Icons.event, size: 64, color: Color(0xFF2196F3)),
-                      ),
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) {
+                          print('✅ Immagine caricata: ${evento.immagineCopertina}');
+                          return child;
+                        }
+                        print('⏳ Caricamento immagine: ${evento.immagineCopertina} - ${loadingProgress.cumulativeBytesLoaded}/${loadingProgress.expectedTotalBytes ?? "?"}');
+                        return Container(
+                          height: 180,
+                          color: Colors.grey[200],
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        print('❌ Errore caricamento immagine: ${evento.immagineCopertina}');
+                        print('   Error: $error');
+                        return Container(
+                          height: 180,
+                          color: const Color(0xFFE3F2FD),
+                          child: const Icon(Icons.event, size: 64, color: Color(0xFF2196F3)),
+                        );
+                      },
                     ),
                     if (evento.sonoIscritto)
                       Positioned(

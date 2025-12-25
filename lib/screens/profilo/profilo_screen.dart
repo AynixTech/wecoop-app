@@ -105,11 +105,27 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
       print('🔄 Caricamento miei eventi...');
       final response = await EventiService.getMieiEventi();
       
-      print('📥 Risposta getMieiEventi: success=${response['success']}');
+      print('📥 Risposta getMieiEventi RAW: $response');
+      print('📥 success=${response['success']}');
+      print('📥 totale=${response['totale']}');
       
       if (response['success'] == true) {
         final eventiList = (response['eventi'] as List?)?.cast<Evento>() ?? [];
-        print('✅ ${eventiList.length} eventi caricati');
+        print('✅ ${eventiList.length} miei eventi caricati');
+        
+        // Log dettagliato per ogni evento
+        for (var i = 0; i < eventiList.length; i++) {
+          final evento = eventiList[i];
+          print('📌 Mio Evento #$i: ${evento.titolo}');
+          print('   - ID: ${evento.id}');
+          print('   - Data: ${evento.dataInizio} ${evento.oraInizio ?? ""}');
+          print('   - Categoria: ${evento.categoria ?? "nessuna"}');
+          print('   - Immagine copertina: ${evento.immagineCopertina ?? "NESSUNA"}');
+          print('   - Luogo: ${evento.luogo ?? evento.citta ?? "non specificato"}');
+          print('   - Online: ${evento.online}');
+          print('   - Sono iscritto: ${evento.sonoIscritto}');
+        }
+        
         if (mounted) {
           setState(() {
             _mieiEventi = eventiList;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import '../../services/socio_service.dart';
 import '../login/login_screen.dart';
@@ -384,6 +385,10 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
 
                       TextFormField(
                         controller: _nomeController,
+                        textCapitalization: TextCapitalization.characters,
+                        inputFormatters: [
+                          UpperCaseTextFormatter(),
+                        ],
                         decoration: InputDecoration(
                           labelText: '${l10n.name} *',
                           border: const OutlineInputBorder(),
@@ -403,6 +408,10 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
 
                       TextFormField(
                         controller: _cognomeController,
+                        textCapitalization: TextCapitalization.characters,
+                        inputFormatters: [
+                          UpperCaseTextFormatter(),
+                        ],
                         decoration: InputDecoration(
                           labelText: '${l10n.surname} *',
                           border: const OutlineInputBorder(),
@@ -747,6 +756,20 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// TextInputFormatter che converte tutto il testo in maiuscolo
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
     );
   }
 }

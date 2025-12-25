@@ -86,6 +86,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     // Verifica se l'utente è loggato
     final token = await storage.read(key: 'jwt_token');
     if (token == null) {
+      print('⚠️ Utente non loggato, impossibile caricare eventi');
       // Utente non loggato, non caricare eventi
       if (mounted) {
         setState(() {
@@ -101,10 +102,14 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     });
 
     try {
+      print('🔄 Caricamento miei eventi...');
       final response = await EventiService.getMieiEventi();
+      
+      print('📥 Risposta getMieiEventi: success=${response['success']}');
       
       if (response['success'] == true) {
         final eventiList = (response['eventi'] as List?)?.cast<Evento>() ?? [];
+        print('✅ ${eventiList.length} eventi caricati');
         if (mounted) {
           setState(() {
             _mieiEventi = eventiList;
@@ -112,6 +117,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
           });
         }
       } else {
+        print('❌ Errore: ${response['message']}');
         if (mounted) {
           setState(() {
             _isLoadingEventi = false;
@@ -119,7 +125,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
         }
       }
     } catch (e) {
-      print('Errore getMieiEventi: $e');
+      print('❌ Errore getMieiEventi: $e');
       if (mounted) {
         setState(() {
           _isLoadingEventi = false;
@@ -374,19 +380,6 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    if (tesseraUrl != null) ...[
-                      const SizedBox(height: 8),
-                      TextButton.icon(
-                        onPressed: () {
-                          // Apri URL tessera nel browser
-                        },
-                        icon: const Icon(Icons.open_in_new, size: 16),
-                        label: Text(l10n.openDigitalCard),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.amber.shade700,
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),

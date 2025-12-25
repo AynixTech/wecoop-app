@@ -256,11 +256,22 @@ class EventiService {
               .toList(),
           'totale': data['totale'],
         };
+      } else if (response.statusCode == 500) {
+        print('❌ Errore server 500: ${response.body}');
+        return {
+          'success': false,
+          'message': 'Errore del server. L\'endpoint /miei-eventi non è configurato correttamente.',
+        };
+      } else if (response.statusCode == 401) {
+        return {
+          'success': false,
+          'message': 'Sessione scaduta, effettua nuovamente il login',
+        };
       }
 
       return {
         'success': false,
-        'message': 'Errore nel caricamento',
+        'message': 'Errore ${response.statusCode}: ${response.body}',
       };
     } catch (e) {
       print('Errore getMieiEventi: $e');

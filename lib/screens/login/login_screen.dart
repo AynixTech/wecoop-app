@@ -5,6 +5,7 @@ import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/push_notification_service.dart';
 import '../../widgets/language_selector.dart';
+import '../../utils/html_utils.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final storage = SecureStorageService();
   bool rememberPassword = false;
   bool isLoading = false;
+  bool _obscurePassword = true;
 
   @override
   void initState() {
@@ -124,10 +126,11 @@ class _LoginScreenState extends State<LoginScreen> {
           });
         }
         final message = data['message'] ?? 'Login fallito';
-        print('Login fallito: $message');
+        final decodedMessage = decodeHtmlEntities(message);
+        print('Login fallito: $decodedMessage');
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        ).showSnackBar(SnackBar(content: Text(decodedMessage)));
       }
     } catch (e) {
       if (mounted) {
@@ -298,8 +301,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     keyboardType: TextInputType.phone,
                     decoration: InputDecoration(
                       labelText: l10n.translate('phoneNumber'),
-                      hintText: '3331234567',
-                      helperText: 'Ej: 3891733185',
+                      hintText: '3891234567',
                       helperStyle: const TextStyle(fontSize: 11, color: Colors.grey),
                       prefixIcon: const Icon(Icons.phone),
                     ),
@@ -310,8 +312,20 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 16),
             TextField(
               controller: passwordController,
-              obscureText: true,
-              decoration: InputDecoration(labelText: l10n.password),
+              obscureText: _obscurePassword,
+              decoration: InputDecoration(
+                labelText: l10n.password,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                ),
+              ),
             ),
             const SizedBox(height: 8),
             Row(

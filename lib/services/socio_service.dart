@@ -50,6 +50,13 @@ class SocioService {
       print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
+        // Verifica se la risposta contiene warning PHP invece di JSON
+        if (response.body.trim().startsWith('<')) {
+          print('⚠️ Risposta contiene HTML/warning PHP invece di JSON');
+          print('💡 Configura WordPress: WP_DEBUG_DISPLAY = false in wp-config.php');
+          return false;
+        }
+        
         final rawData = jsonDecode(response.body);
         final data = decodeHtmlInMap(rawData);
         // Nuova API ritorna: {"success": true, "is_socio": true, "status": "attivo", "data_adesione": "2024-01-10"}
@@ -58,6 +65,10 @@ class SocioService {
       return false;
     } catch (e) {
       print('Errore verifica socio: $e');
+      if (e is FormatException) {
+        print('💡 Il backend WordPress sta restituendo warning PHP invece di JSON');
+        print('💡 Soluzione: Aggiungi in wp-config.php -> define("WP_DEBUG_DISPLAY", false);');
+      }
       return false;
     }
   }
@@ -79,6 +90,12 @@ class SocioService {
           .timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
+        // Verifica se la risposta contiene warning PHP invece di JSON
+        if (response.body.trim().startsWith('<')) {
+          print('⚠️ Risposta contiene HTML/warning PHP invece di JSON');
+          return false;
+        }
+        
         final rawData = jsonDecode(response.body);
         final data = decodeHtmlInMap(rawData);
         // Se success è true ma is_socio è false, significa che c'è una richiesta pending
@@ -88,6 +105,9 @@ class SocioService {
       return false;
     } catch (e) {
       print('Errore verifica richiesta: $e');
+      if (e is FormatException) {
+        print('💡 Il backend sta restituendo warning PHP. Configura WP_DEBUG_DISPLAY = false');
+      }
       return false;
     }
   }

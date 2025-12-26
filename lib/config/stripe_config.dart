@@ -8,7 +8,7 @@ class StripeConfig {
   // Test: pk_test_...
   // Live: pk_live_...
   // IMPORTANTE: Inserisci la tua Publishable Key, NON la Secret Key!
-  static const String publishableKey = 'pk_test_51SiYvcAJaLsqAD1peNd7cC8x2rhxsScURg2onqqA8wjkCWjmgky7IQgnChUxaUVuLEwKmbJGe177r6eamIL1nbur00bGOc7Lcx';
+  static const String publishableKey = 'pk_test_51SiYvHPF9rfBflxGogDBVHQFtLsxfbckAZXuJdITCsuS0lXHZJSgQaH1yXPZou2vDxvaHyX2pLG3hbOr5noMvL3q00FFKDal2i';
   
   // Merchant Display Name
   static const String merchantDisplayName = 'WeCoop';

@@ -30,11 +30,18 @@ class Pagamento {
   });
 
   factory Pagamento.fromJson(Map<String, dynamic> json) {
+    // Parse importo gestendo sia String che num
+    double parseImporto(dynamic value) {
+      if (value is num) return value.toDouble();
+      if (value is String) return double.parse(value);
+      return 0.0;
+    }
+    
     return Pagamento(
       id: json['id'] as int,
       richiestaId: json['richiesta_id'] as int,
       userId: json['user_id'] as int,
-      importo: (json['importo'] as num).toDouble(),
+      importo: parseImporto(json['importo']),
       stato: json['stato'] as String,
       metodoPagamento: json['metodo_pagamento'] as String?,
       transactionId: json['transaction_id'] as String?,

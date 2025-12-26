@@ -538,6 +538,75 @@ class SocioService {
     }
   }
 
+  /// Elimina una richiesta in stato pending (AUTENTICATO)
+  /// DELETE /richiesta-servizio/{id}
+  /// Solo il proprietario può eliminare, solo se stato = 'pending' e senza pagamenti
+  static Future<Map<String, dynamic>> deleteRichiesta(int id) async {
+    try {
+      final token = await storage.read(key: 'jwt_token');
+
+      if (token == null) {
+        print('Token JWT mancante');
+        return {'success': false, 'message': 'Utente non autenticato'};
+      }
+
+      final url = '$baseUrl/richiesta-servizio/$id';
+      print('🔄 Chiamata DELETE /richiesta-servizio/$id...');
+
+      final headers = await _getHeaders();
+      final response = await http
+          .delete(Uri.parse(url), headers: headers)
+          .timeout(const Duration(seconds: 30));
+
+      print('📥 DELETE /richiesta-servizio/$id status: ${response.statusCode}');
+      print('📥 Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final rawData = jsonDecode(response.body);
+        final responseData = decodeHtmlInMap(rawData);
+        if (responseData['success'] == true) {
+          print('✅ Richiesta eliminata: ${responseData['numero_pratica']}');
+          return {
+            'success': true,
+            'message':
+                responseData['message'] ?? 'Richiesta eliminata con successo',
+            'id': responseData['id'],
+            'numero_pratica': responseData['numero_pratica'],
+          };
+        }
+      } else if (response.statusCode == 401) {
+        return {'success': false, 'message': 'Utente non autenticato'};
+      } else if (response.statusCode == 403) {
+        return {
+          'success': false,
+          'message': 'Non hai il permesso di eliminare questa richiesta',
+        };
+      } else if (response.statusCode == 404) {
+        return {'success': false, 'message': 'Richiesta non trovata'};
+      } else if (response.statusCode == 400) {
+        final errorData = jsonDecode(response.body);
+        return {
+          'success': false,
+          'message':
+              errorData['message'] ??
+              'Impossibile eliminare questa richiesta',
+        };
+      }
+
+      return {
+        'success': false,
+        'message': 'Errore durante l\'eliminazione della richiesta',
+      };
+    } on TimeoutException {
+      return {'success': false, 'message': 'Timeout: il server non risponde'};
+    } on SocketException {
+      return {'success': false, 'message': 'Nessuna connessione internet'};
+    } catch (e) {
+      print('❌ Errore durante DELETE /richiesta-servizio/$id: $e');
+      return {'success': false, 'message': 'Errore: ${e.toString()}'};
+    }
+  }
+
   /// Completa il profilo dell'utente loggato
   /// POST /soci/me/completa-profilo
   /// Tutti i campi sono opzionali

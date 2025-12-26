@@ -283,6 +283,12 @@ class AppLocalizations {
       'notPaid': 'Non pagato',
       'paymentReceived': 'Pagamento ricevuto',
       'paymentRequired': 'Pagamento richiesto',
+      'deleteRequest': 'Elimina Richiesta',
+      'deleteRequestConfirm': 'Sei sicuro di voler eliminare questa richiesta?',
+      'deleteRequestWarning': '⚠️ Questa azione non può essere annullata',
+      'requestDeleted': 'Richiesta eliminata con successo',
+      'cannotDeleteRequest': 'Impossibile eliminare la richiesta',
+      'onlyPendingCanBeDeleted': 'Puoi eliminare solo richieste in attesa',
       'noRequestsThisDay': 'Nessuna richiesta per questo giorno',
       'noRequestsFound': 'Nessuna richiesta trovata',
       'transaction': 'Transazione',
@@ -808,6 +814,12 @@ class AppLocalizations {
       'notPaid': 'Not paid',
       'paymentReceived': 'Payment received',
       'paymentRequired': 'Payment required',
+      'deleteRequest': 'Delete Request',
+      'deleteRequestConfirm': 'Are you sure you want to delete this request?',
+      'deleteRequestWarning': '⚠️ This action cannot be undone',
+      'requestDeleted': 'Request deleted successfully',
+      'cannotDeleteRequest': 'Cannot delete request',
+      'onlyPendingCanBeDeleted': 'You can only delete pending requests',
       'noRequestsThisDay': 'No requests for this day',
       'noRequestsFound': 'No requests found',
       'transaction': 'Transaction',
@@ -1343,6 +1355,12 @@ class AppLocalizations {
       'notPaid': 'No pagado',
       'paymentReceived': 'Pago recibido',
       'paymentRequired': 'Pago requerido',
+      'deleteRequest': 'Eliminar Solicitud',
+      'deleteRequestConfirm': '¿Estás seguro de que quieres eliminar esta solicitud?',
+      'deleteRequestWarning': '⚠️ Esta acción no se puede deshacer',
+      'requestDeleted': 'Solicitud eliminada con éxito',
+      'cannotDeleteRequest': 'No se puede eliminar la solicitud',
+      'onlyPendingCanBeDeleted': 'Solo puedes eliminar solicitudes pendientes',
       'noRequestsThisDay': 'No hay solicitudes para este día',
       'noRequestsFound': 'No se encontraron solicitudes',
       'transaction': 'Transacción',
@@ -1796,6 +1814,12 @@ class AppLocalizations {
   String get notPaid => translate('notPaid');
   String get paymentReceived => translate('paymentReceived');
   String get paymentRequired => translate('paymentRequired');
+  String get deleteRequest => translate('deleteRequest');
+  String get deleteRequestConfirm => translate('deleteRequestConfirm');
+  String get deleteRequestWarning => translate('deleteRequestWarning');
+  String get requestDeleted => translate('requestDeleted');
+  String get cannotDeleteRequest => translate('cannotDeleteRequest');
+  String get onlyPendingCanBeDeleted => translate('onlyPendingCanBeDeleted');
   String get noRequestsThisDay => translate('noRequestsThisDay');
   String get noRequestsFound => translate('noRequestsFound');
   String get selectServiceYouNeed => translate('selectServiceYouNeed');

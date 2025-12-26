@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
@@ -181,22 +180,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
   }
 
-  Future<void> _apriLinkPagamento(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.cannotOpenPaymentLink),
-          ),
-        );
-      }
-    }
-  }
-
   String _getStatoLabelTradotto(String stato) {
     final l10n = AppLocalizations.of(context);
     if (l10n == null) return stato;
@@ -291,6 +274,139 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
+  Future<void> _confermaEliminaRichiesta(Map<String, dynamic> richiesta, {bool fromBottomSheet = false}) async {
+    final l10n = AppLocalizations.of(context)!;
+    final stato = richiesta['stato'] ?? '';
+    
+    // Verifica se eliminabile
+    if (stato != 'pending') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.onlyPendingCanBeDeleted),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.deleteRequest),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.deleteRequestConfirm),
+            const SizedBox(height: 16),
+            Text(
+              '${l10n.fileNumber}: ${richiesta['numero_pratica'] ?? 'N/A'}',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              '${l10n.paymentService}: ${_getServizioLabelTradotto(richiesta['servizio'] ?? '')}',
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.deleteRequestWarning,
+              style: const TextStyle(color: Colors.orange, fontSize: 12),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(l10n.deleteRequest),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await _eliminaRichiesta(richiesta['id'] as int, fromBottomSheet: fromBottomSheet);
+    }
+  }
+
+  Future<void> _eliminaRichiesta(int richiestaId, {bool fromBottomSheet = false}) async {
+    final l10n = AppLocalizations.of(context)!;
+    
+    // Guarda el contexto del navigator antes de operaciones asíncronas
+    final navigator = Navigator.of(context);
+    
+    try {
+      // Mostra loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      final result = await SocioService.deleteRichiesta(richiestaId);
+
+      // Chiudi loading - usa il navigator salvato
+      if (mounted) {
+        navigator.pop();
+      }
+
+      if (result['success'] == true) {
+        // Chiudi bottom sheet solo se chiamato da lì
+        if (fromBottomSheet && mounted) {
+          navigator.pop();
+        }
+        
+        // Mostra successo
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('✅ ${l10n.requestDeleted}'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+
+        // Ricarica lista
+        if (mounted) {
+          _caricaRichieste();
+        }
+      } else {
+        // Mostra errore
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('❌ ${result['message'] ?? l10n.cannotDeleteRequest}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Chiudi loading
+      if (mounted) {
+        navigator.pop();
+      }
+
+      // Mostra errore
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ ${l10n.cannotDeleteRequest}: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    }
+  }
+
   void _apriRichiestaById(String id) {
     print('🔍 Cerco richiesta con ID: $id');
     
@@ -317,10 +433,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Widget _buildDettaglioSheet(Map<String, dynamic> richiesta) {
     final stato = richiesta['stato'] ?? '';
-    final statoLabelOriginale = richiesta['stato_label'] ?? '';
     final statoLabel = _getStatoLabelTradotto(stato);
     final pagamento = richiesta['pagamento'] ?? {};
-    final paymentLink = richiesta['payment_link'];
     final puoPagare = richiesta['puo_pagare'] == true;
     final richiestaId = richiesta['id'] as int?;
     
@@ -454,7 +568,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
                         if (pagamento['transazione_id'] != null)
                           _buildInfoRow(
-                            'ID ${AppLocalizations.of(context)!.translate('transaction') ?? 'Transazione'}',
+                            'ID Transazione',
                             pagamento['transazione_id'],
                             Icons.receipt,
                           ),
@@ -542,6 +656,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.orange,
                             foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            minimumSize: const Size(double.infinity, 0),
+                          ),
+                        ),
+                      ],
+                      
+                      // Pulsante Elimina - Solo per richieste pending
+                      if (stato == 'pending' && richiestaId != null) ...[
+                        const SizedBox(height: 12),
+                        OutlinedButton.icon(
+                          onPressed: () {
+                            _confermaEliminaRichiesta(richiesta, fromBottomSheet: true);
+                          },
+                          icon: const Icon(Icons.delete_outline),
+                          label: Text(AppLocalizations.of(context)!.deleteRequest),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.red,
+                            side: const BorderSide(color: Colors.red),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             minimumSize: const Size(double.infinity, 0),
                           ),
@@ -754,14 +886,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Widget _buildRichiestaCard(Map<String, dynamic> richiesta) {
     final stato = richiesta['stato'] ?? '';
-    final statoLabelOriginale = richiesta['stato_label'] ?? '';
     final statoLabel = _getStatoLabelTradotto(stato);
     final pagamento = richiesta['pagamento'] ?? {};
-    final paymentLink = richiesta['payment_link'];
     final puoPagare = richiesta['puo_pagare'] == true;
     final isAwaitingPayment = stato == 'awaiting_payment' || stato == 'pending_payment';
+    final canDelete = stato == 'pending';
 
-    return Card(
+    final cardContent = Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: InkWell(
         onTap: () => _mostraDettaglioRichiesta(richiesta),
@@ -976,5 +1107,36 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ),
       ),
     );
+
+    // Wrap con Dismissible solo se pending (swipe-to-delete)
+    if (canDelete) {
+      return Dismissible(
+        key: Key('richiesta-${richiesta['id']}'),
+        direction: DismissDirection.endToStart,
+        confirmDismiss: (direction) async {
+          await _confermaEliminaRichiesta(richiesta, fromBottomSheet: false);
+          return false; // Non dismissare automaticamente, lo fa _eliminaRichiesta
+        },
+        background: Container(
+          color: Colors.red,
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.only(right: 20),
+          child: const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.delete, color: Colors.white, size: 32),
+              SizedBox(height: 4),
+              Text(
+                'Elimina',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+        child: cardContent,
+      );
+    } else {
+      return cardContent;
+    }
   }
 }

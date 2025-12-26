@@ -9,12 +9,15 @@ import 'package:wecoop_app/screens/profilo/completa_profilo_screen.dart';
 import 'package:wecoop_app/services/locale_provider.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/push_notification_service.dart';
+import 'package:wecoop_app/services/deep_link_service.dart';
+import 'package:wecoop_app/utils/deep_link_handler.dart';
 import 'screens/main_screen.dart';
 import 'screens/login/login_screen.dart';
 import 'screens/login/forgot_password_screen.dart';
 import 'screens/profilo/change_password_screen.dart';
 import 'screens/debug/push_notification_debug_screen.dart';
 import 'screens/debug/eventi_debug_screen.dart';
+import 'screens/calendar/calendar_screen.dart';
 
 class WECOOPApp extends StatefulWidget {
   const WECOOPApp({super.key});
@@ -25,12 +28,14 @@ class WECOOPApp extends StatefulWidget {
 
 class _WECOOPAppState extends State<WECOOPApp> {
   final PushNotificationService _pushService = PushNotificationService();
+  final DeepLinkService _deepLinkService = DeepLinkService();
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {
     super.initState();
     _initializePushNotifications();
+    _initializeDeepLinks();
   }
 
   Future<void> _initializePushNotifications() async {
@@ -40,6 +45,26 @@ class _WECOOPAppState extends State<WECOOPApp> {
     _pushService.onMessageTap = (RemoteMessage message) {
       _handleNotificationNavigation(message.data);
     };
+  }
+
+  Future<void> _initializeDeepLinks() async {
+    await _deepLinkService.initialize((uri) {
+      // Aspetta che il navigator sia pronto
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final context = _navigatorKey.currentContext;
+        if (context != null) {
+          DeepLinkHandler.handleDeepLink(context, uri);
+        } else {
+          print('⚠️ Navigator context non disponibile per deep link');
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _deepLinkService.dispose();
+    super.dispose();
   }
 
   void _handleNotificationNavigation(Map<String, dynamic> data) {
@@ -147,10 +172,11 @@ class _WECOOPAppState extends State<WECOOPApp> {
                 borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
-              ),
-              focusedBorder: OutlineInputBorder(
+          home: const MainScreen(),
+          routes: {
+            '/home': (context) => const MainScreen(),
+            '/calendar': (context) => const CalendarScreen(),
+            '/login': (context) => const LoginScreen(),
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: Color(0xFF2196F3), width: 2),
               ),

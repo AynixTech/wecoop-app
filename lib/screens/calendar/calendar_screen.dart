@@ -23,6 +23,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   String? _filtroStato;
   bool _localeInitialized = false;
   final storage = SecureStorageService();
+  String? _richiestaIdToOpen;
 
   List<Map<String, dynamic>> _filtriStato = [];
 
@@ -31,6 +32,26 @@ class _CalendarScreenState extends State<CalendarScreen> {
     super.initState();
     _selectedDay = _focusedDay;
     _initializeLocale();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    
+    // Controlla se c'è un ID richiesta da aprire (da deep link)
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    if (args != null && args['richiesta_id'] != null && _richiestaIdToOpen == null) {
+      _richiestaIdToOpen = args['richiesta_id'].toString();
+      print('📋 Richiesta da aprire: $_richiestaIdToOpen');
+      
+      // Apri il dettaglio dopo che le richieste sono caricate
+      if (!_isLoading && _tutteRichieste.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _apriRichiestaById(_richiestaIdToOpen!);
+          _richiestaIdToOpen = null; // Reset per evitare aperture multiple
+        });
+      }
+    }
   }
 
   Future<void> _initializeLocale() async {
@@ -45,16 +66,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
     // Verifica se l'utente è loggato
     final token = await storage.read(key: 'jwt_token');
     if (token == null) {
-      // Utente non loggato, non caricare richieste
-      if (mounted) {
-        setState(() {
-          _tutteRichieste = [];
-          _isLoading = false;
-        });
-      }
-      return;
-    }
-
+      if (result['success'] == true) {
+        if (mounted) {
+          setState(() {
+            _tutteRichieste = List<Map<String, dynamic>>.from(
+              result['data'] ?? [],
+            );
+            _isLoading = false;
+          });
+          
+          // Se c'è una richiesta da aprire, aprila dopo il caricamento
+          if (_richiestaIdToOpen != null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _apriRichiestaById(_richiestaIdToOpen!);
+              _richiestaIdToOpen = null;
+            });
+          }
+        }
+      } else {
     if (mounted) {
       setState(() => _isLoading = true);
     }
@@ -190,14 +219,38 @@ class _CalendarScreenState extends State<CalendarScreen> {
         return l10n.paymentStatusCancelled;
       case 'processing':
       case 'in_lavorazione':
-        return l10n.translate('processing') ?? 'In lavorazione';
-      case 'in_attesa':
-        return l10n.pending;
-      default:
-        return stato;
-    }
+  void _mostraDettaglioRichiesta(Map<String, dynamic> richiesta) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _buildDettaglioSheet(richiesta),
+    );
   }
 
+  void _apriRichiestaById(String id) {
+    print('🔍 Cerco richiesta con ID: $id');
+    
+    final richiesta = _tutteRichieste.firstWhere(
+      (r) => r['id'].toString() == id,
+      orElse: () => {},
+    );
+    
+    if (richiesta.isNotEmpty) {
+      print('✅ Richiesta trovata: ${richiesta['numero_pratica']}');
+      _mostraDettaglioRichiesta(richiesta);
+    } else {
+      print('❌ Richiesta non trovata: $id');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Richiesta non trovata'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    }
+  }
   void _mostraDettaglioRichiesta(Map<String, dynamic> richiesta) {
     showModalBottomSheet(
       context: context,

@@ -5,6 +5,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import '../../services/socio_service.dart';
+import '../servizi/pagamento_screen.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -111,14 +112,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Color _getStatoColor(String stato) {
     switch (stato) {
+      case 'awaiting_payment':
       case 'pending_payment':
         return Colors.orange;
       case 'processing':
+      case 'in_lavorazione':
         return Colors.blue;
       case 'completed':
+      case 'completata':
         return Colors.green;
       case 'cancelled':
+      case 'annullata':
         return Colors.red;
+      case 'in_attesa':
+        return Colors.amber;
       default:
         return Colors.grey;
     }
@@ -126,14 +133,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   IconData _getStatoIcon(String stato) {
     switch (stato) {
+      case 'awaiting_payment':
       case 'pending_payment':
         return Icons.payment;
       case 'processing':
+      case 'in_lavorazione':
         return Icons.hourglass_empty;
       case 'completed':
+      case 'completata':
         return Icons.check_circle;
       case 'cancelled':
+      case 'annullata':
         return Icons.cancel;
+      case 'in_attesa':
+        return Icons.schedule;
       default:
         return Icons.info;
     }
@@ -170,6 +183,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final pagamento = richiesta['pagamento'] ?? {};
     final paymentLink = richiesta['payment_link'];
     final puoPagare = richiesta['puo_pagare'] == true;
+    final richiestaId = richiesta['id'] as int?;
+    
+    // Stato awaiting_payment significa che c'è un pagamento da effettuare
+    final isAwaitingPayment = stato == 'awaiting_payment' || stato == 'pending_payment';
 
     return DraggableScrollableSheet(
       initialChildSize: 0.7,
@@ -295,7 +312,34 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           Icons.receipt,
                         ),
 
-                      if (puoPagare && paymentLink != null) ...[
+                      // Pulsante Paga - Priorità alla schermata interna se awaiting_payment
+                      if (isAwaitingPayment && richiestaId != null) ...[
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.pop(context); // Chiudi bottom sheet
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PagamentoScreen(
+                                  richiestaId: richiestaId,
+                                ),
+                              ),
+                            ).then((_) {
+                              // Ricarica le richieste quando torna indietro
+                              _caricaRichieste();
+                            });
+                          },
+                          icon: const Icon(Icons.payment),
+                          label: Text(AppLocalizations.of(context)!.payNow),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            minimumSize: const Size(double.infinity, 0),
+                          ),
+                        ),
+                      ] else if (puoPagare && paymentLink != null) ...[
                         const SizedBox(height: 24),
                         ElevatedButton.icon(
                           onPressed: () {
@@ -525,6 +569,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final pagamento = richiesta['pagamento'] ?? {};
     final paymentLink = richiesta['payment_link'];
     final puoPagare = richiesta['puo_pagare'] == true;
+    final isAwaitingPayment = stato == 'awaiting_payment' || stato == 'pending_payment';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -621,7 +666,44 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ),
                 ],
               ),
-              if (pagamento['ricevuto'] == true) ...[
+              
+              // Badge "In attesa di pagamento" più visibile
+              if (isAwaitingPayment) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.orange.shade300),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.warning_amber_rounded,
+                        size: 18,
+                        color: Colors.orange.shade700,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Pagamento richiesto',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.orange.shade900,
+                        ),
+                      ),
+                      const Spacer(),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 14,
+                        color: Colors.orange.shade700,
+                      ),
+                    ],
+                  ),
+                ),
+              ] else if (pagamento['ricevuto'] == true) ...[
                 const SizedBox(height: 8),
                 Row(
                   children: [

@@ -1,0 +1,620 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart' hide Card;
+import '../../models/pagamento_model.dart';
+import '../../services/pagamento_service.dart';
+import '../../services/app_localizations.dart';
+
+class PagamentoScreen extends StatefulWidget {
+  final int paymentId;
+  final int? richiestaId; // Opzionale: se passi la richiesta invece del payment
+
+  const PagamentoScreen({
+    super.key,
+    this.paymentId = 0,
+    this.richiestaId,
+  });
+
+  @override
+  State<PagamentoScreen> createState() => _PagamentoScreenState();
+}
+
+class _PagamentoScreenState extends State<PagamentoScreen> {
+  Pagamento? _pagamento;
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPagamento();
+  }
+
+  Future<void> _loadPagamento() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      Pagamento? pagamento;
+
+      if (widget.richiestaId != null) {
+        // Carica pagamento tramite richiesta_id
+        pagamento = await PagamentoService.getPagamentoPerRichiesta(
+          widget.richiestaId!,
+        );
+      } else if (widget.paymentId > 0) {
+        // Carica pagamento tramite payment_id
+        pagamento = await PagamentoService.getPagamento(widget.paymentId);
+      }
+
+      if (pagamento == null) {
+        setState(() {
+          _errorMessage = 'Pagamento non trovato';
+          _isLoading = false;
+        });
+        return;
+      }
+
+      setState(() {
+        _pagamento = pagamento;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Errore durante il caricamento del pagamento';
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _handleStripePayment() async {
+    if (_pagamento == null) return;
+
+    try {
+      // Mostra loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      // 1. Crea Payment Intent sul backend
+      final clientSecret = await PagamentoService.creaStripePaymentIntent(
+        importo: _pagamento!.importo,
+        paymentId: _pagamento!.id,
+      );
+
+      if (!mounted) return;
+      Navigator.pop(context); // Chiudi loading
+
+      if (clientSecret == null) {
+        _showErrorDialog('Impossibile creare il pagamento Stripe. Verifica la configurazione backend.');
+        return;
+      }
+
+      // 2. Inizializza Payment Sheet
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: clientSecret,
+          merchantDisplayName: 'WeCoop',
+          style: ThemeMode.system,
+          appearance: const PaymentSheetAppearance(
+            colors: PaymentSheetAppearanceColors(
+              primary: Color(0xFF00A86B),
+            ),
+          ),
+        ),
+      );
+
+      // 3. Mostra Payment Sheet
+      await Stripe.instance.presentPaymentSheet();
+
+      // 4. Se arriviamo qui, il pagamento è riuscito
+      // Conferma sul backend WordPress
+      final result = await PagamentoService.confermaPagamento(
+        paymentId: _pagamento!.id,
+        metodoPagamento: 'stripe',
+        transactionId: clientSecret,
+        note: 'Pagato tramite Stripe in-app',
+      );
+
+      if (!mounted) return;
+
+      if (result['success'] == true) {
+        // Ricarica i dati del pagamento
+        await _loadPagamento();
+
+        _showSuccessDialog(
+          'Pagamento Completato!',
+          'Il tuo pagamento di €${_pagamento!.importo.toStringAsFixed(2)} è stato processato con successo.',
+        );
+      } else {
+        _showErrorDialog(result['message'] ?? 'Errore durante la conferma del pagamento');
+      }
+    } on StripeException catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context); // Chiudi loading se aperto
+
+      // Gestisci errori Stripe specifici
+      if (e.error.code == FailureCode.Canceled) {
+        // Utente ha annullato
+        return;
+      }
+
+      _showErrorDialog('Errore Stripe: ${e.error.localizedMessage ?? e.error.message}');
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context); // Chiudi loading se aperto
+      _showErrorDialog('Errore imprevisto: $e');
+    }
+  }
+
+  Future<void> _handlePayPalPayment() async {
+    if (_pagamento == null) return;
+
+    // TODO: Integra PayPal
+    _showInfoDialog(
+      'Integrazione PayPal',
+      'PayPal non ancora integrato.\n\nImporto: €${_pagamento!.importo.toStringAsFixed(2)}\n\nIntegra react-native-paypal o simile.',
+    );
+  }
+
+  Future<void> _handleBankTransferPayment() async {
+    if (_pagamento == null) return;
+
+    final l10n = AppLocalizations.of(context)!;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Bonifico Bancario'),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Importo: €${_pagamento!.importo.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text('Coordinate bancarie:'),
+              const SizedBox(height: 8),
+              _buildBankDetail('IBAN', 'IT60 X054 2811 1010 0000 0123 456'),
+              _buildBankDetail('Intestatario', 'WeCoop Cooperativa'),
+              _buildBankDetail('BIC/SWIFT', 'BPMOIT22XXX'),
+              const SizedBox(height: 16),
+              Text(
+                'Causale: ${_pagamento!.numeroPratica ?? 'Pagamento #${_pagamento!.id}'}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Dopo aver effettuato il bonifico, invia la ricevuta a pagamenti@wecoop.org',
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _showSuccessDialog(
+                'Istruzioni inviate',
+                'Ti abbiamo inviato una email con le istruzioni per il bonifico.',
+              );
+            },
+            child: const Text('Invia Email'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBankDetail(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 100,
+            child: Text(
+              '$label:',
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ),
+          Expanded(
+            child: SelectableText(
+              value,
+              style: const TextStyle(fontFamily: 'monospace'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showErrorDialog(String message) {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            const Icon(Icons.error, color: Colors.red),
+            const SizedBox(width: 8),
+            Text(l10n.error),
+          ],
+        ),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.ok),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showInfoDialog(String title, String message) {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            const Icon(Icons.info, color: Colors.blue),
+            const SizedBox(width: 8),
+            Text(title),
+          ],
+        ),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.ok),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSuccessDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.green, size: 32),
+            const SizedBox(width: 12),
+            Expanded(child: Text(title)),
+          ],
+        ),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Chiudi dialog
+              Navigator.pop(context); // Torna alla schermata precedente
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Pagamento'),
+        elevation: 0,
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _errorMessage != null
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          size: 64,
+                          color: Colors.red,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          _errorMessage!,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton(
+                          onPressed: _loadPagamento,
+                          child: const Text('Riprova'),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : _pagamento == null
+                  ? const Center(child: Text('Pagamento non trovato'))
+                  : SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Header colorato
+                          Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Theme.of(context).primaryColor,
+                                  Theme.of(context).primaryColor.withOpacity(0.7),
+                                ],
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                const Icon(
+                                  Icons.payment,
+                                  size: 48,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  '€${_pagamento!.importo.toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                    fontSize: 48,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  _pagamento!.statoReadable,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Dettagli pagamento
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Dettagli',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const Divider(),
+                                    _buildDetailRow(
+                                      'Servizio',
+                                      _pagamento!.servizio ?? 'N/A',
+                                    ),
+                                    _buildDetailRow(
+                                      'Numero Pratica',
+                                      _pagamento!.numeroPratica ?? 'N/A',
+                                    ),
+                                    _buildDetailRow(
+                                      'Data Creazione',
+                                      _formatDate(_pagamento!.createdAt),
+                                    ),
+                                    if (_pagamento!.paidAt != null)
+                                      _buildDetailRow(
+                                        'Data Pagamento',
+                                        _formatDate(_pagamento!.paidAt!),
+                                      ),
+                                    if (_pagamento!.metodoPagamento != null)
+                                      _buildDetailRow(
+                                        'Metodo',
+                                        _pagamento!.metodoPagamento!.toUpperCase(),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          // Pulsanti pagamento (solo se pending)
+                          if (_pagamento!.isPending)
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  const Text(
+                                    'Scegli il metodo di pagamento:',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+
+                                  // Stripe
+                                  _buildPaymentButton(
+                                    icon: Icons.credit_card,
+                                    label: 'Paga con Carta',
+                                    subtitle: 'Visa, Mastercard, American Express',
+                                    color: const Color(0xFF635BFF),
+                                    onTap: _handleStripePayment,
+                                  ),
+                                  const SizedBox(height: 12),
+
+                                  // PayPal
+                                  _buildPaymentButton(
+                                    icon: Icons.account_balance_wallet,
+                                    label: 'PayPal',
+                                    subtitle: 'Paga con il tuo account PayPal',
+                                    color: const Color(0xFF0070BA),
+                                    onTap: _handlePayPalPayment,
+                                  ),
+                                  const SizedBox(height: 12),
+
+                                  // Bonifico
+                                  _buildPaymentButton(
+                                    icon: Icons.account_balance,
+                                    label: 'Bonifico Bancario',
+                                    subtitle: 'Ricevi le coordinate via email',
+                                    color: Colors.green,
+                                    onTap: _handleBankTransferPayment,
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                          // Messaggio se già pagato
+                          if (_pagamento!.isPaid)
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Card(
+                                color: Colors.green.shade50,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.check_circle,
+                                        color: Colors.green,
+                                        size: 32,
+                                      ),
+                                      const SizedBox(width: 16),
+                                      const Expanded(
+                                        child: Text(
+                                          'Pagamento completato con successo',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                          const SizedBox(height: 32),
+                        ],
+                      ),
+                    ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 140,
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: Colors.grey,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaymentButton({
+    required IconData icon,
+    required String label,
+    required String subtitle,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: color, size: 28),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey.shade400),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+  }
+}

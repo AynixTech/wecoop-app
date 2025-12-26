@@ -31,6 +31,7 @@ dependencies:
   carousel_slider: ^4.2.1
   percent_indicator: ^4.2.2
   google_fonts: ^5.0.0
+  flutter_stripe: ^11.2.0
   
   # Firebase Push Notifications
   firebase_core: ^2.24.0

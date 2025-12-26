@@ -40,6 +40,102 @@ String getCountryName(String? isoCode) {
   return countryNames[isoCode.toUpperCase()] ?? isoCode;
 }
 
+/// Mappa servizi multilingua -> chiave standardizzata (inglese)
+const Map<String, String> servizioStandardMap = {
+  // CAF - Assistenza Fiscale
+  'CAF - Assistenza Fiscale': 'caf_tax_assistance',
+  'CAF - Tax Assistance': 'caf_tax_assistance',
+  'CAF - Asistencia Fiscal': 'caf_tax_assistance',
+  
+  // Sportello Immigrazione
+  'Sportello Immigrazione': 'immigration_desk',
+  'Immigration Desk': 'immigration_desk',
+  'Oficina de Inmigración': 'immigration_desk',
+  
+  // Supporto Contabile
+  'Supporto Contabile': 'accounting_support',
+  'Accounting Support': 'accounting_support',
+  'Soporte Contable': 'accounting_support',
+  
+  // Mediazione Fiscale
+  'Mediazione Fiscale': 'tax_mediation',
+  'Tax Mediation': 'tax_mediation',
+  'Mediación Fiscal': 'tax_mediation',
+};
+
+/// Mappa categorie multilingua -> chiave standardizzata (inglese)
+const Map<String, String> categoriaStandardMap = {
+  // CAF - Dichiarazione dei Redditi
+  'Dichiarazione dei Redditi (730)': 'tax_return_730',
+  'Tax Return (730)': 'tax_return_730',
+  'Declaración de la Renta (730)': 'tax_return_730',
+  
+  // CAF - Compilazione Modelli
+  'Compilazione Modelli': 'form_compilation',
+  'Form Compilation': 'form_compilation',
+  'Compilación de Formularios': 'form_compilation',
+  
+  // Sportello - Permesso di Soggiorno
+  'Permesso di Soggiorno': 'residence_permit',
+  'Residence Permit': 'residence_permit',
+  'Permiso de Residencia': 'residence_permit',
+  
+  // Sportello - Cittadinanza
+  'Cittadinanza': 'citizenship',
+  'Citizenship': 'citizenship',
+  'Ciudadanía': 'citizenship',
+  
+  // Sportello - Visto Turistico
+  'Visto Turistico': 'tourist_visa',
+  'Tourist Visa': 'tourist_visa',
+  'Visa Turística': 'tourist_visa',
+  
+  // Sportello - Richiesta Asilo
+  'Richiesta Asilo': 'asylum_request',
+  'Asylum Request': 'asylum_request',
+  'Solicitud de Asilo': 'asylum_request',
+  
+  // Contabilità - Dichiarazione Redditi
+  'Dichiarazione Redditi': 'income_tax_return',
+  'Income Tax Return': 'income_tax_return',
+  'Declaración de Renta': 'income_tax_return',
+  
+  // Contabilità - Apertura Partita IVA
+  'Apertura Partita IVA': 'vat_number_opening',
+  'VAT Number Opening': 'vat_number_opening',
+  'Apertura de Partita IVA': 'vat_number_opening',
+  
+  // Contabilità - Gestione Contabilità
+  'Gestione Contabilità': 'accounting_management',
+  'Accounting Management': 'accounting_management',
+  'Gestión de Contabilidad': 'accounting_management',
+  
+  // Contabilità - Adempimenti Fiscali
+  'Adempimenti Fiscali': 'tax_compliance',
+  'Tax Compliance': 'tax_compliance',
+  'Cumplimientos Fiscales': 'tax_compliance',
+  
+  // Contabilità - Consulenza Fiscale
+  'Consulenza Fiscale': 'tax_consultation',
+  'Tax Consultation': 'tax_consultation',
+  'Consultoría Fiscal': 'tax_consultation',
+  
+  // Mediazione Fiscale - Gestione Debiti
+  'Gestione Debiti Fiscali': 'tax_debt_management',
+  'Tax Debt Management': 'tax_debt_management',
+  'Gestión de Deudas Fiscales': 'tax_debt_management',
+};
+
+/// Converte servizio tradotto in chiave standard
+String _getStandardServizio(String servizio) {
+  return servizioStandardMap[servizio] ?? servizio;
+}
+
+/// Converte categoria tradotta in chiave standard
+String _getStandardCategoria(String categoria) {
+  return categoriaStandardMap[categoria] ?? categoria;
+}
+
 class RichiestaFormScreen extends StatefulWidget {
   final String servizio;
   final String categoria;
@@ -621,10 +717,20 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       print('=== DATI CONVERTITI PER API ===');
       print(apiData);
 
-      // Usa il nuovo endpoint API
+      // Standardizza servizio e categoria (da tradotti a chiavi inglesi)
+      final servizioStandard = _getStandardServizio(widget.servizio);
+      final categoriaStandard = _getStandardCategoria(widget.categoria);
+      
+      print('=== STANDARDIZZAZIONE ===');
+      print('Servizio originale: ${widget.servizio}');
+      print('Servizio standard: $servizioStandard');
+      print('Categoria originale: ${widget.categoria}');
+      print('Categoria standard: $categoriaStandard');
+
+      // Usa il nuovo endpoint API con valori standardizzati
       final result = await SocioService.inviaRichiestaServizio(
-        servizio: widget.servizio,
-        categoria: widget.categoria,
+        servizio: servizioStandard,
+        categoria: categoriaStandard,
         dati: apiData,
       );
 

@@ -16,7 +16,7 @@ class DeepLinkService {
 
     // Gestisci il link iniziale (app aperta da chiusa)
     try {
-      final initialUri = await _appLinks.getInitialLink();
+      final initialUri = await _appLinks.getInitialAppLink();
       if (initialUri != null) {
         print('🔗 Link iniziale: $initialUri');
         _handleLink(initialUri);

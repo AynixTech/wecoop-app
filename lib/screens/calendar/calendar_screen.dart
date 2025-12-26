@@ -66,24 +66,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
     // Verifica se l'utente è loggato
     final token = await storage.read(key: 'jwt_token');
     if (token == null) {
-      if (result['success'] == true) {
-        if (mounted) {
-          setState(() {
-            _tutteRichieste = List<Map<String, dynamic>>.from(
-              result['data'] ?? [],
-            );
-            _isLoading = false;
-          });
-          
-          // Se c'è una richiesta da aprire, aprila dopo il caricamento
-          if (_richiestaIdToOpen != null) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _apriRichiestaById(_richiestaIdToOpen!);
-              _richiestaIdToOpen = null;
-            });
-          }
-        }
-      } else {
+      // Utente non loggato, non caricare richieste
+      if (mounted) {
+        setState(() {
+          _tutteRichieste = [];
+          _isLoading = false;
+        });
+      }
+      return;
+    }
+
     if (mounted) {
       setState(() => _isLoading = true);
     }
@@ -103,6 +95,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
             );
             _isLoading = false;
           });
+          
+          // Se c'è una richiesta da aprire, aprila dopo il caricamento
+          if (_richiestaIdToOpen != null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _apriRichiestaById(_richiestaIdToOpen!);
+              _richiestaIdToOpen = null;
+            });
+          }
         }
       } else {
         if (mounted) {
@@ -219,6 +219,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
         return l10n.paymentStatusCancelled;
       case 'processing':
       case 'in_lavorazione':
+        return l10n.translate('processing') ?? 'In lavorazione';
+      case 'in_attesa':
+        return l10n.pending;
+      default:
+        return stato;
+    }
+  }
+
   void _mostraDettaglioRichiesta(Map<String, dynamic> richiesta) {
     showModalBottomSheet(
       context: context,
@@ -250,14 +258,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
         );
       }
     }
-  }
-  void _mostraDettaglioRichiesta(Map<String, dynamic> richiesta) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => _buildDettaglioSheet(richiesta),
-    );
   }
 
   Widget _buildDettaglioSheet(Map<String, dynamic> richiesta) {

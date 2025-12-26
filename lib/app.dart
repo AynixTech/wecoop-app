@@ -172,11 +172,10 @@ class _WECOOPAppState extends State<WECOOPApp> {
                 borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
               ),
               enabledBorder: OutlineInputBorder(
-          home: const MainScreen(),
-          routes: {
-            '/home': (context) => const MainScreen(),
-            '/calendar': (context) => const CalendarScreen(),
-            '/login': (context) => const LoginScreen(),
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+              ),
+              focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: Color(0xFF2196F3), width: 2),
               ),
@@ -198,6 +197,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
           home: const MainScreen(),
           routes: {
             '/home': (context) => const MainScreen(),
+            '/calendar': (context) => const CalendarScreen(),
             '/login': (context) => const LoginScreen(),
             '/forgot-password': (context) => const ForgotPasswordScreen(),
             '/change-password': (context) => const ChangePasswordScreen(),

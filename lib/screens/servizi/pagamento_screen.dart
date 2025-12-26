@@ -383,6 +383,24 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
     );
   }
 
+  String _getServizioLabelTradotto(String servizio) {
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) return servizio;
+    
+    switch (servizio) {
+      case 'caf_tax_assistance':
+        return l10n.cafTaxAssistance;
+      case 'immigration_desk':
+        return l10n.immigrationDesk;
+      case 'tax_mediation':
+        return l10n.taxMediation;
+      case 'accounting_support':
+        return l10n.accountingSupport;
+      default:
+        return servizio;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -507,7 +525,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                     const Divider(),
                                     _buildDetailRow(
                                       AppLocalizations.of(context)!.paymentService,
-                                      _pagamento!.servizio ?? 'N/A',
+                                      _getServizioLabelTradotto(_pagamento!.servizio ?? 'N/A'),
                                     ),
                                     _buildDetailRow(
                                       AppLocalizations.of(context)!.paymentFileNumber,

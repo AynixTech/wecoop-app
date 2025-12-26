@@ -219,11 +219,66 @@ class _CalendarScreenState extends State<CalendarScreen> {
         return l10n.paymentStatusCancelled;
       case 'processing':
       case 'in_lavorazione':
-        return l10n.translate('processing') ?? 'In lavorazione';
+        return l10n.processing;
       case 'in_attesa':
         return l10n.pending;
       default:
         return stato;
+    }
+  }
+
+  String _getCategoriaLabelTradotta(String categoria) {
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) return categoria;
+    
+    switch (categoria) {
+      case '730':
+      case 'tax_return_730':
+        return l10n.taxReturn730;
+      case 'form_compilation':
+        return l10n.formCompilation;
+      case 'residence_permit':
+        return l10n.residencePermit;
+      case 'citizenship':
+        return l10n.citizenship;
+      case 'tourist_visa':
+        return l10n.touristVisa;
+      case 'asylum_request':
+        return l10n.asylumRequest;
+      case 'income_tax_return':
+        return l10n.incomeTaxReturn;
+      case 'vat_number_opening':
+        return l10n.vatNumberOpening;
+      case 'accounting_management':
+        return l10n.accountingManagement;
+      case 'tax_compliance':
+        return l10n.taxCompliance;
+      case 'tax_consultation':
+        return l10n.taxConsultation;
+      case 'tax_debt_management':
+        return l10n.taxDebtManagement;
+      case 'tax_mediation':
+        return l10n.taxMediation;
+      default:
+        return categoria;
+    }
+  }
+
+  String _getServizioLabelTradotto(String servizio) {
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) return servizio;
+    
+    switch (servizio) {
+      case 'caf_tax_assistance':
+        return l10n.cafTaxAssistance;
+      case 'immigration_desk':
+        return l10n.immigrationDesk;
+      case 'tax_mediation':
+        return l10n.taxMediation;
+      case 'accounting_support':
+        return l10n.accountingSupport;
+      default:
+        return servizio;
     }
   }
 
@@ -308,14 +363,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              richiesta['servizio'] ?? '',
+                              _getServizioLabelTradotto(richiesta['servizio'] ?? ''),
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             Text(
-                              richiesta['categoria'] ?? '',
+                              _getCategoriaLabelTradotta(richiesta['categoria'] ?? ''),
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey.shade700,
@@ -463,9 +518,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         ),
                       ],
 
-                      // Pulsante Paga - Priorità alla schermata interna se awaiting_payment
+                      // Pulsante Paga - Usa sempre la schermata interna se c'è richiestaId
                       // Mostra solo se NON è già stato pagato
-                      if (isAwaitingPayment && richiestaId != null && pagamento['ricevuto'] != true) ...[
+                      if ((isAwaitingPayment || puoPagare) && richiestaId != null && pagamento['ricevuto'] != true) ...[
                         const SizedBox(height: 24),
                         ElevatedButton.icon(
                           onPressed: () {
@@ -486,22 +541,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           label: Text(AppLocalizations.of(context)!.payNow),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.orange,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            minimumSize: const Size(double.infinity, 0),
-                          ),
-                        ),
-                      ] else if (puoPagare && paymentLink != null) ...[
-                        const SizedBox(height: 24),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            _apriLinkPagamento(paymentLink);
-                          },
-                          icon: const Icon(Icons.payment),
-                          label: Text(AppLocalizations.of(context)!.payNow),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             minimumSize: const Size(double.infinity, 0),
@@ -781,14 +820,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                richiesta['servizio'] ?? '',
+                _getServizioLabelTradotto(richiesta['servizio'] ?? ''),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Text(
-                richiesta['categoria'] ?? '',
+                _getCategoriaLabelTradotta(richiesta['categoria'] ?? ''),
                 style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
               ),
               const SizedBox(height: 8),
@@ -903,16 +942,29 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ],
                 ),
               ],
-              if (puoPagare && paymentLink != null) ...[
+              // Bottone Paga - Usa schermata interna se c'è richiestaId
+              if ((isAwaitingPayment || puoPagare) && richiesta['id'] != null && pagamento['ricevuto'] != true) ...[
                 const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: () => _apriLinkPagamento(paymentLink),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PagamentoScreen(
+                            richiestaId: richiesta['id'] as int,
+                          ),
+                        ),
+                      ).then((_) {
+                        // Ricarica le richieste quando torna indietro
+                        _caricaRichieste();
+                      });
+                    },
                     icon: const Icon(Icons.payment, size: 18),
                     label: Text(AppLocalizations.of(context)!.payNow),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: Colors.orange,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 10),
                     ),

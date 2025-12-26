@@ -54,6 +54,8 @@ class AppLocalizations {
       'support': 'Supporto',
       'ourServices': 'I nostri servizi',
       'welcomeOrientation': 'Accoglienza e Orientamento',
+      'cafTaxAssistance': 'CAF - Assistenza Fiscale',
+      'immigrationDesk': 'Sportello Immigrazione',
       'taxMediation': 'Mediazione Fiscale',
       'accountingSupport': 'Supporto Contabile',
       'latestArticles': 'Ultimi articoli',
@@ -256,6 +258,7 @@ class AppLocalizations {
       'paymentStatusCompleted': 'Completato',
       'paymentStatusFailed': 'Fallito',
       'paymentStatusCancelled': 'Annullato',
+      'processing': 'In lavorazione',
       'paymentDetails': 'Dettagli',
       'paymentService': 'Servizio',
       'paymentFileNumber': 'Numero Pratica',
@@ -407,6 +410,15 @@ class AppLocalizations {
       'selectFiscalService': 'Seleziona il servizio fiscale',
       'tax730Declaration': '730 - Dichiarazione dei Redditi',
       'tax730Description': 'Compilazione modello 730 per dipendenti e pensionati',
+      'taxReturn730': 'Dichiarazione dei Redditi (730)',
+      'formCompilation': 'Compilazione Modelli',
+      'asylumRequest': 'Richiesta Asilo',
+      'incomeTaxReturn': 'Dichiarazione Redditi',
+      'vatNumberOpening': 'Apertura Partita IVA',
+      'accountingManagement': 'Gestione Contabilità',
+      'taxCompliance': 'Adempimenti Fiscali',
+      'taxConsultation': 'Consulenza Fiscale',
+      'taxDebtManagement': 'Gestione Debiti Fiscali',
       'individualPerson': 'Persona Fisica',
       'individualPersonDescription': 'Dichiarazione redditi per persone fisiche',
       'taxpayerType': 'Tipologia contribuente',
@@ -577,6 +589,8 @@ class AppLocalizations {
       'support': 'Support',
       'ourServices': 'Our services',
       'welcomeOrientation': 'Welcome and Orientation',
+      'cafTaxAssistance': 'CAF - Tax Assistance',
+      'immigrationDesk': 'Immigration Desk',
       'taxMediation': 'Tax Mediation',
       'accountingSupport': 'Accounting Support',
       'latestArticles': 'Latest articles',
@@ -769,6 +783,7 @@ class AppLocalizations {
       'paymentStatusCompleted': 'Completed',
       'paymentStatusFailed': 'Failed',
       'paymentStatusCancelled': 'Cancelled',
+      'processing': 'Processing',
       'paymentDetails': 'Details',
       'paymentService': 'Service',
       'paymentFileNumber': 'File Number',
@@ -930,6 +945,15 @@ class AppLocalizations {
       'selectFiscalService': 'Select tax service',
       'tax730Declaration': '730 - Income Tax Return',
       'tax730Description': 'Form 730 preparation for employees and pensioners',
+      'taxReturn730': 'Tax Return (730)',
+      'formCompilation': 'Form Compilation',
+      'asylumRequest': 'Asylum Request',
+      'incomeTaxReturn': 'Income Tax Return',
+      'vatNumberOpening': 'VAT Number Opening',
+      'accountingManagement': 'Accounting Management',
+      'taxCompliance': 'Tax Compliance',
+      'taxConsultation': 'Tax Consultation',
+      'taxDebtManagement': 'Tax Debt Management',
       'individualPerson': 'Individual Person',
       'individualPersonDescription': 'Income tax return for individuals',
       'taxpayerType': 'Taxpayer type',
@@ -1100,6 +1124,8 @@ class AppLocalizations {
       'support': 'Soporte',
       'ourServices': 'Nuestros servicios',
       'welcomeOrientation': 'Acogida y Orientación',
+      'cafTaxAssistance': 'CAF - Asistencia Fiscal',
+      'immigrationDesk': 'Oficina de Inmigración',
       'taxMediation': 'Mediación Fiscal',
       'accountingSupport': 'Soporte Contable',
       'latestArticles': 'Últimos artículos',
@@ -1292,6 +1318,7 @@ class AppLocalizations {
       'paymentStatusCompleted': 'Completado',
       'paymentStatusFailed': 'Fallido',
       'paymentStatusCancelled': 'Cancelado',
+      'processing': 'En proceso',
       'paymentDetails': 'Detalles',
       'paymentService': 'Servicio',
       'paymentFileNumber': 'Número de Expediente',
@@ -1454,6 +1481,15 @@ class AppLocalizations {
       'selectFiscalService': 'Selecciona el servicio fiscal',
       'tax730Declaration': '730 - Declaración de la Renta',
       'tax730Description': 'Preparación del modelo 730 para empleados y pensionistas',
+      'taxReturn730': 'Declaración de la Renta (730)',
+      'formCompilation': 'Compilación de Formularios',
+      'asylumRequest': 'Solicitud de Asilo',
+      'incomeTaxReturn': 'Declaración de Renta',
+      'vatNumberOpening': 'Apertura de Partita IVA',
+      'accountingManagement': 'Gestión de Contabilidad',
+      'taxCompliance': 'Cumplimientos Fiscales',
+      'taxConsultation': 'Consultoría Fiscal',
+      'taxDebtManagement': 'Gestión de Deudas Fiscales',
       'individualPerson': 'Persona Física',
       'individualPersonDescription': 'Declaración de la renta para personas físicas',
       'taxpayerType': 'Tipo de contribuyente',
@@ -1630,6 +1666,8 @@ class AppLocalizations {
   String get support => translate('support');
   String get ourServices => translate('ourServices');
   String get welcomeOrientation => translate('welcomeOrientation');
+  String get cafTaxAssistance => translate('cafTaxAssistance');
+  String get immigrationDesk => translate('immigrationDesk');
   String get taxMediation => translate('taxMediation');
   String get accountingSupport => translate('accountingSupport');
   String get latestArticles => translate('latestArticles');
@@ -1733,6 +1771,7 @@ class AppLocalizations {
   String get paymentStatusCompleted => translate('paymentStatusCompleted');
   String get paymentStatusFailed => translate('paymentStatusFailed');
   String get paymentStatusCancelled => translate('paymentStatusCancelled');
+  String get processing => translate('processing');
   String get paymentDetails => translate('paymentDetails');
   String get paymentService => translate('paymentService');
   String get paymentFileNumber => translate('paymentFileNumber');
@@ -1870,6 +1909,15 @@ class AppLocalizations {
   String get selectFiscalService => translate('selectFiscalService');
   String get tax730Declaration => translate('tax730Declaration');
   String get tax730Description => translate('tax730Description');
+  String get taxReturn730 => translate('taxReturn730');
+  String get formCompilation => translate('formCompilation');
+  String get asylumRequest => translate('asylumRequest');
+  String get incomeTaxReturn => translate('incomeTaxReturn');
+  String get vatNumberOpening => translate('vatNumberOpening');
+  String get accountingManagement => translate('accountingManagement');
+  String get taxCompliance => translate('taxCompliance');
+  String get taxConsultation => translate('taxConsultation');
+  String get taxDebtManagement => translate('taxDebtManagement');
   String get individualPerson => translate('individualPerson');
   String get individualPersonDescription => translate('individualPersonDescription');
   String get taxpayerType => translate('taxpayerType');

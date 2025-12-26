@@ -455,11 +455,33 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                Text(
-                                  _pagamento!.statoReadable,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.white70,
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: _getStatoBadgeColor(_pagamento!.stato),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        _getStatoIcon(_pagamento!.stato),
+                                        size: 16,
+                                        color: Colors.white,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        _pagamento!.statoReadable(context),
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -475,34 +497,34 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
-                                      'Dettagli',
-                                      style: TextStyle(
+                                    Text(
+                                      AppLocalizations.of(context)!.paymentDetails,
+                                      style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     const Divider(),
                                     _buildDetailRow(
-                                      'Servizio',
+                                      AppLocalizations.of(context)!.paymentService,
                                       _pagamento!.servizio ?? 'N/A',
                                     ),
                                     _buildDetailRow(
-                                      'Numero Pratica',
+                                      AppLocalizations.of(context)!.paymentFileNumber,
                                       _pagamento!.numeroPratica ?? 'N/A',
                                     ),
                                     _buildDetailRow(
-                                      'Data Creazione',
+                                      AppLocalizations.of(context)!.paymentCreatedDate,
                                       _formatDate(_pagamento!.createdAt),
                                     ),
                                     if (_pagamento!.paidAt != null)
                                       _buildDetailRow(
-                                        'Data Pagamento',
+                                        AppLocalizations.of(context)!.paymentPaidDate,
                                         _formatDate(_pagamento!.paidAt!),
                                       ),
                                     if (_pagamento!.metodoPagamento != null)
                                       _buildDetailRow(
-                                        'Metodo',
+                                        AppLocalizations.of(context)!.paymentMethod,
                                         _pagamento!.metodoPagamento!.toUpperCase(),
                                       ),
                                   ],
@@ -518,9 +540,9 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  const Text(
-                                    'Scegli il metodo di pagamento:',
-                                    style: TextStyle(
+                                  Text(
+                                    AppLocalizations.of(context)!.choosePaymentMethod,
+                                    style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -530,8 +552,8 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                   // Stripe
                                   _buildPaymentButton(
                                     icon: Icons.credit_card,
-                                    label: 'Paga con Carta',
-                                    subtitle: 'Visa, Mastercard, American Express',
+                                    label: AppLocalizations.of(context)!.payWithCard,
+                                    subtitle: AppLocalizations.of(context)!.payWithCardDesc,
                                     color: const Color(0xFF635BFF),
                                     onTap: _handleStripePayment,
                                   ),
@@ -540,8 +562,8 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                   // PayPal
                                   _buildPaymentButton(
                                     icon: Icons.account_balance_wallet,
-                                    label: 'PayPal',
-                                    subtitle: 'Paga con il tuo account PayPal',
+                                    label: AppLocalizations.of(context)!.payPal,
+                                    subtitle: AppLocalizations.of(context)!.payPalDesc,
                                     color: const Color(0xFF0070BA),
                                     onTap: _handlePayPalPayment,
                                   ),
@@ -550,8 +572,8 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                   // Bonifico
                                   _buildPaymentButton(
                                     icon: Icons.account_balance,
-                                    label: 'Bonifico Bancario',
-                                    subtitle: 'Ricevi le coordinate via email',
+                                    label: AppLocalizations.of(context)!.bankTransfer,
+                                    subtitle: AppLocalizations.of(context)!.bankTransferDesc,
                                     color: Colors.green,
                                     onTap: _handleBankTransferPayment,
                                   ),
@@ -575,10 +597,10 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                         size: 32,
                                       ),
                                       const SizedBox(width: 16),
-                                      const Expanded(
+                                      Expanded(
                                         child: Text(
-                                          'Pagamento completato con successo',
-                                          style: TextStyle(
+                                          AppLocalizations.of(context)!.paymentCompletedSuccess,
+                                          style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -682,5 +704,41 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
 
   String _formatDate(DateTime date) {
     return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+  }
+
+  Color _getStatoBadgeColor(String stato) {
+    switch (stato) {
+      case 'paid':
+      case 'completed':
+        return Colors.green;
+      case 'pending':
+        return Colors.orange;
+      case 'awaiting_payment':
+        return Colors.amber;
+      case 'failed':
+        return Colors.red;
+      case 'cancelled':
+        return Colors.grey;
+      default:
+        return Colors.blueGrey;
+    }
+  }
+
+  IconData _getStatoIcon(String stato) {
+    switch (stato) {
+      case 'paid':
+      case 'completed':
+        return Icons.check_circle;
+      case 'pending':
+        return Icons.hourglass_empty;
+      case 'awaiting_payment':
+        return Icons.pending_actions;
+      case 'failed':
+        return Icons.error;
+      case 'cancelled':
+        return Icons.cancel;
+      default:
+        return Icons.info;
+    }
   }
 }

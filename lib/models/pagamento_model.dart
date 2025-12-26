@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import '../services/app_localizations.dart';
+
 class Pagamento {
   final int id;
   final int richiestaId;
@@ -81,20 +84,25 @@ class Pagamento {
   bool get isFailed => stato == 'failed';
   bool get isCancelled => stato == 'cancelled';
 
-  String get statoReadable {
+  /// Restituisce la label tradotta dello stato
+  /// Richiede il BuildContext per accedere alle localizzazioni
+  String statoReadable(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) return stato;
+    
     switch (stato) {
       case 'pending':
-        return 'In attesa';
+        return l10n.paymentStatusPending;
       case 'awaiting_payment':
-        return 'In attesa di pagamento';
+        return l10n.paymentStatusAwaitingPayment;
       case 'completed':
-        return 'Completato';
+        return l10n.paymentStatusCompleted;
       case 'paid':
-        return 'Pagato';
+        return l10n.paymentStatusPaid;
       case 'failed':
-        return 'Fallito';
+        return l10n.paymentStatusFailed;
       case 'cancelled':
-        return 'Annullato';
+        return l10n.paymentStatusCancelled;
       default:
         return stato;
     }

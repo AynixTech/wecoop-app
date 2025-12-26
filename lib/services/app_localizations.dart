@@ -250,6 +250,39 @@ class AppLocalizations {
       'pending': 'In attesa',
       'approved': 'Approvato',
       'rejected': 'Rifiutato',
+      'paymentStatusPending': 'In attesa',
+      'paymentStatusAwaitingPayment': 'In attesa di pagamento',
+      'paymentStatusPaid': 'Pagato',
+      'paymentStatusCompleted': 'Completato',
+      'paymentStatusFailed': 'Fallito',
+      'paymentStatusCancelled': 'Annullato',
+      'paymentDetails': 'Dettagli',
+      'paymentService': 'Servizio',
+      'paymentFileNumber': 'Numero Pratica',
+      'paymentCreatedDate': 'Data Creazione',
+      'paymentPaidDate': 'Data Pagamento',
+      'paymentMethod': 'Metodo',
+      'choosePaymentMethod': 'Scegli il metodo di pagamento:',
+      'payWithCard': 'Paga con Carta',
+      'payWithCardDesc': 'Visa, Mastercard, American Express',
+      'payPal': 'PayPal',
+      'payPalDesc': 'Paga con il tuo account PayPal',
+      'bankTransfer': 'Bonifico Bancario',
+      'bankTransferDesc': 'Ricevi le coordinate via email',
+      'paymentCompletedSuccess': 'Pagamento completato con successo',
+      'fileNumber': 'Numero Pratica',
+      'status': 'Stato',
+      'requestDate': 'Data Richiesta',
+      'amount': 'Importo',
+      'paymentInfo': 'Informazioni Pagamento',
+      'paymentStatus': 'Stato Pagamento',
+      'paid': 'Pagato',
+      'notPaid': 'Non pagato',
+      'paymentReceived': 'Pagamento ricevuto',
+      'paymentRequired': 'Pagamento richiesto',
+      'noRequestsThisDay': 'Nessuna richiesta per questo giorno',
+      'noRequestsFound': 'Nessuna richiesta trovata',
+      'transaction': 'Transazione',
       'selectServiceYouNeed': 'Seleziona il servizio di cui hai bisogno',
       'guideStepByStep': 'Ti guideremo passo dopo passo per completare la tua richiesta',
       'residencePermitDesc': 'Richiesta, rinnovo e informazioni',
@@ -730,6 +763,39 @@ class AppLocalizations {
       'pending': 'Pending',
       'approved': 'Approved',
       'rejected': 'Rejected',
+      'paymentStatusPending': 'Pending',
+      'paymentStatusAwaitingPayment': 'Awaiting payment',
+      'paymentStatusPaid': 'Paid',
+      'paymentStatusCompleted': 'Completed',
+      'paymentStatusFailed': 'Failed',
+      'paymentStatusCancelled': 'Cancelled',
+      'paymentDetails': 'Details',
+      'paymentService': 'Service',
+      'paymentFileNumber': 'File Number',
+      'paymentCreatedDate': 'Created Date',
+      'paymentPaidDate': 'Payment Date',
+      'paymentMethod': 'Method',
+      'choosePaymentMethod': 'Choose payment method:',
+      'payWithCard': 'Pay with Card',
+      'payWithCardDesc': 'Visa, Mastercard, American Express',
+      'payPal': 'PayPal',
+      'payPalDesc': 'Pay with your PayPal account',
+      'bankTransfer': 'Bank Transfer',
+      'bankTransferDesc': 'Receive bank details via email',
+      'paymentCompletedSuccess': 'Payment completed successfully',
+      'fileNumber': 'File Number',
+      'status': 'Status',
+      'requestDate': 'Request Date',
+      'amount': 'Amount',
+      'paymentInfo': 'Payment Information',
+      'paymentStatus': 'Payment Status',
+      'paid': 'Paid',
+      'notPaid': 'Not paid',
+      'paymentReceived': 'Payment received',
+      'paymentRequired': 'Payment required',
+      'noRequestsThisDay': 'No requests for this day',
+      'noRequestsFound': 'No requests found',
+      'transaction': 'Transaction',
       'selectServiceYouNeed': 'Select the service you need',
       'guideStepByStep': 'We will guide you step by step to complete your request',
       'residencePermitDesc': 'Application, renewal and information',
@@ -1220,6 +1286,39 @@ class AppLocalizations {
       'pending': 'Pendiente',
       'approved': 'Aprobado',
       'rejected': 'Rechazado',
+      'paymentStatusPending': 'Pendiente',
+      'paymentStatusAwaitingPayment': 'En espera de pago',
+      'paymentStatusPaid': 'Pagado',
+      'paymentStatusCompleted': 'Completado',
+      'paymentStatusFailed': 'Fallido',
+      'paymentStatusCancelled': 'Cancelado',
+      'paymentDetails': 'Detalles',
+      'paymentService': 'Servicio',
+      'paymentFileNumber': 'Número de Expediente',
+      'paymentCreatedDate': 'Fecha de Creación',
+      'paymentPaidDate': 'Fecha de Pago',
+      'paymentMethod': 'Método',
+      'choosePaymentMethod': 'Elige el método de pago:',
+      'payWithCard': 'Pagar con Tarjeta',
+      'payWithCardDesc': 'Visa, Mastercard, American Express',
+      'payPal': 'PayPal',
+      'payPalDesc': 'Paga con tu cuenta de PayPal',
+      'bankTransfer': 'Transferencia Bancaria',
+      'bankTransferDesc': 'Recibe las coordenadas por email',
+      'paymentCompletedSuccess': 'Pago completado con éxito',
+      'fileNumber': 'Número de Expediente',
+      'status': 'Estado',
+      'requestDate': 'Fecha de Solicitud',
+      'amount': 'Importe',
+      'paymentInfo': 'Información de Pago',
+      'paymentStatus': 'Estado del Pago',
+      'paid': 'Pagado',
+      'notPaid': 'No pagado',
+      'paymentReceived': 'Pago recibido',
+      'paymentRequired': 'Pago requerido',
+      'noRequestsThisDay': 'No hay solicitudes para este día',
+      'noRequestsFound': 'No se encontraron solicitudes',
+      'transaction': 'Transacción',
       'selectServiceYouNeed': 'Selecciona el servicio que necesitas',
       'guideStepByStep': 'Te guiaremos paso a paso para completar tu solicitud',
       'residencePermitDesc': 'Solicitud, renovación e información',
@@ -1628,6 +1727,38 @@ class AppLocalizations {
   String get pending => translate('pending');
   String get approved => translate('approved');
   String get rejected => translate('rejected');
+  String get paymentStatusPending => translate('paymentStatusPending');
+  String get paymentStatusAwaitingPayment => translate('paymentStatusAwaitingPayment');
+  String get paymentStatusPaid => translate('paymentStatusPaid');
+  String get paymentStatusCompleted => translate('paymentStatusCompleted');
+  String get paymentStatusFailed => translate('paymentStatusFailed');
+  String get paymentStatusCancelled => translate('paymentStatusCancelled');
+  String get paymentDetails => translate('paymentDetails');
+  String get paymentService => translate('paymentService');
+  String get paymentFileNumber => translate('paymentFileNumber');
+  String get paymentCreatedDate => translate('paymentCreatedDate');
+  String get paymentPaidDate => translate('paymentPaidDate');
+  String get paymentMethod => translate('paymentMethod');
+  String get choosePaymentMethod => translate('choosePaymentMethod');
+  String get payWithCard => translate('payWithCard');
+  String get payWithCardDesc => translate('payWithCardDesc');
+  String get payPal => translate('payPal');
+  String get payPalDesc => translate('payPalDesc');
+  String get bankTransfer => translate('bankTransfer');
+  String get bankTransferDesc => translate('bankTransferDesc');
+  String get paymentCompletedSuccess => translate('paymentCompletedSuccess');
+  String get fileNumber => translate('fileNumber');
+  String get status => translate('status');
+  String get requestDate => translate('requestDate');
+  String get amount => translate('amount');
+  String get paymentInfo => translate('paymentInfo');
+  String get paymentStatus => translate('paymentStatus');
+  String get paid => translate('paid');
+  String get notPaid => translate('notPaid');
+  String get paymentReceived => translate('paymentReceived');
+  String get paymentRequired => translate('paymentRequired');
+  String get noRequestsThisDay => translate('noRequestsThisDay');
+  String get noRequestsFound => translate('noRequestsFound');
   String get selectServiceYouNeed => translate('selectServiceYouNeed');
   String get guideStepByStep => translate('guideStepByStep');
   String get residencePermit => translate('residencePermit');

@@ -15,7 +15,7 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  CalendarFormat _calendarFormat = CalendarFormat.month;
+  CalendarFormat _calendarFormat = CalendarFormat.week;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   bool _isLoading = true;
@@ -168,6 +168,36 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
   }
 
+  String _getStatoLabelTradotto(String stato) {
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) return stato;
+    
+    switch (stato) {
+      case 'pending':
+        return l10n.paymentStatusPending;
+      case 'awaiting_payment':
+      case 'pending_payment':
+        return l10n.paymentStatusAwaitingPayment;
+      case 'paid':
+        return l10n.paymentStatusPaid;
+      case 'completed':
+      case 'completata':
+        return l10n.paymentStatusCompleted;
+      case 'failed':
+        return l10n.paymentStatusFailed;
+      case 'cancelled':
+      case 'annullata':
+        return l10n.paymentStatusCancelled;
+      case 'processing':
+      case 'in_lavorazione':
+        return l10n.translate('processing') ?? 'In lavorazione';
+      case 'in_attesa':
+        return l10n.pending;
+      default:
+        return stato;
+    }
+  }
+
   void _mostraDettaglioRichiesta(Map<String, dynamic> richiesta) {
     showModalBottomSheet(
       context: context,
@@ -179,7 +209,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Widget _buildDettaglioSheet(Map<String, dynamic> richiesta) {
     final stato = richiesta['stato'] ?? '';
-    final statoLabel = richiesta['stato_label'] ?? '';
+    final statoLabelOriginale = richiesta['stato_label'] ?? '';
+    final statoLabel = _getStatoLabelTradotto(stato);
     final pagamento = richiesta['pagamento'] ?? {};
     final paymentLink = richiesta['payment_link'];
     final puoPagare = richiesta['puo_pagare'] == true;
@@ -253,13 +284,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     padding: const EdgeInsets.all(16),
                     children: [
                       _buildInfoRow(
-                        'Numero Pratica',
+                        AppLocalizations.of(context)!.fileNumber,
                         richiesta['numero_pratica'] ?? 'N/A',
                         Icons.confirmation_number,
                       ),
-                      _buildInfoRow('Stato', statoLabel, Icons.info_outline),
                       _buildInfoRow(
-                        'Data Richiesta',
+                        AppLocalizations.of(context)!.status,
+                        statoLabel,
+                        Icons.info_outline,
+                      ),
+                      _buildInfoRow(
+                        AppLocalizations.of(context)!.requestDate,
                         _formatData(richiesta['data_richiesta']),
                         Icons.calendar_today,
                       ),
@@ -267,53 +302,117 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       if (richiesta['prezzo_formattato'] != null) ...[
                         const Divider(height: 32),
                         _buildInfoRow(
-                          'Importo',
+                          AppLocalizations.of(context)!.amount,
                           richiesta['prezzo_formattato'],
                           Icons.euro,
                         ),
                       ],
 
-                      const Divider(height: 32),
-                      const Text(
-                        'Informazioni Pagamento',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                      // Mostra sezione pagamento SOLO se c'è un pagamento attivo (non ancora completato)
+                      if (isAwaitingPayment || (pagamento.isNotEmpty && pagamento['ricevuto'] != true)) ...[
+                        const Divider(height: 32),
+                        Text(
+                          AppLocalizations.of(context)!.paymentInfo,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
+                        const SizedBox(height: 12),
 
-                      _buildInfoRow(
-                        'Stato Pagamento',
-                        pagamento['ricevuto'] == true ? 'Pagato' : 'Non pagato',
-                        pagamento['ricevuto'] == true
-                            ? Icons.check_circle
-                            : Icons.pending,
-                      ),
-
-                      if (pagamento['metodo'] != null)
                         _buildInfoRow(
-                          'Metodo',
-                          pagamento['metodo'],
-                          Icons.payment,
+                          AppLocalizations.of(context)!.paymentStatus,
+                          pagamento['ricevuto'] == true
+                              ? AppLocalizations.of(context)!.paid
+                              : AppLocalizations.of(context)!.notPaid,
+                          pagamento['ricevuto'] == true
+                              ? Icons.check_circle
+                              : Icons.pending,
                         ),
 
-                      if (pagamento['data'] != null)
-                        _buildInfoRow(
-                          'Data Pagamento',
-                          _formatData(pagamento['data']),
-                          Icons.calendar_today,
-                        ),
+                        if (pagamento['metodo'] != null)
+                          _buildInfoRow(
+                            AppLocalizations.of(context)!.paymentMethod,
+                            pagamento['metodo'],
+                            Icons.payment,
+                          ),
 
-                      if (pagamento['transazione_id'] != null)
-                        _buildInfoRow(
-                          'ID Transazione',
-                          pagamento['transazione_id'],
-                          Icons.receipt,
+                        if (pagamento['data'] != null)
+                          _buildInfoRow(
+                            AppLocalizations.of(context)!.paymentPaidDate,
+                            _formatData(pagamento['data']),
+                            Icons.calendar_today,
+                          ),
+
+                        if (pagamento['transazione_id'] != null)
+                          _buildInfoRow(
+                            'ID ${AppLocalizations.of(context)!.translate('transaction') ?? 'Transazione'}',
+                            pagamento['transazione_id'],
+                            Icons.receipt,
+                          ),
+                      ],
+                      
+                      // Mostra messaggio di conferma se già pagato
+                      if (pagamento['ricevuto'] == true) ...[
+                        const Divider(height: 32),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.green.shade300),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.check_circle,
+                                color: Colors.green.shade700,
+                                size: 32,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      AppLocalizations.of(context)!.paymentReceived,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.green.shade900,
+                                      ),
+                                    ),
+                                    if (pagamento['metodo'] != null) ...[
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${AppLocalizations.of(context)!.paymentMethod}: ${pagamento['metodo']}',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.green.shade700,
+                                        ),
+                                      ),
+                                    ],
+                                    if (pagamento['data'] != null) ...[
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        _formatData(pagamento['data']),
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
+                      ],
 
                       // Pulsante Paga - Priorità alla schermata interna se awaiting_payment
-                      if (isAwaitingPayment && richiestaId != null) ...[
+                      // Mostra solo se NON è già stato pagato
+                      if (isAwaitingPayment && richiestaId != null && pagamento['ricevuto'] != true) ...[
                         const SizedBox(height: 24),
                         ElevatedButton.icon(
                           onPressed: () {
@@ -414,10 +513,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
     if (_filtriStato.isEmpty) {
       _filtriStato = [
         {'label': l10n.all, 'value': null},
-        {'label': l10n.pending, 'value': 'pending_payment'},
-        {'label': 'In lavorazione', 'value': 'processing'},
-        {'label': 'Completate', 'value': 'completed'},
-        {'label': 'Annullate', 'value': 'cancelled'},
+        {'label': l10n.paymentStatusAwaitingPayment, 'value': 'awaiting_payment'},
+        {'label': l10n.paymentStatusCompleted, 'value': 'completed'},
       ];
     }
     
@@ -544,8 +641,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
             const SizedBox(height: 16),
             Text(
               _selectedDay != null
-                  ? 'Nessuna richiesta per questo giorno'
-                  : 'Nessuna richiesta trovata',
+                  ? AppLocalizations.of(context)!.noRequestsThisDay
+                  : AppLocalizations.of(context)!.noRequestsFound,
               style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
             ),
           ],
@@ -565,7 +662,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Widget _buildRichiestaCard(Map<String, dynamic> richiesta) {
     final stato = richiesta['stato'] ?? '';
-    final statoLabel = richiesta['stato_label'] ?? '';
+    final statoLabelOriginale = richiesta['stato_label'] ?? '';
+    final statoLabel = _getStatoLabelTradotto(stato);
     final pagamento = richiesta['pagamento'] ?? {};
     final paymentLink = richiesta['payment_link'];
     final puoPagare = richiesta['puo_pagare'] == true;
@@ -664,6 +762,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     _formatData(richiesta['data_richiesta']),
                     style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   ),
+                  // Mostra importo se disponibile
+                  if (richiesta['prezzo_formattato'] != null) ...[
+                    const SizedBox(width: 16),
+                    Icon(
+                      Icons.euro,
+                      size: 14,
+                      color: Colors.grey.shade600,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      richiesta['prezzo_formattato'],
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.green.shade700,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ],
               ),
               
@@ -687,7 +803,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Pagamento richiesto',
+                        AppLocalizations.of(context)!.paymentRequired,
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -714,7 +830,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Pagamento ricevuto',
+                      AppLocalizations.of(context)!.paymentReceived,
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.green.shade700,

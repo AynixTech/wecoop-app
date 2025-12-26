@@ -219,6 +219,8 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     }
   }
 
+  // Metodo per salvare l'interesse dell'utente (da usare in futuro)
+  // ignore: unused_element
   Future<void> _saveInterest(String interest) async {
     await storage.write(key: 'selected_interest', value: interest);
     if (mounted) {

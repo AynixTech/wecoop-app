@@ -3,6 +3,7 @@ import 'package:flutter_stripe/flutter_stripe.dart' hide Card;
 import '../../models/pagamento_model.dart';
 import '../../services/pagamento_service.dart';
 import '../../services/app_localizations.dart';
+import '../../config/stripe_config.dart';
 
 class PagamentoScreen extends StatefulWidget {
   final int paymentId;
@@ -26,10 +27,14 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
   @override
   void initState() {
     super.initState();
+    print('🚀 [PagamentoScreen] initState - paymentId: ${widget.paymentId}, richiestaId: ${widget.richiestaId}');
     _loadPagamento();
   }
 
   Future<void> _loadPagamento() async {
+    print('📱 [PagamentoScreen] Caricamento pagamento...');
+    print('📱 [PagamentoScreen] paymentId: ${widget.paymentId}, richiestaId: ${widget.richiestaId}');
+    
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -39,28 +44,48 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       Pagamento? pagamento;
 
       if (widget.richiestaId != null) {
+        print('📱 [PagamentoScreen] Carico tramite richiestaId: ${widget.richiestaId}');
         // Carica pagamento tramite richiesta_id
         pagamento = await PagamentoService.getPagamentoPerRichiesta(
           widget.richiestaId!,
         );
       } else if (widget.paymentId > 0) {
+        print('📱 [PagamentoScreen] Carico tramite paymentId: ${widget.paymentId}');
         // Carica pagamento tramite payment_id
         pagamento = await PagamentoService.getPagamento(widget.paymentId);
+      } else {
+        print('⚠️ [PagamentoScreen] Né paymentId né richiestaId forniti!');
       }
 
       if (pagamento == null) {
+        print('❌ [PagamentoScreen] Pagamento non trovato o non esiste');
+        
+        String errorMsg;
+        if (widget.richiestaId != null) {
+          errorMsg = 'Nessun pagamento richiesto per questa richiesta.\n\n'
+              'Questa richiesta potrebbe non richiedere un pagamento o il pagamento '
+              'non è ancora stato creato dal sistema.\n\n'
+              'Richiesta ID: ${widget.richiestaId}';
+        } else {
+          errorMsg = 'Pagamento non trovato.\n\n'
+              'Il pagamento richiesto non esiste o non hai i permessi per visualizzarlo.';
+        }
+        
         setState(() {
-          _errorMessage = 'Pagamento non trovato';
+          _errorMessage = errorMsg;
           _isLoading = false;
         });
         return;
       }
 
+      print('✅ [PagamentoScreen] Pagamento caricato: ID ${pagamento.id}, €${pagamento.importo}, Stato: ${pagamento.stato}');
+      
       setState(() {
         _pagamento = pagamento;
         _isLoading = false;
       });
     } catch (e) {
+      print('❌ [PagamentoScreen] Errore caricamento: $e');
       setState(() {
         _errorMessage = 'Errore durante il caricamento del pagamento';
         _isLoading = false;
@@ -69,7 +94,27 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
   }
 
   Future<void> _handleStripePayment() async {
-    if (_pagamento == null) return;
+    print('💳 [PagamentoScreen] Inizio processo pagamento Stripe');
+    
+    if (_pagamento == null) {
+      print('❌ [PagamentoScreen] Pagamento null, impossibile procedere');
+      return;
+    }
+
+    print('💳 [PagamentoScreen] Pagamento: ID ${_pagamento!.id}, Importo €${_pagamento!.importo}, Stato: ${_pagamento!.stato}');
+
+    // Verifica se Stripe è configurato
+    if (!StripeConfig.isConfigured) {
+      print('❌ [PagamentoScreen] Stripe non configurato');
+      _showErrorDialog(
+        'Stripe non disponibile!\n\n'
+        'I pagamenti con carta non sono al momento disponibili. '
+        'Riprova più tardi o usa un metodo di pagamento alternativo.'
+      );
+      return;
+    }
+
+    print('✅ [PagamentoScreen] Stripe configurato correttamente');
 
     try {
       // Mostra loading
@@ -81,19 +126,29 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
         ),
       );
 
+      print('🔄 Creo Payment Intent per €${_pagamento!.importo}...');
+
       // 1. Crea Payment Intent sul backend
       final clientSecret = await PagamentoService.creaStripePaymentIntent(
         importo: _pagamento!.importo,
         paymentId: _pagamento!.id,
       );
 
+      print('✅ Client Secret ricevuto: ${clientSecret != null ? "OK" : "NULL"}');
+
       if (!mounted) return;
       Navigator.pop(context); // Chiudi loading
 
       if (clientSecret == null) {
-        _showErrorDialog('Impossibile creare il pagamento Stripe. Verifica la configurazione backend.');
+        _showErrorDialog(
+          'Impossibile creare il pagamento.\n\n'
+          'Il server non è riuscito a processare la richiesta. '
+          'Verifica la tua connessione e riprova.'
+        );
         return;
       }
+
+      print('🔄 Inizializzo Payment Sheet...');
 
       // 2. Inizializza Payment Sheet
       await Stripe.instance.initPaymentSheet(
@@ -109,8 +164,12 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
         ),
       );
 
+      print('✅ Payment Sheet inizializzato, mostro UI...');
+
       // 3. Mostra Payment Sheet
       await Stripe.instance.presentPaymentSheet();
+
+      print('✅ Pagamento completato con successo!');
 
       // 4. Se arriviamo qui, il pagamento è riuscito
       // Conferma sul backend WordPress
@@ -135,17 +194,24 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
         _showErrorDialog(result['message'] ?? 'Errore durante la conferma del pagamento');
       }
     } on StripeException catch (e) {
+      print('❌ StripeException: ${e.error.code} - ${e.error.message}');
       if (!mounted) return;
-      Navigator.pop(context); // Chiudi loading se aperto
+      
+      // Chiudi loading solo se non è già chiuso
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
 
       // Gestisci errori Stripe specifici
       if (e.error.code == FailureCode.Canceled) {
+        print('ℹ️ Utente ha annullato il pagamento');
         // Utente ha annullato
         return;
       }
 
       _showErrorDialog('Errore Stripe: ${e.error.localizedMessage ?? e.error.message}');
     } catch (e) {
+      print('❌ Errore generico: $e');
       if (!mounted) return;
       Navigator.pop(context); // Chiudi loading se aperto
       _showErrorDialog('Errore imprevisto: $e');

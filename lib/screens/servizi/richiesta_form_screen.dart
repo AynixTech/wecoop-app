@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import '../../services/socio_service.dart';
+import 'pagamento_screen.dart';
 
 /// Mappa dei codici ISO paese -> nome completo
 const Map<String, String> countryNames = {
@@ -743,37 +744,70 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       if (result['success'] == true) {
         final l10n = AppLocalizations.of(context)!;
         final numeroPratica = result['numero_pratica'];
-        final message =
-            numeroPratica != null
-                ? '${l10n.requestSent}\n\n${l10n.error}: $numeroPratica'
-                : result['message'] ?? l10n.requestSent;
+        final requiresPayment = result['requires_payment'] == true;
+        final importo = result['importo'];
+        final paymentId = result['payment_id'];
+        
+        String message = numeroPratica != null
+            ? '${l10n.requestSent}\n\n${l10n.error}: $numeroPratica'
+            : result['message'] ?? l10n.requestSent;
+        
+        // Aggiungi info pagamento se richiesto
+        if (requiresPayment && importo != null) {
+          message += '\n\n💰 Pagamento richiesto: €${importo.toStringAsFixed(2)}';
+          message += '\n\nPotrai completare il pagamento dalla sezione "Le Mie Richieste".';
+        } else {
+          message += '\n\nSarai contattato via email per i prossimi passi.';
+        }
 
         showDialog(
           context: context,
           barrierDismissible: false,
-          builder:
-              (context) => AlertDialog(
-                title: Row(
-                  children: [
-                    const Icon(Icons.check_circle, color: Colors.green, size: 32),
-                    const SizedBox(width: 12),
-                    Text(l10n.requestSent),
-                  ],
+          builder: (context) => AlertDialog(
+            title: Row(
+              children: [
+                Icon(
+                  requiresPayment ? Icons.payment : Icons.check_circle,
+                  color: requiresPayment ? Colors.orange : Colors.green,
+                  size: 32,
                 ),
-                content: Text(
-                  message +
-                      '\n\nSarai contattato via email per i prossimi passi.',
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Chiudi dialog
-                      Navigator.of(context).pop(); // Torna indietro
-                    },
-                    child: Text(l10n.ok),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    requiresPayment ? 'Richiesta Inviata - Pagamento Richiesto' : l10n.requestSent,
                   ),
-                ],
+                ),
+              ],
+            ),
+            content: Text(message),
+            actions: [
+              if (requiresPayment && paymentId != null)
+                TextButton.icon(
+                  icon: const Icon(Icons.credit_card),
+                  label: const Text('Paga Ora'),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Chiudi dialog
+                    Navigator.of(context).pop(); // Torna indietro
+                    // Naviga alla schermata pagamento
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PagamentoScreen(
+                          paymentId: paymentId,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Chiudi dialog
+                  Navigator.of(context).pop(); // Torna indietro
+                },
+                child: Text(requiresPayment ? 'Paga Dopo' : l10n.ok),
               ),
+            ],
+          ),
         );
       } else {
         final l10n = AppLocalizations.of(context)!;

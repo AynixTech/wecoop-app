@@ -25,6 +25,11 @@ class StripeConfig {
   /// Indica se siamo in modalità test
   static bool get isTestMode => publishableKey.startsWith('pk_test_');
   
+  /// Verifica se Stripe è configurato correttamente
+  static bool get isConfigured => 
+    publishableKey.startsWith('pk_test_') || 
+    publishableKey.startsWith('pk_live_');
+  
   /// Backend URL per creare Payment Intent
   static const String backendUrl = 'https://www.wecoop.org/wp-json/wecoop/v1';
 }

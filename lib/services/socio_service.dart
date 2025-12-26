@@ -269,13 +269,22 @@ class SocioService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
-        // Nuova API ritorna: {"success": true, "message": "Richiesta ricevuta con successo", "id": 789, "numero_pratica": "WECOOP-2025-00001", "data_richiesta": "..."}
+        
+        print('✅ Richiesta creata con successo');
+        if (data['requires_payment'] == true) {
+          print('💰 Pagamento richiesto: €${data['importo']} - Payment ID: ${data['payment_id']}');
+        }
+        
+        // Nuova API ritorna: {"success": true, "message": "...", "id": 789, "numero_pratica": "...", "requires_payment": true, "payment_id": 123, "importo": 50.00}
         return {
           'success': data['success'] ?? true,
           'message': data['message'] ?? 'Richiesta ricevuta con successo',
           'id': data['id'],
           'numero_pratica': data['numero_pratica'],
           'data_richiesta': data['data_richiesta'],
+          'requires_payment': data['requires_payment'] ?? false,
+          'payment_id': data['payment_id'],
+          'importo': data['importo'],
         };
       } else if (response.statusCode == 400) {
         final errorData = jsonDecode(response.body);

@@ -116,10 +116,15 @@ class PagamentoService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
+        print('✅ Pagamento trovato per richiesta $richiestaId: ID ${data['id']}, Importo €${data['importo']}, Stato: ${data['stato']}');
         return Pagamento.fromJson(data);
       } else if (response.statusCode == 404) {
-        print('ℹ️ Nessun pagamento trovato per questa richiesta');
+        print('ℹ️ Nessun pagamento trovato per richiesta $richiestaId');
+        print('📝 Response body: ${response.body}');
         return null;
+      } else {
+        print('⚠️ Status code inatteso: ${response.statusCode}');
+        print('📝 Response body: ${response.body}');
       }
 
       return null;
@@ -197,7 +202,7 @@ class PagamentoService {
     try {
       // Nota: questo endpoint deve essere creato sul backend WordPress
       final url = 'https://www.wecoop.org/wp-json/wecoop/v1/create-payment-intent';
-      print('🔄 Chiamata POST /create-payment-intent...');
+      print('🔄 Chiamata POST /create-payment-intent (importo: €$importo, paymentId: $paymentId)...');
 
       final headers = await _getHeaders();
       final body = {
@@ -205,6 +210,8 @@ class PagamentoService {
         'currency': 'eur',
         'payment_id': paymentId,
       };
+
+      print('📤 Body richiesta: ${jsonEncode(body)}');
 
       final response = await http
           .post(
@@ -215,10 +222,20 @@ class PagamentoService {
           .timeout(const Duration(seconds: 30));
 
       print('📥 POST /create-payment-intent status: ${response.statusCode}');
+      print('📥 Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['clientSecret'] as String?;
+        final clientSecret = data['clientSecret'] as String?;
+        
+        if (clientSecret != null) {
+          print('✅ Client Secret ricevuto');
+          return clientSecret;
+        } else {
+          print('⚠️ Client Secret non presente nella risposta');
+        }
+      } else {
+        print('❌ Errore HTTP ${response.statusCode}: ${response.body}');
       }
 
       return null;

@@ -242,9 +242,12 @@ class SocioService {
       final token = await storage.read(key: 'jwt_token');
       final url = '$baseUrl/richiesta-servizio';
 
-      print('=== INVIANDO RICHIESTA SERVIZIO ===');
-      print('URL: $url');
-      print('Token presente: ${token != null}');
+      print('\n🎯 ==================== RICHIESTA SERVIZIO ====================');
+      print('🚀 URL: $url');
+      print('🔑 Token presente: ${token != null}');
+      print('📋 Servizio: $servizio');
+      print('📁 Categoria: $categoria');
+      print('📦 Dati completi: ${jsonEncode(dati)}');
 
       final body = jsonEncode({
         'servizio': servizio,
@@ -264,11 +267,28 @@ class SocioService {
           .post(Uri.parse(url), headers: headers, body: body)
           .timeout(const Duration(seconds: 30));
 
-      print('Status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      print('\n📡 RESPONSE RICEVUTA:');
+      print('   Status code: ${response.statusCode}');
+      print('   Response body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
+        print('\n✅ PARSING RESPONSE:');
+        print('   success: ${data['success']}');
+        print('   message: ${data['message']}');
+        print('   numero_pratica: ${data['numero_pratica']}');
+        print('   requires_payment: ${data['requires_payment']}');
+        print('   payment_id: ${data['payment_id']}');
+        print('   importo: ${data['importo']}');
+        
+        if (data['requires_payment'] == true) {
+          print('\n💰 PAGAMENTO RICHIESTO!');
+          print('   💳 Payment ID: ${data['payment_id']}');
+          print('   💵 Importo: €${data['importo']}');
+        } else {
+          print('\n✅ Servizio gratuito - nessun pagamento richiesto');
+        }
+        print('==========================================================\n');
         
         print('✅ Richiesta creata con successo');
         if (data['requires_payment'] == true) {

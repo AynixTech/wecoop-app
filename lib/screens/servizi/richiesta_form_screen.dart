@@ -728,12 +728,20 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       print('Categoria originale: ${widget.categoria}');
       print('Categoria standard: $categoriaStandard');
 
+      print('\n🔄 CHIAMATA API IN CORSO...');
       // Usa il nuovo endpoint API con valori standardizzati
       final result = await SocioService.inviaRichiestaServizio(
         servizio: servizioStandard,
         categoria: categoriaStandard,
         dati: apiData,
       );
+      
+      print('\n📨 RESULT RICEVUTO:');
+      print('   success: ${result['success']}');
+      print('   numero_pratica: ${result['numero_pratica']}');
+      print('   requires_payment: ${result['requires_payment']}');
+      print('   payment_id: ${result['payment_id']}');
+      print('   importo: ${result['importo']}');
 
       setState(() {
         _isSubmitting = false;
@@ -747,6 +755,12 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         final requiresPayment = result['requires_payment'] == true;
         final importo = result['importo'];
         final paymentId = result['payment_id'];
+        
+        print('\n💬 PREPARAZIONE DIALOG:');
+        print('   numeroPratica: $numeroPratica');
+        print('   requiresPayment: $requiresPayment');
+        print('   importo: $importo');
+        print('   paymentId: $paymentId');
         
         String message = numeroPratica != null
             ? '${l10n.requestSent}\n\n${l10n.error}: $numeroPratica'

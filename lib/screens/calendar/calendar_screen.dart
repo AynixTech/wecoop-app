@@ -407,6 +407,171 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
   }
 
+  Future<void> _visualizzaRicevuta(int paymentId, String numeroPratica) async {
+    final l10n = AppLocalizations.of(context)!;
+    
+    try {
+      // Mostra loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => Center(
+          child: Card(
+            margin: const EdgeInsets.all(20),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text(l10n.downloadingReceipt),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Ottieni URL ricevuta
+      final result = await SocioService.getRicevutaPdf(paymentId);
+
+      // Chiudi loading
+      if (mounted) Navigator.pop(context);
+
+      if (result['success'] == true) {
+        final receiptUrl = result['receipt_url'] as String;
+        final filename = result['filename'] as String;
+        final numeroRicevuta = result['numero_ricevuta'] as String;
+
+        // Mostra dialog con opzioni
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Row(
+                children: [
+                  Icon(Icons.receipt_long, color: Colors.blue),
+                  const SizedBox(width: 8),
+                  Text(l10n.receiptDownloaded),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l10n.receiptSavedSuccessfully),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Ricevuta N° $numeroRicevuta',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    filename,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(l10n.close),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    await _apriRicevutaWeb(receiptUrl);
+                  },
+                  icon: const Icon(Icons.open_in_browser),
+                  label: Text(l10n.openPdf),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+      } else {
+        // Mostra errore
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('❌ ${result['message'] ?? l10n.errorDownloadingReceipt}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Chiudi loading se aperto
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+
+      // Mostra errore
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ ${l10n.errorDownloadingReceipt}: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _apriRicevutaWeb(String url) async {
+    // Apre l'URL nel browser esterno
+    // Nota: richiede url_launcher package, ma per ora usiamo un placeholder
+    // In produzione, decommenta il codice sotto e aggiungi url_launcher al pubspec.yaml
+    
+    /*
+    import 'package:url_launcher/url_launcher.dart';
+    
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.cannotOpenFile),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+    */
+    
+    // Placeholder: mostra URL in un dialog
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('URL Ricevuta'),
+          content: SelectableText(url),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(AppLocalizations.of(context)!.close),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   void _apriRichiestaById(String id) {
     print('🔍 Cerco richiesta con ID: $id');
     
@@ -674,6 +839,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.red,
                             side: const BorderSide(color: Colors.red),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            minimumSize: const Size(double.infinity, 0),
+                          ),
+                        ),
+                      ],
+                      
+                      // Pulsante Scarica Ricevuta - Solo per pagamenti completati
+                      if (pagamento['ricevuto'] == true && pagamento['id'] != null) ...[
+                        const SizedBox(height: 12),
+                        OutlinedButton.icon(
+                          onPressed: () async {
+                            await _visualizzaRicevuta(pagamento['id'] as int, richiesta['numero_pratica'] ?? 'N/A');
+                          },
+                          icon: const Icon(Icons.receipt_long),
+                          label: Text(AppLocalizations.of(context)!.downloadReceipt),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.blue,
+                            side: const BorderSide(color: Colors.blue),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             minimumSize: const Size(double.infinity, 0),
                           ),
@@ -1070,6 +1253,41 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         ),
                       ),
                     ],
+                    const Spacer(),
+                    // Icona ricevuta disponibile
+                    if (pagamento['id'] != null)
+                      InkWell(
+                        onTap: () => _visualizzaRicevuta(
+                          pagamento['id'] as int,
+                          richiesta['numero_pratica'] ?? 'N/A',
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade50,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.receipt_long,
+                                size: 16,
+                                color: Colors.blue.shade700,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                AppLocalizations.of(context)!.downloadReceipt,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.blue.shade700,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ],

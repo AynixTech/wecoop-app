@@ -289,6 +289,23 @@ class AppLocalizations {
       'requestDeleted': 'Richiesta eliminata con successo',
       'cannotDeleteRequest': 'Impossibile eliminare la richiesta',
       'onlyPendingCanBeDeleted': 'Puoi eliminare solo richieste in attesa',
+      'downloadReceipt': 'Scarica Ricevuta',
+      'shareReceipt': 'Condividi',
+      'openPdf': 'Apri PDF',
+      'receiptDownloaded': 'Ricevuta Scaricata',
+      'receiptSavedSuccessfully': 'La ricevuta è stata salvata con successo',
+      'downloadingReceipt': 'Download ricevuta in corso...',
+      'receiptAvailable': 'Ricevuta fiscale disponibile',
+      'storagePermissionDenied': 'Permesso storage negato',
+      'cannotOpenFile': 'Impossibile aprire il file',
+      'errorDownloadingReceipt': 'Errore download ricevuta',
+      'errorSharingReceipt': 'Errore condivisione ricevuta',
+      'paymentRequiredAmount': 'Pagamento richiesto',
+      'canCompletePaymentFromRequests': 'Potrai completare il pagamento dalla sezione "Le Mie Richieste".',
+      'willBeContactedByEmail': 'Sarai contattato via email per i prossimi passi.',
+      'requestSentPaymentRequired': 'Richiesta Inviata - Pagamento Richiesto',
+      'payNow': 'Paga Ora',
+      'payLater': 'Paga Dopo',
       'noRequestsThisDay': 'Nessuna richiesta per questo giorno',
       'noRequestsFound': 'Nessuna richiesta trovata',
       'transaction': 'Transazione',
@@ -820,6 +837,23 @@ class AppLocalizations {
       'requestDeleted': 'Request deleted successfully',
       'cannotDeleteRequest': 'Cannot delete request',
       'onlyPendingCanBeDeleted': 'You can only delete pending requests',
+      'downloadReceipt': 'Download Receipt',
+      'shareReceipt': 'Share',
+      'openPdf': 'Open PDF',
+      'receiptDownloaded': 'Receipt Downloaded',
+      'receiptSavedSuccessfully': 'The receipt has been saved successfully',
+      'downloadingReceipt': 'Downloading receipt...',
+      'receiptAvailable': 'Tax receipt available',
+      'storagePermissionDenied': 'Storage permission denied',
+      'cannotOpenFile': 'Cannot open file',
+      'errorDownloadingReceipt': 'Error downloading receipt',
+      'errorSharingReceipt': 'Error sharing receipt',
+      'paymentRequiredAmount': 'Payment required',
+      'canCompletePaymentFromRequests': 'You can complete the payment from the "My Requests" section.',
+      'willBeContactedByEmail': 'You will be contacted via email for next steps.',
+      'requestSentPaymentRequired': 'Request Sent - Payment Required',
+      'payNow': 'Pay Now',
+      'payLater': 'Pay Later',
       'noRequestsThisDay': 'No requests for this day',
       'noRequestsFound': 'No requests found',
       'transaction': 'Transaction',
@@ -1361,6 +1395,23 @@ class AppLocalizations {
       'requestDeleted': 'Solicitud eliminada con éxito',
       'cannotDeleteRequest': 'No se puede eliminar la solicitud',
       'onlyPendingCanBeDeleted': 'Solo puedes eliminar solicitudes pendientes',
+      'downloadReceipt': 'Descargar Recibo',
+      'shareReceipt': 'Compartir',
+      'openPdf': 'Abrir PDF',
+      'receiptDownloaded': 'Recibo Descargado',
+      'receiptSavedSuccessfully': 'El recibo se ha guardado con éxito',
+      'downloadingReceipt': 'Descargando recibo...',
+      'receiptAvailable': 'Recibo fiscal disponible',
+      'storagePermissionDenied': 'Permiso de almacenamiento denegado',
+      'cannotOpenFile': 'No se puede abrir el archivo',
+      'errorDownloadingReceipt': 'Error al descargar recibo',
+      'errorSharingReceipt': 'Error al compartir recibo',
+      'paymentRequiredAmount': 'Pago requerido',
+      'canCompletePaymentFromRequests': 'Podrás completar el pago desde la sección "Mis Solicitudes".',
+      'willBeContactedByEmail': 'Serás contactado por email para los próximos pasos.',
+      'requestSentPaymentRequired': 'Solicitud Enviada - Pago Requerido',
+      'payNow': 'Pagar Ahora',
+      'payLater': 'Pagar Después',
       'noRequestsThisDay': 'No hay solicitudes para este día',
       'noRequestsFound': 'No se encontraron solicitudes',
       'transaction': 'Transacción',
@@ -1820,6 +1871,22 @@ class AppLocalizations {
   String get requestDeleted => translate('requestDeleted');
   String get cannotDeleteRequest => translate('cannotDeleteRequest');
   String get onlyPendingCanBeDeleted => translate('onlyPendingCanBeDeleted');
+  String get downloadReceipt => translate('downloadReceipt');
+  String get shareReceipt => translate('shareReceipt');
+  String get openPdf => translate('openPdf');
+  String get receiptDownloaded => translate('receiptDownloaded');
+  String get receiptSavedSuccessfully => translate('receiptSavedSuccessfully');
+  String get downloadingReceipt => translate('downloadingReceipt');
+  String get receiptAvailable => translate('receiptAvailable');
+  String get storagePermissionDenied => translate('storagePermissionDenied');
+  String get cannotOpenFile => translate('cannotOpenFile');
+  String get errorDownloadingReceipt => translate('errorDownloadingReceipt');
+  String get errorSharingReceipt => translate('errorSharingReceipt');
+  String get paymentRequiredAmount => translate('paymentRequiredAmount');
+  String get canCompletePaymentFromRequests => translate('canCompletePaymentFromRequests');
+  String get willBeContactedByEmail => translate('willBeContactedByEmail');
+  String get requestSentPaymentRequired => translate('requestSentPaymentRequired');
+  String get payLater => translate('payLater');
   String get noRequestsThisDay => translate('noRequestsThisDay');
   String get noRequestsFound => translate('noRequestsFound');
   String get selectServiceYouNeed => translate('selectServiceYouNeed');

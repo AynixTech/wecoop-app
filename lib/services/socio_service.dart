@@ -607,6 +607,79 @@ class SocioService {
     }
   }
 
+  /// Ottieni URL ricevuta PDF per un pagamento (AUTENTICATO)
+  /// GET /pagamento/{id}/ricevuta
+  static Future<Map<String, dynamic>> getRicevutaPdf(int paymentId) async {
+    try {
+      final token = await storage.read(key: 'jwt_token');
+
+      if (token == null) {
+        print('Token JWT mancante');
+        return {'success': false, 'message': 'Utente non autenticato'};
+      }
+
+      final url = '$baseUrl/pagamento/$paymentId/ricevuta';
+      print('🔄 Chiamata GET /pagamento/$paymentId/ricevuta...');
+
+      final headers = await _getHeaders();
+      final response = await http
+          .get(Uri.parse(url), headers: headers)
+          .timeout(const Duration(seconds: 30));
+
+      print('📥 GET /pagamento/$paymentId/ricevuta status: ${response.statusCode}');
+      print('📥 Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final rawData = jsonDecode(response.body);
+        final responseData = decodeHtmlInMap(rawData);
+        if (responseData['success'] == true) {
+          print('✅ Ricevuta disponibile: ${responseData['receipt_url']}');
+          return {
+            'success': true,
+            'receipt_url': responseData['receipt_url'],
+            'filename': responseData['filename'],
+            'payment_id': responseData['payment_id'],
+            'numero_ricevuta': responseData['numero_ricevuta'],
+            'importo': responseData['importo'],
+            'data_pagamento': responseData['data_pagamento'],
+          };
+        }
+      } else if (response.statusCode == 401) {
+        return {'success': false, 'message': 'Utente non autenticato'};
+      } else if (response.statusCode == 403) {
+        return {
+          'success': false,
+          'message': 'Non hai accesso a questa ricevuta',
+        };
+      } else if (response.statusCode == 404) {
+        return {
+          'success': false,
+          'message': 'Pagamento non trovato o ricevuta non disponibile',
+        };
+      } else if (response.statusCode == 400) {
+        final errorData = jsonDecode(response.body);
+        return {
+          'success': false,
+          'message':
+              errorData['message'] ??
+              'Ricevuta disponibile solo per pagamenti completati',
+        };
+      }
+
+      return {
+        'success': false,
+        'message': 'Errore durante il recupero della ricevuta',
+      };
+    } on TimeoutException {
+      return {'success': false, 'message': 'Timeout: il server non risponde'};
+    } on SocketException {
+      return {'success': false, 'message': 'Nessuna connessione internet'};
+    } catch (e) {
+      print('❌ Errore durante GET /pagamento/$paymentId/ricevuta: $e');
+      return {'success': false, 'message': 'Errore: ${e.toString()}'};
+    }
+  }
+
   /// Completa il profilo dell'utente loggato
   /// POST /soci/me/completa-profilo
   /// Tutti i campi sono opzionali

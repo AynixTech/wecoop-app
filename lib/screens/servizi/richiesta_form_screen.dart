@@ -763,15 +763,15 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         print('   paymentId: $paymentId');
         
         String message = numeroPratica != null
-            ? '${l10n.requestSent}\n\n${l10n.error}: $numeroPratica'
+            ? '${l10n.requestSent}\n\n${l10n.fileNumber}: $numeroPratica'
             : result['message'] ?? l10n.requestSent;
         
         // Aggiungi info pagamento se richiesto
         if (requiresPayment && importo != null) {
-          message += '\n\n💰 Pagamento richiesto: €${importo.toStringAsFixed(2)}';
-          message += '\n\nPotrai completare il pagamento dalla sezione "Le Mie Richieste".';
+          message += '\n\n💰 ${l10n.paymentRequiredAmount}: €${importo.toStringAsFixed(2)}';
+          message += '\n\n${l10n.canCompletePaymentFromRequests}';
         } else {
-          message += '\n\nSarai contattato via email per i prossimi passi.';
+          message += '\n\n${l10n.willBeContactedByEmail}';
         }
 
         showDialog(
@@ -788,7 +788,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    requiresPayment ? 'Richiesta Inviata - Pagamento Richiesto' : l10n.requestSent,
+                    requiresPayment ? l10n.requestSentPaymentRequired : l10n.requestSent,
                   ),
                 ),
               ],
@@ -798,7 +798,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
               if (requiresPayment && paymentId != null)
                 TextButton.icon(
                   icon: const Icon(Icons.credit_card),
-                  label: const Text('Paga Ora'),
+                  label: Text(l10n.payNow),
                   onPressed: () {
                     Navigator.of(context).pop(); // Chiudi dialog
                     Navigator.of(context).pop(); // Torna indietro
@@ -818,7 +818,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   Navigator.of(context).pop(); // Chiudi dialog
                   Navigator.of(context).pop(); // Torna indietro
                 },
-                child: Text(requiresPayment ? 'Paga Dopo' : l10n.ok),
+                child: Text(requiresPayment ? l10n.payLater : l10n.ok),
               ),
             ],
           ),

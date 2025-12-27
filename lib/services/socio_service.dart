@@ -627,22 +627,56 @@ class SocioService {
           .timeout(const Duration(seconds: 30));
 
       print('📥 GET /pagamento/$paymentId/ricevuta status: ${response.statusCode}');
-      print('📥 Response body: ${response.body}');
-
+      
+      // Il backend ritorna il PDF direttamente (Content-Type: application/pdf)
       if (response.statusCode == 200) {
-        final rawData = jsonDecode(response.body);
-        final responseData = decodeHtmlInMap(rawData);
-        if (responseData['success'] == true) {
-          print('✅ Ricevuta disponibile: ${responseData['receipt_url']}');
+        // Verifica se è un PDF o JSON
+        final contentType = response.headers['content-type'] ?? '';
+        
+        if (contentType.contains('application/pdf')) {
+          // Risposta PDF binaria - estrai filename dall'header Content-Disposition
+          final contentDisposition = response.headers['content-disposition'] ?? '';
+          String filename = 'ricevuta_$paymentId.pdf';
+          
+          final filenameMatch = RegExp(r'filename="(.+?)"').firstMatch(contentDisposition);
+          if (filenameMatch != null) {
+            filename = filenameMatch.group(1) ?? filename;
+          }
+          
+          print('✅ PDF ricevuto: $filename (${response.bodyBytes.length} bytes)');
+          
+          // Ritorna i dati PDF come base64 per poterli salvare/condividere
+          final pdfBytes = response.bodyBytes;
+          final pdfBase64 = base64Encode(pdfBytes);
+          
           return {
             'success': true,
-            'receipt_url': responseData['receipt_url'],
-            'filename': responseData['filename'],
-            'payment_id': responseData['payment_id'],
-            'numero_ricevuta': responseData['numero_ricevuta'],
-            'importo': responseData['importo'],
-            'data_pagamento': responseData['data_pagamento'],
+            'pdf_bytes': pdfBytes,
+            'pdf_base64': pdfBase64,
+            'filename': filename,
+            'size': pdfBytes.length,
+            'numero_ricevuta': 'Ricevuta_$paymentId', // Placeholder
           };
+        } else {
+          // Risposta JSON (vecchio formato o errore)
+          try {
+            final rawData = jsonDecode(response.body);
+            final responseData = decodeHtmlInMap(rawData);
+            if (responseData['success'] == true) {
+              print('✅ Ricevuta disponibile: ${responseData['receipt_url']}');
+              return {
+                'success': true,
+                'receipt_url': responseData['receipt_url'],
+                'filename': responseData['filename'],
+                'payment_id': responseData['payment_id'],
+                'numero_ricevuta': responseData['numero_ricevuta'],
+                'importo': responseData['importo'],
+                'data_pagamento': responseData['data_pagamento'],
+              };
+            }
+          } catch (e) {
+            print('❌ Errore parsing JSON: $e');
+          }
         }
       } else if (response.statusCode == 401) {
         return {'success': false, 'message': 'Utente non autenticato'};

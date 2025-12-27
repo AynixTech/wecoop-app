@@ -5,6 +5,10 @@ import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import '../../services/socio_service.dart';
 import '../servizi/pagamento_screen.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:open_file/open_file.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -407,8 +411,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
   }
 
-  Future<void> _visualizzaRicevuta(int paymentId, String numeroPratica) async {
+  Future<void> _visualizzaRicevuta(int? paymentId, String numeroPratica, {int? richiestaId}) async {
     final l10n = AppLocalizations.of(context)!;
+    
+    // Se non abbiamo payment ID ma abbiamo richiesta ID, mostra messaggio
+    if (paymentId == null && richiestaId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('❌ ${l10n.errorDownloadingReceipt}: ID pagamento mancante'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
     
     try {
       // Mostra loading
@@ -433,72 +448,98 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ),
       );
 
-      // Ottieni URL ricevuta
-      final result = await SocioService.getRicevutaPdf(paymentId);
+      // Se non abbiamo paymentId, usa richiestaId per cercare il pagamento
+      int actualPaymentId = paymentId ?? 0;
+      
+      if (paymentId == null && richiestaId != null) {
+        print('⚠️ Payment ID mancante, uso richiesta ID: $richiestaId');
+        // TODO: Chiamare API per ottenere payment ID da richiesta ID
+        // Per ora usiamo richiestaId come fallback
+        actualPaymentId = richiestaId;
+      }
+
+      // Ottieni ricevuta PDF
+      final result = await SocioService.getRicevutaPdf(actualPaymentId);
 
       // Chiudi loading
       if (mounted) Navigator.pop(context);
 
       if (result['success'] == true) {
-        final receiptUrl = result['receipt_url'] as String;
-        final filename = result['filename'] as String;
-        final numeroRicevuta = result['numero_ricevuta'] as String;
+        // Il backend ritorna il PDF direttamente come bytes
+        final pdfBytes = result['pdf_bytes'] as List<int>?;
+        final filename = result['filename'] as String? ?? 'ricevuta.pdf';
 
-        // Mostra dialog con opzioni
-        if (mounted) {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Row(
-                children: [
-                  Icon(Icons.receipt_long, color: Colors.blue),
-                  const SizedBox(width: 8),
-                  Text(l10n.receiptDownloaded),
-                ],
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.receiptSavedSuccessfully),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Ricevuta N° $numeroRicevuta',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
+        if (pdfBytes != null) {
+          // Salva il PDF automaticamente e aprilo
+          try {
+            final savedFile = await _salvaPdfLocale(pdfBytes, filename);
+            
+            if (savedFile != null && mounted) {
+              // Apri il PDF automaticamente
+              final result = await OpenFile.open(savedFile.path);
+              
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      const Icon(Icons.check_circle, color: Colors.white),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '✅ ${l10n.receiptDownloaded}',
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              filename,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    filename,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[700],
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(l10n.close),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    Navigator.pop(context);
-                    await _apriRicevutaWeb(receiptUrl);
-                  },
-                  icon: const Icon(Icons.open_in_browser),
-                  label: Text(l10n.openPdf),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
+                  backgroundColor: Colors.green,
+                  duration: const Duration(seconds: 4),
+                  action: SnackBarAction(
+                    label: 'Apri',
+                    textColor: Colors.white,
+                    onPressed: () => OpenFile.open(savedFile.path),
                   ),
                 ),
-              ],
-            ),
-          );
+              );
+              
+              print('✅ PDF salvato e aperto: ${savedFile.path}');
+              print('📱 OpenFile result: ${result.message}');
+            } else if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('⚠️ PDF ricevuto ma impossibile salvarlo'),
+                  backgroundColor: Colors.orange,
+                ),
+              );
+            }
+          } catch (e) {
+            print('❌ Errore salvataggio/apertura PDF: $e');
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('❌ Errore: $e'),
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 5),
+                ),
+              );
+            }
+          }
+        } else {
+          // Vecchio formato con URL
+          final receiptUrl = result['receipt_url'] as String?;
+          if (receiptUrl != null && mounted) {
+            await _apriRicevutaWeb(receiptUrl);
+          }
         }
       } else {
         // Mostra errore
@@ -528,6 +569,66 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
         );
       }
+    }
+  }
+
+  Future<File?> _salvaPdfLocale(List<int> pdfBytes, String filename) async {
+    try {
+      // 1. Richiedi permessi storage (solo Android)
+      if (Platform.isAndroid) {
+        final status = await Permission.storage.request();
+        if (!status.isGranted) {
+          print('⚠️ Permesso storage negato');
+          // Su Android 13+ non serve più il permesso WRITE_EXTERNAL_STORAGE
+          // Proviamo comunque a salvare in app-specific directory
+        }
+      }
+      
+      // 2. Ottieni directory appropriata
+      Directory? directory;
+      
+      if (Platform.isAndroid) {
+        // Prova a ottenere la directory Download pubblica
+        try {
+          // Per Android, usa la directory Download pubblica
+          directory = Directory('/storage/emulated/0/Download');
+          
+          // Se non esiste, usa directory app-specific
+          if (!await directory.exists()) {
+            directory = await getExternalStorageDirectory();
+          }
+        } catch (e) {
+          print('⚠️ Impossibile accedere a Download, uso directory app: $e');
+          directory = await getApplicationDocumentsDirectory();
+        }
+      } else if (Platform.isIOS) {
+        // Per iOS, usa directory Documents dell'app
+        directory = await getApplicationDocumentsDirectory();
+      } else {
+        // Fallback per altre piattaforme
+        directory = await getApplicationDocumentsDirectory();
+      }
+      
+      if (directory == null) {
+        print('❌ Impossibile ottenere directory');
+        return null;
+      }
+      
+      // 3. Crea il percorso completo del file
+      final filePath = '${directory.path}/$filename';
+      final file = File(filePath);
+      
+      // 4. Scrivi i bytes sul file
+      await file.writeAsBytes(pdfBytes);
+      
+      print('✅ PDF salvato in: $filePath');
+      print('📁 Directory: ${directory.path}');
+      print('📄 File size: ${pdfBytes.length} bytes');
+      
+      return file;
+    } catch (e) {
+      print('❌ Errore salvataggio PDF: $e');
+      return null;
     }
   }
 
@@ -602,6 +703,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final pagamento = richiesta['pagamento'] ?? {};
     final puoPagare = richiesta['puo_pagare'] == true;
     final richiestaId = richiesta['id'] as int?;
+    
+    // Debug: verifica dati pagamento COMPLETI
+    print('📋 ==================== DEBUG RICHIESTA ====================');
+    print('📋 Richiesta ID: $richiestaId');
+    print('📋 Stato: $stato');
+    print('📋 Numero pratica: ${richiesta['numero_pratica']}');
+    print('💰 ==================== PAGAMENTO COMPLETO ====================');
+    print('💰 Pagamento object: $pagamento');
+    print('💰 Pagamento keys: ${pagamento.keys.toList()}');
+    print('🔑 pagamento["id"]: ${pagamento['id']}');
+    print('🔑 pagamento["payment_id"]: ${pagamento['payment_id']}');
+    print('🔑 pagamento["pagamento_id"]: ${pagamento['pagamento_id']}');
+    print('✅ pagamento["ricevuto"]: ${pagamento['ricevuto']}');
+    print('📋 =========================================================');
     
     // Stato awaiting_payment significa che c'è un pagamento da effettuare
     final isAwaitingPayment = stato == 'awaiting_payment' || stato == 'pending_payment';
@@ -846,11 +961,119 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       ],
                       
                       // Pulsante Scarica Ricevuta - Solo per pagamenti completati
-                      if (pagamento['ricevuto'] == true && pagamento['id'] != null) ...[
+                      // PROBLEMA: Backend non ritorna payment ID, solo transaction_id
+                      if (pagamento['ricevuto'] == true || stato == 'completed' || stato == 'completata') ...[
                         const SizedBox(height: 12),
                         OutlinedButton.icon(
                           onPressed: () async {
-                            await _visualizzaRicevuta(pagamento['id'] as int, richiesta['numero_pratica'] ?? 'N/A');
+                            // Prova diversi campi per l'ID del pagamento
+                            // Il backend può ritornare String o int, gestiamo entrambi
+                            final paymentIdRaw = pagamento['id'] ?? 
+                                                 pagamento['payment_id'] ?? 
+                                                 pagamento['pagamento_id'];
+                            
+                            final paymentId = paymentIdRaw is int 
+                                ? paymentIdRaw 
+                                : (paymentIdRaw is String ? int.tryParse(paymentIdRaw) : null);
+                            
+                            final transactionId = pagamento['transazione_id'] as String?;
+                            
+                            print('🧾 Tentativo scarica ricevuta:');
+                            print('   - Payment ID: $paymentId');
+                            print('   - Transaction ID: $transactionId');
+                            print('   - Richiesta ID: $richiestaId');
+                            
+                            if (paymentId == null) {
+                              // Mostra dialog informativo invece di errore
+                              if (mounted) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: Row(
+                                      children: [
+                                        Icon(Icons.info_outline, color: Colors.orange),
+                                        const SizedBox(width: 8),
+                                        const Text('Ricevuta Non Disponibile'),
+                                      ],
+                                    ),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'Il sistema sta elaborando il tuo pagamento.',
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        const Text('Dettagli pagamento:'),
+                                        const SizedBox(height: 8),
+                                        Text('• Pratica: ${richiesta['numero_pratica']}'),
+                                        if (transactionId != null) ...[
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            '• ID Transazione: ${transactionId.substring(0, 20)}...',
+                                            style: const TextStyle(fontSize: 12),
+                                          ),
+                                        ],
+                                        if (pagamento['metodo'] != null) ...[
+                                          const SizedBox(height: 4),
+                                          Text('• Metodo: ${pagamento['metodo']}'),
+                                        ],
+                                        if (pagamento['data'] != null) ...[
+                                          const SizedBox(height: 4),
+                                          Text('• Data: ${_formatData(pagamento['data'])}'),
+                                        ],
+                                        const SizedBox(height: 16),
+                                        Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: Colors.blue.shade50,
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: const Row(
+                                            children: [
+                                              Icon(Icons.lightbulb_outline, size: 20, color: Colors.blue),
+                                              SizedBox(width: 8),
+                                              Expanded(
+                                                child: Text(
+                                                  'La ricevuta sarà disponibile a breve. Riprova tra qualche minuto o contatta il supporto.',
+                                                  style: TextStyle(fontSize: 12),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text('Chiudi'),
+                                      ),
+                                      ElevatedButton.icon(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          _caricaRichieste(); // Ricarica per vedere se ora c'è l'ID
+                                        },
+                                        icon: const Icon(Icons.refresh),
+                                        label: const Text('Ricarica'),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.blue,
+                                          foregroundColor: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                              return;
+                            }
+                            
+                            await _visualizzaRicevuta(
+                              paymentId, 
+                              richiesta['numero_pratica'] ?? 'N/A',
+                              richiestaId: richiestaId,
+                            );
                           },
                           icon: const Icon(Icons.receipt_long),
                           label: Text(AppLocalizations.of(context)!.downloadReceipt),
@@ -1255,12 +1478,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     ],
                     const Spacer(),
                     // Icona ricevuta disponibile
-                    if (pagamento['id'] != null)
+                    if (pagamento['ricevuto'] == true)
                       InkWell(
-                        onTap: () => _visualizzaRicevuta(
-                          pagamento['id'] as int,
-                          richiesta['numero_pratica'] ?? 'N/A',
-                        ),
+                        onTap: () {
+                          // Gestisci conversione String/int per payment ID
+                          final paymentIdRaw = pagamento['id'];
+                          final paymentId = paymentIdRaw is int 
+                              ? paymentIdRaw 
+                              : (paymentIdRaw is String ? int.tryParse(paymentIdRaw) : null);
+                          
+                          _visualizzaRicevuta(
+                            paymentId,
+                            richiesta['numero_pratica'] ?? 'N/A',
+                            richiestaId: richiesta['id'] as int?,
+                          );
+                        },
                         child: Container(
                           padding: const EdgeInsets.all(4),
                           decoration: BoxDecoration(

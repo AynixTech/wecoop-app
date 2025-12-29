@@ -10,6 +10,7 @@ import '../servizi/accoglienza_screen.dart';
 import '../servizi/mediazione_fiscale_screen.dart';
 import '../servizi/supporto_contabile_screen.dart';
 import '../servizi/servizi_gate_screen.dart';
+import '../onboarding/first_access_screen.dart';
 import '../progetti/project_category_detail_screen.dart';
 import '../eventi/evento_detail_screen.dart';
 import '../../widgets/language_selector.dart';
@@ -521,11 +522,7 @@ class _ServicesSection extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder:
-                    (context) => ServiziGateScreen(
-                      destinationScreen: const AccoglienzaScreen(),
-                      serviceName: l10n.welcomeOrientation,
-                    ),
+                builder: (context) => const FirstAccessScreen(),
               ),
             );
           },
@@ -538,11 +535,7 @@ class _ServicesSection extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder:
-                    (context) => ServiziGateScreen(
-                      destinationScreen: const MediazioneFiscaleScreen(),
-                      serviceName: l10n.taxMediation,
-                    ),
+                builder: (context) => const FirstAccessScreen(),
               ),
             );
           },
@@ -555,11 +548,7 @@ class _ServicesSection extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder:
-                    (context) => ServiziGateScreen(
-                      destinationScreen: const SupportoContabileScreen(),
-                      serviceName: l10n.accountingSupport,
-                    ),
+                builder: (context) => const FirstAccessScreen(),
               ),
             );
           },

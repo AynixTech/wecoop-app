@@ -40,6 +40,22 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _checkIfAlreadyLoggedIn();
+  }
+
+  Future<void> _checkIfAlreadyLoggedIn() async {
+    final token = await _storage.read(key: 'jwt_token');
+    if (token != null && token.isNotEmpty && mounted) {
+      // Utente già loggato, vai direttamente ai servizi
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const MainScreen()),
+      );
+    }
+  }
+
+  @override
   void dispose() {
     _nomeController.dispose();
     _cognomeController.dispose();

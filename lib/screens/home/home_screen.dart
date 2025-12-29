@@ -9,7 +9,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../servizi/accoglienza_screen.dart';
 import '../servizi/mediazione_fiscale_screen.dart';
 import '../servizi/supporto_contabile_screen.dart';
-import '../servizi/servizi_gate_screen.dart';
 import '../onboarding/first_access_screen.dart';
 import '../progetti/project_category_detail_screen.dart';
 import '../eventi/evento_detail_screen.dart';
@@ -518,11 +517,18 @@ class _ServicesSection extends StatelessWidget {
         _ServiceButton(
           title: l10n.welcomeOrientation,
           imagePath: 'assets/images/home/accoglienza.jpg',
-          onTap: () {
+          onTap: () async {
+            final storage = SecureStorageService();
+            final token = await storage.read(key: 'jwt_token');
+            final isLoggedIn = token != null && token.isNotEmpty;
+            
+            if (!context.mounted) return;
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const FirstAccessScreen(),
+                builder: (context) => isLoggedIn 
+                  ? const AccoglienzaScreen()
+                  : const FirstAccessScreen(),
               ),
             );
           },
@@ -531,11 +537,18 @@ class _ServicesSection extends StatelessWidget {
         _ServiceButton(
           title: l10n.taxMediation,
           imagePath: 'assets/images/home/mediazione.jpg',
-          onTap: () {
+          onTap: () async {
+            final storage = SecureStorageService();
+            final token = await storage.read(key: 'jwt_token');
+            final isLoggedIn = token != null && token.isNotEmpty;
+            
+            if (!context.mounted) return;
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const FirstAccessScreen(),
+                builder: (context) => isLoggedIn 
+                  ? const MediazioneFiscaleScreen()
+                  : const FirstAccessScreen(),
               ),
             );
           },
@@ -544,11 +557,18 @@ class _ServicesSection extends StatelessWidget {
         _ServiceButton(
           title: l10n.accountingSupport,
           imagePath: 'assets/images/home/contabile.jpg',
-          onTap: () {
+          onTap: () async {
+            final storage = SecureStorageService();
+            final token = await storage.read(key: 'jwt_token');
+            final isLoggedIn = token != null && token.isNotEmpty;
+            
+            if (!context.mounted) return;
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const FirstAccessScreen(),
+                builder: (context) => isLoggedIn 
+                  ? const SupportoContabileScreen()
+                  : const FirstAccessScreen(),
               ),
             );
           },

@@ -15,8 +15,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get hello => 'Ciao';
 
   @override
-  String get welcome =>
-      'Esplora eventi, servizi e progetti vicino a te.';
+  String get welcome => 'Esplora eventi, servizi e progetti vicino a te.';
 
   @override
   String get user => 'Utente';

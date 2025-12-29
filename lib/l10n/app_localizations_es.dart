@@ -15,8 +15,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get hello => 'Hola';
 
   @override
-  String get welcome =>
-      'Explora eventos, servicios y proyectos cerca de ti.';
+  String get welcome => 'Explora eventos, servicios y proyectos cerca de ti.';
 
   @override
   String get user => 'Usuario';

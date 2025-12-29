@@ -1155,17 +1155,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.myRequests),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _caricaRichieste,
-          ),
-        ],
       ),
-      body:
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : Column(
+      body: RefreshIndicator(
+        onRefresh: _caricaRichieste,
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
                 children: [
                   // Filtri stato
                   Container(
@@ -1253,6 +1248,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   Expanded(child: _buildListaRichieste()),
                 ],
               ),
+      ),
     );
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'package:wecoop_app/widgets/help_button_widget.dart';
 import '../../services/socio_service.dart';
 import 'pagamento_screen.dart';
 
@@ -355,7 +356,8 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.categoria)),
-      body:
+      body: Stack(
+        children: [
           _isLoading
               ? const Center(child: CircularProgressIndicator())
               : SafeArea(
@@ -465,6 +467,13 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   ),
                 ),
               ),
+          HelpButtonWidget(
+            serviceName: widget.servizio,
+            serviceCategory: widget.categoria,
+            currentScreen: 'RichiestaFormScreen',
+          ),
+        ],
+      ),
     );
   }
 

@@ -236,7 +236,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Bonifico Bancario'),
+        title: Text(l10n.bankTransferTitle),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,7 +250,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text('Coordinate bancarie:'),
+              Text(l10n.bankCoordinates),
               const SizedBox(height: 8),
               _buildBankDetail('IBAN', 'IT60 X054 2811 1010 0000 0123 456'),
               _buildBankDetail('Intestatario', 'WeCoop Cooperativa'),
@@ -277,11 +277,11 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
             onPressed: () {
               Navigator.pop(context);
               _showSuccessDialog(
-                'Istruzioni inviate',
-                'Ti abbiamo inviato una email con le istruzioni per il bonifico.',
+                l10n.instructionsSent,
+                l10n.instructionsSentMessage,
               );
             },
-            child: const Text('Invia Email'),
+            child: Text(l10n.sendEmail),
           ),
         ],
       ),
@@ -376,7 +376,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
               Navigator.pop(context); // Chiudi dialog
               Navigator.pop(context); // Torna alla schermata precedente
             },
-            child: const Text('OK'),
+            child: Text(AppLocalizations.of(context)!.ok),
           ),
         ],
       ),
@@ -405,7 +405,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pagamento'),
+        title: Text(AppLocalizations.of(context)!.payment),
         elevation: 0,
       ),
       body: _isLoading
@@ -431,14 +431,14 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                         const SizedBox(height: 24),
                         ElevatedButton(
                           onPressed: _loadPagamento,
-                          child: const Text('Riprova'),
+                          child: Text(AppLocalizations.of(context)!.retry),
                         ),
                       ],
                     ),
                   ),
                 )
               : _pagamento == null
-                  ? const Center(child: Text('Pagamento non trovato'))
+                  ? Center(child: Text(AppLocalizations.of(context)!.paymentNotFound))
                   : SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,

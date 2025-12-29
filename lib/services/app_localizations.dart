@@ -16,7 +16,7 @@ class AppLocalizations {
     'it': {
       'appTitle': 'WECOOP',
       'hello': 'Ciao',
-      'welcome': 'Benvenuta su WECOOP! Esplora eventi, servizi e progetti vicino a te.',
+      'welcome': 'Esplora eventi, servizi e progetti vicino a te.',
       'user': 'Utente',
       'profile': 'Profilo',
       'home': 'Home',
@@ -273,6 +273,13 @@ class AppLocalizations {
       'bankTransfer': 'Bonifico Bancario',
       'bankTransferDesc': 'Ricevi le coordinate via email',
       'paymentCompletedSuccess': 'Pagamento completato con successo',
+      'payment': 'Pagamento',
+      'paymentNotFound': 'Pagamento non trovato',
+      'bankTransferTitle': 'Bonifico Bancario',
+      'bankCoordinates': 'Coordinate bancarie:',
+      'sendEmail': 'Invia Email',
+      'instructionsSent': 'Istruzioni inviate',
+      'instructionsSentMessage': 'Ti abbiamo inviato una email con le istruzioni per il bonifico.',
       'fileNumber': 'Numero Pratica',
       'status': 'Stato',
       'requestDate': 'Data Richiesta',
@@ -304,7 +311,6 @@ class AppLocalizations {
       'canCompletePaymentFromRequests': 'Potrai completare il pagamento dalla sezione "Le Mie Richieste".',
       'willBeContactedByEmail': 'Sarai contattato via email per i prossimi passi.',
       'requestSentPaymentRequired': 'Richiesta Inviata - Pagamento Richiesto',
-      'payNow': 'Paga Ora',
       'payLater': 'Paga Dopo',
       'noRequestsThisDay': 'Nessuna richiesta per questo giorno',
       'noRequestsFound': 'Nessuna richiesta trovata',
@@ -570,6 +576,44 @@ class AppLocalizations {
       'phoneNumberTooShort': 'Numero di telefono troppo corto',
       'enterEmail': 'Inserisci la tua email',
       'helpTitle': 'Come funziona',
+      'needHelp': 'Hai bisogno di aiuto?',
+      'usingService': 'Stai utilizzando il servizio',
+      'canWeAssist': 'Possiamo assisterti con questo servizio?',
+      'noThanks': 'No, grazie',
+      'yesHelpMe': 'Sì, aiutami',
+      'requestSentSuccess': 'Richiesta inviata!',
+      'supportRequestCreated': 'La tua richiesta di supporto è stata creata con successo.',
+      'ticketNumber': 'Numero Ticket:',
+      'operatorWillContact': 'Un operatore ti contatterà al più presto per assisterti.',
+      'errorNotAuthenticated': 'Errore: utente non autenticato',
+      'errorSendingRequest': 'Errore durante l\'invio della richiesta',
+      'welcomeExclamation': 'Benvenuto!',
+      'enterYourDataToStart': 'Inserisci i tuoi dati per iniziare',
+      'nameRequired': 'Nome *',
+      'surnameRequired': 'Cognome *',
+      'prefixRequired': 'Pref. *',
+      'phoneRequired': 'Telefono *',
+      'continue': 'Continua',
+      'afterRegistrationInfo': 'Dopo la registrazione, potrai accedere a tutti i servizi. Un operatore ti contatterà per completare l\'adesione come socio.',
+      'completeDataToAccessServices': 'Completa i tuoi dati per accedere a tutti i servizi',
+      'nameIsMandatory': 'Il nome è obbligatorio',
+      'nameMinLength': 'Il nome deve avere almeno 2 caratteri',
+      'surnameIsMandatory': 'Il cognome è obbligatorio',
+      'surnameMinLength': 'Il cognome deve avere almeno 2 caratteri',
+      'phoneIsMandatory': 'Il telefono è obbligatorio',
+      'phoneMust10Digits': 'Deve essere 10 cifre (es: 3331234567)',
+      'phoneInvalid': 'Numero telefono non valido',
+      'autoLoginFailed': 'Login Automatico Fallito',
+      'registrationCompletedLoginFailed': 'Registrazione completata, ma il login automatico è fallito.',
+      'canLoginManually': 'Puoi effettuare il login manualmente.',
+      'registrationCompleted': 'Registrazione Completata!',
+      'accountCreatedSuccess': 'Account creato con successo!',
+      'yourLoginCredentials': 'Ecco le tue credenziali di accesso:',
+      'username': 'Username',
+      'saveTheseCredentials': 'Salva queste credenziali!',
+      'phoneAlreadyRegistered': 'Numero già registrato',
+      'alreadyHaveAccount': 'Hai già un account? Prova ad effettuare il login.',
+      'welcomeSuccess': '🎉 Benvenuto! Accesso effettuato con successo',
     },
     'en': {
       'appTitle': 'WECOOP',
@@ -821,6 +865,13 @@ class AppLocalizations {
       'bankTransfer': 'Bank Transfer',
       'bankTransferDesc': 'Receive bank details via email',
       'paymentCompletedSuccess': 'Payment completed successfully',
+      'payment': 'Payment',
+      'paymentNotFound': 'Payment not found',
+      'bankTransferTitle': 'Bank Transfer',
+      'bankCoordinates': 'Bank details:',
+      'sendEmail': 'Send Email',
+      'instructionsSent': 'Instructions sent',
+      'instructionsSentMessage': 'We have sent you an email with the bank transfer instructions.',
       'fileNumber': 'File Number',
       'status': 'Status',
       'requestDate': 'Request Date',
@@ -852,7 +903,6 @@ class AppLocalizations {
       'canCompletePaymentFromRequests': 'You can complete the payment from the "My Requests" section.',
       'willBeContactedByEmail': 'You will be contacted via email for next steps.',
       'requestSentPaymentRequired': 'Request Sent - Payment Required',
-      'payNow': 'Pay Now',
       'payLater': 'Pay Later',
       'noRequestsThisDay': 'No requests for this day',
       'noRequestsFound': 'No requests found',
@@ -1128,11 +1178,49 @@ class AppLocalizations {
       'phoneNumberTooShort': 'Phone number too short',
       'enterEmail': 'Enter your email',
       'helpTitle': 'How it works',
+      'needHelp': 'Need help?',
+      'usingService': 'You are using the service',
+      'canWeAssist': 'Can we assist you with this service?',
+      'noThanks': 'No, thanks',
+      'yesHelpMe': 'Yes, help me',
+      'requestSentSuccess': 'Request sent!',
+      'supportRequestCreated': 'Your support request has been created successfully.',
+      'ticketNumber': 'Ticket Number:',
+      'operatorWillContact': 'An operator will contact you soon to assist you.',
+      'errorNotAuthenticated': 'Error: user not authenticated',
+      'errorSendingRequest': 'Error sending request',
+      'welcomeExclamation': 'Welcome!',
+      'enterYourDataToStart': 'Enter your details to get started',
+      'nameRequired': 'Name *',
+      'surnameRequired': 'Surname *',
+      'prefixRequired': 'Prefix *',
+      'phoneRequired': 'Phone *',
+      'continue': 'Continue',
+      'afterRegistrationInfo': 'After registration, you will be able to access all services. An operator will contact you to complete the membership.',
+      'completeDataToAccessServices': 'Complete your details to access all services',
+      'nameIsMandatory': 'Name is required',
+      'nameMinLength': 'Name must be at least 2 characters',
+      'surnameIsMandatory': 'Surname is required',
+      'surnameMinLength': 'Surname must be at least 2 characters',
+      'phoneIsMandatory': 'Phone is required',
+      'phoneMust10Digits': 'Must be 10 digits (e.g.: 3331234567)',
+      'phoneInvalid': 'Invalid phone number',
+      'autoLoginFailed': 'Auto Login Failed',
+      'registrationCompletedLoginFailed': 'Registration completed, but auto login failed.',
+      'canLoginManually': 'You can login manually.',
+      'registrationCompleted': 'Registration Completed!',
+      'accountCreatedSuccess': 'Account created successfully!',
+      'yourLoginCredentials': 'Here are your login credentials:',
+      'username': 'Username',
+      'saveTheseCredentials': 'Save these credentials!',
+      'phoneAlreadyRegistered': 'Phone already registered',
+      'alreadyHaveAccount': 'Already have an account? Try logging in.',
+      'welcomeSuccess': '🎉 Welcome! Login successful',
     },
     'es': {
       'appTitle': 'WECOOP',
       'hello': 'Hola',
-      'welcome': '¡Bienvenida a WECOOP! Explora eventos, servicios y proyectos cerca de ti.',
+      'welcome': 'Explora eventos, servicios y proyectos cerca de ti.',
       'user': 'Usuario',
       'profile': 'Perfil',
       'home': 'Inicio',
@@ -1410,7 +1498,6 @@ class AppLocalizations {
       'canCompletePaymentFromRequests': 'Podrás completar el pago desde la sección "Mis Solicitudes".',
       'willBeContactedByEmail': 'Serás contactado por email para los próximos pasos.',
       'requestSentPaymentRequired': 'Solicitud Enviada - Pago Requerido',
-      'payNow': 'Pagar Ahora',
       'payLater': 'Pagar Después',
       'noRequestsThisDay': 'No hay solicitudes para este día',
       'noRequestsFound': 'No se encontraron solicitudes',
@@ -1687,6 +1774,44 @@ class AppLocalizations {
       'phoneNumberTooShort': 'Número de teléfono demasiado corto',
       'enterEmail': 'Ingresa tu email',
       'helpTitle': 'Cómo funciona',
+      'needHelp': '¿Necesitas ayuda?',
+      'usingService': 'Estás utilizando el servicio',
+      'canWeAssist': '¿Podemos asistirte con este servicio?',
+      'noThanks': 'No, gracias',
+      'yesHelpMe': 'Sí, ayúdame',
+      'requestSentSuccess': '¡Solicitud enviada!',
+      'supportRequestCreated': 'Tu solicitud de soporte ha sido creada exitosamente.',
+      'ticketNumber': 'Número de Ticket:',
+      'operatorWillContact': 'Un operador te contactará pronto para asistirte.',
+      'errorNotAuthenticated': 'Error: usuario no autenticado',
+      'errorSendingRequest': 'Error al enviar la solicitud',
+      'welcomeExclamation': '¡Bienvenido!',
+      'enterYourDataToStart': 'Ingresa tus datos para comenzar',
+      'nameRequired': 'Nombre *',
+      'surnameRequired': 'Apellido *',
+      'prefixRequired': 'Pref. *',
+      'phoneRequired': 'Teléfono *',
+      'continue': 'Continuar',
+      'afterRegistrationInfo': 'Después del registro, podrás acceder a todos los servicios. Un operador te contactará para completar la adhesión como socio.',
+      'completeDataToAccessServices': 'Completa tus datos para acceder a todos los servicios',
+      'nameIsMandatory': 'El nombre es obligatorio',
+      'nameMinLength': 'El nombre debe tener al menos 2 caracteres',
+      'surnameIsMandatory': 'El apellido es obligatorio',
+      'surnameMinLength': 'El apellido debe tener al menos 2 caracteres',
+      'phoneIsMandatory': 'El teléfono es obligatorio',
+      'phoneMust10Digits': 'Debe ser 10 dígitos (ej: 3331234567)',
+      'phoneInvalid': 'Número de teléfono inválido',
+      'autoLoginFailed': 'Login Automático Fallido',
+      'registrationCompletedLoginFailed': 'Registro completado, pero el login automático falló.',
+      'canLoginManually': 'Puedes iniciar sesión manualmente.',
+      'registrationCompleted': '¡Registro Completado!',
+      'accountCreatedSuccess': '¡Cuenta creada exitosamente!',
+      'yourLoginCredentials': 'Aquí están tus credenciales de acceso:',
+      'username': 'Usuario',
+      'saveTheseCredentials': '¡Guarda estas credenciales!',
+      'phoneAlreadyRegistered': 'Número ya registrado',
+      'alreadyHaveAccount': '¿Ya tienes una cuenta? Intenta iniciar sesión.',
+      'welcomeSuccess': '🎉 ¡Bienvenido! Acceso exitoso',
     },
   };
 
@@ -1855,6 +1980,13 @@ class AppLocalizations {
   String get bankTransfer => translate('bankTransfer');
   String get bankTransferDesc => translate('bankTransferDesc');
   String get paymentCompletedSuccess => translate('paymentCompletedSuccess');
+  String get payment => translate('payment');
+  String get paymentNotFound => translate('paymentNotFound');
+  String get bankTransferTitle => translate('bankTransferTitle');
+  String get bankCoordinates => translate('bankCoordinates');
+  String get sendEmail => translate('sendEmail');
+  String get instructionsSent => translate('instructionsSent');
+  String get instructionsSentMessage => translate('instructionsSentMessage');
   String get fileNumber => translate('fileNumber');
   String get status => translate('status');
   String get requestDate => translate('requestDate');
@@ -2142,6 +2274,30 @@ class AppLocalizations {
   String get copyCredentials => translate('copyCredentials');
   String get iHaveSaved => translate('iHaveSaved');
   String get welcomeToWecoop => translate('welcomeToWecoop');
+  String get welcomeExclamation => translate('welcomeExclamation');
+  String get enterYourDataToStart => translate('enterYourDataToStart');
+  String get nameRequired => translate('nameRequired');
+  String get surnameRequired => translate('surnameRequired');
+  String get prefixRequired => translate('prefixRequired');
+  String get phoneRequired => translate('phoneRequired');
+  String get continue_ => translate('continue');
+  String get afterRegistrationInfo => translate('afterRegistrationInfo');
+  String get completeDataToAccessServices => translate('completeDataToAccessServices');
+  String get nameIsMandatory => translate('nameIsMandatory');
+  String get nameMinLength => translate('nameMinLength');
+  String get surnameIsMandatory => translate('surnameIsMandatory');
+  String get surnameMinLength => translate('surnameMinLength');
+  String get phoneIsMandatory => translate('phoneIsMandatory');
+  String get phoneMust10Digits => translate('phoneMust10Digits');
+  String get phoneInvalid => translate('phoneInvalid');
+  String get autoLoginFailed => translate('autoLoginFailed');
+  String get registrationCompletedLoginFailed => translate('registrationCompletedLoginFailed');
+  String get canLoginManually => translate('canLoginManually');
+  String get accountCreatedSuccess => translate('accountCreatedSuccess');
+  String get yourLoginCredentials => translate('yourLoginCredentials');
+  String get phoneAlreadyRegistered => translate('phoneAlreadyRegistered');
+  String get alreadyHaveAccount => translate('alreadyHaveAccount');
+  String get welcomeSuccess => translate('welcomeSuccess');
   
   // Chatbot translations
   String get chatbotTitle => translate('chatbotTitle');
@@ -2200,6 +2356,19 @@ class AppLocalizations {
   String get continueWithoutLogin => translate('continueWithoutLogin');
   String get alreadyRegistered => translate('alreadyRegistered');
   String get loginToAccess => translate('loginToAccess');
+  
+  // Help Widget
+  String get needHelp => translate('needHelp');
+  String get usingService => translate('usingService');
+  String get canWeAssist => translate('canWeAssist');
+  String get noThanks => translate('noThanks');
+  String get yesHelpMe => translate('yesHelpMe');
+  String get requestSentSuccess => translate('requestSentSuccess');
+  String get supportRequestCreated => translate('supportRequestCreated');
+  String get ticketNumber => translate('ticketNumber');
+  String get operatorWillContact => translate('operatorWillContact');
+  String get errorNotAuthenticated => translate('errorNotAuthenticated');
+  String get errorSendingRequest => translate('errorSendingRequest');
 }
 
 class _AppLocalizationsDelegate

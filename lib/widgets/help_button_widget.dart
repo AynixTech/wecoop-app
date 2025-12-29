@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -62,6 +63,9 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
 
   /// Mostra il dialog "Hai bisogno di aiuto?"
   void _showHelpDialog() {
+    final localizations = AppLocalizations.of(context);
+    if (localizations == null) return;
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -71,9 +75,9 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
             const Icon(Icons.help_outline, color: Color(0xFF2196F3), size: 28),
             const SizedBox(width: 12),
             Expanded(
-              child: const Text(
-                'Hai bisogno di aiuto?',
-                style: TextStyle(fontSize: 18),
+              child: Text(
+                localizations.needHelp,
+                style: const TextStyle(fontSize: 18),
               ),
             ),
           ],
@@ -83,13 +87,13 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Stai utilizzando il servizio "${widget.serviceName}".',
+              '${localizations.usingService} "${widget.serviceName}".',
               style: const TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Possiamo assisterti con questo servizio?',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            Text(
+              localizations.canWeAssist,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
           ],
         ),
@@ -99,7 +103,7 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
               Navigator.of(context).pop();
               _resetInactivityTimer();
             },
-            child: const Text('No, grazie'),
+            child: Text(localizations.noThanks),
           ),
           ElevatedButton.icon(
             onPressed: _isSubmitting ? null : () {
@@ -113,7 +117,7 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
                     child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                   )
                 : const Icon(Icons.check),
-            label: Text(_isSubmitting ? 'Invio...' : 'Sì, aiutami'),
+            label: Text(_isSubmitting ? localizations.sending : localizations.yesHelpMe),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF2196F3),
               foregroundColor: Colors.white,
@@ -126,6 +130,9 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
 
   /// Crea una richiesta di supporto chiamando l'API backend
   Future<void> _creaRichiestaSupporto() async {
+    final localizations = AppLocalizations.of(context);
+    if (localizations == null) return;
+    
     setState(() {
       _isSubmitting = true;
     });
@@ -139,7 +146,7 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
       final userPhone = await _storage.read(key: 'last_login_phone');
 
       if (token == null || userId == null) {
-        _showErrorSnackbar('Errore: utente non autenticato');
+        _showErrorSnackbar(localizations.errorNotAuthenticated);
         return;
       }
 
@@ -189,11 +196,11 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
         _showSuccessDialog(data['data']?['numero_ticket']);
       } else {
         print('❌ Errore nella risposta: ${response.statusCode}');
-        _showErrorSnackbar('Errore durante l\'invio della richiesta');
+        _showErrorSnackbar(localizations.errorSendingRequest);
       }
     } catch (e) {
       print('❌ Errore richiesta supporto: $e');
-      _showErrorSnackbar('Errore di connessione');
+      _showErrorSnackbar(localizations.connectionError);
     } finally {
       if (mounted) {
         setState(() {
@@ -205,25 +212,28 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
 
   /// Mostra dialog di successo
   void _showSuccessDialog([String? numeroTicket]) {
+    final localizations = AppLocalizations.of(context);
+    if (localizations == null) return;
+    
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.check_circle, color: Colors.green, size: 28),
-            SizedBox(width: 12),
-            Expanded(child: Text('Richiesta inviata!', style: TextStyle(fontSize: 18))),
+            const Icon(Icons.check_circle, color: Colors.green, size: 28),
+            const SizedBox(width: 12),
+            Expanded(child: Text(localizations.requestSentSuccess, style: const TextStyle(fontSize: 18))),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'La tua richiesta di supporto è stata creata con successo.',
-              style: TextStyle(fontSize: 14),
+            Text(
+              localizations.supportRequestCreated,
+              style: const TextStyle(fontSize: 14),
             ),
             if (numeroTicket != null) ...[
               const SizedBox(height: 12),
@@ -242,9 +252,9 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Numero Ticket:',
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          Text(
+                            localizations.ticketNumber,
+                            style: const TextStyle(fontSize: 12, color: Colors.grey),
                           ),
                           Text(
                             numeroTicket,
@@ -262,9 +272,9 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
               ),
             ],
             const SizedBox(height: 12),
-            const Text(
-              'Un operatore ti contatterà al più presto per assisterti.',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            Text(
+              localizations.operatorWillContact,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
           ],
         ),
@@ -278,7 +288,7 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
               backgroundColor: Colors.green,
               foregroundColor: Colors.white,
             ),
-            child: const Text('OK'),
+            child: Text(localizations.ok),
           ),
         ],
       ),

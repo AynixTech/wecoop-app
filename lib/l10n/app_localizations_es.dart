@@ -16,7 +16,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get welcome =>
-      '¡Bienvenida a WECOOP! Explora eventos, servicios y proyectos cerca de ti.';
+      'Explora eventos, servicios y proyectos cerca de ti.';
 
   @override
   String get user => 'Usuario';

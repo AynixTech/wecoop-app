@@ -115,7 +115,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcome.
   ///
   /// In it, this message translates to:
-  /// **'Benvenuta su WECOOP! Esplora eventi, servizi e progetti vicino a te.'**
+  /// **'Esplora eventi, servizi e progetti vicino a te.'**
   String get welcome;
 
   /// No description provided for @user.

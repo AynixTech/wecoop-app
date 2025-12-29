@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/push_notification_service.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/screens/main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -93,10 +94,10 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                       const SizedBox(height: 24),
                       
                       // Titolo
-                      const Text(
-                        'Benvenuto!',
+                      Text(
+                        AppLocalizations.of(context)!.welcomeExclamation,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF2196F3),
@@ -105,7 +106,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                       const SizedBox(height: 8),
                       
                       Text(
-                        'Inserisci i tuoi dati per iniziare',
+                        AppLocalizations.of(context)!.enterYourDataToStart,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16,
@@ -118,7 +119,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                       TextFormField(
                         controller: _nomeController,
                         decoration: InputDecoration(
-                          labelText: 'Nome *',
+                          labelText: AppLocalizations.of(context)!.nameRequired,
                           hintText: 'Mario',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -127,11 +128,12 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                         ),
                         textCapitalization: TextCapitalization.words,
                         validator: (value) {
+                          final l10n = AppLocalizations.of(context)!;
                           if (value == null || value.trim().isEmpty) {
-                            return 'Il nome è obbligatorio';
+                            return l10n.nameIsMandatory;
                           }
                           if (value.trim().length < 2) {
-                            return 'Il nome deve avere almeno 2 caratteri';
+                            return l10n.nameMinLength;
                           }
                           return null;
                         },
@@ -142,7 +144,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                       TextFormField(
                         controller: _cognomeController,
                         decoration: InputDecoration(
-                          labelText: 'Cognome *',
+                          labelText: AppLocalizations.of(context)!.surnameRequired,
                           hintText: 'Rossi',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -151,11 +153,12 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                         ),
                         textCapitalization: TextCapitalization.words,
                         validator: (value) {
+                          final l10n = AppLocalizations.of(context)!;
                           if (value == null || value.trim().isEmpty) {
-                            return 'Il cognome è obbligatorio';
+                            return l10n.surnameIsMandatory;
                           }
                           if (value.trim().length < 2) {
-                            return 'Il cognome deve avere almeno 2 caratteri';
+                            return l10n.surnameMinLength;
                           }
                           return null;
                         },
@@ -172,7 +175,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                             child: DropdownButtonFormField<String>(
                               value: _prefixController.text,
                               decoration: InputDecoration(
-                                labelText: 'Pref. *',
+                                labelText: AppLocalizations.of(context)!.prefixRequired,
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -199,7 +202,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                             child: TextFormField(
                               controller: _telefonoController,
                               decoration: InputDecoration(
-                                labelText: 'Telefono *',
+                                labelText: AppLocalizations.of(context)!.phoneRequired,
                                 hintText: '3331234567',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -208,8 +211,9 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                               ),
                               keyboardType: TextInputType.phone,
                               validator: (value) {
+                                final l10n = AppLocalizations.of(context)!;
                                 if (value == null || value.trim().isEmpty) {
-                                  return 'Il telefono è obbligatorio';
+                                  return l10n.phoneIsMandatory;
                                 }
                                 
                                 // Rimuovi spazi e caratteri non numerici
@@ -218,12 +222,12 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                                 // Per +39 deve essere 10 cifre (333 123 4567)
                                 if (_prefixController.text == '+39') {
                                   if (cleanPhone.length != 10) {
-                                    return 'Deve essere 10 cifre (es: 3331234567)';
+                                    return l10n.phoneMust10Digits;
                                   }
                                 } else {
                                   // Altri prefissi: almeno 8 cifre
                                   if (cleanPhone.length < 8) {
-                                    return 'Numero telefono non valido';
+                                    return l10n.phoneInvalid;
                                   }
                                 }
                                 
@@ -256,8 +260,8 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                                   strokeWidth: 2,
                                 ),
                               )
-                            : const Text(
-                                'Continua',
+                            : Text(
+                                AppLocalizations.of(context)!.continue_,
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -283,8 +287,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
-                                'Dopo la registrazione, potrai accedere a tutti i servizi. '
-                                'Un operatore ti contatterà per completare l\'adesione come socio.',
+                                AppLocalizations.of(context)!.afterRegistrationInfo,
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: Colors.blue[900],
@@ -319,13 +322,13 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
           ),
         ],
       ),
-      child: const Row(
+      child: Row(
         children: [
-          Icon(Icons.info_outline, color: Colors.white, size: 24),
-          SizedBox(width: 12),
+          const Icon(Icons.info_outline, color: Colors.white, size: 24),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Completa i tuoi dati per accedere a tutti i servizi',
+              AppLocalizations.of(context)!.completeDataToAccessServices,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
@@ -645,7 +648,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
             // Mostra messaggio di benvenuto
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('🎉 Benvenuto! Accesso effettuato con successo'),
+                content: Text(AppLocalizations.of(context)!.welcomeSuccess),
                 backgroundColor: Colors.green,
                 duration: const Duration(seconds: 3),
               ),
@@ -742,13 +745,13 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.warning_amber, color: Colors.orange, size: 28),
-            SizedBox(width: 8),
+            const Icon(Icons.warning_amber, color: Colors.orange, size: 28),
+            const SizedBox(width: 8),
             Expanded(
               child: Text(
-                'Login Automatico Fallito',
+                AppLocalizations.of(context)!.autoLoginFailed,
                 style: TextStyle(fontSize: 16),
               ),
             ),
@@ -759,9 +762,9 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Registrazione completata, ma il login automatico è fallito.',
-                style: TextStyle(fontSize: 13),
+              Text(
+                AppLocalizations.of(context)!.registrationCompletedLoginFailed,
+                style: const TextStyle(fontSize: 13),
               ),
             const SizedBox(height: 12),
             Container(
@@ -770,13 +773,13 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                 color: Colors.blue[50],
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: Color(0xFF2196F3), size: 18),
-                  SizedBox(width: 8),
+                  const Icon(Icons.info_outline, color: Color(0xFF2196F3), size: 18),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Puoi effettuare il login manualmente.',
+                      AppLocalizations.of(context)!.canLoginManually,
                       style: TextStyle(fontSize: 11),
                     ),
                   ),
@@ -797,7 +800,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
               Navigator.of(context).pop();
               Navigator.of(context).pushReplacementNamed('/login');
             },
-            child: const Text('Vai al Login'),
+            child: Text(AppLocalizations.of(context)!.goToLogin),
           ),
           ElevatedButton(
             onPressed: () {
@@ -809,7 +812,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF2196F3),
             ),
-            child: const Text('Continua'),
+            child: Text(AppLocalizations.of(context)!.continue_),
           ),
         ],
       ),
@@ -822,13 +825,13 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.check_circle, color: Color(0xFF2196F3), size: 28),
-            SizedBox(width: 12),
+            const Icon(Icons.check_circle, color: Color(0xFF2196F3), size: 28),
+            const SizedBox(width: 12),
             Flexible(
               child: Text(
-                'Registrazione Completata!',
+                AppLocalizations.of(context)!.registrationCompleted,
                 style: TextStyle(fontSize: 18),
               ),
             ),
@@ -839,13 +842,13 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Account creato con successo!',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+              Text(
+                AppLocalizations.of(context)!.accountCreatedSuccess,
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 6),
-              const Text(
-                'Ecco le tue credenziali di accesso:',
+              Text(
+                AppLocalizations.of(context)!.yourLoginCredentials,
                 style: TextStyle(fontSize: 13, color: Colors.grey),
               ),
               const SizedBox(height: 12),
@@ -867,8 +870,8 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Username',
+                          Text(
+                            AppLocalizations.of(context)!.username,
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -910,8 +913,8 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Password',
+                          Text(
+                            AppLocalizations.of(context)!.password,
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -946,9 +949,9 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                 children: [
                   Icon(Icons.info_outline, color: Colors.orange[700], size: 18),
                   const SizedBox(width: 8),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Salva queste credenziali!',
+                      AppLocalizations.of(context)!.saveTheseCredentials,
                       style: TextStyle(fontSize: 11),
                     ),
                   ),
@@ -969,7 +972,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text('OK'),
+            child: Text(AppLocalizations.of(context)!.ok),
           ),
         ],
       ),
@@ -983,18 +986,18 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.error_outline, color: Colors.red, size: 32),
-            SizedBox(width: 12),
-            Text('Errore'),
+            const Icon(Icons.error_outline, color: Colors.red, size: 32),
+            const SizedBox(width: 12),
+            Text(AppLocalizations.of(context)!.error),
           ],
         ),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+            child: Text(AppLocalizations.of(context)!.ok),
           ),
         ],
       ),
@@ -1008,11 +1011,11 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.info_outline, color: Color(0xFF2196F3), size: 32),
-            SizedBox(width: 12),
-            Text('Numero già registrato'),
+            const Icon(Icons.info_outline, color: Color(0xFF2196F3), size: 32),
+            const SizedBox(width: 12),
+            Text(AppLocalizations.of(context)!.phoneAlreadyRegistered),
           ],
         ),
         content: Column(
@@ -1031,9 +1034,9 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                 children: [
                   const Icon(Icons.lightbulb_outline, color: Color(0xFF2196F3), size: 20),
                   const SizedBox(width: 8),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Hai già un account? Prova ad effettuare il login.',
+                      AppLocalizations.of(context)!.alreadyHaveAccount,
                       style: TextStyle(fontSize: 12),
                     ),
                   ),
@@ -1045,7 +1048,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Annulla'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -1055,7 +1058,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF2196F3),
             ),
-            child: const Text('Vai al Login'),
+            child: Text(AppLocalizations.of(context)!.goToLogin),
           ),
         ],
       ),

@@ -236,6 +236,253 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                   );
                 },
               ),
+              const SizedBox(height: 12),
+              _OptionCard(
+                title: l10n.translate('waitingEmployment'),
+                description: l10n.translate('waitingEmploymentDesc'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => RichiestaFormScreen(
+                            servizio: l10n.residencePermit,
+                            categoria: l10n.translate('waitingEmployment'),
+                            campi: [
+                              {
+                                'label': l10n.fullName,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.email,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.phone,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.dateOfBirth,
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.countryOfOrigin,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.translate('currentPermitType'),
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.translate('permitExpiryDate'),
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.additionalNotes,
+                                'type': 'textarea',
+                                'required': false,
+                              },
+                            ],
+                          ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              _OptionCard(
+                title: l10n.translate('familyReunificationPermit'),
+                description: l10n.translate('familyReunificationPermitDesc'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => RichiestaFormScreen(
+                            servizio: l10n.residencePermit,
+                            categoria: l10n.translate('familyReunificationPermit'),
+                            campi: [
+                              {
+                                'label': l10n.fullName,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.email,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.phone,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.dateOfBirth,
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.countryOfOrigin,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.relationshipWithFamily,
+                                'type': 'select',
+                                'options': [l10n.spouse, l10n.son, l10n.parent, l10n.other],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.familyNameInItaly,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.additionalNotes,
+                                'type': 'textarea',
+                                'required': false,
+                              },
+                            ],
+                          ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              _OptionCard(
+                title: l10n.translate('duplicatePermit'),
+                description: l10n.translate('duplicatePermitDesc'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => RichiestaFormScreen(
+                            servizio: l10n.residencePermit,
+                            categoria: l10n.translate('duplicatePermit'),
+                            campi: [
+                              {
+                                'label': l10n.fullName,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.email,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.phone,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.dateOfBirth,
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.countryOfOrigin,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.translate('currentPermitNumber'),
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.translate('reasonDuplicate'),
+                                'type': 'select',
+                                'options': [
+                                  l10n.translate('lost'),
+                                  l10n.translate('stolen'),
+                                  l10n.translate('damaged'),
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.additionalNotes,
+                                'type': 'textarea',
+                                'required': false,
+                              },
+                            ],
+                          ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              _OptionCard(
+                title: l10n.translate('longTermPermitUpdate'),
+                description: l10n.translate('longTermPermitUpdateDesc'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => RichiestaFormScreen(
+                            servizio: l10n.residencePermit,
+                            categoria: l10n.translate('longTermPermitUpdate'),
+                            campi: [
+                              {
+                                'label': l10n.fullName,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.email,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.phone,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.dateOfBirth,
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.countryOfOrigin,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.translate('currentPermitNumber'),
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.translate('permitIssueDate'),
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.translate('updateReason'),
+                                'type': 'textarea',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.additionalNotes,
+                                'type': 'textarea',
+                                'required': false,
+                              },
+                            ],
+                          ),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),

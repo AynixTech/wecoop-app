@@ -92,6 +92,31 @@ const Map<String, String> categoriaStandardMap = {
   'Residence Permit': 'residence_permit',
   'Permiso de Residencia': 'residence_permit',
   
+  // Permesso - Per studiare in Italia
+  'Per Studiare in Italia': 'study_italy',
+  'For Studying in Italy': 'study_italy',
+  'Para Estudiar en Italia': 'study_italy',
+  
+  // Permesso - Per attesa occupazione
+  'Per attesa occupazione': 'waiting_employment',
+  'Waiting Employment': 'waiting_employment',
+  'En espera de empleo': 'waiting_employment',
+  
+  // Permesso - Ricongiungimento
+  'Ricongiungimento': 'family_reunification_permit',
+  'Family Reunification Permit': 'family_reunification_permit',
+  'Reagrupación familiar': 'family_reunification_permit',
+  
+  // Permesso - Duplicato permesso di soggiorno
+  'Duplicato permesso di soggiorno': 'duplicate_permit',
+  'Duplicate Residence Permit': 'duplicate_permit',
+  'Duplicado permiso de residencia': 'duplicate_permit',
+  
+  // Permesso - Aggiornamento permesso lungo periodo
+  'Aggiornamento permesso lungo periodo': 'long_term_permit_update',
+  'Long-term Permit Update': 'long_term_permit_update',
+  'Actualización permiso largo período': 'long_term_permit_update',
+  
   // Sportello - Cittadinanza
   'Cittadinanza': 'citizenship',
   'Citizenship': 'citizenship',

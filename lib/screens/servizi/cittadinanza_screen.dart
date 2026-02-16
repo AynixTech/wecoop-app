@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'richiesta_form_screen.dart';
 
-class CittadinanzaScreen extends StatelessWidget {
+class CittadinanzaScreen extends StatefulWidget {
   const CittadinanzaScreen({super.key});
+
+  @override
+  State<CittadinanzaScreen> createState() => _CittadinanzaScreenState();
+}
+
+class _CittadinanzaScreenState extends State<CittadinanzaScreen> {
+  bool _showSecondQuestion = false;
 
   @override
   Widget build(BuildContext context) {
@@ -26,15 +33,28 @@ class CittadinanzaScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               ),
               const SizedBox(height: 24),
-              _QuestionCard(
-                question: 'Hai almeno 10 anni di residenza legale in Italia?',
-                onYes: () {
-                  _showNextStep(context, hasResidenza: true);
-                },
-                onNo: () {
-                  _showIneligibleDialog(context);
-                },
-              ),
+              if (!_showSecondQuestion)
+                _QuestionCard(
+                  question: 'Hai almeno 10 anni di residenza legale in Italia?',
+                  onYes: () {
+                    _showNextStep(context, hasResidenza: true);
+                  },
+                  onNo: () {
+                    setState(() {
+                      _showSecondQuestion = true;
+                    });
+                  },
+                )
+              else
+                _QuestionCard(
+                  question: 'Sei sposato/a con un cittadino italiano?',
+                  onYes: () {
+                    _showNextStep(context, hasResidenza: false);
+                  },
+                  onNo: () {
+                    _showNotEligibleMessage(context);
+                  },
+                ),
             ],
           ),
         ),
@@ -49,7 +69,7 @@ class CittadinanzaScreen extends StatelessWidget {
         builder:
             (context) => RichiestaFormScreen(
               servizio: 'Cittadinanza Italiana',
-              categoria: 'Per residenza',
+              categoria: hasResidenza ? 'Per residenza' : 'Per matrimonio',
               campi: const [
                 {'label': 'Nome completo', 'type': 'text', 'required': true},
                 {'label': 'Data di nascita', 'type': 'date', 'required': true},
@@ -99,25 +119,22 @@ class CittadinanzaScreen extends StatelessWidget {
     );
   }
 
-  void _showIneligibleDialog(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+  void _showNotEligibleMessage(BuildContext context) {
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
-            title: Text(l10n.requirementsNotMet),
-            content: Text(l10n.requirementsMessage),
+            title: const Text('Requisiti non soddisfatti'),
+            content: const Text(
+              'Al momento non risultano i requisiti necessari per avviare questa pratica. Ti contatteremo se emergono soluzioni alternative. Grazie per la preferenza!',
+            ),
             actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(l10n.understand),
-              ),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  // TODO: Apri chat o contatti
+                  Navigator.pop(context);
                 },
-                child: Text(l10n.contactUs),
+                child: const Text('Ho capito'),
               ),
             ],
           ),

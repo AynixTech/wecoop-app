@@ -49,6 +49,10 @@
 	<array>
 		<string>remote-notification</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Abbiamo bisogno di accedere alla fotocamera per scattare foto ai tuoi documenti</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Abbiamo bisogno di accedere alla galleria per selezionare i tuoi documenti</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 	<key>CFBundleURLTypes</key>

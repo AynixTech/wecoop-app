@@ -1,0 +1,258 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
+import '../models/documento.dart';
+
+class DocumentoService {
+  static const String _documentiKey = 'documenti_utente';
+
+  // Singleton
+  static final DocumentoService _instance = DocumentoService._internal();
+  factory DocumentoService() => _instance;
+  DocumentoService._internal();
+
+  // Cache locale
+  List<Documento>? _documenti;
+
+  // Ottiene tutti i documenti
+  Future<List<Documento>> getDocumenti() async {
+    if (_documenti != null) return _documenti!;
+
+    final prefs = await SharedPreferences.getInstance();
+    final String? documentiJson = prefs.getString(_documentiKey);
+
+    if (documentiJson == null || documentiJson.isEmpty) {
+      _documenti = [];
+      return _documenti!;
+    }
+
+    final List<dynamic> documentiList = jsonDecode(documentiJson);
+    _documenti = documentiList.map((json) => Documento.fromJson(json)).toList();
+    return _documenti!;
+  }
+
+  // Salva i documenti
+  Future<void> _saveDocumenti(List<Documento> documenti) async {
+    final prefs = await SharedPreferences.getInstance();
+    final String documentiJson = jsonEncode(
+      documenti.map((doc) => doc.toJson()).toList(),
+    );
+    await prefs.setString(_documentiKey, documentiJson);
+    _documenti = documenti;
+  }
+
+  // Ottiene un documento per tipo
+  Documento? getDocumentoByTipo(String tipo) {
+    if (_documenti == null) return null;
+    try {
+      return _documenti!.firstWhere((doc) => doc.tipo == tipo);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Verifica se un documento esiste
+  bool hasDocumento(String tipo) {
+    return getDocumentoByTipo(tipo) != null;
+  }
+
+  // Ottiene i documenti mancanti da una lista richiesta
+  List<String> getDocumentiMancanti(List<String> tipiRichiesti) {
+    return tipiRichiesti.where((tipo) => !hasDocumento(tipo)).toList();
+  }
+
+  // Verifica se ci sono documenti in scadenza (entro 30 giorni)
+  Future<List<Documento>> getDocumentiInScadenza() async {
+    final documenti = await getDocumenti();
+    return documenti.where((doc) => doc.staPerScadere).toList();
+  }
+
+  // Verifica se ci sono documenti scaduti
+  Future<List<Documento>> getDocumentiScaduti() async {
+    final documenti = await getDocumenti();
+    return documenti.where((doc) => doc.isScaduto).toList();
+  }
+
+  // Carica un nuovo documento da file
+  Future<Documento?> caricaDocumento({
+    required String tipo,
+    DateTime? dataScadenza,
+  }) async {
+    // Seleziona il file
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
+    );
+
+    if (result == null || result.files.single.path == null) {
+      return null;
+    }
+
+    final file = File(result.files.single.path!);
+    final fileName = result.files.single.name;
+
+    return _salvaDocumento(
+      file: file,
+      fileName: fileName,
+      tipo: tipo,
+      dataScadenza: dataScadenza,
+    );
+  }
+
+  // Carica un nuovo documento con la fotocamera
+  Future<Documento?> caricaDocumentoDaFotocamera({
+    required String tipo,
+    DateTime? dataScadenza,
+  }) async {
+    final ImagePicker picker = ImagePicker();
+    
+    // Scatta la foto
+    final XFile? photo = await picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 85,
+      maxWidth: 1920,
+      maxHeight: 1920,
+    );
+
+    if (photo == null) {
+      return null;
+    }
+
+    final file = File(photo.path);
+    final fileName = '${tipo}_foto_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+    return _salvaDocumento(
+      file: file,
+      fileName: fileName,
+      tipo: tipo,
+      dataScadenza: dataScadenza,
+    );
+  }
+
+  // Carica un nuovo documento dalla galleria
+  Future<Documento?> caricaDocumentoDaGalleria({
+    required String tipo,
+    DateTime? dataScadenza,
+  }) async {
+    final ImagePicker picker = ImagePicker();
+    
+    // Seleziona dalla galleria
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
+
+    if (image == null) {
+      return null;
+    }
+
+    final file = File(image.path);
+    final fileName = image.name;
+
+    return _salvaDocumento(
+      file: file,
+      fileName: fileName,
+      tipo: tipo,
+      dataScadenza: dataScadenza,
+    );
+  }
+
+  // Metodo privato per salvare il documento (usato da entrambi i metodi)
+  Future<Documento?> _salvaDocumento({
+    required File file,
+    required String fileName,
+    required String tipo,
+    DateTime? dataScadenza,
+  }) async {
+    // Copia il file nella directory dell'app
+    final appDir = await getApplicationDocumentsDirectory();
+    final documentiDir = Directory('${appDir.path}/documenti');
+    if (!await documentiDir.exists()) {
+      await documentiDir.create(recursive: true);
+    }
+
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final newFileName = '${tipo}_$timestamp${_getFileExtension(fileName)}';
+    final newPath = '${documentiDir.path}/$newFileName';
+    final savedFile = await file.copy(newPath);
+
+    // Crea il documento
+    final documento = Documento(
+      id: timestamp.toString(),
+      tipo: tipo,
+      filePath: savedFile.path,
+      fileName: fileName,
+      dataCaricamento: DateTime.now(),
+      dataScadenza: dataScadenza,
+    );
+
+    // Rimuove il documento precedente dello stesso tipo se esiste
+    await rimuoviDocumentoByTipo(tipo);
+
+    // Salva il nuovo documento
+    final documenti = await getDocumenti();
+    documenti.add(documento);
+    await _saveDocumenti(documenti);
+
+    return documento;
+  }
+
+  // Aggiorna un documento esistente
+  Future<bool> aggiornaDocumento({
+    required String tipo,
+    DateTime? dataScadenza,
+  }) async {
+    final nuovoDoc = await caricaDocumento(
+      tipo: tipo,
+      dataScadenza: dataScadenza,
+    );
+    return nuovoDoc != null;
+  }
+
+  // Rimuove un documento per tipo
+  Future<void> rimuoviDocumentoByTipo(String tipo) async {
+    final documenti = await getDocumenti();
+    final docDaRimuovere = documenti.where((doc) => doc.tipo == tipo).toList();
+
+    for (var doc in docDaRimuovere) {
+      // Elimina il file fisico
+      final file = File(doc.filePath);
+      if (await file.exists()) {
+        await file.delete();
+      }
+      // Rimuove dalla lista
+      documenti.remove(doc);
+    }
+
+    await _saveDocumenti(documenti);
+  }
+
+  // Rimuove un documento per ID
+  Future<void> rimuoviDocumento(String id) async {
+    final documenti = await getDocumenti();
+    final doc = documenti.firstWhere((d) => d.id == id);
+
+    // Elimina il file fisico
+    final file = File(doc.filePath);
+    if (await file.exists()) {
+      await file.delete();
+    }
+
+    // Rimuove dalla lista
+    documenti.removeWhere((d) => d.id == id);
+    await _saveDocumenti(documenti);
+  }
+
+  // Helper per ottenere l'estensione del file
+  String _getFileExtension(String fileName) {
+    return fileName.substring(fileName.lastIndexOf('.'));
+  }
+
+  // Invalida la cache
+  void invalidateCache() {
+    _documenti = null;
+  }
+}

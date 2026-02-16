@@ -3,8 +3,10 @@ import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import '../../models/post_model.dart';
 import '../../models/evento_model.dart';
+import '../../models/documento.dart';
 import '../../services/wordpress_service.dart';
 import '../../services/eventi_service.dart';
+import '../../services/documento_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../servizi/accoglienza_screen.dart';
 import '../servizi/mediazione_fiscale_screen.dart';
@@ -13,6 +15,7 @@ import '../servizi/orientamento_fiscale_screen.dart';
 import '../onboarding/first_access_screen.dart';
 import '../progetti/project_category_detail_screen.dart';
 import '../eventi/evento_detail_screen.dart';
+import '../profilo/documenti_screen.dart';
 import '../../widgets/language_selector.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -82,6 +85,10 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _GreetingSection(userName: userName),
               const SizedBox(height: 24),
+
+              // Avviso documenti in scadenza
+              if (isLoggedIn) const _DocumentiScadenzaSection(),
+              if (isLoggedIn) const SizedBox(height: 24),
 
               if (!isLoggedIn)
                 Card(
@@ -927,6 +934,191 @@ class _UpcomingEventsSectionState extends State<_UpcomingEventsSection> {
             );
           },
         ),
+      ],
+    );
+  }
+}
+
+// Sezione avviso documenti in scadenza
+class _DocumentiScadenzaSection extends StatefulWidget {
+  const _DocumentiScadenzaSection();
+
+  @override
+  State<_DocumentiScadenzaSection> createState() => _DocumentiScadenzaSectionState();
+}
+
+class _DocumentiScadenzaSectionState extends State<_DocumentiScadenzaSection> {
+  final DocumentoService _documentoService = DocumentoService();
+  List<Documento> _documentiInScadenza = [];
+  List<Documento> _documentiScaduti = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkDocumenti();
+  }
+
+  Future<void> _checkDocumenti() async {
+    final inScadenza = await _documentoService.getDocumentiInScadenza();
+    final scaduti = await _documentoService.getDocumentiScaduti();
+    
+    if (mounted) {
+      setState(() {
+        _documentiInScadenza = inScadenza;
+        _documentiScaduti = scaduti;
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const SizedBox.shrink();
+    }
+
+    if (_documentiScaduti.isEmpty && _documentiInScadenza.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      children: [
+        // Documenti scaduti (priorità alta)
+        if (_documentiScaduti.isNotEmpty)
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.red.shade50,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.red, width: 2),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.error, color: Colors.red.shade700),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        '⚠️ DOCUMENTI SCADUTI',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Hai ${_documentiScaduti.length} documento/i scaduto/i. Aggiornali subito!',
+                  style: const TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+                ..._documentiScaduti.map((doc) => Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    '• ${TipoDocumento.getDisplayName(doc.tipo)}',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const DocumentiScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.upload),
+                    label: const Text('Aggiorna documenti'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        
+        // Documenti in scadenza
+        if (_documentiInScadenza.isNotEmpty) ...[
+          if (_documentiScaduti.isNotEmpty) const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.orange.shade50,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.orange, width: 2),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.warning, color: Colors.orange.shade700),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        '📅 Documenti in scadenza',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Hai ${_documentiInScadenza.length} documento/i che scadono a breve:',
+                  style: const TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+                ..._documentiInScadenza.map((doc) {
+                  final giorniRimanenti = doc.dataScadenza!.difference(DateTime.now()).inDays;
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      '• ${TipoDocumento.getDisplayName(doc.tipo)} (tra $giorniRimanenti giorni)',
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                  );
+                }),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const DocumentiScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.visibility),
+                    label: const Text('Gestisci documenti'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.orange.shade700,
+                      side: BorderSide(color: Colors.orange.shade700),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }

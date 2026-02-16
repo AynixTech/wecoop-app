@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/app_localizations.dart';
+import '../../models/documento.dart';
 import 'richiesta_form_screen.dart';
 
 class PermessoSoggiornoScreen extends StatelessWidget {
@@ -70,6 +71,12 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                                 'required': false,
                               },
                             ],
+                            documentiRichiesti: const [
+                              TipoDocumento.permessoSoggiorno,
+                              TipoDocumento.passaporto,
+                              TipoDocumento.codiceFiscale,
+                              TipoDocumento.cartaIdentita,
+                            ],
                           ),
                     ),
                   );
@@ -119,6 +126,12 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                                 'type': 'textarea',
                                 'required': true,
                               },
+                            ],
+                            documentiRichiesti: const [
+                              TipoDocumento.permessoSoggiorno,
+                              TipoDocumento.passaporto,
+                              TipoDocumento.codiceFiscale,
+                              TipoDocumento.cartaIdentita,
                             ],
                           ),
                     ),
@@ -175,6 +188,12 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                                 'required': true,
                               },
                             ],
+                            documentiRichiesti: const [
+                              TipoDocumento.permessoSoggiorno,
+                              TipoDocumento.passaporto,
+                              TipoDocumento.codiceFiscale,
+                              TipoDocumento.cartaIdentita,
+                            ],
                           ),
                     ),
                   );
@@ -230,6 +249,12 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                                 'type': 'text',
                                 'required': true,
                               },
+                            ],
+                            documentiRichiesti: const [
+                              TipoDocumento.permessoSoggiorno,
+                              TipoDocumento.passaporto,
+                              TipoDocumento.codiceFiscale,
+                              TipoDocumento.cartaIdentita,
                             ],
                           ),
                     ),
@@ -290,6 +315,12 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                                 'required': false,
                               },
                             ],
+                            documentiRichiesti: const [
+                              TipoDocumento.permessoSoggiorno,
+                              TipoDocumento.passaporto,
+                              TipoDocumento.codiceFiscale,
+                              TipoDocumento.cartaIdentita,
+                            ],
                           ),
                     ),
                   );
@@ -349,6 +380,12 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                                 'type': 'textarea',
                                 'required': false,
                               },
+                            ],
+                            documentiRichiesti: const [
+                              TipoDocumento.permessoSoggiorno,
+                              TipoDocumento.passaporto,
+                              TipoDocumento.codiceFiscale,
+                              TipoDocumento.cartaIdentita,
                             ],
                           ),
                     ),
@@ -414,6 +451,12 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                                 'required': false,
                               },
                             ],
+                            documentiRichiesti: const [
+                              TipoDocumento.permessoSoggiorno,
+                              TipoDocumento.passaporto,
+                              TipoDocumento.codiceFiscale,
+                              TipoDocumento.cartaIdentita,
+                            ],
                           ),
                     ),
                   );
@@ -477,6 +520,12 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                                 'type': 'textarea',
                                 'required': false,
                               },
+                            ],
+                            documentiRichiesti: const [
+                              TipoDocumento.permessoSoggiorno,
+                              TipoDocumento.passaporto,
+                              TipoDocumento.codiceFiscale,
+                              TipoDocumento.cartaIdentita,
                             ],
                           ),
                     ),

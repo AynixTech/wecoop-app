@@ -3,6 +3,9 @@ import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/widgets/help_button_widget.dart';
 import '../../services/socio_service.dart';
+import '../../services/documento_service.dart';
+import '../../models/documento.dart';
+import '../profilo/documenti_screen.dart';
 import 'pagamento_screen.dart';
 
 /// Mappa dei codici ISO paese -> nome completo
@@ -205,12 +208,14 @@ class RichiestaFormScreen extends StatefulWidget {
   final String servizio;
   final String categoria;
   final List<Map<String, dynamic>> campi;
+  final List<String>? documentiRichiesti;
 
   const RichiestaFormScreen({
     super.key,
     required this.servizio,
     required this.categoria,
     required this.campi,
+    this.documentiRichiesti,
   });
 
   @override
@@ -222,13 +227,29 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   final Map<String, dynamic> _formData = {};
   final Map<String, TextEditingController> _controllers = {};
   final _storage = SecureStorageService();
+  final _documentoService = DocumentoService();
   bool _isSubmitting = false;
   bool _isLoading = true;
+  List<String> _documentiMancanti = [];
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
+    _checkDocumenti();
+  }
+
+  // Controlla quali documenti mancano
+  Future<void> _checkDocumenti() async {
+    if (widget.documentiRichiesti == null || widget.documentiRichiesti!.isEmpty) {
+      return;
+    }
+
+    await _documentoService.getDocumenti(); // Carica documenti
+    final mancanti = _documentoService.getDocumentiMancanti(widget.documentiRichiesti!);
+    setState(() {
+      _documentiMancanti = mancanti;
+    });
   }
 
   @override
@@ -478,6 +499,9 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                                 },
                               ),
                               const SizedBox(height: 16),
+                              // Sezione documenti richiesti
+                              if (widget.documentiRichiesti != null && widget.documentiRichiesti!.isNotEmpty)
+                                _buildDocumentiRichiestiSection(),
                               ...widget.campi.map(
                                 (campo) => _buildField(campo),
                               ),
@@ -756,6 +780,15 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       return;
     }
 
+    // Controlla se ci sono documenti mancanti
+    if (widget.documentiRichiesti != null && widget.documentiRichiesti!.isNotEmpty) {
+      await _checkDocumenti();
+      if (_documentiMancanti.isNotEmpty) {
+        _showDocumentiMancantiDialog();
+        return;
+      }
+    }
+
     // Non serve più save() perché usiamo onChanged
     // Aggiungi i valori dei controller che potrebbero non essere in _formData
     for (var entry in _controllers.entries) {
@@ -935,5 +968,161 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
             ),
       );
     }
+  }
+
+  // Costruisce la sezione documenti richiesti
+  Widget _buildDocumentiRichiestiSection() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _documentiMancanti.isEmpty ? Colors.green.shade50 : Colors.orange.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: _documentiMancanti.isEmpty ? Colors.green : Colors.orange,
+          width: 2,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                _documentiMancanti.isEmpty ? Icons.check_circle : Icons.upload_file,
+                color: _documentiMancanti.isEmpty ? Colors.green : Colors.orange,
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'DOCUMENTI RICHIESTI',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...widget.documentiRichiesti!.map((tipo) {
+            final haDocumento = !_documentiMancanti.contains(tipo);
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  Icon(
+                    haDocumento ? Icons.check_circle : Icons.cancel,
+                    color: haDocumento ? Colors.green : Colors.red,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      TipoDocumento.getDisplayName(tipo),
+                      style: TextStyle(
+                        fontSize: 14,
+                        decoration: haDocumento ? TextDecoration.lineThrough : null,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+          if (_documentiMancanti.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DocumentiScreen(),
+                    ),
+                  );
+                  await _checkDocumenti();
+                },
+                icon: const Icon(Icons.upload),
+                label: const Text('Carica documenti mancanti'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  // Mostra dialog per documenti mancanti
+  void _showDocumentiMancantiDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('📄 Documenti mancanti'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Per procedere con questa richiesta devi caricare i seguenti documenti:',
+            ),
+            const SizedBox(height: 16),
+            ..._documentiMancanti.map(
+              (tipo) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    const Icon(Icons.upload_file, color: Colors.orange),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        TipoDocumento.getDisplayName(tipo),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'I dati del form verranno conservati.',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annulla'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () async {
+              Navigator.pop(context);
+              // Naviga allo screen documenti
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const DocumentiScreen(),
+                ),
+              );
+              // Ricontrolla i documenti al ritorno
+              await _checkDocumenti();
+            },
+            icon: const Icon(Icons.upload),
+            label: const Text('Carica documenti'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

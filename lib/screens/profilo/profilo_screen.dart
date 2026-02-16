@@ -10,6 +10,7 @@ import '../../services/push_notification_service.dart';
 import '../../models/evento_model.dart';
 import '../eventi/evento_detail_screen.dart';
 import 'completa_profilo_screen.dart';
+import 'documenti_screen.dart';
 
 final storage = SecureStorageService();
 
@@ -399,6 +400,78 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                       textAlign: TextAlign.center,
                     ),
                   ],
+                ),
+              ),
+            ),
+
+            const Divider(height: 32, thickness: 1),
+
+            // Sezione I miei documenti
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DocumentiScreen(),
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.folder_outlined,
+                            color: Color(0xFF4CAF50),
+                            size: 24,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'I miei documenti',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Gestisci i tuoi documenti personali',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: Colors.grey.shade600,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: Color(0xFF4CAF50),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Vai alla sezione documenti',
+                            style: TextStyle(
+                              color: const Color(0xFF4CAF50),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

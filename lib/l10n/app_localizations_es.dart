@@ -367,79 +367,77 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get taxGuidanceAndClarifications =>
-      'Orientamento e chiarimenti fiscali';
+      'Orientación y Aclaraciones Fiscales';
 
   @override
-  String get familyReunification => 'Ricongiungimento familiare';
+  String get familyReunification => 'Reagrupación Familiar';
 
   @override
   String get familyReunificationDesc =>
-      'Richiesta di ricongiungimento con familiari (coniuge, figli, genitori)';
+      'Solicitud de reagrupación con familiares (cónyuge, hijos, padres)';
 
   @override
-  String get selectFamilyMember => 'Seleziona il familiare da ricongiungere';
+  String get selectFamilyMember => 'Selecciona el familiar a reagrupar';
 
   @override
-  String get spouse => 'Coniuge';
+  String get spouse => 'Cónyuge';
 
   @override
-  String get spouseDesc => 'Ricongiungimento con il/la coniuge';
+  String get spouseDesc => 'Reagrupación con el/la cónyuge';
 
   @override
-  String get minorChildren => 'Figli minori';
+  String get minorChildren => 'Hijos menores';
 
   @override
-  String get minorChildrenDesc =>
-      'Ricongiungimento con figli minori di 18 anni';
+  String get minorChildrenDesc => 'Reagrupación con hijos menores de 18 años';
 
   @override
-  String get dependentParents => 'Genitori a carico';
+  String get dependentParents => 'Padres a cargo';
 
   @override
-  String get dependentParentsDesc =>
-      'Ricongiungimento con genitori anziani a carico';
+  String get dependentParentsDesc => 'Reagrupación con padres ancianos a cargo';
 
   @override
-  String get spouseFullName => 'Nome completo del coniuge';
+  String get spouseFullName => 'Nombre completo del cónyuge';
 
   @override
-  String get spouseDateOfBirth => 'Data di nascita del coniuge';
+  String get spouseDateOfBirth => 'Fecha de nacimiento del cónyuge';
 
   @override
-  String get marriageDate => 'Data di matrimonio';
+  String get marriageDate => 'Fecha de matrimonio';
 
   @override
-  String get marriageCountry => 'Paese del matrimonio';
+  String get marriageCountry => 'País de matrimonio';
 
   @override
-  String get currentResidence => 'Residenza attuale';
+  String get currentResidence => 'Residencia actual';
 
   @override
-  String get incomeProof => 'Hai prova di reddito sufficiente?';
+  String get incomeProof => '¿Tienes prueba de ingresos suficientes?';
 
   @override
-  String get childFullName => 'Nome completo del figlio/a';
+  String get childFullName => 'Nombre completo del hijo/a';
 
   @override
-  String get childDateOfBirth => 'Data di nascita del figlio/a';
+  String get childDateOfBirth => 'Fecha de nacimiento del hijo/a';
 
   @override
-  String get relationshipType => 'Tipo di rapporto';
+  String get relationshipType => 'Tipo de relación';
 
   @override
-  String get biologicalChild => 'Figlio biologico';
+  String get biologicalChild => 'Hijo biológico';
 
   @override
-  String get adoptedChild => 'Figlio adottato';
+  String get adoptedChild => 'Hijo adoptado';
 
   @override
-  String get parentFullName => 'Nome completo del genitore';
+  String get parentFullName => 'Nombre completo del padre/madre';
 
   @override
-  String get parentDateOfBirth => 'Data di nascita del genitore';
+  String get parentDateOfBirth => 'Fecha de nacimiento del padre/madre';
 
   @override
-  String get parentRelationship => 'Rapporto di parentela';
+  String get parentRelationship => 'Relación parental';
 
   @override
   String get father => 'Padre';
@@ -448,7 +446,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mother => 'Madre';
 
   @override
-  String get dependencyProof => 'Hai prova di dipendenza economica?';
+  String get dependencyProof => '¿Tienes prueba de dependencia económica?';
 
   @override
   String get residencePermit => 'Permiso de Residencia';
@@ -767,48 +765,48 @@ class AppLocalizationsEs extends AppLocalizations {
   String get chatbotMigrantsService => 'Servicios para Migrantes';
 
   @override
-  String get taxesAndContributions => 'Tasse e Contributi';
+  String get taxesAndContributions => 'Impuestos y Contribuciones';
 
   @override
   String get taxesAndContributionsDesc =>
-      'Orientamento su IMU, TARI, TASI, imposte sul reddito e contributi';
+      'Orientación sobre IMU, TARI, TASI, impuestos sobre la renta y contribuciones';
 
   @override
-  String get clarificationsAndConsulting => 'Chiarimenti e Consulenza';
+  String get clarificationsAndConsulting => 'Aclaraciones y Consultoría';
 
   @override
   String get clarificationsAndConsultingDesc =>
-      'Consulenza fiscale su detrazioni, rimborsi IVA e regimi fiscali';
+      'Consultoría fiscal sobre deducciones, devoluciones de IVA y regímenes fiscales';
 
   @override
-  String get selectServiceCategory => 'Seleziona la categoria di servizio';
+  String get selectServiceCategory => 'Selecciona la categoría de servicio';
 
   @override
-  String get taxType => 'Tipo di tassa/contributo';
+  String get taxType => 'Tipo de impuesto/contribución';
 
   @override
-  String get incomeTax => 'Imposta sul reddito';
+  String get incomeTax => 'Impuesto sobre la renta';
 
   @override
-  String get requestDescription => 'Descrizione della richiesta';
+  String get requestDescription => 'Descripción de la solicitud';
 
   @override
-  String get consultingTopic => 'Argomento della consulenza';
+  String get consultingTopic => 'Tema de consultoría';
 
   @override
-  String get taxDeduction => 'Detrazioni fiscali';
+  String get taxDeduction => 'Deducciones fiscales';
 
   @override
-  String get vatRefund => 'Rimborso IVA';
+  String get vatRefund => 'Devolución de IVA';
 
   @override
-  String get fiscalRegime => 'Regime fiscale';
+  String get fiscalRegime => 'Régimen fiscal';
 
   @override
-  String get taxDeclaration => 'Dichiarazione dei redditi';
+  String get taxDeclaration => 'Declaración de impuestos';
 
   @override
-  String get questionDetail => 'Dettaglio della domanda';
+  String get questionDetail => 'Detalle de la pregunta';
 
   @override
   String get chatbotWelcomeDetail =>

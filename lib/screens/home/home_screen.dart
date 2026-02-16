@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../servizi/accoglienza_screen.dart';
 import '../servizi/mediazione_fiscale_screen.dart';
 import '../servizi/supporto_contabile_screen.dart';
+import '../servizi/orientamento_fiscale_screen.dart';
 import '../onboarding/first_access_screen.dart';
 import '../progetti/project_category_detail_screen.dart';
 import '../eventi/evento_detail_screen.dart';
@@ -568,6 +569,26 @@ class _ServicesSection extends StatelessWidget {
               MaterialPageRoute(
                 builder: (context) => isLoggedIn 
                   ? const SupportoContabileScreen()
+                  : const FirstAccessScreen(),
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 12),
+        _ServiceButton(
+          title: l10n.translate('taxGuidanceAndClarifications'),
+          imagePath: 'assets/images/home/orientamento.jpg',
+          onTap: () async {
+            final storage = SecureStorageService();
+            final token = await storage.read(key: 'jwt_token');
+            final isLoggedIn = token != null && token.isNotEmpty;
+            
+            if (!context.mounted) return;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => isLoggedIn 
+                  ? const OrientamentoFiscaleScreen()
                   : const FirstAccessScreen(),
               ),
             );

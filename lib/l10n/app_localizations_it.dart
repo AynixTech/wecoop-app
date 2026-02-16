@@ -129,7 +129,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get taxMediationService => 'Mediazione fiscale';
 
   @override
-  String get accountingService => 'Supporto contabile';
+  String get accountingService => 'Supporto contabile per P.IVA forfettaria';
 
   @override
   String get seeAll => 'Vedi tutti';
@@ -357,13 +357,98 @@ class AppLocalizationsIt extends AppLocalizations {
   String get startRequest => 'Inizia la richiesta';
 
   @override
-  String get touristVisaRequest => 'Richiesta Visa per Turismo';
+  String get touristVisaRequest => 'Richiesta Visto per Turismo';
 
   @override
   String get taxMediation => 'Mediazione Fiscale';
 
   @override
-  String get accountingSupport => 'Supporto Contabile';
+  String get accountingSupport => 'Supporto contabile per P.IVA forfettaria';
+
+  @override
+  String get taxGuidanceAndClarifications =>
+      'Orientamento e chiarimenti fiscali';
+
+  @override
+  String get familyReunification => 'Ricongiungimento familiare';
+
+  @override
+  String get familyReunificationDesc =>
+      'Richiesta di ricongiungimento con familiari (coniuge, figli, genitori)';
+
+  @override
+  String get selectFamilyMember => 'Seleziona il familiare da ricongiungere';
+
+  @override
+  String get spouse => 'Coniuge';
+
+  @override
+  String get spouseDesc => 'Ricongiungimento con il/la coniuge';
+
+  @override
+  String get minorChildren => 'Figli minori';
+
+  @override
+  String get minorChildrenDesc =>
+      'Ricongiungimento con figli minori di 18 anni';
+
+  @override
+  String get dependentParents => 'Genitori a carico';
+
+  @override
+  String get dependentParentsDesc =>
+      'Ricongiungimento con genitori anziani a carico';
+
+  @override
+  String get spouseFullName => 'Nome completo del coniuge';
+
+  @override
+  String get spouseDateOfBirth => 'Data di nascita del coniuge';
+
+  @override
+  String get marriageDate => 'Data di matrimonio';
+
+  @override
+  String get marriageCountry => 'Paese del matrimonio';
+
+  @override
+  String get currentResidence => 'Residenza attuale';
+
+  @override
+  String get incomeProof => 'Hai prova di reddito sufficiente?';
+
+  @override
+  String get childFullName => 'Nome completo del figlio/a';
+
+  @override
+  String get childDateOfBirth => 'Data di nascita del figlio/a';
+
+  @override
+  String get relationshipType => 'Tipo di rapporto';
+
+  @override
+  String get biologicalChild => 'Figlio biologico';
+
+  @override
+  String get adoptedChild => 'Figlio adottato';
+
+  @override
+  String get parentFullName => 'Nome completo del genitore';
+
+  @override
+  String get parentDateOfBirth => 'Data di nascita del genitore';
+
+  @override
+  String get parentRelationship => 'Rapporto di parentela';
+
+  @override
+  String get father => 'Padre';
+
+  @override
+  String get mother => 'Madre';
+
+  @override
+  String get dependencyProof => 'Hai prova di dipendenza economica?';
 
   @override
   String get residencePermit => 'Permesso di Soggiorno';
@@ -378,14 +463,14 @@ class AppLocalizationsIt extends AppLocalizations {
   String get selectFiscalService => 'Seleziona il servizio fiscale';
 
   @override
-  String get tax730Declaration => '730 - Dichiarazione dei Redditi';
+  String get tax730Declaration => '730 per dipendenti e pensionati';
 
   @override
   String get tax730Description =>
       'Compilazione modello 730 per dipendenti e pensionati';
 
   @override
-  String get individualPerson => 'Persona Fisica';
+  String get individualPerson => 'Modello Persona Fisica (ex Unico)';
 
   @override
   String get individualPersonDescription =>
@@ -611,7 +696,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get chatbotServicesResponse =>
-      'Offriamo diversi servizi:\n\n• Accoglienza e Orientamento\n• Mediazione Fiscale\n• Supporto Contabile\n• Servizi per Migranti\n\nQuale ti interessa?';
+      'Offriamo diversi servizi:\n\n• Vivere in Italia\n• Mediazione Fiscale\n• Supporto contabile per P.IVA forfettaria\n• Servizi per Migranti\n\nQuale ti interessa?';
 
   @override
   String get chatbotProjectsResponse =>
@@ -631,7 +716,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get chatbotTaxResponse =>
-      'Ti serve aiuto con il 730 o altri servizi fiscali?\n\nOffriamo:\n• Dichiarazione 730\n• Consulenza fiscale\n• Supporto contabile';
+      'Ti serve aiuto con il 730 o altri servizi fiscali?\n\nOffriamo:\n• Dichiarazione 730\n• Consulenza fiscale\n• Supporto contabile per P.IVA forfettaria';
 
   @override
   String get chatbotAppointmentResponse =>
@@ -673,13 +758,57 @@ class AppLocalizationsIt extends AppLocalizations {
   String get chatbotMigrantsBtn => 'Servizi Migranti';
 
   @override
-  String get chatbotWelcomeService => 'Accoglienza e Orientamento';
+  String get chatbotWelcomeService => 'Vivere in Italia';
 
   @override
   String get chatbotFiscalService => 'Mediazione Fiscale';
 
   @override
   String get chatbotMigrantsService => 'Servizi per Migranti';
+
+  @override
+  String get taxesAndContributions => 'Tasse e Contributi';
+
+  @override
+  String get taxesAndContributionsDesc =>
+      'Orientamento su IMU, TARI, TASI, imposte sul reddito e contributi';
+
+  @override
+  String get clarificationsAndConsulting => 'Chiarimenti e Consulenza';
+
+  @override
+  String get clarificationsAndConsultingDesc =>
+      'Consulenza fiscale su detrazioni, rimborsi IVA e regimi fiscali';
+
+  @override
+  String get selectServiceCategory => 'Seleziona la categoria di servizio';
+
+  @override
+  String get taxType => 'Tipo di tassa/contributo';
+
+  @override
+  String get incomeTax => 'Imposta sul reddito';
+
+  @override
+  String get requestDescription => 'Descrizione della richiesta';
+
+  @override
+  String get consultingTopic => 'Argomento della consulenza';
+
+  @override
+  String get taxDeduction => 'Detrazioni fiscali';
+
+  @override
+  String get vatRefund => 'Rimborso IVA';
+
+  @override
+  String get fiscalRegime => 'Regime fiscale';
+
+  @override
+  String get taxDeclaration => 'Dichiarazione dei redditi';
+
+  @override
+  String get questionDetail => 'Dettaglio della domanda';
 
   @override
   String get chatbotWelcomeDetail =>

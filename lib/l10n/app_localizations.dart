@@ -343,7 +343,7 @@ abstract class AppLocalizations {
   /// No description provided for @accountingService.
   ///
   /// In it, this message translates to:
-  /// **'Supporto contabile'**
+  /// **'Supporto contabile per P.IVA forfettaria'**
   String get accountingService;
 
   /// No description provided for @seeAll.
@@ -781,7 +781,7 @@ abstract class AppLocalizations {
   /// No description provided for @touristVisaRequest.
   ///
   /// In it, this message translates to:
-  /// **'Richiesta Visa per Turismo'**
+  /// **'Richiesta Visto per Turismo'**
   String get touristVisaRequest;
 
   /// No description provided for @taxMediation.
@@ -793,8 +793,170 @@ abstract class AppLocalizations {
   /// No description provided for @accountingSupport.
   ///
   /// In it, this message translates to:
-  /// **'Supporto Contabile'**
+  /// **'Supporto contabile per P.IVA forfettaria'**
   String get accountingSupport;
+
+  /// No description provided for @taxGuidanceAndClarifications.
+  ///
+  /// In it, this message translates to:
+  /// **'Orientamento e chiarimenti fiscali'**
+  String get taxGuidanceAndClarifications;
+
+  /// No description provided for @familyReunification.
+  ///
+  /// In it, this message translates to:
+  /// **'Ricongiungimento familiare'**
+  String get familyReunification;
+
+  /// No description provided for @familyReunificationDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Richiesta di ricongiungimento con familiari (coniuge, figli, genitori)'**
+  String get familyReunificationDesc;
+
+  /// No description provided for @selectFamilyMember.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona il familiare da ricongiungere'**
+  String get selectFamilyMember;
+
+  /// No description provided for @spouse.
+  ///
+  /// In it, this message translates to:
+  /// **'Coniuge'**
+  String get spouse;
+
+  /// No description provided for @spouseDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Ricongiungimento con il/la coniuge'**
+  String get spouseDesc;
+
+  /// No description provided for @minorChildren.
+  ///
+  /// In it, this message translates to:
+  /// **'Figli minori'**
+  String get minorChildren;
+
+  /// No description provided for @minorChildrenDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Ricongiungimento con figli minori di 18 anni'**
+  String get minorChildrenDesc;
+
+  /// No description provided for @dependentParents.
+  ///
+  /// In it, this message translates to:
+  /// **'Genitori a carico'**
+  String get dependentParents;
+
+  /// No description provided for @dependentParentsDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Ricongiungimento con genitori anziani a carico'**
+  String get dependentParentsDesc;
+
+  /// No description provided for @spouseFullName.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome completo del coniuge'**
+  String get spouseFullName;
+
+  /// No description provided for @spouseDateOfBirth.
+  ///
+  /// In it, this message translates to:
+  /// **'Data di nascita del coniuge'**
+  String get spouseDateOfBirth;
+
+  /// No description provided for @marriageDate.
+  ///
+  /// In it, this message translates to:
+  /// **'Data di matrimonio'**
+  String get marriageDate;
+
+  /// No description provided for @marriageCountry.
+  ///
+  /// In it, this message translates to:
+  /// **'Paese del matrimonio'**
+  String get marriageCountry;
+
+  /// No description provided for @currentResidence.
+  ///
+  /// In it, this message translates to:
+  /// **'Residenza attuale'**
+  String get currentResidence;
+
+  /// No description provided for @incomeProof.
+  ///
+  /// In it, this message translates to:
+  /// **'Hai prova di reddito sufficiente?'**
+  String get incomeProof;
+
+  /// No description provided for @childFullName.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome completo del figlio/a'**
+  String get childFullName;
+
+  /// No description provided for @childDateOfBirth.
+  ///
+  /// In it, this message translates to:
+  /// **'Data di nascita del figlio/a'**
+  String get childDateOfBirth;
+
+  /// No description provided for @relationshipType.
+  ///
+  /// In it, this message translates to:
+  /// **'Tipo di rapporto'**
+  String get relationshipType;
+
+  /// No description provided for @biologicalChild.
+  ///
+  /// In it, this message translates to:
+  /// **'Figlio biologico'**
+  String get biologicalChild;
+
+  /// No description provided for @adoptedChild.
+  ///
+  /// In it, this message translates to:
+  /// **'Figlio adottato'**
+  String get adoptedChild;
+
+  /// No description provided for @parentFullName.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome completo del genitore'**
+  String get parentFullName;
+
+  /// No description provided for @parentDateOfBirth.
+  ///
+  /// In it, this message translates to:
+  /// **'Data di nascita del genitore'**
+  String get parentDateOfBirth;
+
+  /// No description provided for @parentRelationship.
+  ///
+  /// In it, this message translates to:
+  /// **'Rapporto di parentela'**
+  String get parentRelationship;
+
+  /// No description provided for @father.
+  ///
+  /// In it, this message translates to:
+  /// **'Padre'**
+  String get father;
+
+  /// No description provided for @mother.
+  ///
+  /// In it, this message translates to:
+  /// **'Madre'**
+  String get mother;
+
+  /// No description provided for @dependencyProof.
+  ///
+  /// In it, this message translates to:
+  /// **'Hai prova di dipendenza economica?'**
+  String get dependencyProof;
 
   /// No description provided for @residencePermit.
   ///
@@ -823,7 +985,7 @@ abstract class AppLocalizations {
   /// No description provided for @tax730Declaration.
   ///
   /// In it, this message translates to:
-  /// **'730 - Dichiarazione dei Redditi'**
+  /// **'730 per dipendenti e pensionati'**
   String get tax730Declaration;
 
   /// No description provided for @tax730Description.
@@ -835,7 +997,7 @@ abstract class AppLocalizations {
   /// No description provided for @individualPerson.
   ///
   /// In it, this message translates to:
-  /// **'Persona Fisica'**
+  /// **'Modello Persona Fisica (ex Unico)'**
   String get individualPerson;
 
   /// No description provided for @individualPersonDescription.
@@ -1249,7 +1411,7 @@ abstract class AppLocalizations {
   /// No description provided for @chatbotServicesResponse.
   ///
   /// In it, this message translates to:
-  /// **'Offriamo diversi servizi:\n\n• Accoglienza e Orientamento\n• Mediazione Fiscale\n• Supporto Contabile\n• Servizi per Migranti\n\nQuale ti interessa?'**
+  /// **'Offriamo diversi servizi:\n\n• Vivere in Italia\n• Mediazione Fiscale\n• Supporto contabile per P.IVA forfettaria\n• Servizi per Migranti\n\nQuale ti interessa?'**
   String get chatbotServicesResponse;
 
   /// No description provided for @chatbotProjectsResponse.
@@ -1279,7 +1441,7 @@ abstract class AppLocalizations {
   /// No description provided for @chatbotTaxResponse.
   ///
   /// In it, this message translates to:
-  /// **'Ti serve aiuto con il 730 o altri servizi fiscali?\n\nOffriamo:\n• Dichiarazione 730\n• Consulenza fiscale\n• Supporto contabile'**
+  /// **'Ti serve aiuto con il 730 o altri servizi fiscali?\n\nOffriamo:\n• Dichiarazione 730\n• Consulenza fiscale\n• Supporto contabile per P.IVA forfettaria'**
   String get chatbotTaxResponse;
 
   /// No description provided for @chatbotAppointmentResponse.
@@ -1357,7 +1519,7 @@ abstract class AppLocalizations {
   /// No description provided for @chatbotWelcomeService.
   ///
   /// In it, this message translates to:
-  /// **'Accoglienza e Orientamento'**
+  /// **'Vivere in Italia'**
   String get chatbotWelcomeService;
 
   /// No description provided for @chatbotFiscalService.
@@ -1371,6 +1533,90 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Servizi per Migranti'**
   String get chatbotMigrantsService;
+
+  /// No description provided for @taxesAndContributions.
+  ///
+  /// In it, this message translates to:
+  /// **'Tasse e Contributi'**
+  String get taxesAndContributions;
+
+  /// No description provided for @taxesAndContributionsDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Orientamento su IMU, TARI, TASI, imposte sul reddito e contributi'**
+  String get taxesAndContributionsDesc;
+
+  /// No description provided for @clarificationsAndConsulting.
+  ///
+  /// In it, this message translates to:
+  /// **'Chiarimenti e Consulenza'**
+  String get clarificationsAndConsulting;
+
+  /// No description provided for @clarificationsAndConsultingDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Consulenza fiscale su detrazioni, rimborsi IVA e regimi fiscali'**
+  String get clarificationsAndConsultingDesc;
+
+  /// No description provided for @selectServiceCategory.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona la categoria di servizio'**
+  String get selectServiceCategory;
+
+  /// No description provided for @taxType.
+  ///
+  /// In it, this message translates to:
+  /// **'Tipo di tassa/contributo'**
+  String get taxType;
+
+  /// No description provided for @incomeTax.
+  ///
+  /// In it, this message translates to:
+  /// **'Imposta sul reddito'**
+  String get incomeTax;
+
+  /// No description provided for @requestDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Descrizione della richiesta'**
+  String get requestDescription;
+
+  /// No description provided for @consultingTopic.
+  ///
+  /// In it, this message translates to:
+  /// **'Argomento della consulenza'**
+  String get consultingTopic;
+
+  /// No description provided for @taxDeduction.
+  ///
+  /// In it, this message translates to:
+  /// **'Detrazioni fiscali'**
+  String get taxDeduction;
+
+  /// No description provided for @vatRefund.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimborso IVA'**
+  String get vatRefund;
+
+  /// No description provided for @fiscalRegime.
+  ///
+  /// In it, this message translates to:
+  /// **'Regime fiscale'**
+  String get fiscalRegime;
+
+  /// No description provided for @taxDeclaration.
+  ///
+  /// In it, this message translates to:
+  /// **'Dichiarazione dei redditi'**
+  String get taxDeclaration;
+
+  /// No description provided for @questionDetail.
+  ///
+  /// In it, this message translates to:
+  /// **'Dettaglio della domanda'**
+  String get questionDetail;
 
   /// No description provided for @chatbotWelcomeDetail.
   ///

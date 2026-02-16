@@ -242,7 +242,7 @@ Future<void> richiesta730(BuildContext context) async {
 // ============================================
 Future<void> aprirePartitaIva(BuildContext context) async {
   final result = await SocioService.inviaRichiestaServizio(
-    servizio: 'Supporto Contabile',
+    servizio: 'Supporto contabile per P.IVA forfettaria',
     categoria: 'Aprire Partita IVA',
     dati: {
       'nome_completo': 'Mario Rossi',

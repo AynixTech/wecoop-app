@@ -366,6 +366,91 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountingSupport => 'Accounting Support';
 
   @override
+  String get taxGuidanceAndClarifications =>
+      'Orientamento e chiarimenti fiscali';
+
+  @override
+  String get familyReunification => 'Ricongiungimento familiare';
+
+  @override
+  String get familyReunificationDesc =>
+      'Richiesta di ricongiungimento con familiari (coniuge, figli, genitori)';
+
+  @override
+  String get selectFamilyMember => 'Seleziona il familiare da ricongiungere';
+
+  @override
+  String get spouse => 'Coniuge';
+
+  @override
+  String get spouseDesc => 'Ricongiungimento con il/la coniuge';
+
+  @override
+  String get minorChildren => 'Figli minori';
+
+  @override
+  String get minorChildrenDesc =>
+      'Ricongiungimento con figli minori di 18 anni';
+
+  @override
+  String get dependentParents => 'Genitori a carico';
+
+  @override
+  String get dependentParentsDesc =>
+      'Ricongiungimento con genitori anziani a carico';
+
+  @override
+  String get spouseFullName => 'Nome completo del coniuge';
+
+  @override
+  String get spouseDateOfBirth => 'Data di nascita del coniuge';
+
+  @override
+  String get marriageDate => 'Data di matrimonio';
+
+  @override
+  String get marriageCountry => 'Paese del matrimonio';
+
+  @override
+  String get currentResidence => 'Residenza attuale';
+
+  @override
+  String get incomeProof => 'Hai prova di reddito sufficiente?';
+
+  @override
+  String get childFullName => 'Nome completo del figlio/a';
+
+  @override
+  String get childDateOfBirth => 'Data di nascita del figlio/a';
+
+  @override
+  String get relationshipType => 'Tipo di rapporto';
+
+  @override
+  String get biologicalChild => 'Figlio biologico';
+
+  @override
+  String get adoptedChild => 'Figlio adottato';
+
+  @override
+  String get parentFullName => 'Nome completo del genitore';
+
+  @override
+  String get parentDateOfBirth => 'Data di nascita del genitore';
+
+  @override
+  String get parentRelationship => 'Rapporto di parentela';
+
+  @override
+  String get father => 'Padre';
+
+  @override
+  String get mother => 'Madre';
+
+  @override
+  String get dependencyProof => 'Hai prova di dipendenza economica?';
+
+  @override
   String get residencePermit => 'Residence Permit';
 
   @override
@@ -678,6 +763,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chatbotMigrantsService => 'Migrant Services';
+
+  @override
+  String get taxesAndContributions => 'Tasse e Contributi';
+
+  @override
+  String get taxesAndContributionsDesc =>
+      'Orientamento su IMU, TARI, TASI, imposte sul reddito e contributi';
+
+  @override
+  String get clarificationsAndConsulting => 'Chiarimenti e Consulenza';
+
+  @override
+  String get clarificationsAndConsultingDesc =>
+      'Consulenza fiscale su detrazioni, rimborsi IVA e regimi fiscali';
+
+  @override
+  String get selectServiceCategory => 'Seleziona la categoria di servizio';
+
+  @override
+  String get taxType => 'Tipo di tassa/contributo';
+
+  @override
+  String get incomeTax => 'Imposta sul reddito';
+
+  @override
+  String get requestDescription => 'Descrizione della richiesta';
+
+  @override
+  String get consultingTopic => 'Argomento della consulenza';
+
+  @override
+  String get taxDeduction => 'Detrazioni fiscali';
+
+  @override
+  String get vatRefund => 'Rimborso IVA';
+
+  @override
+  String get fiscalRegime => 'Regime fiscale';
+
+  @override
+  String get taxDeclaration => 'Dichiarazione dei redditi';
+
+  @override
+  String get questionDetail => 'Dettaglio della domanda';
 
   @override
   String get chatbotWelcomeDetail =>

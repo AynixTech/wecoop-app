@@ -196,7 +196,7 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
             action: _buildNavigationButton(l10n.translate('chatbotGoToService'), () {
               Navigator.push(context, MaterialPageRoute(builder: (context) => const ServiziGateScreen(
                 destinationScreen: AccoglienzaScreen(),
-                serviceName: 'Accoglienza e Orientamento',
+                serviceName: 'Vivere in Italia',
               )));
             }),
           );

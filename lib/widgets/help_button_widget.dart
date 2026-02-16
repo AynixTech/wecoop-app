@@ -8,7 +8,7 @@ import 'dart:convert';
 /// Widget che mostra un pulsante di aiuto dopo 10 secondi di inattività
 /// Appare in basso a destra e permette di creare una richiesta di supporto
 class HelpButtonWidget extends StatefulWidget {
-  /// Nome del servizio corrente (es: "Accoglienza e Orientamento")
+  /// Nome del servizio corrente (es: "Vivere in Italia")
   final String serviceName;
   
   /// ID categoria servizio (opzionale, per tracciare meglio)

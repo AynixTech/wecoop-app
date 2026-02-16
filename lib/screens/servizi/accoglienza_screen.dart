@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'permesso_soggiorno_screen.dart';
 import 'cittadinanza_screen.dart';
+import 'ricongiungimento_familiare_screen.dart';
 import 'asilo_politico_screen.dart';
 import 'visa_turismo_screen.dart';
 
@@ -52,6 +53,20 @@ class AccoglienzaScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => const CittadinanzaScreen(),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              _ServiceOptionCard(
+                icon: Icons.family_restroom,
+                title: l10n.translate('familyReunification'),
+                description: l10n.translate('familyReunificationDesc'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RicongiungimentoFamiliareScreen(),
                     ),
                   );
                 },

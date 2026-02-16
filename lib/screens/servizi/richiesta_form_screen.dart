@@ -54,8 +54,8 @@ const Map<String, String> servizioStandardMap = {
   'Immigration Desk': 'immigration_desk',
   'Oficina de Inmigración': 'immigration_desk',
   
-  // Supporto Contabile
-  'Supporto Contabile': 'accounting_support',
+  // Supporto contabile per P.IVA forfettaria
+  'Supporto contabile per P.IVA forfettaria': 'accounting_support',
   'Accounting Support': 'accounting_support',
   'Soporte Contable': 'accounting_support',
   
@@ -63,6 +63,16 @@ const Map<String, String> servizioStandardMap = {
   'Mediazione Fiscale': 'tax_mediation',
   'Tax Mediation': 'tax_mediation',
   'Mediación Fiscal': 'tax_mediation',
+  
+  // Orientamento e chiarimenti fiscali
+  'Orientamento e chiarimenti fiscali': 'tax_guidance_clarifications',
+  'Tax Guidance and Clarifications': 'tax_guidance_clarifications',
+  'Orientación y aclaraciones fiscales': 'tax_guidance_clarifications',
+  
+  // Ricongiungimento familiare
+  'Ricongiungimento familiare': 'family_reunification',
+  'Family Reunification': 'family_reunification',
+  'Reagrupación Familiar': 'family_reunification',
 };
 
 /// Mappa categorie multilingua -> chiave standardizzata (inglese)
@@ -104,11 +114,13 @@ const Map<String, String> categoriaStandardMap = {
   
   // Contabilità - Apertura Partita IVA
   'Apertura Partita IVA': 'vat_number_opening',
+  'Apertura Partita IVA – Regime forfettario': 'vat_number_opening',
   'VAT Number Opening': 'vat_number_opening',
   'Apertura de Partita IVA': 'vat_number_opening',
   
   // Contabilità - Gestione Contabilità
   'Gestione Contabilità': 'accounting_management',
+  'Gestione contabile – Partita IVA forfettaria': 'accounting_management',
   'Accounting Management': 'accounting_management',
   'Gestión de Contabilidad': 'accounting_management',
   
@@ -122,10 +134,36 @@ const Map<String, String> categoriaStandardMap = {
   'Tax Consultation': 'tax_consultation',
   'Consultoría Fiscal': 'tax_consultation',
   
+  // Contabilità - Chiusura/Variazione Attività
+  'Chiudere o cambiare attività': 'close_change_activity',
+  
   // Mediazione Fiscale - Gestione Debiti
   'Gestione Debiti Fiscali': 'tax_debt_management',
   'Tax Debt Management': 'tax_debt_management',
   'Gestión de Deudas Fiscales': 'tax_debt_management',
+  
+  // Orientamento fiscale - Tasse e Contributi
+  'Tasse e Contributi': 'taxes_and_contributions',
+  'Taxes and Contributions': 'taxes_and_contributions',
+  'Impuestos y Contribuciones': 'taxes_and_contributions',
+  
+  // Orientamento fiscale - Chiarimenti e Consulenza
+  'Chiarimenti e Consulenza': 'clarifications_consulting',
+  'Clarifications and Consulting': 'clarifications_consulting',
+  'Aclaraciones y Consultoría': 'clarifications_consulting',
+  
+  // Ricongiungimento familiare - Categorie
+  'Coniuge': 'spouse',
+  'Spouse': 'spouse',
+  'Cónyuge': 'spouse',
+  
+  'Figli minori': 'minor_children',
+  'Minor Children': 'minor_children',
+  'Hijos menores': 'minor_children',
+  
+  'Genitori a carico': 'dependent_parents',
+  'Dependent Parents': 'dependent_parents',
+  'Padres dependientes': 'dependent_parents',
 };
 
 /// Converte servizio tradotto in chiave standard

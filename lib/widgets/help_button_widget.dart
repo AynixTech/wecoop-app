@@ -31,6 +31,7 @@ class HelpButtonWidget extends StatefulWidget {
 class _HelpButtonWidgetState extends State<HelpButtonWidget> {
   Timer? _inactivityTimer;
   bool _isSubmitting = false;
+  bool _userDismissedHelp = false; // Traccia se l'utente ha cliccato "No, grazie"
   final _storage = SecureStorageService();
 
   @override
@@ -47,9 +48,12 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
 
   /// Avvia il timer di inattività (10 secondi)
   void _startInactivityTimer() {
+    // Non avviare il timer se l'utente ha già rifiutato l'aiuto
+    if (_userDismissedHelp) return;
+    
     _inactivityTimer?.cancel();
     _inactivityTimer = Timer(const Duration(seconds: 10), () {
-      if (mounted) {
+      if (mounted && !_userDismissedHelp) {
         // Mostra direttamente il dialog invece del pulsante
         _showHelpDialog();
       }
@@ -63,6 +67,9 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
 
   /// Mostra il dialog "Hai bisogno di aiuto?"
   void _showHelpDialog() {
+    // Non mostrare se l'utente ha già detto "No, grazie"
+    if (_userDismissedHelp) return;
+    
     final localizations = AppLocalizations.of(context);
     if (localizations == null) return;
     
@@ -101,7 +108,11 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              _resetInactivityTimer();
+              // L'utente ha rifiutato l'aiuto, non mostrare più la modale
+              setState(() {
+                _userDismissedHelp = true;
+              });
+              _inactivityTimer?.cancel(); // Ferma definitivamente il timer
             },
             child: Text(localizations.noThanks),
           ),

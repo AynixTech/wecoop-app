@@ -232,7 +232,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
   }
 
   void _nextStep() {
-    if (_currentStep < 2) {
+    if (_currentStep < 1) {
       // Valida solo i campi dello step corrente
       bool isValid = true;
       if (_currentStep == 0) {
@@ -318,17 +318,11 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                             ),
                             _buildStepConnector(0),
                             _buildStepIndicator(1, l10n.address, Icons.home),
-                            _buildStepConnector(1),
-                            _buildStepIndicator(
-                              2,
-                              l10n.documents,
-                              Icons.description,
-                            ),
                           ],
                         ),
                         const SizedBox(height: 8),
                         LinearProgressIndicator(
-                          value: (_currentStep + 1) / 3,
+                          value: (_currentStep + 1) / 2,
                           backgroundColor: Colors.grey[200],
                           valueColor: const AlwaysStoppedAnimation<Color>(
                             Color(0xFF2196F3),
@@ -401,12 +395,12 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                                         ),
                                       )
                                       : Icon(
-                                        _currentStep == 2
+                                        _currentStep == 1
                                             ? Icons.check
                                             : Icons.arrow_forward,
                                       ),
                               label: Text(
-                                _currentStep == 2 ? l10n.complete : l10n.next,
+                                _currentStep == 1 ? l10n.complete : l10n.next,
                               ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF2196F3),
@@ -487,8 +481,6 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
         return _buildPersonalDataStep(l10n);
       case 1:
         return _buildAddressStep(l10n);
-      case 2:
-        return _buildDocumentsStep(l10n);
       default:
         return Container();
     }

@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/documento.dart';
+import 'socio_service.dart';
 
 class DocumentoService {
   static const String _documentiKey = 'documenti_utente';
@@ -167,7 +168,11 @@ class DocumentoService {
     required String tipo,
     DateTime? dataScadenza,
   }) async {
-    // Copia il file nella directory dell'app
+    print('🔍 DEBUG: Inizio _salvaDocumento()');
+    print('   Tipo: $tipo');
+    print('   FileName: $fileName');
+    
+    // 1. Copia il file nella directory dell'app (per cache locale)
     final appDir = await getApplicationDocumentsDirectory();
     final documentiDir = Directory('${appDir.path}/documenti');
     if (!await documentiDir.exists()) {
@@ -179,25 +184,50 @@ class DocumentoService {
     final newPath = '${documentiDir.path}/$newFileName';
     final savedFile = await file.copy(newPath);
 
-    // Crea il documento
-    final documento = Documento(
-      id: timestamp.toString(),
-      tipo: tipo,
-      filePath: savedFile.path,
-      fileName: fileName,
-      dataCaricamento: DateTime.now(),
-      dataScadenza: dataScadenza,
-    );
+    // 2. ✅ INVIA AL BACKEND
+    print('📤 Invio documento al backend...');
+    try {
+      final uploadResult = await SocioService.uploadDocumento(
+        file: savedFile,
+        tipoDocumento: tipo,
+      );
+      print('📥 Upload result: $uploadResult');
 
-    // Rimuove il documento precedente dello stesso tipo se esiste
-    await rimuoviDocumentoByTipo(tipo);
+      if (uploadResult['success'] != true) {
+        print('❌ Errore upload backend: ${uploadResult['message']}');
+        // Rimuovi file locale se upload fallisce
+        await savedFile.delete();
+        return null;
+      }
 
-    // Salva il nuovo documento
-    final documenti = await getDocumenti();
-    documenti.add(documento);
-    await _saveDocumenti(documenti);
+      print('✅ Documento caricato sul backend!');
+      
+      // 3. Crea documento locale con ID dal backend
+      final backendId = uploadResult['data']?['id'];
+      final documento = Documento(
+        id: backendId?.toString() ?? timestamp.toString(),
+        tipo: tipo,
+        filePath: savedFile.path,
+        fileName: fileName,
+        dataCaricamento: DateTime.now(),
+        dataScadenza: dataScadenza,
+      );
 
-    return documento;
+      // 4. Rimuove il documento precedente dello stesso tipo se esiste
+      await rimuoviDocumentoByTipo(tipo);
+
+      // 5. Salva il nuovo documento
+      final documenti = await getDocumenti();
+      documenti.add(documento);
+      await _saveDocumenti(documenti);
+
+      return documento;
+    } catch (e) {
+      print('❌ Eccezione durante upload: $e');
+      // Rimuovi file locale se upload fallisce
+      await savedFile.delete();
+      return null;
+    }
   }
 
   // Aggiorna un documento esistente

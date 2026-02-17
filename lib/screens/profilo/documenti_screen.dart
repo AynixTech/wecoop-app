@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../models/documento.dart';
+import '../../services/app_localizations.dart';
 import '../../services/documento_service.dart';
 
 class DocumentiScreen extends StatefulWidget {
@@ -299,6 +301,23 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
     await OpenFile.open(documento.filePath);
   }
 
+  Future<void> _openWhatsAppSupport() async {
+    // TODO: Replace with your actual WhatsApp business number
+    const phoneNumber = '393491234567'; // Example Italian number
+    final message = Uri.encodeComponent('Ciao, ho problemi con il caricamento dei documenti');
+    final uri = Uri.parse('https://wa.me/$phoneNumber?text=$message');
+    
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Impossibile aprire WhatsApp')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -335,6 +354,53 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
                     onApri: doc != null ? () => _apriDocumento(doc) : null,
                   );
                 }),
+                const SizedBox(height: 16),
+                // WhatsApp Support Card
+                InkWell(
+                  onTap: _openWhatsAppSupport,
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF25D366).withOpacity(0.1),
+                      border: Border.all(color: const Color(0xFF25D366), width: 1.5),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF25D366),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.chat,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            AppLocalizations.of(context)!.whatsappDocumentSupport,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF25D366),
+                            ),
+                          ),
+                        ),
+                        const Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                          color: Color(0xFF25D366),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 40),
               ],
             ),
     );

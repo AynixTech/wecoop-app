@@ -135,6 +135,10 @@
   "taxMediation": "Mediación Fiscal",
   "accountingSupport": "Soporte Contable",
   "residencePermit": "Permiso de Residencia",
+  "duplicatePermit": "Duplicado permiso de residencia",
+  "duplicatePermitDesc": "Solicitud de duplicado por pérdida, robo o deterioro",
+  "longTermPermitUpdate": "Actualización permiso larga duración",
+  "longTermPermitUpdateDesc": "Actualización de datos del permiso CE de residentes de larga duración",
   
   "yes": "Sí",
   "no": "No",

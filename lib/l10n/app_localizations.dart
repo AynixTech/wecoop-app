@@ -964,6 +964,30 @@ abstract class AppLocalizations {
   /// **'Permesso di Soggiorno'**
   String get residencePermit;
 
+  /// No description provided for @duplicatePermit.
+  ///
+  /// In it, this message translates to:
+  /// **'Duplicato permesso di soggiorno'**
+  String get duplicatePermit;
+
+  /// No description provided for @duplicatePermitDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Richiesta duplicato per perdita, furto o deterioramento'**
+  String get duplicatePermitDesc;
+
+  /// No description provided for @longTermPermitUpdate.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiornamento permesso lungo periodo'**
+  String get longTermPermitUpdate;
+
+  /// No description provided for @longTermPermitUpdateDesc.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiornamento dati permesso CE soggiornanti lungo periodo'**
+  String get longTermPermitUpdateDesc;
+
   /// No description provided for @yes.
   ///
   /// In it, this message translates to:

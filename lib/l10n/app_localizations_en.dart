@@ -452,6 +452,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get residencePermit => 'Residence Permit';
 
   @override
+  String get duplicatePermit => 'Duplicate residence permit';
+
+  @override
+  String get duplicatePermitDesc =>
+      'Request for duplicate due to loss, theft or deterioration';
+
+  @override
+  String get longTermPermitUpdate => 'Long-term permit update';
+
+  @override
+  String get longTermPermitUpdateDesc =>
+      'Update of EC long-term residents permit data';
+
+  @override
   String get yes => 'Yes';
 
   @override

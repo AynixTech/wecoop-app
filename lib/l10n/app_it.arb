@@ -162,6 +162,10 @@
   "mother": "Madre",
   "dependencyProof": "Hai prova di dipendenza economica?",
   "residencePermit": "Permesso di Soggiorno",
+  "duplicatePermit": "Duplicato permesso di soggiorno",
+  "duplicatePermitDesc": "Richiesta duplicato per perdita, furto o deterioramento",
+  "longTermPermitUpdate": "Aggiornamento permesso lungo periodo",
+  "longTermPermitUpdateDesc": "Aggiornamento dati permesso CE soggiornanti lungo periodo",
   
   "yes": "Sì",
   "no": "No",

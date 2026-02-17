@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/app_localizations.dart';
+import '../../models/documento.dart';
 import 'richiesta_form_screen.dart';
 
 class SupportoContabileScreen extends StatelessWidget {
@@ -34,6 +35,7 @@ class SupportoContabileScreen extends StatelessWidget {
                           (context) => RichiestaFormScreen(
                             servizio: l10n.accountingSupport,
                             categoria: l10n.openVatNumber,
+              
                             campi: [
                               {
                                 'label': l10n.fullName,
@@ -56,36 +58,48 @@ class SupportoContabileScreen extends StatelessWidget {
                                 'required': true,
                               },
                               {
-                                'label': l10n.businessType,
+                                'label': l10n.previousVatOpening,
                                 'type': 'select',
                                 'options': [
-                                  l10n.trade,
-                                  l10n.servicesActivity,
-                                  l10n.craftsmanship,
-                                  l10n.freelance,
-                                  l10n.other,
+                                  l10n.noFirstOpening,
+                                  l10n.yesClosed,
                                 ],
                                 'required': true,
                               },
                               {
-                                'label': l10n.businessDescription,
+                                'label': l10n.activityTypeToStart,
+                                'type': 'select',
+                                'options': [
+                                  l10n.professionalActivity,
+                                  l10n.vatActivityServices,
+                                  l10n.commerceActivity,
+                                  l10n.otherActivity,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.workingAs,
+                                'type': 'select',
+                                'options': [
+                                  l10n.selfEmployedWorker,
+                                  l10n.collaborator,
+                                  l10n.otherActivity,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.whenOpenVat,
+                                'type': 'select',
+                                'options': [
+                                  l10n.immediately,
+                                  l10n.within1to2Months,
+                                  l10n.evaluating,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.notesAndAdditionalInfo,
                                 'type': 'textarea',
-                                'required': true,
-                              },
-                              {
-                                'label': l10n.expectedTaxRegime,
-                                'type': 'select',
-                                'options': [
-                                  l10n.flatRate,
-                                  l10n.simplified,
-                                  l10n.ordinary,
-                                  l10n.dontKnow,
-                                ],
-                                'required': true,
-                              },
-                              {
-                                'label': l10n.expectedAnnualRevenue,
-                                'type': 'number',
                                 'required': false,
                               },
                             ],
@@ -109,41 +123,58 @@ class SupportoContabileScreen extends StatelessWidget {
                             categoria: l10n.manageVatNumber,
                             campi: [
                               {
-                                'label': l10n.companyName,
+                                'label': l10n.fullName,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': l10n.vatNumber,
+                                'label': l10n.fiscalCode,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': l10n.supportTypeRequired,
+                                'label': l10n.dateOfBirth,
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.residenceAddress,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.hasActiveVatForfettario,
                                 'type': 'select',
                                 'options': [
-                                  l10n.electronicInvoicing,
-                                  l10n.invoiceRegistration,
-                                  l10n.journalManagement,
-                                  l10n.annualBalance,
-                                  l10n.generalConsulting,
+                                  l10n.yes,
+                                  l10n.no,
                                 ],
                                 'required': true,
                               },
                               {
-                                'label': l10n.currentTaxRegime,
+                                'label': l10n.vatActiveFrom,
                                 'type': 'select',
                                 'options': [
-                                  l10n.flatRate,
-                                  l10n.simplified,
-                                  l10n.ordinary,
+                                  l10n.currentYear,
+                                  l10n.previousYears,
                                 ],
                                 'required': true,
                               },
                               {
-                                'label': l10n.describeYourNeed,
+                                'label': l10n.atecoActivitySector,
+                                'type': 'select',
+                                'options': [
+                                  l10n.commerceActivity,
+                                  l10n.vatActivityServices,
+                                  l10n.professionalActivity,
+                                  l10n.otherActivity,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.notesAndAdditionalInfo,
                                 'type': 'textarea',
-                                'required': true,
+                                'required': false,
                               },
                             ],
                           ),
@@ -166,34 +197,59 @@ class SupportoContabileScreen extends StatelessWidget {
                             categoria: l10n.closeChangeActivity,
                             campi: [
                               {
-                                'label': l10n.companyName,
+                                'label': l10n.fullName,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': l10n.vatNumber,
+                                'label': l10n.fiscalCode,
                                 'type': 'text',
                                 'required': true,
                               },
                               {
-                                'label': l10n.whatDoYouWantToDo,
-                                'type': 'select',
-                                'options': [
-                                  l10n.closeVatNumber,
-                                  l10n.changeActivity,
-                                  l10n.changeTaxRegime,
-                                ],
-                                'required': true,
-                              },
-                              {
-                                'label': l10n.expectedDate,
+                                'label': l10n.dateOfBirth,
                                 'type': 'date',
                                 'required': true,
                               },
                               {
-                                'label': l10n.reason,
-                                'type': 'textarea',
+                                'label': l10n.residenceAddress,
+                                'type': 'text',
                                 'required': true,
+                              },
+                              {
+                                'label': l10n.whatDoYouWantToDoActivity,
+                                'type': 'select',
+                                'options': [
+                                  l10n.closeVatActivity,
+                                  l10n.suspendTemporarily,
+                                  l10n.changeActivityAteco,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.currentFiscalRegime,
+                                'type': 'select',
+                                'options': [
+                                  l10n.forfettarioRegime,
+                                  l10n.otherRegime,
+                                  l10n.dontKnowRegime,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.whenProceed,
+                                'type': 'select',
+                                'options': [
+                                  l10n.immediately,
+                                  l10n.within1to2Months,
+                                  l10n.evaluating,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.notesAndAdditionalInfo,
+                                'type': 'textarea',
+                                'required': false,
                               },
                             ],
                           ),

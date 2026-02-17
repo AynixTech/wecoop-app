@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/app_localizations.dart';
+import '../../models/documento.dart';
 import 'richiesta_form_screen.dart';
 
 class MediazioneFiscaleScreen extends StatelessWidget {
@@ -33,27 +34,50 @@ class MediazioneFiscaleScreen extends StatelessWidget {
                       builder: (context) => RichiestaFormScreen(
                         servizio: l10n.taxMediation,
                         categoria: '730',
+                        documentiRichiesti: const [
+                          TipoDocumento.permessoSoggiorno,
+                          TipoDocumento.passaporto,
+                          TipoDocumento.codiceFiscale,
+                          TipoDocumento.cartaIdentita,
+                        ],
                         campi: [
                           {'label': l10n.fullName, 'type': 'text', 'required': true},
                           {'label': l10n.fiscalCode, 'type': 'text', 'required': true},
                           {'label': l10n.dateOfBirth, 'type': 'date', 'required': true},
                           {'label': l10n.address, 'type': 'text', 'required': true},
                           {
-                            'label': l10n.taxpayerType,
+                            'label': l10n.workType,
                             'type': 'select',
-                            'options': [l10n.employee, l10n.pensioner],
+                            'options': [
+                              l10n.employee,
+                              l10n.housekeeper,
+                              l10n.caregiver,
+                              l10n.babysitter,
+                            ],
+                            'required': true,
+                          },
+                          {
+                            'label': l10n.multipleContracts,
+                            'type': 'select',
+                            'options': [l10n.yes, l10n.no],
+                            'required': true,
+                          },
+                          {
+                            'label': l10n.homeMortgage,
+                            'type': 'select',
+                            'options': [l10n.yes, l10n.no],
+                            'required': true,
+                          },
+                          {
+                            'label': l10n.pensionIncome,
+                            'type': 'select',
+                            'options': [l10n.yes, l10n.no],
                             'required': true,
                           },
                           {
                             'label': l10n.fiscalYear,
                             'type': 'select',
                             'options': ['2024', '2023', '2022'],
-                            'required': true,
-                          },
-                          {
-                            'label': l10n.hasDeductibleExpenses,
-                            'type': 'select',
-                            'options': [l10n.yes, l10n.no],
                             'required': true,
                           },
                           {'label': l10n.notesAndAdditionalInfo, 'type': 'textarea', 'required': false},
@@ -75,22 +99,44 @@ class MediazioneFiscaleScreen extends StatelessWidget {
                       builder: (context) => RichiestaFormScreen(
                         servizio: l10n.taxMediation,
                         categoria: l10n.individualPerson,
+                        documentiRichiesti: const [
+                          TipoDocumento.permessoSoggiorno,
+                          TipoDocumento.passaporto,
+                          TipoDocumento.codiceFiscale,
+                          TipoDocumento.cartaIdentita,
+                        ],
                         campi: [
                           {'label': l10n.fullName, 'type': 'text', 'required': true},
                           {'label': l10n.fiscalCode, 'type': 'text', 'required': true},
                           {'label': l10n.dateOfBirth, 'type': 'date', 'required': true},
                           {'label': l10n.address, 'type': 'text', 'required': true},
                           {
-                            'label': l10n.incomeType,
+                            'label': l10n.workType,
                             'type': 'select',
                             'options': [
-                              l10n.employedWork,
-                              l10n.selfEmployed,
-                              l10n.pension,
-                              l10n.capitalIncome,
-                              l10n.otherIncome,
-                              l10n.multipleTypes,
+                              l10n.selfEmployedForfettario,
+                              l10n.housekeeper,
+                              l10n.caregiver,
+                              l10n.babysitter,
                             ],
+                            'required': true,
+                          },
+                          {
+                            'label': l10n.missedTax730Deadline,
+                            'type': 'select',
+                            'options': [l10n.yes, l10n.no],
+                            'required': true,
+                          },
+                          {
+                            'label': l10n.multipleContracts,
+                            'type': 'select',
+                            'options': [l10n.yes, l10n.no],
+                            'required': true,
+                          },
+                          {
+                            'label': l10n.homeMortgage,
+                            'type': 'select',
+                            'options': [l10n.yes, l10n.no],
                             'required': true,
                           },
                           {
@@ -99,13 +145,7 @@ class MediazioneFiscaleScreen extends StatelessWidget {
                             'options': ['2024', '2023', '2022'],
                             'required': true,
                           },
-                          {
-                            'label': l10n.hasProperties,
-                            'type': 'select',
-                            'options': [l10n.yes, l10n.no],
-                            'required': true,
-                          },
-                          {'label': l10n.detailsAndNotes, 'type': 'textarea', 'required': false},
+                          {'label': l10n.notesAndAdditionalInfo, 'type': 'textarea', 'required': false},
                         ],
                       ),
                     ),

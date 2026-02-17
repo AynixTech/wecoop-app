@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/app_localizations.dart';
+import '../../models/documento.dart';
 import 'richiesta_form_screen.dart';
 
 class OrientamentoFiscaleScreen extends StatelessWidget {
@@ -33,31 +34,43 @@ class OrientamentoFiscaleScreen extends StatelessWidget {
                       builder: (context) => RichiestaFormScreen(
                         servizio: l10n.translate('taxGuidanceAndClarifications'),
                         categoria: l10n.translate('taxesAndContributions'),
+
                         campi: [
                           {'label': l10n.fullName, 'type': 'text', 'required': true},
-                          {'label': l10n.email, 'type': 'text', 'required': true},
-                          {'label': l10n.phone, 'type': 'text', 'required': true},
                           {'label': l10n.fiscalCode, 'type': 'text', 'required': true},
+                          {'label': l10n.dateOfBirth, 'type': 'date', 'required': true},
+                          {'label': l10n.residenceAddress, 'type': 'text', 'required': true},
                           {
-                            'label': l10n.translate('taxType'),
+                            'label': l10n.clarifyTopic,
                             'type': 'select',
                             'options': [
-                              'IMU',
-                              'TARI',
-                              'TASI',
-                              l10n.translate('incomeTax'),
-                              'INPS',
-                              'INAIL',
-                              l10n.translate('other'),
+                              l10n.taxCalculation,
+                              l10n.depositsBalances,
+                              l10n.inpsContributionsTax,
+                              l10n.f24Payments,
                             ],
                             'required': true,
                           },
                           {
-                            'label': l10n.translate('requestDescription'),
-                            'type': 'textarea',
+                            'label': l10n.workSituation,
+                            'type': 'select',
+                            'options': [
+                              l10n.employeeWorker,
+                              l10n.vatForfettario,
+                              l10n.otherActivity,
+                            ],
                             'required': true,
                           },
-                          {'label': l10n.translate('additionalNotes'), 'type': 'textarea', 'required': false},
+                          {
+                            'label': l10n.urgencyLevel,
+                            'type': 'select',
+                            'options': [
+                              l10n.informative,
+                              l10n.imminentDeadline,
+                            ],
+                            'required': true,
+                          },
+                          {'label': l10n.notesAndAdditionalInfo, 'type': 'textarea', 'required': false},
                         ],
                       ),
                     ),
@@ -78,26 +91,40 @@ class OrientamentoFiscaleScreen extends StatelessWidget {
                         categoria: l10n.translate('clarificationsAndConsulting'),
                         campi: [
                           {'label': l10n.fullName, 'type': 'text', 'required': true},
-                          {'label': l10n.email, 'type': 'text', 'required': true},
-                          {'label': l10n.phone, 'type': 'text', 'required': true},
+                          {'label': l10n.fiscalCode, 'type': 'text', 'required': true},
+                          {'label': l10n.dateOfBirth, 'type': 'date', 'required': true},
+                          {'label': l10n.residenceAddress, 'type': 'text', 'required': true},
                           {
-                            'label': l10n.translate('consultingTopic'),
+                            'label': l10n.howCanWeHelp,
                             'type': 'select',
                             'options': [
-                              l10n.translate('taxDeduction'),
-                              l10n.translate('vatRefund'),
-                              l10n.translate('fiscalRegime'),
-                              l10n.translate('taxDeclaration'),
-                              l10n.translate('other'),
+                              l10n.personalizedExplanations,
+                              l10n.taxPositionVerification,
+                              l10n.taxRegimeChange,
+                              l10n.questionsNotSureWhereToStart,
                             ],
                             'required': true,
                           },
                           {
-                            'label': l10n.translate('questionDetail'),
-                            'type': 'textarea',
+                            'label': l10n.workSituationQuestion,
+                            'type': 'select',
+                            'options': [
+                              l10n.employeeWorker,
+                              l10n.vatForfettario,
+                              l10n.notWorkingOther,
+                            ],
                             'required': true,
                           },
-                          {'label': l10n.translate('additionalNotes'), 'type': 'textarea', 'required': false},
+                          {
+                            'label': l10n.urgencyQuestion,
+                            'type': 'select',
+                            'options': [
+                              l10n.informative,
+                              l10n.closeDeadline,
+                            ],
+                            'required': true,
+                          },
+                          {'label': l10n.notesAndAdditionalInfo, 'type': 'textarea', 'required': false},
                         ],
                       ),
                     ),

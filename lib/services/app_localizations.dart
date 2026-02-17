@@ -264,6 +264,7 @@ class AppLocalizations {
       'personalData': 'Dati Personali',
       'documents': 'Documenti',
       'uploadDocumentsOptional': 'Carica i tuoi documenti (opzionale)',
+      'whatsappDocumentSupport': 'Hai problemi a caricare i documenti? Scrivici su WhatsApp',
       'identityCard': 'Carta d\'Identità',
       'fiscalCodeDocument': 'Codice Fiscale',
       'requiredField': 'Campo obbligatorio',
@@ -440,14 +441,66 @@ class AppLocalizations {
       'vatManagementAccounting': 'Gestione Partita IVA e Contabilità',
       'openVatNumber': 'Apertura Partita IVA – Regime forfettario',
       'openingNewVat': 'Apertura nuova partita IVA',
+      'previousVatOpening': 'Hai già aperto una Partita IVA in passato?',
+      'noFirstOpening': 'No (prima apertura)',
+      'yesClosed': 'Sì (chiusa)',
+      'activityTypeToStart': 'Tipologia di attività che vuoi avviare',
+      'professionalActivity': 'Professionista',
+      'vatActivityServices': 'Servizi',
+      'commerceActivity': 'Commercio',
+      'otherActivity': 'Altro',
+      'workingAs': 'Prevedi di lavorare come:',
+      'selfEmployedWorker': 'Lavoratore autonomo',
+      'collaborator': 'Collaboratore',
+      'whenOpenVat': 'Quando vorresti aprire la Partita IVA?',
+      'immediately': 'Subito',
+      'within1to2Months': 'Entro 1–2 mesi',
+      'evaluating': 'Sto valutando',
       'manageVatNumber': 'Gestione contabile – Partita IVA forfettaria',
       'ordinaryAccountingInvoicing': 'Contabilità ordinaria, fatturazione, registrazioni',
+      'hasActiveVatForfettario': 'Hai una Partita IVA attiva in regime forfettario?',
+      'forfettarioServiceOnly': 'Questo servizio è riservato alle Partite IVA in regime forfettario. Possiamo aiutarti con altri servizi fiscali.',
+      'vatActiveFrom': 'Da quando è attiva la tua Partita IVA?',
+      'currentYear': 'Anno in corso',
+      'previousYears': 'Anni precedenti',
+      'atecoActivitySector': 'Settore di attività (ATECO)',
       'taxesContributions': 'Tasse e Contributi',
       'f24InpsTaxDeadlines': 'F24, INPS, scadenze fiscali',
+      'clarifyTopic': 'Quale tema vuoi chiarire?',
+      'taxCalculation': 'Calcolo imposte',
+      'depositsBalances': 'Acconti e saldi',
+      'inpsContributionsTax': 'Contributi INPS',
+      'f24Payments': 'Pagamenti F24',
+      'multipleSelectionAllowed': '(Selezione multipla consentita)',
+      'workSituation': 'La tua situazione lavorativa',
+      'employeeWorker': 'Dipendente',
+      'vatForfettario': 'Partita IVA (forfettario)',
+      'urgencyLevel': 'Urgenza',
+      'informative': 'Informativa',
+      'imminentDeadline': 'Scadenza imminente',
       'clarificationsConsulting': 'Chiarimenti e Consulenza',
+      'howCanWeHelp': 'In cosa possiamo aiutarti?',
+      'personalizedExplanations': 'Spiegazioni personalizzate',
+      'taxPositionVerification': 'Verifica posizione fiscale',
+      'taxRegimeChange': 'Cambio regime fiscale',
+      'questionsNotSureWhereToStart': 'Ho delle domande ma non so da dove partire',
+      'workSituationQuestion': 'La tua situazione lavorativa',
+      'notWorkingOther': 'Non lavoro / altro',
+      'urgencyQuestion': 'Quanto è urgente la tua richiesta?',
+      'closeDeadline': 'C’è una scadenza vicina',
       'questionsAccountingSupport': 'Domande e supporto fiscale/contabile',
       'closeChangeActivity': 'Chiudere o cambiare attività',
       'businessTerminationModification': 'Cessazione o modifica attività',
+      'whatDoYouWantToDoActivity': 'Cosa vuoi fare?',
+      'closeVatActivity': 'Chiudere la Partita IVA',
+      'suspendTemporarily': 'Sospendere temporaneamente l’attività',
+      'changeActivityAteco': 'Cambiare attività / codice ATECO',
+      'currentFiscalRegime': 'Regime fiscale attuale',
+      'forfettarioRegime': 'Forfettario',
+      'otherRegime': 'Altro',
+      'dontKnowRegime': 'Non so',
+      'verifyBestSolution': 'Verificheremo insieme la soluzione più adatta.',
+      'whenProceed': 'Quando vuoi procedere?',
       'businessType': 'Tipo di attività',
       'trade': 'Commercio',
       'servicesActivity': 'Servizi',
@@ -508,6 +561,16 @@ class AppLocalizations {
       'taxpayerType': 'Tipologia contribuente',
       'employee': 'Lavoratore dipendente',
       'pensioner': 'Pensionato',
+      'workType': 'Tipo di lavoro',
+      'housekeeper': 'Colf',
+      'caregiver': 'Badante',
+      'babysitter': 'Babysitter',
+      'selfEmployedForfettario': 'Autonomo (solo Forfetario)',
+      'missedTax730Deadline': 'Sei un dipendente e: non hai fatto il 730 entro il termine previsto del 30 settembre e hai ricevuto la lettera dall\'Agenzia dell\'Entrate?',
+      'multipleContracts': 'Nel corso dell\'anno scorso hai avuto più di un datore di lavoro o contratto?',
+      'homeMortgage': 'Hai un mutuo sulla casa (prima o seconda casa)?',
+      'pensionIncome': 'Hai un reddito da pensione?',
+      'requiredDocuments': 'Documenti richiesti',
       'fiscalYear': 'Anno fiscale',
       'hasDeductibleExpenses': 'Hai spese detraibili/deducibili?',
       'notesAndAdditionalInfo': 'Note e informazioni aggiuntive',
@@ -831,6 +894,10 @@ class AppLocalizations {
       'book': 'Book',
       'selectType': 'Select type',
       'residencePermit': 'Residence Permit',
+      'duplicatePermit': 'Duplicate residence permit',
+      'duplicatePermitDesc': 'Request for duplicate due to loss, theft or deterioration',
+      'longTermPermitUpdate': 'Long-term permit update',
+      'longTermPermitUpdateDesc': 'Update of EC long-term residents permit data',
       'checkRequirements': 'Check requirements',
       'forEmployment': 'For Employment',
       'forEmploymentDesc': 'Employment contract',
@@ -877,6 +944,7 @@ class AppLocalizations {
       'personalData': 'Personal Data',
       'documents': 'Documents',
       'uploadDocumentsOptional': 'Upload your documents (optional)',
+      'whatsappDocumentSupport': 'Having trouble uploading documents? Contact us on WhatsApp',
       'identityCard': 'Identity Card',
       'fiscalCodeDocument': 'Tax ID',
       'requiredField': 'Required field',
@@ -1051,16 +1119,68 @@ class AppLocalizations {
       'accommodationAddressItaly': 'Accommodation address in Italy',
       'fillRequest': 'Fill out request',
       'vatManagementAccounting': 'VAT Management and Accounting',
-      'openVatNumber': 'Open VAT Number',
+      'openVatNumber': 'VAT Number Opening – Flat-rate regime',
       'openingNewVat': 'Opening new VAT number',
-      'manageVatNumber': 'Manage VAT Number',
+      'previousVatOpening': 'Have you opened a VAT number in the past?',
+      'noFirstOpening': 'No (first opening)',
+      'yesClosed': 'Yes (closed)',
+      'activityTypeToStart': 'Type of activity you want to start',
+      'professionalActivity': 'Professional',
+      'vatActivityServices': 'Services',
+      'commerceActivity': 'Commerce',
+      'otherActivity': 'Other',
+      'workingAs': 'You plan to work as:',
+      'selfEmployedWorker': 'Self-employed worker',
+      'collaborator': 'Collaborator',
+      'whenOpenVat': 'When would you like to open the VAT number?',
+      'immediately': 'Immediately',
+      'within1to2Months': 'Within 1–2 months',
+      'evaluating': 'I am evaluating',
+      'manageVatNumber': 'Accounting management – Flat-rate VAT',
       'ordinaryAccountingInvoicing': 'Ordinary accounting, invoicing, registrations',
+      'hasActiveVatForfettario': 'Do you have an active VAT number in flat-rate regime?',
+      'forfettarioServiceOnly': 'This service is reserved for flat-rate VAT numbers. We can help you with other tax services.',
+      'vatActiveFrom': 'Since when has your VAT number been active?',
+      'currentYear': 'Current year',
+      'previousYears': 'Previous years',
+      'atecoActivitySector': 'Activity sector (ATECO)',
       'taxesContributions': 'Taxes and Contributions',
       'f24InpsTaxDeadlines': 'F24, INPS, tax deadlines',
+      'clarifyTopic': 'Which topic do you want to clarify?',
+      'taxCalculation': 'Tax calculation',
+      'depositsBalances': 'Deposits and balances',
+      'inpsContributionsTax': 'INPS contributions',
+      'f24Payments': 'F24 payments',
+      'multipleSelectionAllowed': '(Multiple selection allowed)',
+      'workSituation': 'Your work situation',
+      'employeeWorker': 'Employee',
+      'vatForfettario': 'VAT (flat-rate)',
+      'urgencyLevel': 'Urgency',
+      'informative': 'Informative',
+      'imminentDeadline': 'Imminent deadline',
       'clarificationsConsulting': 'Clarifications and Consulting',
+      'howCanWeHelp': 'How can we help you?',
+      'personalizedExplanations': 'Personalized explanations',
+      'taxPositionVerification': 'Tax position verification',
+      'taxRegimeChange': 'Tax regime change',
+      'questionsNotSureWhereToStart': 'I have questions but I don\'t know where to start',
+      'workSituationQuestion': 'Your work situation',
+      'notWorkingOther': 'Not working / other',
+      'urgencyQuestion': 'How urgent is your request?',
+      'closeDeadline': 'There is a close deadline',
       'questionsAccountingSupport': 'Questions and tax/accounting support',
-      'closeChangeActivity': 'Close or Change Activity',
+      'closeChangeActivity': 'Close or change activity',
       'businessTerminationModification': 'Business termination or modification',
+      'whatDoYouWantToDoActivity': 'What do you want to do?',
+      'closeVatActivity': 'Close VAT number',
+      'suspendTemporarily': 'Temporarily suspend activity',
+      'changeActivityAteco': 'Change activity / ATECO code',
+      'currentFiscalRegime': 'Current tax regime',
+      'forfettarioRegime': 'Flat-rate',
+      'otherRegime': 'Other',
+      'dontKnowRegime': 'I don\'t know',
+      'verifyBestSolution': 'We will verify the most suitable solution together.',
+      'whenProceed': 'When do you want to proceed?',
       'businessType': 'Type of business',
       'trade': 'Trade',
       'servicesActivity': 'Services',
@@ -1121,6 +1241,16 @@ class AppLocalizations {
       'taxpayerType': 'Taxpayer type',
       'employee': 'Employee',
       'pensioner': 'Pensioner',
+      'workType': 'Work type',
+      'housekeeper': 'Housekeeper',
+      'caregiver': 'Caregiver',
+      'babysitter': 'Babysitter',
+      'selfEmployedForfettario': 'Self-employed (Flat-rate only)',
+      'missedTax730Deadline': 'Are you an employee and: did you not file form 730 by the September 30 deadline and received a letter from the Tax Agency?',
+      'multipleContracts': 'Did you have more than one employer or contract during the past year?',
+      'homeMortgage': 'Do you have a mortgage on your home (primary or secondary)?',
+      'pensionIncome': 'Do you have pension income?',
+      'requiredDocuments': 'Required documents',
       'fiscalYear': 'Fiscal year',
       'hasDeductibleExpenses': 'Do you have deductible expenses?',
       'notesAndAdditionalInfo': 'Notes and additional information',
@@ -1475,6 +1605,10 @@ class AppLocalizations {
       'book': 'Reservar',
       'selectType': 'Selecciona el tipo',
       'residencePermit': 'Permiso de Residencia',
+      'duplicatePermit': 'Duplicado permiso de residencia',
+      'duplicatePermitDesc': 'Solicitud de duplicado por pérdida, robo o deterioro',
+      'longTermPermitUpdate': 'Actualización permiso larga duración',
+      'longTermPermitUpdateDesc': 'Actualización de datos del permiso CE de residentes de larga duración',
       'checkRequirements': 'Verificar requisitos',
       'forEmployment': 'Por Trabajo Subordinado',
       'forEmploymentDesc': 'Contrato de trabajo dependiente',
@@ -1689,16 +1823,68 @@ class AppLocalizations {
       'accommodationAddressItaly': 'Dirección de alojamiento en Italia',
       'fillRequest': 'Completar solicitud',
       'vatManagementAccounting': 'Gestión de IVA y Contabilidad',
-      'openVatNumber': 'Abrir Número de IVA',
+      'openVatNumber': 'Apertura de Partita IVA – Régimen plano',
       'openingNewVat': 'Apertura de nuevo número de IVA',
-      'manageVatNumber': 'Gestionar Número de IVA',
+      'previousVatOpening': '¿Has abierto una Partita IVA en el pasado?',
+      'noFirstOpening': 'No (primera apertura)',
+      'yesClosed': 'Sí (cerrada)',
+      'activityTypeToStart': 'Tipo de actividad que quieres iniciar',
+      'professionalActivity': 'Profesional',
+      'vatActivityServices': 'Servicios',
+      'commerceActivity': 'Comercio',
+      'otherActivity': 'Otro',
+      'workingAs': 'Prevés trabajar como:',
+      'selfEmployedWorker': 'Trabajador autónomo',
+      'collaborator': 'Colaborador',
+      'whenOpenVat': '¿Cuándo te gustaría abrir la Partita IVA?',
+      'immediately': 'Inmediatamente',
+      'within1to2Months': 'Dentro de 1–2 meses',
+      'evaluating': 'Estoy evaluando',
+      'manageVatNumber': 'Gestión contable – Partita IVA plana',
       'ordinaryAccountingInvoicing': 'Contabilidad ordinaria, facturación, registros',
+      'hasActiveVatForfettario': '¿Tienes una Partita IVA activa en régimen de tarifa plana?',
+      'forfettarioServiceOnly': 'Este servicio está reservado para Partitas IVA en régimen de tarifa plana. Podemos ayudarte con otros servicios fiscales.',
+      'vatActiveFrom': '¿Desde cuándo está activa tu Partita IVA?',
+      'currentYear': 'Año en curso',
+      'previousYears': 'Años anteriores',
+      'atecoActivitySector': 'Sector de actividad (ATECO)',
       'taxesContributions': 'Impuestos y Contribuciones',
       'f24InpsTaxDeadlines': 'F24, INPS, plazos fiscales',
+      'clarifyTopic': '¿Qué tema quieres aclarar?',
+      'taxCalculation': 'Cálculo de impuestos',
+      'depositsBalances': 'Anticipos y saldos',
+      'inpsContributionsTax': 'Contribuciones INPS',
+      'f24Payments': 'Pagos F24',
+      'multipleSelectionAllowed': '(Selección múltiple permitida)',
+      'workSituation': 'Tu situación laboral',
+      'employeeWorker': 'Empleado',
+      'vatForfettario': 'Partita IVA (tarifa plana)',
+      'urgencyLevel': 'Urgencia',
+      'informative': 'Informativa',
+      'imminentDeadline': 'Plazo inminente',
       'clarificationsConsulting': 'Aclaraciones y Consultoría',
+      'howCanWeHelp': '¿En qué podemos ayudarte?',
+      'personalizedExplanations': 'Explicaciones personalizadas',
+      'taxPositionVerification': 'Verificación de posición fiscal',
+      'taxRegimeChange': 'Cambio de régimen fiscal',
+      'questionsNotSureWhereToStart': 'Tengo preguntas pero no sé por dónde empezar',
+      'workSituationQuestion': 'Tu situación laboral',
+      'notWorkingOther': 'No trabajo / otro',
+      'urgencyQuestion': '¿Qué tan urgente es tu solicitud?',
+      'closeDeadline': 'Hay un plazo cercano',
       'questionsAccountingSupport': 'Preguntas y soporte fiscal/contable',
-      'closeChangeActivity': 'Cerrar o Cambiar Actividad',
+      'closeChangeActivity': 'Cerrar o cambiar actividad',
       'businessTerminationModification': 'Cese o modificación de actividad',
+      'whatDoYouWantToDoActivity': '¿Qué quieres hacer?',
+      'closeVatActivity': 'Cerrar la Partita IVA',
+      'suspendTemporarily': 'Suspender temporalmente la actividad',
+      'changeActivityAteco': 'Cambiar actividad / código ATECO',
+      'currentFiscalRegime': 'Régimen fiscal actual',
+      'forfettarioRegime': 'Tarifa plana',
+      'otherRegime': 'Otro',
+      'dontKnowRegime': 'No lo sé',
+      'verifyBestSolution': 'Verificaremos juntos la solución más adecuada.',
+      'whenProceed': '¿Cuándo quieres proceder?',
       'businessType': 'Tipo de actividad',
       'trade': 'Comercio',
       'servicesActivity': 'Servicios',
@@ -1759,6 +1945,16 @@ class AppLocalizations {
       'taxpayerType': 'Tipo de contribuyente',
       'employee': 'Trabajador empleado',
       'pensioner': 'Pensionista',
+      'workType': 'Tipo de trabajo',
+      'housekeeper': 'Empleada doméstica',
+      'caregiver': 'Cuidador/a',
+      'babysitter': 'Niñera',
+      'selfEmployedForfettario': 'Autónomo (solo Régimen de tarifa plana)',
+      'missedTax730Deadline': '¿Eres un empleado y: no presentaste el modelo 730 antes del plazo del 30 de septiembre y recibiste una carta de la Agencia Tributaria?',
+      'multipleContracts': '¿Tuviste más de un empleador o contrato durante el año pasado?',
+      'homeMortgage': '¿Tienes una hipoteca sobre tu casa (primera o segunda vivienda)?',
+      'pensionIncome': '¿Tienes ingresos de pensión?',
+      'requiredDocuments': 'Documentos requeridos',
       'fiscalYear': 'Año fiscal',
       'hasDeductibleExpenses': '¿Tienes gastos deducibles?',
       'notesAndAdditionalInfo': 'Notas e información adicional',
@@ -2226,14 +2422,66 @@ class AppLocalizations {
   String get vatManagementAccounting => translate('vatManagementAccounting');
   String get openVatNumber => translate('openVatNumber');
   String get openingNewVat => translate('openingNewVat');
+  String get previousVatOpening => translate('previousVatOpening');
+  String get noFirstOpening => translate('noFirstOpening');
+  String get yesClosed => translate('yesClosed');
+  String get activityTypeToStart => translate('activityTypeToStart');
+  String get professionalActivity => translate('professionalActivity');
+  String get vatActivityServices => translate('vatActivityServices');
+  String get commerceActivity => translate('commerceActivity');
+  String get otherActivity => translate('otherActivity');
+  String get workingAs => translate('workingAs');
+  String get selfEmployedWorker => translate('selfEmployedWorker');
+  String get collaborator => translate('collaborator');
+  String get whenOpenVat => translate('whenOpenVat');
+  String get immediately => translate('immediately');
+  String get within1to2Months => translate('within1to2Months');
+  String get evaluating => translate('evaluating');
   String get manageVatNumber => translate('manageVatNumber');
   String get ordinaryAccountingInvoicing => translate('ordinaryAccountingInvoicing');
+  String get hasActiveVatForfettario => translate('hasActiveVatForfettario');
+  String get forfettarioServiceOnly => translate('forfettarioServiceOnly');
+  String get vatActiveFrom => translate('vatActiveFrom');
+  String get currentYear => translate('currentYear');
+  String get previousYears => translate('previousYears');
+  String get atecoActivitySector => translate('atecoActivitySector');
   String get taxesContributions => translate('taxesContributions');
   String get f24InpsTaxDeadlines => translate('f24InpsTaxDeadlines');
+  String get clarifyTopic => translate('clarifyTopic');
+  String get taxCalculation => translate('taxCalculation');
+  String get depositsBalances => translate('depositsBalances');
+  String get inpsContributionsTax => translate('inpsContributionsTax');
+  String get f24Payments => translate('f24Payments');
+  String get multipleSelectionAllowed => translate('multipleSelectionAllowed');
+  String get workSituation => translate('workSituation');
+  String get employeeWorker => translate('employeeWorker');
+  String get vatForfettario => translate('vatForfettario');
+  String get urgencyLevel => translate('urgencyLevel');
+  String get informative => translate('informative');
+  String get imminentDeadline => translate('imminentDeadline');
   String get clarificationsConsulting => translate('clarificationsConsulting');
+  String get howCanWeHelp => translate('howCanWeHelp');
+  String get personalizedExplanations => translate('personalizedExplanations');
+  String get taxPositionVerification => translate('taxPositionVerification');
+  String get taxRegimeChange => translate('taxRegimeChange');
+  String get questionsNotSureWhereToStart => translate('questionsNotSureWhereToStart');
+  String get workSituationQuestion => translate('workSituationQuestion');
+  String get notWorkingOther => translate('notWorkingOther');
+  String get urgencyQuestion => translate('urgencyQuestion');
+  String get closeDeadline => translate('closeDeadline');
   String get questionsAccountingSupport => translate('questionsAccountingSupport');
   String get closeChangeActivity => translate('closeChangeActivity');
   String get businessTerminationModification => translate('businessTerminationModification');
+  String get whatDoYouWantToDoActivity => translate('whatDoYouWantToDoActivity');
+  String get closeVatActivity => translate('closeVatActivity');
+  String get suspendTemporarily => translate('suspendTemporarily');
+  String get changeActivityAteco => translate('changeActivityAteco');
+  String get currentFiscalRegime => translate('currentFiscalRegime');
+  String get forfettarioRegime => translate('forfettarioRegime');
+  String get otherRegime => translate('otherRegime');
+  String get dontKnowRegime => translate('dontKnowRegime');
+  String get verifyBestSolution => translate('verifyBestSolution');
+  String get whenProceed => translate('whenProceed');
   String get businessType => translate('businessType');
   String get trade => translate('trade');
   String get servicesActivity => translate('servicesActivity');
@@ -2296,6 +2544,16 @@ class AppLocalizations {
   String get taxpayerType => translate('taxpayerType');
   String get employee => translate('employee');
   String get pensioner => translate('pensioner');
+  String get workType => translate('workType');
+  String get housekeeper => translate('housekeeper');
+  String get caregiver => translate('caregiver');
+  String get babysitter => translate('babysitter');
+  String get selfEmployedForfettario => translate('selfEmployedForfettario');
+  String get missedTax730Deadline => translate('missedTax730Deadline');
+  String get multipleContracts => translate('multipleContracts');
+  String get homeMortgage => translate('homeMortgage');
+  String get pensionIncome => translate('pensionIncome');
+  String get requiredDocuments => translate('requiredDocuments');
   String get fiscalYear => translate('fiscalYear');
   String get hasDeductibleExpenses => translate('hasDeductibleExpenses');
   String get notesAndAdditionalInfo => translate('notesAndAdditionalInfo');
@@ -2519,6 +2777,9 @@ class AppLocalizations {
   String get operatorWillContact => translate('operatorWillContact');
   String get errorNotAuthenticated => translate('errorNotAuthenticated');
   String get errorSendingRequest => translate('errorSendingRequest');
+  
+  // WhatsApp Support
+  String get whatsappDocumentSupport => translate('whatsappDocumentSupport');
 }
 
 class _AppLocalizationsDelegate

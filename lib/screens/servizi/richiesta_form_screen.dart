@@ -576,9 +576,8 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       case 'text':
         field = TextFormField(
           controller: _controllers[label],
-          decoration: InputDecoration(
-            labelText: label + (required ? ' *' : ''),
-            border: const OutlineInputBorder(),
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
           ),
           validator:
               required
@@ -591,9 +590,8 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       case 'textarea':
         field = TextFormField(
           controller: _controllers[label],
-          decoration: InputDecoration(
-            labelText: label + (required ? ' *' : ''),
-            border: const OutlineInputBorder(),
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
           ),
           maxLines: 4,
           validator:
@@ -607,9 +605,8 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       case 'number':
         field = TextFormField(
           controller: _controllers[label],
-          decoration: InputDecoration(
-            labelText: label + (required ? ' *' : ''),
-            border: const OutlineInputBorder(),
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
           ),
           keyboardType: TextInputType.number,
           validator:
@@ -623,10 +620,9 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       case 'date':
         field = TextFormField(
           controller: _controllers[label],
-          decoration: InputDecoration(
-            labelText: label + (required ? ' *' : ''),
-            border: const OutlineInputBorder(),
-            suffixIcon: const Icon(Icons.calendar_today),
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            suffixIcon: Icon(Icons.calendar_today),
           ),
           readOnly: true,
           onTap: () async {
@@ -652,9 +648,8 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       case 'select':
         final options = campo['options'] as List<dynamic>;
         field = DropdownButtonFormField<String>(
-          decoration: InputDecoration(
-            labelText: label + (required ? ' *' : ''),
-            border: const OutlineInputBorder(),
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
           ),
           items:
               options.map((option) {
@@ -674,7 +669,37 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         field = const SizedBox();
     }
 
-    return Padding(padding: const EdgeInsets.only(bottom: 16), child: field);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          RichText(
+            text: TextSpan(
+              text: label,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey.shade800,
+              ),
+              children: required
+                  ? [
+                      TextSpan(
+                        text: ' *',
+                        style: TextStyle(
+                          color: Colors.red.shade700,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ]
+                  : [],
+            ),
+          ),
+          const SizedBox(height: 8),
+          field,
+        ],
+      ),
+    );
   }
 
   /// Converte le label italiane dei campi in chiavi snake_case per l'API

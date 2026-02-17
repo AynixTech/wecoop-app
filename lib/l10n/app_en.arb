@@ -135,6 +135,10 @@
   "taxMediation": "Tax Mediation",
   "accountingSupport": "Accounting Support",
   "residencePermit": "Residence Permit",
+  "duplicatePermit": "Duplicate residence permit",
+  "duplicatePermitDesc": "Request for duplicate due to loss, theft or deterioration",
+  "longTermPermitUpdate": "Long-term permit update",
+  "longTermPermitUpdateDesc": "Update of EC long-term residents permit data",
   
   "yes": "Yes",
   "no": "No",

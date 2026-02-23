@@ -77,6 +77,7 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                               TipoDocumento.codiceFiscale,
                               TipoDocumento.cartaIdentita,
                             ],
+                            modalitaConsegna: const ['courier', 'pickup', 'email'],
                           ),
                     ),
                   );
@@ -133,6 +134,7 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                               TipoDocumento.codiceFiscale,
                               TipoDocumento.cartaIdentita,
                             ],
+                            modalitaConsegna: const ['courier', 'pickup', 'email'],
                           ),
                     ),
                   );
@@ -194,6 +196,7 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                               TipoDocumento.codiceFiscale,
                               TipoDocumento.cartaIdentita,
                             ],
+                            modalitaConsegna: const ['courier', 'pickup', 'email'],
                           ),
                     ),
                   );
@@ -256,6 +259,7 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                               TipoDocumento.codiceFiscale,
                               TipoDocumento.cartaIdentita,
                             ],
+                            modalitaConsegna: const ['courier', 'pickup', 'email'],
                           ),
                     ),
                   );
@@ -321,6 +325,7 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                               TipoDocumento.codiceFiscale,
                               TipoDocumento.cartaIdentita,
                             ],
+                            modalitaConsegna: const ['courier', 'pickup', 'email'],
                           ),
                     ),
                   );
@@ -387,6 +392,7 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                               TipoDocumento.codiceFiscale,
                               TipoDocumento.cartaIdentita,
                             ],
+                            modalitaConsegna: const ['courier', 'pickup', 'email'],
                           ),
                     ),
                   );
@@ -457,6 +463,7 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                               TipoDocumento.codiceFiscale,
                               TipoDocumento.cartaIdentita,
                             ],
+                            modalitaConsegna: const ['courier', 'pickup', 'email'],
                           ),
                     ),
                   );
@@ -527,6 +534,7 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                               TipoDocumento.codiceFiscale,
                               TipoDocumento.cartaIdentita,
                             ],
+                            modalitaConsegna: const ['courier', 'pickup', 'email'],
                           ),
                     ),
                   );

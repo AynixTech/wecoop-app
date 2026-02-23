@@ -503,15 +503,15 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                                 },
                               ),
                               const SizedBox(height: 16),
+                              ...widget.campi.map(
+                                (campo) => _buildField(campo),
+                              ),
                               // Sezione documenti richiesti
                               if (widget.documentiRichiesti != null && widget.documentiRichiesti!.isNotEmpty)
                                 _buildDocumentiRichiestiSection(),
                               // Sezione modalità di consegna
                               if (widget.modalitaConsegna != null && widget.modalitaConsegna!.isNotEmpty)
                                 _buildModalitaConsegnaSection(),
-                              ...widget.campi.map(
-                                (campo) => _buildField(campo),
-                              ),
                             ],
                           ),
                         ),

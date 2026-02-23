@@ -743,6 +743,12 @@ class AppLocalizations {
       'phoneAlreadyRegistered': 'Numero già registrato',
       'alreadyHaveAccount': 'Hai già un account? Prova ad effettuare il login.',
       'welcomeSuccess': '🎉 Benvenuto! Accesso effettuato con successo',
+      // Modalità di consegna
+      'deliveryMethodsTitle': 'Modalità di consegna',
+      'selectDeliveryMethods': 'Seleziona le modalità di consegna preferite',
+      'courierShipping': 'Spedizione con corriere',
+      'pickupAtOffice': 'Ritiro presso la sede',
+      'emailDelivery': 'Invio via email',
     },
     'en': {
       'appTitle': 'WECOOP',
@@ -1454,6 +1460,12 @@ class AppLocalizations {
       'waitingEmployment': 'Waiting for employment',
       'waitingEmploymentDesc': 'Request permit while waiting for employment',
       'familyReunificationPermit': 'Family reunification permit',
+      // Delivery methods
+      'deliveryMethodsTitle': 'Delivery methods',
+      'selectDeliveryMethods': 'Select preferred delivery methods',
+      'courierShipping': 'Courier shipping',
+      'pickupAtOffice': 'Pickup at office',
+      'emailDelivery': 'Email delivery',
     },
     'es': {
       'appTitle': 'WECOOP',
@@ -2158,6 +2170,12 @@ class AppLocalizations {
       'waitingEmployment': 'En espera de empleo',
       'waitingEmploymentDesc': 'Solicitar permiso mientras esperas empleo',
       'familyReunificationPermit': 'Permiso de reagrupación familiar',
+      // Métodos de entrega
+      'deliveryMethodsTitle': 'Métodos de entrega',
+      'selectDeliveryMethods': 'Selecciona los métodos de entrega preferidos',
+      'courierShipping': 'Envío con mensajero',
+      'pickupAtOffice': 'Recogida en la oficina',
+      'emailDelivery': 'Envío por correo electrónico',
     },
   };
 
@@ -2780,6 +2798,13 @@ class AppLocalizations {
   
   // WhatsApp Support
   String get whatsappDocumentSupport => translate('whatsappDocumentSupport');
+  
+  // Delivery Methods
+  String get deliveryMethodsTitle => translate('deliveryMethodsTitle');
+  String get selectDeliveryMethods => translate('selectDeliveryMethods');
+  String get courierShipping => translate('courierShipping');
+  String get pickupAtOffice => translate('pickupAtOffice');
+  String get emailDelivery => translate('emailDelivery');
 }
 
 class _AppLocalizationsDelegate

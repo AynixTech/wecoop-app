@@ -209,6 +209,8 @@ class RichiestaFormScreen extends StatefulWidget {
   final String categoria;
   final List<Map<String, dynamic>> campi;
   final List<String>? documentiRichiesti;
+  final List<String>? modalitaConsegna;
+  
 
   const RichiestaFormScreen({
     super.key,
@@ -216,6 +218,7 @@ class RichiestaFormScreen extends StatefulWidget {
     required this.categoria,
     required this.campi,
     this.documentiRichiesti,
+    this.modalitaConsegna,
   });
 
   @override
@@ -231,6 +234,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   bool _isSubmitting = false;
   bool _isLoading = true;
   List<String> _documentiMancanti = [];
+  final Set<String> _modalitaConsegnaSelezionate = {};
 
   @override
   void initState() {
@@ -502,6 +506,9 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                               // Sezione documenti richiesti
                               if (widget.documentiRichiesti != null && widget.documentiRichiesti!.isNotEmpty)
                                 _buildDocumentiRichiestiSection(),
+                              // Sezione modalità di consegna
+                              if (widget.modalitaConsegna != null && widget.modalitaConsegna!.isNotEmpty)
+                                _buildModalitaConsegnaSection(),
                               ...widget.campi.map(
                                 (campo) => _buildField(campo),
                               ),
@@ -819,6 +826,13 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     for (var entry in _controllers.entries) {
       if (entry.value.text.isNotEmpty) {
         _formData[entry.key] = entry.value.text;
+      }
+    }
+
+    // Aggiungi modalità di consegna selezionate se presenti
+    if (widget.modalitaConsegna != null && widget.modalitaConsegna!.isNotEmpty) {
+      if (_modalitaConsegnaSelezionate.isNotEmpty) {
+        _formData['modalita_consegna'] = _modalitaConsegnaSelezionate.toList();
       }
     }
 
@@ -1146,6 +1160,96 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
               foregroundColor: Colors.white,
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  // Costruisce la sezione modalità di consegna
+  Widget _buildModalitaConsegnaSection() {
+    final l10n = AppLocalizations.of(context)!;
+    
+    // Mappa delle modalità disponibili con le loro chiavi e etichette localizzate
+    final modalitaDisponibili = {
+      'courier': l10n.courierShipping,
+      'pickup': l10n.pickupAtOffice,
+      'email': l10n.emailDelivery,
+    };
+    
+    // Filtra solo le modalità disponibili per questo servizio
+    final modalitaPerServizio = <String, String>{};
+    for (var modalita in widget.modalitaConsegna!) {
+      if (modalitaDisponibili.containsKey(modalita)) {
+        modalitaPerServizio[modalita] = modalitaDisponibili[modalita]!;
+      }
+    }
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.blue.shade300,
+          width: 2,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.local_shipping,
+                color: Colors.blue.shade700,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.deliveryMethodsTitle.toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.selectDeliveryMethods,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade700,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ...modalitaPerServizio.entries.map((entry) {
+            final key = entry.key;
+            final label = entry.value;
+            final isSelected = _modalitaConsegnaSelezionate.contains(key);
+            
+            return CheckboxListTile(
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+              title: Text(
+                label,
+                style: const TextStyle(fontSize: 14),
+              ),
+              value: isSelected,
+              onChanged: (bool? value) {
+                setState(() {
+                  if (value == true) {
+                    _modalitaConsegnaSelezionate.add(key);
+                  } else {
+                    _modalitaConsegnaSelezionate.remove(key);
+                  }
+                });
+              },
+              activeColor: Colors.blue,
+            );
+          }),
         ],
       ),
     );

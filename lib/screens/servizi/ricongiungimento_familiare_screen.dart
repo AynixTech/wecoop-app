@@ -107,6 +107,7 @@ class RicongiungimentoFamiliareScreen extends StatelessWidget {
                 'required': false,
               },
             ],
+            modalitaConsegna: const ['courier', 'pickup', 'email'],
           ),
         ),
       );

@@ -114,6 +114,7 @@ class _CittadinanzaScreenState extends State<CittadinanzaScreen> {
                   'required': false,
                 },
               ],
+              modalitaConsegna: const ['courier', 'pickup', 'email'],
             ),
       ),
     );

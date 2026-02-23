@@ -82,6 +82,7 @@ class MediazioneFiscaleScreen extends StatelessWidget {
                           },
                           {'label': l10n.notesAndAdditionalInfo, 'type': 'textarea', 'required': false},
                         ],
+                        modalitaConsegna: const ['courier', 'pickup', 'email'],
                       ),
                     ),
                   );
@@ -147,6 +148,7 @@ class MediazioneFiscaleScreen extends StatelessWidget {
                           },
                           {'label': l10n.notesAndAdditionalInfo, 'type': 'textarea', 'required': false},
                         ],
+                        modalitaConsegna: const ['courier', 'pickup', 'email'],
                       ),
                     ),
                   );

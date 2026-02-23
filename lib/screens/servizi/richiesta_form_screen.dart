@@ -235,6 +235,13 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   bool _isLoading = true;
   List<String> _documentiMancanti = [];
   final Set<String> _modalitaConsegnaSelezionate = {};
+  
+  // Controller per campi modalità di consegna
+  final _consegnaIndirizzoController = TextEditingController();
+  final _consegnaCittaController = TextEditingController();
+  final _consegnaCapController = TextEditingController();
+  final _consegnaProvinciaController = TextEditingController();
+  final _consegnaEmailController = TextEditingController();
 
   @override
   void initState() {
@@ -262,6 +269,11 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     for (var controller in _controllers.values) {
       controller.dispose();
     }
+    _consegnaIndirizzoController.dispose();
+    _consegnaCittaController.dispose();
+    _consegnaCapController.dispose();
+    _consegnaProvinciaController.dispose();
+    _consegnaEmailController.dispose();
     super.dispose();
   }
 
@@ -348,6 +360,18 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         prefilledData['Postal Code'] = cap;
         prefilledData['Código Postal'] = cap;
       }
+      
+      // Provincia
+      if (provincia != null) {
+        prefilledData['Provincia'] = provincia;
+      }
+      
+      // Precompila i campi per modalità di consegna
+      if (indirizzo != null) _consegnaIndirizzoController.text = indirizzo;
+      if (citta != null) _consegnaCittaController.text = citta;
+      if (cap != null) _consegnaCapController.text = cap;
+      if (provincia != null) _consegnaProvinciaController.text = provincia;
+      if (email != null) _consegnaEmailController.text = email;
 
       // Provincia
       if (provincia != null) {
@@ -833,6 +857,20 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     if (widget.modalitaConsegna != null && widget.modalitaConsegna!.isNotEmpty) {
       if (_modalitaConsegnaSelezionate.isNotEmpty) {
         _formData['modalita_consegna'] = _modalitaConsegnaSelezionate.toList();
+        
+        // Aggiungi dati specifici per ogni modalità
+        if (_modalitaConsegnaSelezionate.contains('courier')) {
+          _formData['consegna_indirizzo'] = _consegnaIndirizzoController.text;
+          _formData['consegna_citta'] = _consegnaCittaController.text;
+          _formData['consegna_cap'] = _consegnaCapController.text;
+          _formData['consegna_provincia'] = _consegnaProvinciaController.text;
+        }
+        if (_modalitaConsegnaSelezionate.contains('email')) {
+          _formData['consegna_email'] = _consegnaEmailController.text;
+        }
+        if (_modalitaConsegnaSelezionate.contains('pickup')) {
+          _formData['consegna_indirizzo_ritiro'] = 'Via Populonia 8, 20159 Milano MI';
+        }
       }
     }
 
@@ -1250,6 +1288,149 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
               activeColor: Colors.blue,
             );
           }),
+          
+          // Campi dinamici per Corriere
+          if (_modalitaConsegnaSelezionate.contains('courier'))
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16),
+                const Divider(),
+                const SizedBox(height: 8),
+                Text(
+                  'Indirizzo di consegna',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade800,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _consegnaIndirizzoController,
+                  decoration: const InputDecoration(
+                    labelText: 'Indirizzo *',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.location_on),
+                  ),
+                  validator: (value) => value?.isEmpty ?? true ? 'Campo obbligatorio' : null,
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: TextFormField(
+                        controller: _consegnaCittaController,
+                        decoration: const InputDecoration(
+                          labelText: 'Città *',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) => value?.isEmpty ?? true ? 'Obbligatorio' : null,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _consegnaCapController,
+                        decoration: const InputDecoration(
+                          labelText: 'CAP *',
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (value) => value?.isEmpty ?? true ? 'Obbligatorio' : null,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _consegnaProvinciaController,
+                  decoration: const InputDecoration(
+                    labelText: 'Provincia *',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) => value?.isEmpty ?? true ? 'Campo obbligatorio' : null,
+                ),
+              ],
+            ),
+          
+          // Campi dinamici per Email
+          if (_modalitaConsegnaSelezionate.contains('email'))
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16),
+                const Divider(),
+                const SizedBox(height: 8),
+                Text(
+                  'Indirizzo email per la consegna',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade800,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _consegnaEmailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email *',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.email),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) return 'Campo obbligatorio';
+                    if (!value!.contains('@')) return 'Email non valida';
+                    return null;
+                  },
+                ),
+              ],
+            ),
+          
+          // Informazioni per Ritiro in sede
+          if (_modalitaConsegnaSelezionate.contains('pickup'))
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16),
+                const Divider(),
+                const SizedBox(height: 8),
+                Text(
+                  'Indirizzo di ritiro',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade800,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.green.shade200),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.location_on, color: Colors.green.shade700),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Text(
+                          'Via Populonia 8, 20159 Milano MI',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
         ],
       ),
     );

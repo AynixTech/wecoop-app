@@ -277,7 +277,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Future<void> _mostraDettaglioRichiesta(Map<String, dynamic> richiesta) async {
+    final richiestaDettaglio = Map<String, dynamic>.from(richiesta);
     final firmaRichiestaId = _resolveFirmaRichiestaId(richiesta);
+
+    final servizioIdInLista = _resolveServizioId(richiestaDettaglio);
+    if (servizioIdInLista == 'N/A' && firmaRichiestaId != null) {
+      try {
+        print('🔎 [Dettaglio] servizioId assente in lista, provo GET dettaglio richiesta id=$firmaRichiestaId');
+        final dettaglio = await SocioService.getDettaglioRichiesta(firmaRichiestaId);
+        if (dettaglio != null && dettaglio.isNotEmpty) {
+          richiestaDettaglio.addAll(dettaglio);
+          print('✅ [Dettaglio] richiesta arricchita da endpoint dettaglio, servizioId=${_resolveServizioId(richiestaDettaglio)}');
+        } else {
+          print('⚠️ [Dettaglio] endpoint dettaglio non ha restituito dati utili per servizioId');
+        }
+      } catch (e) {
+        print('❌ [Dettaglio] errore recupero dettaglio richiesta id=$firmaRichiestaId: $e');
+      }
+    }
 
     if (firmaRichiestaId != null) {
       try {
@@ -314,7 +331,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => _buildDettaglioSheet(richiesta),
+      builder: (context) => _buildDettaglioSheet(richiestaDettaglio),
     );
   }
 
@@ -874,6 +891,25 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return null;
   }
 
+  String? _resolveDocumentoUnicoUrlFromRichiesta(Map<String, dynamic> richiesta) {
+    final candidates = [
+      richiesta['documento_unico_url'],
+      richiesta['documento_url'],
+      richiesta['documento_download_url'],
+      richiesta['modello_unico_url'],
+      richiesta['url_documento'],
+    ];
+
+    for (final candidate in candidates) {
+      final value = candidate?.toString();
+      if (_isValidWebUrl(value)) {
+        return value!.trim();
+      }
+    }
+
+    return null;
+  }
+
   int? _resolveFirmaRichiestaId(Map<String, dynamic> richiesta) {
     final candidates = [
       richiesta['richiesta_id'],
@@ -894,20 +930,48 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return null;
   }
 
+  String? _coerceNonEmptyId(dynamic value) {
+    if (value == null) return null;
+
+    if (value is int) return value.toString();
+
+    final parsed = value.toString().trim();
+    if (parsed.isEmpty || parsed.toLowerCase() == 'null') {
+      return null;
+    }
+
+    return parsed;
+  }
+
+  Map<String, dynamic> _asMap(dynamic value) {
+    if (value is Map) {
+      return value.map((key, mapValue) => MapEntry(key.toString(), mapValue));
+    }
+    return <String, dynamic>{};
+  }
+
   String _resolveServizioId(Map<String, dynamic> richiesta) {
+    final servizioMap = _asMap(richiesta['servizio']);
+    final servizioDettaglioMap = _asMap(richiesta['servizio_dettaglio']);
+
     final candidates = [
+      richiesta['servizioId'],
       richiesta['servizio_id'],
       richiesta['id_servizio'],
       richiesta['service_id'],
-      richiesta['servizio'] is Map<String, dynamic>
-          ? (richiesta['servizio']['id'] ?? richiesta['servizio']['servizio_id'])
-          : null,
+      servizioMap['id'],
+      servizioMap['servizio_id'],
+      servizioMap['id_servizio'],
+      servizioMap['service_id'],
+      servizioMap['servizioId'],
+      servizioDettaglioMap['id'],
+      servizioDettaglioMap['servizio_id'],
+      servizioDettaglioMap['service_id'],
     ];
 
     for (final candidate in candidates) {
-      if (candidate == null) continue;
-      final value = candidate.toString().trim();
-      if (value.isNotEmpty && value.toLowerCase() != 'null') {
+      final value = _coerceNonEmptyId(candidate);
+      if (value != null) {
         return value;
       }
     }
@@ -961,13 +1025,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
 
     final userIdRaw = await storage.read(key: 'user_id');
+    final socioIdRaw = await storage.read(key: 'socio_id');
     final telefonoRaw =
         await storage.read(key: 'telefono') ?? await storage.read(key: 'user_phone');
 
-    final userId = userIdRaw != null ? int.tryParse(userIdRaw) : null;
+    final parsedUserId = userIdRaw != null ? int.tryParse(userIdRaw) : null;
+    final parsedSocioId = socioIdRaw != null ? int.tryParse(socioIdRaw) : null;
+    final userId = parsedUserId ?? parsedSocioId;
     final telefono = telefonoRaw?.trim();
 
     print('🔐 [FirmaFlow] Storage user_id raw: $userIdRaw');
+    print('🔐 [FirmaFlow] Storage socio_id raw: $socioIdRaw');
     print('🔐 [FirmaFlow] Storage telefono presente: ${telefono != null && telefono.isNotEmpty}');
     print('🔐 [FirmaFlow] userId parse: $userId');
 
@@ -977,7 +1045,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       print('❌ [FirmaFlow] Dati utente mancanti, blocco apertura firma');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Dati utente non disponibili per la firma digitale'),
+          content: Text('Dati utente non disponibili per la firma digitale (user_id/socio_id o telefono mancanti)'),
           backgroundColor: Colors.red,
         ),
       );
@@ -1005,7 +1073,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Widget _buildDettaglioSheet(Map<String, dynamic> richiesta) {
     final stato = richiesta['stato'] ?? '';
-    final servizioId = _resolveServizioId(richiesta);
     final statoLabel = _getStatoLabelTradotto(stato);
     final pagamento = richiesta['pagamento'] ?? {};
     final puoPagare = richiesta['puo_pagare'] == true;
@@ -1018,12 +1085,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final firmaStatus =
       firmaRichiestaId != null ? _firmaStatusByRichiesta[firmaRichiestaId] : null;
     final isGiaFirmata = firmaStatus?.firmato == true;
-    final canOpenFirmaCta = isFirmabile && richiestaId != null && !isGiaFirmata;
+    final documentoUnicoUrl =
+        _resolveDocumentoUnicoUrl(firmaStatus) ??
+        _resolveDocumentoUnicoUrlFromRichiesta(richiesta);
+    final canOpenFirmaCta = documentoUnicoUrl != null && !isGiaFirmata;
     
     // Debug: verifica dati pagamento COMPLETI
     print('📋 ==================== DEBUG RICHIESTA ====================');
     print('📋 Richiesta ID: $richiestaId');
-    print('📋 Servizio ID: $servizioId');
     print('📋 Stato: $stato');
     print('📋 Numero pratica: ${richiesta['numero_pratica']}');
     print('💰 ==================== PAGAMENTO COMPLETO ====================');
@@ -1110,8 +1179,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         Icons.confirmation_number,
                       ),
                       _buildInfoRow(
-                        'ID Servizio',
-                        servizioId,
+                        'ID Richiesta',
+                        richiestaId?.toString() ?? 'N/A',
                         Icons.badge_outlined,
                       ),
                       _buildInfoRow(
@@ -1547,15 +1616,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           ),
                         ),
 
-                        if (_resolveDocumentoUnicoUrl(firmaStatus) != null) ...[
+                        if (documentoUnicoUrl != null) ...[
                           const SizedBox(height: 12),
                           OutlinedButton.icon(
-                            onPressed: () {
-                              final docUrl = _resolveDocumentoUnicoUrl(firmaStatus);
-                              if (docUrl != null) {
-                                _visualizzaDocumentoUnico(docUrl);
-                              }
-                            },
+                            onPressed: () => _visualizzaDocumentoUnico(documentoUnicoUrl),
                             icon: const Icon(Icons.description_outlined),
                             label: const Text('Visualizza Documento Unico'),
                             style: OutlinedButton.styleFrom(

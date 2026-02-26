@@ -277,11 +277,130 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     super.dispose();
   }
 
+  String _normalizeFieldLabel(String input) {
+    return input
+        .toLowerCase()
+        .trim()
+        .replaceAll(RegExp(r'[^a-z0-9\s]'), ' ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+  }
+
+  bool _isFullNameFieldLabel(String label) {
+    final normalized = _normalizeFieldLabel(label);
+    final hasNome = normalized.contains('nome');
+    final hasCognome = normalized.contains('cognome');
+    final hasCompleto = normalized.contains('completo');
+    final hasNominativo = normalized.contains('nominativo');
+    final hasFullName = normalized.contains('full name');
+    final hasNombreCompleto = normalized.contains('nombre completo');
+
+    return (hasNome && hasCognome) ||
+        (hasNome && hasCompleto) ||
+        hasNominativo ||
+        hasFullName ||
+        hasNombreCompleto;
+  }
+
+  String _joinNameParts(String? first, String? last) {
+    return '${first ?? ''} ${last ?? ''}'.trim();
+  }
+
+  String? _toNonEmptyString(dynamic value) {
+    if (value == null) return null;
+    final parsed = value.toString().trim();
+    if (parsed.isEmpty || parsed.toLowerCase() == 'null') return null;
+    return parsed;
+  }
+
+  String? _firstNonEmpty(List<dynamic> candidates) {
+    for (final candidate in candidates) {
+      final parsed = _toNonEmptyString(candidate);
+      if (parsed != null) return parsed;
+    }
+    return null;
+  }
+
+  Map<String, dynamic> _asStringDynamicMap(dynamic value) {
+    if (value is! Map) return <String, dynamic>{};
+    return value.map(
+      (key, mapValue) => MapEntry(key.toString(), mapValue),
+    );
+  }
+
+  Map<String, String?> _extractNamePartsFromApiData(Map<String, dynamic> meData) {
+    final userData = _asStringDynamicMap(meData['user']);
+    final wpUserData = _asStringDynamicMap(meData['wp_user']);
+    final profileData = _asStringDynamicMap(meData['profilo']);
+
+    final apiFirstName = _firstNonEmpty([
+      meData['nome'],
+      meData['first_name'],
+      meData['firstname'],
+      meData['given_name'],
+      userData['nome'],
+      userData['first_name'],
+      userData['firstname'],
+      userData['given_name'],
+      wpUserData['nome'],
+      wpUserData['first_name'],
+      wpUserData['given_name'],
+      profileData['nome'],
+      profileData['first_name'],
+    ]);
+
+    final apiLastName = _firstNonEmpty([
+      meData['cognome'],
+      meData['last_name'],
+      meData['lastname'],
+      meData['family_name'],
+      userData['cognome'],
+      userData['last_name'],
+      userData['lastname'],
+      userData['family_name'],
+      wpUserData['cognome'],
+      wpUserData['last_name'],
+      wpUserData['family_name'],
+      profileData['cognome'],
+      profileData['last_name'],
+    ]);
+
+    final apiFullName = _firstNonEmpty([
+      meData['full_name'],
+      meData['nome_completo'],
+      meData['display_name'],
+      meData['name'],
+      meData['nominativo'],
+      userData['full_name'],
+      userData['display_name'],
+      userData['name'],
+      wpUserData['full_name'],
+      wpUserData['display_name'],
+      wpUserData['name'],
+      profileData['full_name'],
+      profileData['nome_completo'],
+      profileData['nominativo'],
+    ]);
+
+    final joined = _joinNameParts(apiFirstName, apiLastName);
+
+    return {
+      'first': apiFirstName,
+      'last': apiLastName,
+      'full': apiFullName ?? joined,
+    };
+  }
+
   /// Carica i dati dell'utente loggato e precompila i campi
   Future<void> _loadUserData() async {
     try {
       // Leggi tutti i dati dall'endpoint /soci/me
       final fullName = await _storage.read(key: 'full_name');
+      String? firstName = await _storage.read(key: 'first_name');
+      String? lastName = await _storage.read(key: 'last_name');
+      String? nome = await _storage.read(key: 'nome');
+      String? cognome = await _storage.read(key: 'cognome');
+      final userDisplayName = await _storage.read(key: 'user_display_name');
       final email = await _storage.read(key: 'user_email');
       final telefono = await _storage.read(key: 'telefono');
       final citta = await _storage.read(key: 'citta');
@@ -295,8 +414,65 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       final paeseOrigine = await _storage.read(key: 'paese_origine');
       final nazionalita = await _storage.read(key: 'nazionalita');
 
+      var computedFullName = _joinNameParts(firstName, lastName);
+      if (computedFullName.isEmpty) {
+        computedFullName = _joinNameParts(nome, cognome);
+      }
+
+      var resolvedFullName =
+          (fullName != null && fullName.trim().isNotEmpty)
+              ? fullName.trim()
+              : computedFullName;
+
+      if (resolvedFullName.isEmpty &&
+          userDisplayName != null &&
+          userDisplayName.trim().isNotEmpty) {
+        resolvedFullName = userDisplayName.trim();
+        await _storage.write(key: 'full_name', value: resolvedFullName);
+        print(
+          '✅ [Prefill] Nome recuperato da storage user_display_name: $resolvedFullName',
+        );
+      }
+
+      if (resolvedFullName.isEmpty) {
+        print('⚠️ [Prefill] Nome non trovato in storage, provo fallback API /soci/me...');
+        final meData = await SocioService.getMe();
+        if (meData != null) {
+          final extractedNameParts = _extractNamePartsFromApiData(meData);
+          final apiNome = extractedNameParts['first'];
+          final apiCognome = extractedNameParts['last'];
+          final apiFullName = extractedNameParts['full'] ?? '';
+
+          if (apiNome != null && apiNome.isNotEmpty) {
+            firstName = apiNome;
+            await _storage.write(key: 'first_name', value: apiNome);
+            await _storage.write(key: 'nome', value: apiNome);
+          }
+          if (apiCognome != null && apiCognome.isNotEmpty) {
+            lastName = apiCognome;
+            await _storage.write(key: 'last_name', value: apiCognome);
+            await _storage.write(key: 'cognome', value: apiCognome);
+          }
+          if (apiFullName.isNotEmpty) {
+            resolvedFullName = apiFullName;
+            await _storage.write(key: 'full_name', value: apiFullName);
+            print('✅ [Prefill] Nome recuperato da API /soci/me (alias-aware): $apiFullName');
+          } else {
+            print('⚠️ [Prefill] API /soci/me non contiene campi nome utilizzabili');
+          }
+        } else {
+          print('⚠️ [Prefill] Fallback API /soci/me non disponibile');
+        }
+      }
+
       print('=== DEBUG PRECOMPILAZIONE ===');
       print('fullName: $fullName');
+      print('firstName: $firstName');
+      print('lastName: $lastName');
+      print('nome (legacy key): $nome');
+      print('cognome (legacy key): $cognome');
+      print('user_display_name: $userDisplayName');
+      print('resolvedFullName (post-fallback): $resolvedFullName');
       print('email: $email');
       print('telefono: $telefono');
       print('citta: $citta');
@@ -312,12 +488,16 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       final prefilledData = <String, String>{};
 
       // Nome completo (italiano, inglese, spagnolo)
-      if (fullName != null && fullName.isNotEmpty) {
-        prefilledData['Nome completo'] = fullName;
-        prefilledData['Nome e Cognome'] = fullName;
-        prefilledData['Nome richiedente'] = fullName;
-        prefilledData['Full name'] = fullName;
-        prefilledData['Nombre completo'] = fullName;
+      if (resolvedFullName.isNotEmpty) {
+        prefilledData['Nome completo'] = resolvedFullName;
+        prefilledData['Nome e Cognome'] = resolvedFullName;
+        prefilledData['Nome richiedente'] = resolvedFullName;
+        prefilledData['Nome completo richiedente'] = resolvedFullName;
+        prefilledData['Nominativo'] = resolvedFullName;
+        prefilledData['Intestatario'] = resolvedFullName;
+        prefilledData['Full name'] = resolvedFullName;
+        prefilledData['Applicant full name'] = resolvedFullName;
+        prefilledData['Nombre completo'] = resolvedFullName;
       }
 
       // Email (italiano, inglese, spagnolo)
@@ -435,16 +615,57 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
 
       print('Dati precompilati: $prefilledData');
       print('Dati precompilati: $prefilledData');
+      print('Campi form ricevuti (${widget.campi.length}): ${widget.campi.map((c) => c['label']).toList()}');
+
+      final normalizedPrefilledData = <String, String>{
+        for (final entry in prefilledData.entries)
+          _normalizeFieldLabel(entry.key): entry.value,
+      };
 
       // Crea i controller per ogni campo con i valori precompilati
       for (var campo in widget.campi) {
         final label = campo['label'] as String;
+        final normalizedLabel = _normalizeFieldLabel(label);
+        final matchedExact = prefilledData[label] != null;
+        final matchedNormalized = normalizedPrefilledData[normalizedLabel] != null;
+        final looksLikeFullName = _isFullNameFieldLabel(label);
+        final fullNameFallbackValue =
+            looksLikeFullName && resolvedFullName.isNotEmpty
+                ? resolvedFullName
+                : null;
+
+        final prefilledValue =
+            prefilledData[label] ??
+            normalizedPrefilledData[normalizedLabel] ??
+            fullNameFallbackValue;
+
+        final source = matchedExact
+            ? 'exact-label'
+            : matchedNormalized
+                ? 'normalized-label'
+                : fullNameFallbackValue != null
+                    ? 'fullname-fallback'
+                    : 'none';
+
+        final preview =
+            (prefilledValue == null || prefilledValue.isEmpty)
+                ? '<vuoto>'
+                : (prefilledValue.length > 40
+                    ? '${prefilledValue.substring(0, 40)}...'
+                    : prefilledValue);
+
+        print(
+          '[PrefillField] label="$label" normalized="$normalizedLabel" '
+          'looksLikeFullName=$looksLikeFullName matchedExact=$matchedExact '
+          'matchedNormalized=$matchedNormalized source=$source value="$preview"',
+        );
+
         final controller = TextEditingController(
-          text: prefilledData[label] ?? '',
+          text: prefilledValue ?? '',
         );
         _controllers[label] = controller;
-        if (prefilledData[label] != null) {
-          _formData[label] = prefilledData[label];
+        if (prefilledValue != null) {
+          _formData[label] = prefilledValue;
         }
       }
 

@@ -5,6 +5,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'services/locale_provider.dart';
 import 'services/secure_storage_service.dart';
+import 'services/firma_digitale_provider.dart';
 import 'config/stripe_config.dart';
 import 'app.dart';
 
@@ -44,8 +45,15 @@ void main() async {
   }
   
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => LocaleProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => LocaleProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => FirmaDigitaleProvider(),
+        ),
+      ],
       child: const WECOOPApp(),
     ),
   );

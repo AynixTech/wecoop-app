@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
+import '../../services/firma_digitale_service.dart';
+import '../../models/firma_digitale_models.dart';
 import '../../services/socio_service.dart';
 import '../servizi/pagamento_screen.dart';
+import '../firma_digitale/firma_documento_screen.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -27,6 +33,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   bool _localeInitialized = false;
   final storage = SecureStorageService();
   String? _richiestaIdToOpen;
+  final Map<int, FirmaStatus> _firmaStatusByRichiesta = {};
 
   List<Map<String, dynamic>> _filtriStato = [];
 
@@ -269,7 +276,40 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
   }
 
-  void _mostraDettaglioRichiesta(Map<String, dynamic> richiesta) {
+  Future<void> _mostraDettaglioRichiesta(Map<String, dynamic> richiesta) async {
+    final firmaRichiestaId = _resolveFirmaRichiestaId(richiesta);
+
+    if (firmaRichiestaId != null) {
+      try {
+        print('📊 [FirmaFlow] pre-check dettaglio stato firma richiestaId=$firmaRichiestaId');
+        final statoFirma = await FirmaDigitaleService.ottieniStatoFirma(firmaRichiestaId);
+        if (mounted) {
+          setState(() {
+            _firmaStatusByRichiesta[firmaRichiestaId] = statoFirma;
+          });
+        }
+        print('📊 [FirmaFlow] pre-check esito richiestaId=$firmaRichiestaId firmato=${statoFirma.firmato}');
+      } on FirmaDigitaleException catch (e) {
+        if (e.code == 'NOT_FOUND') {
+          if (mounted) {
+            setState(() {
+              _firmaStatusByRichiesta[firmaRichiestaId] = FirmaStatus(
+                firmato: false,
+                richiestaId: firmaRichiestaId,
+              );
+            });
+          }
+          print('📊 [FirmaFlow] pre-check: nessuna firma esistente richiestaId=$firmaRichiestaId');
+        } else {
+          print('❌ [FirmaFlow] pre-check errore stato firma richiestaId=$firmaRichiestaId code=${e.code} msg=${e.message}');
+        }
+      } catch (e) {
+        print('❌ [FirmaFlow] pre-check eccezione stato firma richiestaId=$firmaRichiestaId: $e');
+      }
+    }
+
+    if (!mounted) return;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -673,6 +713,99 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
   }
 
+  String _buildViewerUrl(String sourceUrl) {
+    // Evita Google gview su Android WebView: può fallire con ERR_BLOCKED_BY_ORB.
+    // Carichiamo direttamente il PDF/URL originale.
+    return sourceUrl;
+  }
+
+  String _extractFileName(String? rawPathOrUrl) {
+    if (rawPathOrUrl == null || rawPathOrUrl.trim().isEmpty) {
+      return 'N/A';
+    }
+
+    final value = rawPathOrUrl.trim();
+    try {
+      final uri = Uri.parse(value);
+      if (uri.pathSegments.isNotEmpty) {
+        final candidate = Uri.decodeComponent(uri.pathSegments.last);
+        if (candidate.isNotEmpty) {
+          return candidate;
+        }
+      }
+    } catch (_) {}
+
+    final normalized = value.replaceAll('\\', '/');
+    final parts = normalized.split('/').where((part) => part.isNotEmpty).toList();
+    if (parts.isEmpty) return 'N/A';
+    return Uri.decodeComponent(parts.last);
+  }
+
+  Map<String, dynamic> _sanitizeMetadata(Map<String, dynamic> metadata) {
+    final sanitized = Map<String, dynamic>.from(metadata);
+    const sensitivePathKeys = [
+      'documento_url',
+      'documento_download_url',
+      'url',
+      'filepath',
+      'path',
+      'file_path',
+      'file',
+      'filename',
+      'nome_file',
+    ];
+
+    for (final key in sensitivePathKeys) {
+      if (sanitized[key] is String) {
+        sanitized[key] = _extractFileName(sanitized[key] as String);
+      }
+    }
+
+    return sanitized;
+  }
+
+  Future<void> _visualizzaDocumentoUnico(String url) async {
+    if (!mounted) return;
+
+    final uri = Uri.tryParse(url);
+    if (uri != null) {
+      final openedExternal = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (openedExternal) {
+        print('✅ [DocSigned] documento aperto esternamente: $url');
+        return;
+      }
+    }
+
+    final viewerUrl = _buildViewerUrl(url);
+
+    final controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (String startedUrl) {
+            print('🌐 [DocSigned] onPageStarted: $startedUrl');
+          },
+          onPageFinished: (String finishedUrl) {
+            print('✅ [DocSigned] onPageFinished: $finishedUrl');
+          },
+          onWebResourceError: (WebResourceError error) {
+            print('❌ [DocSigned] WebView error code=${error.errorCode} type=${error.errorType} description=${error.description}');
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(viewerUrl));
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: AppBar(title: const Text('Documento Unico Firmato')),
+          body: WebViewWidget(controller: controller),
+        ),
+      ),
+    );
+  }
+
   void _apriRichiestaById(String id) {
     print('🔍 Cerco richiesta con ID: $id');
     
@@ -697,16 +830,200 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
   }
 
+  bool _isRichiestaFirmabile(Map<String, dynamic> richiesta) {
+    if (richiesta['puo_firmare'] == true) {
+      return true;
+    }
+
+    final stato = (richiesta['stato'] ?? '').toString().toLowerCase();
+    return stato == 'pending_firma' ||
+        stato == 'awaiting_signature' ||
+        stato == 'in_attesa_firma' ||
+        stato == 'da_firmare' ||
+        stato == 'paid' ||
+        stato == 'completed' ||
+        stato == 'completata';
+  }
+
+  bool _hasMeaningfulValue(String? value) {
+    if (value == null) return false;
+    final normalized = value.trim().toLowerCase();
+    return normalized.isNotEmpty && normalized != 'null' && normalized != 'undefined';
+  }
+
+  bool _isValidWebUrl(String? value) {
+    if (!_hasMeaningfulValue(value)) return false;
+    final raw = value!.trim();
+    final uri = Uri.tryParse(raw);
+    if (uri == null) return false;
+    final scheme = uri.scheme.toLowerCase();
+    return (scheme == 'http' || scheme == 'https') && uri.host.isNotEmpty;
+  }
+
+  String? _resolveDocumentoUnicoUrl(FirmaStatus? firmaStatus) {
+    final downloadUrl = firmaStatus?.documentoDownloadUrl;
+    if (_isValidWebUrl(downloadUrl)) {
+      return downloadUrl!.trim();
+    }
+
+    final documentoUrl = firmaStatus?.documentoUrl;
+    if (_isValidWebUrl(documentoUrl)) {
+      return documentoUrl!.trim();
+    }
+
+    return null;
+  }
+
+  int? _resolveFirmaRichiestaId(Map<String, dynamic> richiesta) {
+    final candidates = [
+      richiesta['richiesta_id'],
+      richiesta['id_richiesta'],
+      richiesta['request_id'],
+      richiesta['service_request_id'],
+      richiesta['id'],
+    ];
+
+    for (final candidate in candidates) {
+      if (candidate is int) return candidate;
+      if (candidate is String) {
+        final parsed = int.tryParse(candidate);
+        if (parsed != null) return parsed;
+      }
+    }
+
+    return null;
+  }
+
+  String _resolveServizioId(Map<String, dynamic> richiesta) {
+    final candidates = [
+      richiesta['servizio_id'],
+      richiesta['id_servizio'],
+      richiesta['service_id'],
+      richiesta['servizio'] is Map<String, dynamic>
+          ? (richiesta['servizio']['id'] ?? richiesta['servizio']['servizio_id'])
+          : null,
+    ];
+
+    for (final candidate in candidates) {
+      if (candidate == null) continue;
+      final value = candidate.toString().trim();
+      if (value.isNotEmpty && value.toLowerCase() != 'null') {
+        return value;
+      }
+    }
+
+    return 'N/A';
+  }
+
+  Future<void> _apriFirmaDocumento(Map<String, dynamic> richiesta) async {
+    final firmaRichiestaId = _resolveFirmaRichiestaId(richiesta);
+    print('🔐 [FirmaFlow] Avvio apertura firma');
+    print('🔐 [FirmaFlow] Campi ID candidati: richiesta_id=${richiesta['richiesta_id']} id_richiesta=${richiesta['id_richiesta']} request_id=${richiesta['request_id']} service_request_id=${richiesta['service_request_id']} id=${richiesta['id']}');
+    print('🔐 [FirmaFlow] ID selezionato per endpoint documento-unico: $firmaRichiestaId');
+
+    if (firmaRichiestaId == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('ID richiesta non valido per firma digitale'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+
+    try {
+      print('📊 [FirmaFlow] controllo stato firma per richiestaId=$firmaRichiestaId');
+      final statoFirma = await FirmaDigitaleService.ottieniStatoFirma(firmaRichiestaId);
+      print('📊 [FirmaFlow] stato firma ricevuto: firmato=${statoFirma.firmato}, documentoUrl=${statoFirma.documentoUrl}, documentoDownloadUrl=${statoFirma.documentoDownloadUrl}');
+
+      if (statoFirma.firmato) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Documento già firmato. Non è possibile rifirmare questa richiesta.'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+        return;
+      }
+
+    } on FirmaDigitaleException catch (e) {
+      if (e.code == 'NOT_FOUND') {
+        print('📊 [FirmaFlow] nessuna firma esistente per richiestaId=$firmaRichiestaId, continuo con il flusso');
+      } else {
+        print('❌ [FirmaFlow] errore durante controllo stato firma: ${e.code} - ${e.message}');
+      }
+    } catch (e) {
+      print('❌ [FirmaFlow] eccezione non prevista durante controllo stato firma: $e');
+    }
+
+    final userIdRaw = await storage.read(key: 'user_id');
+    final telefonoRaw =
+        await storage.read(key: 'telefono') ?? await storage.read(key: 'user_phone');
+
+    final userId = userIdRaw != null ? int.tryParse(userIdRaw) : null;
+    final telefono = telefonoRaw?.trim();
+
+    print('🔐 [FirmaFlow] Storage user_id raw: $userIdRaw');
+    print('🔐 [FirmaFlow] Storage telefono presente: ${telefono != null && telefono.isNotEmpty}');
+    print('🔐 [FirmaFlow] userId parse: $userId');
+
+    if (!mounted) return;
+
+    if (userId == null || telefono == null || telefono.isEmpty) {
+      print('❌ [FirmaFlow] Dati utente mancanti, blocco apertura firma');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Dati utente non disponibili per la firma digitale'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    Navigator.pop(context);
+    print('🔐 [FirmaFlow] Bottom sheet chiuso, apro FirmaDocumentoScreen');
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FirmaDocumentoScreen(
+          richiestaId: firmaRichiestaId,
+          userId: userId,
+          telefono: telefono,
+        ),
+      ),
+    );
+
+    print('🔐 [FirmaFlow] Rientro da FirmaDocumentoScreen, ricarico richieste');
+
+    _caricaRichieste();
+  }
+
   Widget _buildDettaglioSheet(Map<String, dynamic> richiesta) {
     final stato = richiesta['stato'] ?? '';
+    final servizioId = _resolveServizioId(richiesta);
     final statoLabel = _getStatoLabelTradotto(stato);
     final pagamento = richiesta['pagamento'] ?? {};
     final puoPagare = richiesta['puo_pagare'] == true;
-    final richiestaId = richiesta['id'] as int?;
+    final richiestaIdRaw = richiesta['id'];
+    final richiestaId = richiestaIdRaw is int
+        ? richiestaIdRaw
+        : int.tryParse(richiestaIdRaw?.toString() ?? '');
+    final firmaRichiestaId = _resolveFirmaRichiestaId(richiesta);
+    final isFirmabile = _isRichiestaFirmabile(richiesta);
+    final firmaStatus =
+      firmaRichiestaId != null ? _firmaStatusByRichiesta[firmaRichiestaId] : null;
+    final isGiaFirmata = firmaStatus?.firmato == true;
+    final canOpenFirmaCta = isFirmabile && richiestaId != null && !isGiaFirmata;
     
     // Debug: verifica dati pagamento COMPLETI
     print('📋 ==================== DEBUG RICHIESTA ====================');
     print('📋 Richiesta ID: $richiestaId');
+    print('📋 Servizio ID: $servizioId');
     print('📋 Stato: $stato');
     print('📋 Numero pratica: ${richiesta['numero_pratica']}');
     print('💰 ==================== PAGAMENTO COMPLETO ====================');
@@ -716,6 +1033,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
     print('🔑 pagamento["payment_id"]: ${pagamento['payment_id']}');
     print('🔑 pagamento["pagamento_id"]: ${pagamento['pagamento_id']}');
     print('✅ pagamento["ricevuto"]: ${pagamento['ricevuto']}');
+    print('🔐 [FirmaFlow] CTA abilitata: $canOpenFirmaCta');
+    print('🔐 [FirmaFlow] isFirmabile=$isFirmabile stato=$stato puo_firmare=${richiesta['puo_firmare']} richiestaId=$richiestaId isGiaFirmata=$isGiaFirmata');
     print('📋 =========================================================');
     
     // Stato awaiting_payment significa che c'è un pagamento da effettuare
@@ -789,6 +1108,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         AppLocalizations.of(context)!.fileNumber,
                         richiesta['numero_pratica'] ?? 'N/A',
                         Icons.confirmation_number,
+                      ),
+                      _buildInfoRow(
+                        'ID Servizio',
+                        servizioId,
+                        Icons.badge_outlined,
                       ),
                       _buildInfoRow(
                         AppLocalizations.of(context)!.status,
@@ -959,6 +1283,144 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           ),
                         ),
                       ],
+
+                      if (canOpenFirmaCta) ...[
+                        const SizedBox(height: 12),
+                        ElevatedButton.icon(
+                          onPressed: () => _apriFirmaDocumento(richiesta),
+                          icon: const Icon(Icons.verified_user),
+                          label: const Text('Apri Modello Unico e Firma con OTP'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            minimumSize: const Size(double.infinity, 0),
+                          ),
+                        ),
+                      ],
+
+                      if (isFirmabile && isGiaFirmata) ...[
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade50,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.orange.shade200),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.verified, color: Colors.orange),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Documento già firmato. La firma OTP non è più disponibile.',
+                                  style: TextStyle(fontSize: 13),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade50,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.blue.shade200),
+                          ),
+                          child: Theme(
+                            data: Theme.of(context).copyWith(
+                              dividerColor: Colors.transparent,
+                            ),
+                            child: ExpansionTile(
+                              initiallyExpanded: false,
+                              tilePadding: EdgeInsets.zero,
+                              childrenPadding: const EdgeInsets.only(bottom: 8),
+                              leading: const Icon(Icons.badge, color: Colors.blue),
+                              title: const Text(
+                                'Dettagli Firma Digitale',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: const Text(
+                                'Tocca per espandere',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              children: [
+                                _buildInfoRow(
+                                  'Firmato',
+                                  (firmaStatus?.firmato == true) ? 'Sì' : 'No',
+                                  Icons.verified,
+                                ),
+                                if ((firmaStatus?.id ?? '').isNotEmpty)
+                                  _buildInfoRow(
+                                    'Firma ID',
+                                    firmaStatus!.id!,
+                                    Icons.fingerprint,
+                                  ),
+                                if (firmaStatus?.dataFirma != null)
+                                  _buildInfoRow(
+                                    'Timestamp firma',
+                                    _formatData(firmaStatus!.dataFirma!.toIso8601String()),
+                                    Icons.access_time,
+                                  ),
+                                if ((firmaStatus?.metodo ?? '').isNotEmpty)
+                                  _buildInfoRow(
+                                    'Tipo firma',
+                                    firmaStatus!.metodo!,
+                                    Icons.fact_check,
+                                  ),
+                                if ((firmaStatus?.status ?? '').isNotEmpty)
+                                  _buildInfoRow(
+                                    'Stato firma',
+                                    firmaStatus!.status!,
+                                    Icons.rule,
+                                  ),
+                                if ((firmaStatus?.firmaHash ?? '').isNotEmpty)
+                                  _buildInfoRow(
+                                    'Hash firma',
+                                    firmaStatus!.firmaHash!,
+                                    Icons.tag,
+                                  ),
+                                if ((firmaStatus?.documentoHashSha256 ?? '').isNotEmpty)
+                                  _buildInfoRow(
+                                    'Hash documento (SHA256)',
+                                    firmaStatus!.documentoHashSha256!,
+                                    Icons.security,
+                                  ),
+                                if ((firmaStatus?.deviceFirma ?? '').isNotEmpty)
+                                  _buildInfoRow(
+                                    'Device firma',
+                                    firmaStatus!.deviceFirma!,
+                                    Icons.devices,
+                                  ),
+                                if ((firmaStatus?.documentoUrl ?? '').isNotEmpty)
+                                  _buildInfoRow(
+                                    'Nome file documento',
+                                    _extractFileName(firmaStatus!.documentoUrl),
+                                    Icons.link,
+                                  ),
+                                if ((firmaStatus?.documentoDownloadUrl ?? '').isNotEmpty)
+                                  _buildInfoRow(
+                                    'Nome file download',
+                                    _extractFileName(firmaStatus!.documentoDownloadUrl),
+                                    Icons.download,
+                                  ),
+                                if (firmaStatus?.metadata != null &&
+                                    firmaStatus!.metadata!.isNotEmpty)
+                                  _buildInfoRow(
+                                    'Metadata firma',
+                                    jsonEncode(_sanitizeMetadata(firmaStatus.metadata!)),
+                                    Icons.data_object,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                       
                       // Pulsante Scarica Ricevuta - Solo per pagamenti completati
                       // PROBLEMA: Backend non ritorna payment ID, solo transaction_id
@@ -1084,6 +1546,26 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             minimumSize: const Size(double.infinity, 0),
                           ),
                         ),
+
+                        if (_resolveDocumentoUnicoUrl(firmaStatus) != null) ...[
+                          const SizedBox(height: 12),
+                          OutlinedButton.icon(
+                            onPressed: () {
+                              final docUrl = _resolveDocumentoUnicoUrl(firmaStatus);
+                              if (docUrl != null) {
+                                _visualizzaDocumentoUnico(docUrl);
+                              }
+                            },
+                            icon: const Icon(Icons.description_outlined),
+                            label: const Text('Visualizza Documento Unico'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.blue,
+                              side: BorderSide(color: Colors.blue.shade300),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              minimumSize: const Size(double.infinity, 0),
+                            ),
+                          ),
+                        ],
                       ],
                     ],
                   ),

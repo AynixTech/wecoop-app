@@ -44,6 +44,10 @@ dependencies:
   
   # Deep Links
   app_links: ^3.5.0
+  
+  # Firma Digitale
+  webview_flutter: ^4.4.2
+  device_info_plus: ^9.0.1
 
 flutter_icons:
   android: true

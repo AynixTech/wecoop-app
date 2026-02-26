@@ -749,6 +749,19 @@ class AppLocalizations {
       'courierShipping': 'Spedizione con corriere',
       'pickupAtOffice': 'Ritiro presso la sede',
       'emailDelivery': 'Invio via email',
+      // Contatti
+      'contacts': 'Contatti',
+      'contactsTitle': 'Contattaci',
+      'ourOffice': 'La nostra sede',
+      'officeAddress': 'Via Populonia 8, 20159 Milano MI',
+      'officeHours': 'Orari di apertura',
+      'officeHoursDetails': 'Lunedì - Venerdì: 9:00 - 18:00',
+      'contactPhone': 'Telefono',
+      'emailAddress': 'Email',
+      'followUs': 'Seguici',
+      'getDirections': 'Ottieni indicazioni',
+      'callUs': 'Chiamaci',
+      'contactSendEmail': 'Invia email',
     },
     'en': {
       'appTitle': 'WECOOP',
@@ -1466,6 +1479,19 @@ class AppLocalizations {
       'courierShipping': 'Courier shipping',
       'pickupAtOffice': 'Pickup at office',
       'emailDelivery': 'Email delivery',
+      // Contacts
+      'contacts': 'Contacts',
+      'contactsTitle': 'Contact us',
+      'ourOffice': 'Our office',
+      'officeAddress': 'Via Populonia 8, 20159 Milano MI',
+      'officeHours': 'Opening hours',
+      'officeHoursDetails': 'Monday - Friday: 9:00 AM - 6:00 PM',
+      'contactPhone': 'Phone',
+      'emailAddress': 'Email',
+      'followUs': 'Follow us',
+      'getDirections': 'Get directions',
+      'callUs': 'Call us',
+      'contactSendEmail': 'Send email',
     },
     'es': {
       'appTitle': 'WECOOP',
@@ -2176,6 +2202,19 @@ class AppLocalizations {
       'courierShipping': 'Envío con mensajero',
       'pickupAtOffice': 'Recogida en la oficina',
       'emailDelivery': 'Envío por correo electrónico',
+      // Contactos
+      'contacts': 'Contactos',
+      'contactsTitle': 'Contáctanos',
+      'ourOffice': 'Nuestra oficina',
+      'officeAddress': 'Via Populonia 8, 20159 Milano MI',
+      'officeHours': 'Horario de atención',
+      'officeHoursDetails': 'Lunes - Viernes: 9:00 - 18:00',
+      'contactPhone': 'Teléfono',
+      'emailAddress': 'Correo electrónico',
+      'followUs': 'Síguenos',
+      'getDirections': 'Obtener indicaciones',
+      'callUs': 'Llámanos',
+      'contactSendEmail': 'Enviar correo',
     },
   };
 
@@ -2805,6 +2844,20 @@ class AppLocalizations {
   String get courierShipping => translate('courierShipping');
   String get pickupAtOffice => translate('pickupAtOffice');
   String get emailDelivery => translate('emailDelivery');
+  
+  // Contacts
+  String get contacts => translate('contacts');
+  String get contactsTitle => translate('contactsTitle');
+  String get ourOffice => translate('ourOffice');
+  String get officeAddress => translate('officeAddress');
+  String get officeHours => translate('officeHours');
+  String get officeHoursDetails => translate('officeHoursDetails');
+  String get contactPhone => translate('contactPhone');
+  String get emailAddress => translate('emailAddress');
+  String get followUs => translate('followUs');
+  String get getDirections => translate('getDirections');
+  String get callUs => translate('callUs');
+  String get contactSendEmail => translate('contactSendEmail');
 }
 
 class _AppLocalizationsDelegate

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/screens/firma_digitale/firma_documento_screen.dart';
 
@@ -53,10 +54,11 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
   }
 
   void _avviaFirmaDigitale() {
+    final l10n = AppLocalizations.of(context)!;
     if (_userId == null || _telefono == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Dati utente non disponibili'),
+        SnackBar(
+          content: Text(l10n.translate('userDataUnavailable')),
           backgroundColor: Colors.red,
         ),
       );
@@ -88,22 +90,24 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
   }
 
   String _getTextFromStato(String stato) {
+    final l10n = AppLocalizations.of(context)!;
     switch (stato) {
       case 'firmato':
-        return '✅ Firmato';
+        return '✅ ${l10n.translate('signedLabel')}';
       case 'rifiutato':
-        return '❌ Rifiutato';
+        return '❌ ${l10n.rejected}';
       case 'pending_firma':
       default:
-        return '⏳ In Attesa di Firma';
+        return '⏳ ${l10n.translate('awaitingSignatureStatus')}';
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dettagli Richiesta'),
+        title: Text(l10n.translate('requestDetailsTitle')),
         elevation: 0,
       ),
       body: _caricamento
@@ -161,7 +165,7 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Descrizione',
+                                  l10n.descriptionLabel,
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleMedium
@@ -187,7 +191,7 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '📄 Documento',
+                                  '📄 ${l10n.translate('documentSectionTitle')}',
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleMedium
@@ -199,7 +203,7 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      'Documento Unico',
+                                      l10n.translate('singleDocumentLabel'),
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium,
@@ -246,7 +250,7 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
                                       CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '🔐 Pronto per la Firma?',
+                                      '🔐 ${l10n.translate('readyToSignQuestion')}',
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleSmall
@@ -257,8 +261,7 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
-                                      'Firma il documento digitalmente tramite SMS OTP.\n'
-                                      'Riceverai un codice al tuo numero di telefono.',
+                                      l10n.translate('signWithOtpHint'),
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodySmall
@@ -276,7 +279,7 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
                                 child: ElevatedButton.icon(
                                   onPressed: _avviaFirmaDigitale,
                                   icon: const Icon(Icons.security),
-                                  label: const Text('Firma Documento'),
+                                  label: Text(l10n.translate('signDocument')),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.green,
                                   ),
@@ -309,7 +312,7 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Documento Firmato',
+                                        l10n.translate('signedDocumentTitle'),
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyMedium
@@ -319,7 +322,7 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
                                             ),
                                       ),
                                       Text(
-                                        'La firma è legalmente valida',
+                                        l10n.translate('signatureLegallyValid'),
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodySmall

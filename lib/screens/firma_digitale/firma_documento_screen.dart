@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/firma_digitale_provider.dart';
 import 'package:wecoop_app/widgets/firma_digitale/visualizza_documento_widget.dart';
 import 'package:wecoop_app/widgets/firma_digitale/richiesta_otp_widget.dart';
@@ -54,9 +55,10 @@ class _FirmaDocumentoScreenState extends State<FirmaDocumentoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Firma Documento Digitale'),
+        title: Text(l10n.translate('digitalSignatureScreenTitle')),
         centerTitle: true,
         elevation: 0,
         actions: [
@@ -104,8 +106,8 @@ class _FirmaDocumentoScreenState extends State<FirmaDocumentoScreen> {
                 onVisualizzaRicevuta: () {
                   // TODO: Implementare scaricamento ricevuta
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Ricevuta scaricata'),
+                    SnackBar(
+                      content: Text(l10n.translate('receiptDownloadedSimple')),
                     ),
                   );
                 },

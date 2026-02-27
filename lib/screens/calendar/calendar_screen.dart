@@ -1245,8 +1245,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
           print('❌ [DocMergedUI] PDF vuoto o assente per richiestaId=$richiestaId');
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('❌ Documento PDF non disponibile'),
+              SnackBar(
+                content: Text('❌ ${AppLocalizations.of(context)!.translate('pdfDocumentUnavailable')}'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -1269,8 +1269,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
               SnackBar(
                 content: Text(
                   opened
-                      ? '⚠️ PDF merged non valido, aperto fallback web'
-                      : '❌ PDF non valido e fallback non disponibile',
+                      ? '⚠️ ${AppLocalizations.of(context)!.translate('invalidMergedPdfFallbackOpened')}'
+                      : '❌ ${AppLocalizations.of(context)!.translate('invalidPdfFallbackUnavailable')}',
                 ),
                 backgroundColor: opened ? Colors.orange : Colors.red,
               ),
@@ -1284,8 +1284,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
           print('❌ [DocMergedUI] salvataggio file fallito richiestaId=$richiestaId');
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('❌ Impossibile salvare il documento PDF'),
+              SnackBar(
+                content: Text('❌ ${AppLocalizations.of(context)!.translate('cannotSavePdfDocument')}'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -1299,7 +1299,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('✅ Documento salvato: ${savedFile.path.split('/').last}'),
+              content: Text(
+                '✅ ${AppLocalizations.of(context)!.translate('documentSavedMessage')} ${savedFile.path.split('/').last}',
+              ),
               backgroundColor: Colors.green,
             ),
           );
@@ -1312,7 +1314,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
         print('❌ [DocMergedUI] errore service message=${result['message']}');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('❌ ${result['message'] ?? 'Errore download documento unico'}'),
+            content: Text(
+              '❌ ${result['message'] ?? AppLocalizations.of(context)!.translate('errorDownloadingMergedDocument')}',
+            ),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 4),
           ),
@@ -1324,7 +1328,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
         Navigator.of(context, rootNavigator: true).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('❌ Errore download documento unico: $e'),
+            content: Text(
+              '❌ ${AppLocalizations.of(context)!.translate('errorDownloadingMergedDocument')}: $e',
+            ),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 4),
           ),
@@ -1498,8 +1504,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
     if (firmaRichiestaId == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('ID richiesta non valido per firma digitale'),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.translate('invalidDigitalSignatureRequestId'),
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -1515,8 +1523,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
       if (statoFirma.firmato) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Documento già firmato. Non è possibile rifirmare questa richiesta.'),
+            SnackBar(
+              content: Text(
+                AppLocalizations.of(context)!.translate('documentAlreadySignedCannotResign'),
+              ),
               backgroundColor: Colors.orange,
             ),
           );
@@ -1554,8 +1564,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
     if (userId == null || telefono == null || telefono.isEmpty) {
       print('❌ [FirmaFlow] Dati utente mancanti, blocco apertura firma');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Dati utente non disponibili per la firma digitale (user_id/socio_id o telefono mancanti)'),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.translate('missingDigitalSignatureUserData'),
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -1868,7 +1880,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         ElevatedButton.icon(
                           onPressed: () => _apriFirmaDocumento(richiesta),
                           icon: const Icon(Icons.verified_user),
-                          label: const Text('Apri Modello Unico e Firma con OTP'),
+                          label: Text(
+                            AppLocalizations.of(context)!.translate('openMergedDocumentAndSignOtp'),
+                          ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
@@ -1887,14 +1901,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(color: Colors.orange.shade200),
                           ),
-                          child: const Row(
+                          child: Row(
                             children: [
-                              Icon(Icons.verified, color: Colors.orange),
-                              SizedBox(width: 8),
+                              const Icon(Icons.verified, color: Colors.orange),
+                              const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  'Documento già firmato. La firma OTP non è più disponibile.',
-                                  style: TextStyle(fontSize: 13),
+                                  AppLocalizations.of(context)!.translate('documentAlreadySignedOtpUnavailable'),
+                                  style: const TextStyle(fontSize: 13),
                                 ),
                               ),
                             ],
@@ -1917,81 +1931,83 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               tilePadding: EdgeInsets.zero,
                               childrenPadding: const EdgeInsets.only(bottom: 8),
                               leading: const Icon(Icons.badge, color: Colors.blue),
-                              title: const Text(
-                                'Dettagli Firma Digitale',
-                                style: TextStyle(
+                              title: Text(
+                                AppLocalizations.of(context)!.translate('digitalSignatureDetails'),
+                                style: const TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              subtitle: const Text(
-                                'Tocca per espandere',
-                                style: TextStyle(fontSize: 12),
+                              subtitle: Text(
+                                AppLocalizations.of(context)!.translate('tapToExpand'),
+                                style: const TextStyle(fontSize: 12),
                               ),
                               children: [
                                 _buildInfoRow(
-                                  'Firmato',
-                                  (firmaStatus?.firmato == true) ? 'Sì' : 'No',
+                                  AppLocalizations.of(context)!.translate('signedLabel'),
+                                  (firmaStatus?.firmato == true)
+                                      ? AppLocalizations.of(context)!.yes
+                                      : AppLocalizations.of(context)!.no,
                                   Icons.verified,
                                 ),
                                 if ((firmaStatus?.id ?? '').isNotEmpty)
                                   _buildInfoRow(
-                                    'Firma ID',
+                                    AppLocalizations.of(context)!.translate('signatureIdLabel'),
                                     firmaStatus!.id!,
                                     Icons.fingerprint,
                                   ),
                                 if (firmaStatus?.dataFirma != null)
                                   _buildInfoRow(
-                                    'Timestamp firma',
+                                    AppLocalizations.of(context)!.translate('signatureTimestampLabel'),
                                     _formatData(firmaStatus!.dataFirma!.toIso8601String()),
                                     Icons.access_time,
                                   ),
                                 if ((firmaStatus?.metodo ?? '').isNotEmpty)
                                   _buildInfoRow(
-                                    'Tipo firma',
+                                    AppLocalizations.of(context)!.translate('signatureTypeLabel'),
                                     firmaStatus!.metodo!,
                                     Icons.fact_check,
                                   ),
                                 if ((firmaStatus?.status ?? '').isNotEmpty)
                                   _buildInfoRow(
-                                    'Stato firma',
+                                    AppLocalizations.of(context)!.translate('signatureStatusLabel'),
                                     firmaStatus!.status!,
                                     Icons.rule,
                                   ),
                                 if ((firmaStatus?.firmaHash ?? '').isNotEmpty)
                                   _buildInfoRow(
-                                    'Hash firma',
+                                    AppLocalizations.of(context)!.translate('signatureHashLabel'),
                                     firmaStatus!.firmaHash!,
                                     Icons.tag,
                                   ),
                                 if ((firmaStatus?.documentoHashSha256 ?? '').isNotEmpty)
                                   _buildInfoRow(
-                                    'Hash documento (SHA256)',
+                                    AppLocalizations.of(context)!.translate('documentHashSha256Label'),
                                     firmaStatus!.documentoHashSha256!,
                                     Icons.security,
                                   ),
                                 if ((firmaStatus?.deviceFirma ?? '').isNotEmpty)
                                   _buildInfoRow(
-                                    'Device firma',
+                                    AppLocalizations.of(context)!.translate('signatureDeviceLabel'),
                                     firmaStatus!.deviceFirma!,
                                     Icons.devices,
                                   ),
                                 if ((firmaStatus?.documentoUrl ?? '').isNotEmpty)
                                   _buildInfoRow(
-                                    'Nome file documento',
+                                    AppLocalizations.of(context)!.translate('documentFileNameLabel'),
                                     _extractFileName(firmaStatus!.documentoUrl),
                                     Icons.link,
                                   ),
                                 if ((firmaStatus?.documentoDownloadUrl ?? '').isNotEmpty)
                                   _buildInfoRow(
-                                    'Nome file download',
+                                    AppLocalizations.of(context)!.translate('downloadFileNameLabel'),
                                     _extractFileName(firmaStatus!.documentoDownloadUrl),
                                     Icons.download,
                                   ),
                                 if (firmaStatus?.metadata != null &&
                                     firmaStatus!.metadata!.isNotEmpty)
                                   _buildInfoRow(
-                                    'Metadata firma',
+                                    AppLocalizations.of(context)!.translate('signatureMetadataLabel'),
                                     jsonEncode(_sanitizeMetadata(firmaStatus.metadata!)),
                                     Icons.data_object,
                                   ),
@@ -2034,19 +2050,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                       children: [
                                         Icon(Icons.info_outline, color: Colors.orange),
                                         const SizedBox(width: 8),
-                                        const Text('Ricevuta Non Disponibile'),
+                                        Text(
+                                          AppLocalizations.of(context)!.translate('receiptUnavailableTitle'),
+                                        ),
                                       ],
                                     ),
                                     content: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        const Text(
-                                          'Il sistema sta elaborando il tuo pagamento.',
-                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        Text(
+                                          AppLocalizations.of(context)!.translate('paymentProcessingMessage'),
+                                          style: const TextStyle(fontWeight: FontWeight.bold),
                                         ),
                                         const SizedBox(height: 16),
-                                        const Text('Dettagli pagamento:'),
+                                        Text(AppLocalizations.of(context)!.translate('paymentDetailsLabel')),
                                         const SizedBox(height: 8),
                                         Text('• Pratica: ${richiesta['numero_pratica']}'),
                                         if (transactionId != null) ...[
@@ -2139,7 +2157,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                     );
                                   },
                             icon: const Icon(Icons.description_outlined),
-                            label: const Text('Visualizza Documento Unico'),
+                            label: Text(
+                              AppLocalizations.of(context)!.translate('viewMergedDocument'),
+                            ),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.blue,
                               side: BorderSide(color: Colors.blue.shade300),

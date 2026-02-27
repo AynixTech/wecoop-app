@@ -48,6 +48,7 @@ dependencies:
   # Firma Digitale
   webview_flutter: ^4.4.2
   device_info_plus: ^9.0.1
+  flutter_pdfview: ^1.3.2
 
 flutter_icons:
   android: true

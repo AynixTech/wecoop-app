@@ -71,6 +71,7 @@ const Map<String, String> servizioStandardMap = {
   'Orientamento e chiarimenti fiscali': 'tax_guidance_clarifications',
   'Tax Guidance and Clarifications': 'tax_guidance_clarifications',
   'Orientación y aclaraciones fiscales': 'tax_guidance_clarifications',
+  'Orientación y Aclaraciones Fiscales': 'tax_guidance_clarifications',
   
   // Ricongiungimento familiare
   'Ricongiungimento familiare': 'family_reunification',
@@ -103,22 +104,27 @@ const Map<String, String> categoriaStandardMap = {
   // Permesso - Per attesa occupazione
   'Per attesa occupazione': 'waiting_employment',
   'Waiting Employment': 'waiting_employment',
+  'Waiting for employment': 'waiting_employment',
   'En espera de empleo': 'waiting_employment',
   
   // Permesso - Ricongiungimento
   'Ricongiungimento': 'family_reunification_permit',
   'Family Reunification Permit': 'family_reunification_permit',
+  'Family reunification permit': 'family_reunification_permit',
   'Reagrupación familiar': 'family_reunification_permit',
   
   // Permesso - Duplicato permesso di soggiorno
   'Duplicato permesso di soggiorno': 'duplicate_permit',
   'Duplicate Residence Permit': 'duplicate_permit',
+  'Duplicate residence permit': 'duplicate_permit',
   'Duplicado permiso de residencia': 'duplicate_permit',
   
   // Permesso - Aggiornamento permesso lungo periodo
   'Aggiornamento permesso lungo periodo': 'long_term_permit_update',
   'Long-term Permit Update': 'long_term_permit_update',
+  'Long-term permit update': 'long_term_permit_update',
   'Actualización permiso largo período': 'long_term_permit_update',
+  'Actualización permiso larga duración': 'long_term_permit_update',
   
   // Sportello - Cittadinanza
   'Cittadinanza': 'citizenship',
@@ -187,11 +193,14 @@ const Map<String, String> categoriaStandardMap = {
   
   'Figli minori': 'minor_children',
   'Minor Children': 'minor_children',
+  'Minor children': 'minor_children',
   'Hijos menores': 'minor_children',
   
   'Genitori a carico': 'dependent_parents',
   'Dependent Parents': 'dependent_parents',
+  'Dependent parents': 'dependent_parents',
   'Padres dependientes': 'dependent_parents',
+  'Padres a cargo': 'dependent_parents',
 };
 
 /// Converte servizio tradotto in chiave standard

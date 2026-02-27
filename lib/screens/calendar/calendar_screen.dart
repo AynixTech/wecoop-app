@@ -11,10 +11,9 @@ import '../servizi/pagamento_screen.dart';
 import '../firma_digitale/firma_documento_screen.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'package:open_file/open_file.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -233,6 +232,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
         return l10n.formCompilation;
       case 'residence_permit':
         return l10n.residencePermit;
+      case 'study_italy':
+        return l10n.forStudy;
+      case 'waiting_employment':
+        return l10n.translate('waitingEmployment');
+      case 'family_reunification_permit':
+        return l10n.translate('familyReunificationPermit');
+      case 'duplicate_permit':
+        return l10n.translate('duplicatePermit');
+      case 'long_term_permit_update':
+        return l10n.translate('longTermPermitUpdate');
       case 'citizenship':
         return l10n.citizenship;
       case 'tourist_visa':
@@ -253,6 +262,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
         return l10n.taxDebtManagement;
       case 'tax_mediation':
         return l10n.taxMediation;
+      case 'tax_guidance_clarifications':
+        return l10n.translate('taxGuidanceAndClarifications');
+      case 'taxes_and_contributions':
+        return l10n.translate('taxesAndContributions');
+      case 'clarifications_consulting':
+        return l10n.clarificationsConsulting;
+      case 'close_change_activity':
+        return l10n.closeChangeActivity;
+      case 'spouse':
+        return l10n.spouse;
+      case 'minor_children':
+        return l10n.translate('minorChildren');
+      case 'dependent_parents':
+        return l10n.translate('dependentParents');
       default:
         return categoria;
     }
@@ -271,6 +294,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
         return l10n.taxMediation;
       case 'accounting_support':
         return l10n.accountingSupport;
+      case 'tax_guidance_clarifications':
+        return l10n.translate('taxGuidanceAndClarifications');
+      case 'family_reunification':
+        return l10n.translate('familyReunification');
       default:
         return servizio;
     }
@@ -470,6 +497,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Future<void> _visualizzaRicevuta(int? paymentId, String numeroPratica, {int? richiestaId}) async {
     final l10n = AppLocalizations.of(context)!;
+    final traceId = 'RICEVUTA-${DateTime.now().millisecondsSinceEpoch}';
+    final startedAt = DateTime.now();
+    print('🧾 [$traceId] start paymentId=$paymentId richiestaId=$richiestaId numeroPratica=$numeroPratica');
     
     // Se non abbiamo payment ID ma abbiamo richiesta ID, mostra messaggio
     if (paymentId == null && richiestaId == null) {
@@ -509,7 +539,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       int actualPaymentId = paymentId ?? 0;
       
       if (paymentId == null && richiestaId != null) {
-        print('⚠️ Payment ID mancante, uso richiesta ID: $richiestaId');
+        print('⚠️ [$traceId] paymentId mancante, fallback richiestaId=$richiestaId');
         // TODO: Chiamare API per ottenere payment ID da richiesta ID
         // Per ora usiamo richiestaId come fallback
         actualPaymentId = richiestaId;
@@ -517,23 +547,67 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
       // Ottieni ricevuta PDF
       final result = await SocioService.getRicevutaPdf(actualPaymentId);
+      final elapsedMs = DateTime.now().difference(startedAt).inMilliseconds;
+      print('🧾 [$traceId] service result success=${result['success']} keys=${result.keys.toList()} elapsedMs=$elapsedMs');
 
       // Chiudi loading
       if (mounted) Navigator.pop(context);
 
       if (result['success'] == true) {
+        print('🧾 [$traceId] priorità renderer locale; fallback web solo se necessario');
+
         // Il backend ritorna il PDF direttamente come bytes
         final pdfBytes = result['pdf_bytes'] as List<int>?;
         final filename = result['filename'] as String? ?? 'ricevuta.pdf';
+        print('🧾 [$traceId] local branch filename=$filename bytes=${pdfBytes?.length ?? 0}');
 
         if (pdfBytes != null) {
           // Salva il PDF automaticamente e aprilo
           try {
-            final savedFile = await _salvaPdfLocale(pdfBytes, filename);
+            final normalizedPdfBytes = _normalizzaPdfBytes(
+              pdfBytes,
+              context: 'ricevuta_$actualPaymentId',
+            );
+            final isValid = _isPdfBytesProbablyValid(normalizedPdfBytes);
+            print('📄 [$traceId] bytes validazione pdf: $isValid');
+
+            if (!isValid) {
+              print('⚠️ [$traceId] bytes ricevuta non validi, uso fallback web autenticato');
+              final receiptUrl = result['receipt_url'] as String?;
+              final receiptFilename = result['filename'] as String?;
+              final opened = await _apriRicevutaFallbackWeb(
+                paymentId: actualPaymentId,
+                receiptUrl: receiptUrl,
+                receiptFilename: receiptFilename,
+                traceId: traceId,
+              );
+              print('🧾 [$traceId] fallback dopo bytes invalidi opened=$opened');
+              if (!opened) {
+                print('⚠️ [$traceId] fallback non riuscito, provo comunque renderer locale con bytes normalizzati');
+              }
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      opened
+                          ? '⚠️ PDF ricevuta non valido, aperto fallback web'
+                          : '❌ PDF ricevuta non valido e fallback non disponibile',
+                    ),
+                    backgroundColor: opened ? Colors.orange : Colors.red,
+                  ),
+                );
+              }
+              if (opened) {
+                return;
+              }
+            }
+
+            final savedFile = await _salvaPdfLocale(normalizedPdfBytes, filename);
+            print('🧾 [$traceId] savedFile path=${savedFile?.path}');
             
             if (savedFile != null && mounted) {
-              // Apri il PDF automaticamente
-              final result = await OpenFile.open(savedFile.path);
+              await _apriPdfInApp(savedFile, title: filename);
+              print('🧾 [$traceId] apertura locale completata');
               
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -561,17 +635,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ),
                   backgroundColor: Colors.green,
                   duration: const Duration(seconds: 4),
-                  action: SnackBarAction(
-                    label: 'Apri',
-                    textColor: Colors.white,
-                    onPressed: () => OpenFile.open(savedFile.path),
-                  ),
                 ),
               );
               
-              print('✅ PDF salvato e aperto: ${savedFile.path}');
-              print('📱 OpenFile result: ${result.message}');
+              print('✅ [$traceId] PDF salvato e aperto in-app: ${savedFile.path}');
             } else if (mounted) {
+              print('❌ [$traceId] savedFile null dopo _salvaPdfLocale');
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Text('⚠️ PDF ricevuto ma impossibile salvarlo'),
@@ -580,7 +649,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               );
             }
           } catch (e) {
-            print('❌ Errore salvataggio/apertura PDF: $e');
+            print('❌ [$traceId] Errore salvataggio/apertura PDF: $e');
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -595,10 +664,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
           // Vecchio formato con URL
           final receiptUrl = result['receipt_url'] as String?;
           if (receiptUrl != null && mounted) {
+            print('🧾 [$traceId] legacy receipt_url branch: $receiptUrl');
             await _apriRicevutaWeb(receiptUrl);
+          } else {
+            print('⚠️ [$traceId] nessun pdf_bytes e nessun receipt_url, provo fallback endpoint');
+            await _apriRicevutaFallbackWeb(
+              paymentId: actualPaymentId,
+              receiptUrl: receiptUrl,
+              receiptFilename: result['filename'] as String?,
+              traceId: traceId,
+            );
           }
         }
       } else {
+        print('❌ [$traceId] service error message=${result['message']}');
         // Mostra errore
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -611,6 +690,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         }
       }
     } catch (e) {
+      print('❌ [$traceId] eccezione: $e');
       // Chiudi loading se aperto
       if (mounted) {
         Navigator.of(context, rootNavigator: true).pop();
@@ -631,109 +711,457 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Future<File?> _salvaPdfLocale(List<int> pdfBytes, String filename) async {
     try {
-      // 1. Richiedi permessi storage (solo Android)
-      if (Platform.isAndroid) {
-        final status = await Permission.storage.request();
-        if (!status.isGranted) {
-          print('⚠️ Permesso storage negato');
-          // Su Android 13+ non serve più il permesso WRITE_EXTERNAL_STORAGE
-          // Proviamo comunque a salvare in app-specific directory
-        }
-      }
-      
-      // 2. Ottieni directory appropriata
-      Directory? directory;
-      
-      if (Platform.isAndroid) {
-        // Prova a ottenere la directory Download pubblica
-        try {
-          // Per Android, usa la directory Download pubblica
-          directory = Directory('/storage/emulated/0/Download');
-          
-          // Se non esiste, usa directory app-specific
-          if (!await directory.exists()) {
-            directory = await getExternalStorageDirectory();
-          }
-        } catch (e) {
-          print('⚠️ Impossibile accedere a Download, uso directory app: $e');
-          directory = await getApplicationDocumentsDirectory();
-        }
-      } else if (Platform.isIOS) {
-        // Per iOS, usa directory Documents dell'app
+      final safeFilename = filename.trim().isEmpty
+          ? 'ricevuta.pdf'
+          : filename.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
+
+      Directory directory;
+      try {
         directory = await getApplicationDocumentsDirectory();
-      } else {
-        // Fallback per altre piattaforme
-        directory = await getApplicationDocumentsDirectory();
+      } catch (e) {
+        print('⚠️ [FileSave] Documents directory non disponibile, fallback temp: $e');
+        directory = await getTemporaryDirectory();
       }
-      
-      if (directory == null) {
-        print('❌ Impossibile ottenere directory');
-        return null;
-      }
-      
-      // 3. Crea il percorso completo del file
-      final filePath = '${directory.path}/$filename';
+
+      final filePath = '${directory.path}/$safeFilename';
       final file = File(filePath);
-      
-      // 4. Scrivi i bytes sul file
+
       await file.writeAsBytes(pdfBytes);
-      
-      print('✅ PDF salvato in: $filePath');
-      print('📁 Directory: ${directory.path}');
-      print('📄 File size: ${pdfBytes.length} bytes');
-      
+
+      print('✅ [FileSave] PDF salvato in directory privata: $filePath');
+      print('📁 [FileSave] Directory: ${directory.path}');
+      print('📄 [FileSave] File size: ${pdfBytes.length} bytes');
+
       return file;
     } catch (e) {
-      print('❌ Errore salvataggio PDF: $e');
+      print('❌ [FileSave] Errore salvataggio PDF: $e');
       return null;
     }
   }
 
-  Future<void> _apriRicevutaWeb(String url) async {
-    // Apre l'URL nel browser esterno
-    // Nota: richiede url_launcher package, ma per ora usiamo un placeholder
-    // In produzione, decommenta il codice sotto e aggiungi url_launcher al pubspec.yaml
-    
-    /*
-    import 'package:url_launcher/url_launcher.dart';
-    
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.cannotOpenFile),
-            backgroundColor: Colors.red,
-          ),
-        );
+  List<int> _normalizzaPdfBytes(List<int> bytes, {String context = 'pdf'}) {
+    if (bytes.isEmpty) return bytes;
+
+    const pdfHeader = [37, 80, 68, 70, 45]; // %PDF-
+    const eofMarker = [37, 37, 69, 79, 70]; // %%EOF
+
+    int findSequence(List<int> source, List<int> sequence, {int start = 0}) {
+      if (sequence.isEmpty || source.length < sequence.length) return -1;
+      for (var index = start; index <= source.length - sequence.length; index++) {
+        var isMatch = true;
+        for (var offset = 0; offset < sequence.length; offset++) {
+          if (source[index + offset] != sequence[offset]) {
+            isMatch = false;
+            break;
+          }
+        }
+        if (isMatch) return index;
+      }
+      return -1;
+    }
+
+    List<int> workingBytes = bytes;
+
+    int? parseHexByte(String value) {
+      if (value.length != 2) return null;
+      final parsed = int.tryParse(value, radix: 16);
+      if (parsed == null || parsed < 0 || parsed > 255) return null;
+      return parsed;
+    }
+
+    List<int> decodeEscapedQuotedBytes(String rawText) {
+      var source = rawText;
+      if (source.startsWith('"')) {
+        source = source.substring(1);
+      }
+      if (source.endsWith('"')) {
+        source = source.substring(0, source.length - 1);
+      }
+
+      final output = <int>[];
+      for (var i = 0; i < source.length; i++) {
+        final char = source[i];
+        if (char != r'\') {
+          output.add(source.codeUnitAt(i) & 0xFF);
+          continue;
+        }
+
+        if (i + 1 >= source.length) {
+          output.add(92);
+          break;
+        }
+
+        final next = source[i + 1];
+        i++;
+
+        final nextCode = next.codeUnitAt(0);
+        final isOctalDigit = nextCode >= 48 && nextCode <= 55; // 0-7
+        if (isOctalDigit) {
+          var octal = next;
+          var consumed = 0;
+
+          while (consumed < 2 && i + 1 < source.length) {
+            final peek = source[i + 1];
+            final peekCode = peek.codeUnitAt(0);
+            final peekIsOctal = peekCode >= 48 && peekCode <= 55;
+            if (!peekIsOctal) break;
+            i++;
+            consumed++;
+            octal += peek;
+          }
+
+          final parsedOctal = int.tryParse(octal, radix: 8);
+          if (parsedOctal != null) {
+            output.add(parsedOctal & 0xFF);
+            continue;
+          }
+        }
+
+        switch (next) {
+          case '"':
+            output.add(34);
+            break;
+          case r'\':
+            output.add(92);
+            break;
+          case '/':
+            output.add(47);
+            break;
+          case 'b':
+            output.add(8);
+            break;
+          case 'f':
+            output.add(12);
+            break;
+          case 'n':
+            output.add(10);
+            break;
+          case 'r':
+            output.add(13);
+            break;
+          case 't':
+            output.add(9);
+            break;
+          case 'u':
+            if (i + 4 <= source.length - 1) {
+              final hex = source.substring(i + 1, i + 5);
+              final parsed = int.tryParse(hex, radix: 16);
+              if (parsed != null) {
+                if (parsed <= 0xFF) {
+                  output.add(parsed);
+                } else {
+                  output.addAll(utf8.encode(String.fromCharCode(parsed)));
+                }
+                i += 4;
+                break;
+              }
+            }
+            output.add(117); // 'u'
+            break;
+          case 'x':
+            if (i + 2 <= source.length - 1) {
+              final hex = source.substring(i + 1, i + 3);
+              final parsed = parseHexByte(hex);
+              if (parsed != null) {
+                output.add(parsed);
+                i += 2;
+                break;
+              }
+            }
+            output.add(120); // 'x'
+            break;
+          default:
+            output.add(92); // preserva il backslash originale
+            output.add(next.codeUnitAt(0) & 0xFF);
+            break;
+        }
+      }
+
+      return output;
+    }
+
+    final looksQuoted = workingBytes.isNotEmpty && workingBytes.first == 34;
+    if (looksQuoted) {
+      try {
+        final rawText = latin1.decode(workingBytes);
+        final rawHead = rawText.length > 120 ? '${rawText.substring(0, 120)}...' : rawText;
+        print('📄 [PdfNormalize][$context] quoted payload detected, rawHead=$rawHead');
+        workingBytes = decodeEscapedQuotedBytes(rawText);
+        print('📄 [PdfNormalize][$context] quoted unescape success len=${workingBytes.length} first8=${workingBytes.take(8).toList()}');
+      } catch (e) {
+        print('❌ [PdfNormalize][$context] quoted payload normalization failed: $e');
       }
     }
-    */
-    
-    // Placeholder: mostra URL in un dialog
-    if (mounted) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('URL Ricevuta'),
-          content: SelectableText(url),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(AppLocalizations.of(context)!.close),
-            ),
-          ],
+
+    final startIndex = findSequence(workingBytes, pdfHeader);
+    final eofIndex = findSequence(
+      workingBytes,
+      eofMarker,
+      start: startIndex >= 0 ? startIndex : 0,
+    );
+    print('📄 [PdfNormalize][$context] len=${workingBytes.length} startIndex=$startIndex eofIndex=$eofIndex first8=${workingBytes.take(8).toList()}');
+
+    if (startIndex <= 0 && eofIndex == -1) {
+      return workingBytes;
+    }
+
+    final normalizedStart = startIndex >= 0 ? startIndex : 0;
+    final normalizedEndExclusive =
+        eofIndex >= 0 ? eofIndex + eofMarker.length : workingBytes.length;
+
+    if (normalizedStart >= normalizedEndExclusive ||
+        normalizedStart < 0 ||
+        normalizedEndExclusive > workingBytes.length) {
+      return workingBytes;
+    }
+
+    final normalized = workingBytes.sublist(normalizedStart, normalizedEndExclusive);
+    print('📄 [PdfNormalize][$context] normalizedLen=${normalized.length} normalizedFirst8=${normalized.take(8).toList()}');
+    return normalized;
+  }
+
+  bool _isPdfBytesProbablyValid(List<int> bytes) {
+    if (bytes.length < 16) return false;
+    final headerOk = bytes.length >= 5 &&
+        bytes[0] == 37 &&
+        bytes[1] == 80 &&
+        bytes[2] == 68 &&
+        bytes[3] == 70 &&
+        bytes[4] == 45;
+    if (!headerOk) return false;
+
+    final textTail = latin1.decode(
+      bytes.sublist(bytes.length > 2048 ? bytes.length - 2048 : 0),
+      allowInvalid: true,
+    );
+
+    return textTail.contains('%%EOF') || textTail.contains('startxref');
+  }
+
+  Future<void> _apriUrlInAppWebView(
+    Uri uri, {
+    String? title,
+    Map<String, String>? headers,
+    String? traceId,
+  }) async {
+    if (!mounted) return;
+    print('🌐 [${traceId ?? 'WEBVIEW'}] open uri=$uri title=$title headers=${headers?.keys.toList()}');
+
+    final controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onNavigationRequest: (request) {
+            print('🌐 [${traceId ?? 'WEBVIEW'}] onNavigationRequest: ${request.url} isMainFrame=${request.isMainFrame}');
+            return NavigationDecision.navigate;
+          },
+          onPageStarted: (startedUrl) {
+            print('🌐 [${traceId ?? 'WEBVIEW'}] onPageStarted: $startedUrl');
+          },
+          onPageFinished: (finishedUrl) {
+            print('✅ [${traceId ?? 'WEBVIEW'}] onPageFinished: $finishedUrl');
+          },
+          onWebResourceError: (error) {
+            print('❌ [${traceId ?? 'WEBVIEW'}] webview error code=${error.errorCode} type=${error.errorType} description=${error.description} isMainFrame=${error.isForMainFrame}');
+          },
+        ),
+      )
+      ..loadRequest(uri, headers: headers ?? const <String, String>{});
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: AppBar(title: Text(title ?? 'Visualizza documento')),
+          body: WebViewWidget(controller: controller),
+        ),
+      ),
+    );
+  }
+
+  Future<bool> _apriConGoogleGs(
+    String sourceUrl, {
+    String title = 'Documento (Google GS)',
+    String? traceId,
+  }) async {
+    final googleViewer = Uri.parse(
+      'https://docs.google.com/gview?embedded=1&url=${Uri.encodeComponent(sourceUrl)}',
+    );
+
+    final openedExternal = await launchUrl(
+      googleViewer,
+      mode: LaunchMode.externalApplication,
+    );
+    print('🌐 [${traceId ?? 'GoogleGS'}] tentativo esterno opened=$openedExternal url=$googleViewer');
+    if (openedExternal) {
+      print('✅ [${traceId ?? 'GoogleGS'}] aperto esterno: $googleViewer');
+      return true;
+    }
+
+    try {
+      await _apriUrlInAppWebView(
+        googleViewer,
+        title: title,
+        traceId: traceId ?? 'GoogleGS',
+      );
+      print('✅ [${traceId ?? 'GoogleGS'}] aperto in-app: $googleViewer');
+      return true;
+    } catch (e) {
+      print('❌ [${traceId ?? 'GoogleGS'}] in-app fallito: $e');
+    }
+
+    print('❌ [${traceId ?? 'GoogleGS'}] apertura fallita: $googleViewer');
+    return false;
+  }
+
+  Future<bool> _apriPdfFallbackWeb(String url) async {
+    final openedGoogleGs = await _apriConGoogleGs(
+      url,
+      title: 'Documento (Google GS)',
+    );
+    if (openedGoogleGs) {
+      return true;
+    }
+
+    final directUri = Uri.tryParse(url);
+    if (directUri != null) {
+      try {
+        await _apriUrlInAppWebView(
+          directUri,
+          title: 'Documento',
+        );
+        print('✅ [PdfFallback] aperto URL diretto in-app: $url');
+        return true;
+      } catch (e) {
+        print('❌ [PdfFallback] URL diretto in-app fallito: $e');
+      }
+    }
+
+    if (directUri != null) {
+      final openedDirectExternal = await launchUrl(
+        directUri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (openedDirectExternal) {
+        print('✅ [PdfFallback] aperto esterno URL diretto: $url');
+        return true;
+      }
+    }
+
+    print('❌ [PdfFallback] apertura fallback fallita: $url');
+    return false;
+  }
+
+  Future<bool> _apriRicevutaFallbackWeb({
+    required int paymentId,
+    String? receiptUrl,
+    String? receiptFilename,
+    String? traceId,
+  }) async {
+    print('🧾 [${traceId ?? 'RicevutaFallback'}] start paymentId=$paymentId receiptUrl=$receiptUrl');
+    final token = await storage.read(key: 'jwt_token');
+    print('🧾 [${traceId ?? 'RicevutaFallback'}] tokenPresent=${token != null && token.isNotEmpty}');
+
+    if (receiptUrl != null && _isValidWebUrl(receiptUrl)) {
+      final openedGoogleGs = await _apriConGoogleGs(
+        receiptUrl,
+        title: 'Ricevuta (Google GS)',
+        traceId: traceId ?? 'RicevutaFallback',
+      );
+      print('🧾 [${traceId ?? 'RicevutaFallback'}] GoogleGS su receiptUrl opened=$openedGoogleGs');
+      if (openedGoogleGs) {
+        print('✅ [${traceId ?? 'RicevutaFallback'}] aperto receipt_url con Google GS');
+        return true;
+      }
+
+      try {
+        await _apriUrlInAppWebView(
+          Uri.parse(receiptUrl),
+          title: 'Ricevuta',
+          traceId: traceId ?? 'RicevutaFallback',
+        );
+        print('✅ [${traceId ?? 'RicevutaFallback'}] aperto receipt_url in-app: $receiptUrl');
+        return true;
+      } catch (e) {
+        print('❌ [${traceId ?? 'RicevutaFallback'}] receipt_url in-app fallito: $e');
+      }
+    }
+
+    if (receiptFilename != null && receiptFilename.trim().isNotEmpty) {
+      final fileNameEncoded = Uri.encodeComponent(receiptFilename.trim());
+      final candidates = [
+        'https://www.wecoop.org/wp-content/uploads/ricevute/$fileNameEncoded',
+        'https://www.wecoop.org/wp-content/uploads/wecoop-ricevute/$fileNameEncoded',
+        'https://www.wecoop.org/wp-content/uploads/wecoop-documenti-ricevute/$fileNameEncoded',
+      ];
+
+      print('🧾 [${traceId ?? 'RicevutaFallback'}] provo candidati Google GS da filename=$receiptFilename');
+      for (final candidate in candidates) {
+        final openedGoogleGs = await _apriConGoogleGs(
+          candidate,
+          title: 'Ricevuta (Google GS)',
+          traceId: traceId ?? 'RicevutaFallback',
+        );
+        print('🧾 [${traceId ?? 'RicevutaFallback'}] candidate=$candidate opened=$openedGoogleGs');
+        if (openedGoogleGs) {
+          print('✅ [${traceId ?? 'RicevutaFallback'}] aperto candidato receipt via Google GS');
+          return true;
+        }
+      }
+    }
+
+    print('🧾 [${traceId ?? 'RicevutaFallback'}] receiptUrl non disponibile: evito endpoint /pagamento/{id}/ricevuta in web fallback per prevenire 401 no_auth');
+    print('🧾 [${traceId ?? 'RicevutaFallback'}] tokenPresentForEndpoint=${token != null && token.isNotEmpty} (usato solo da API service, non da launch esterno)');
+
+    print('❌ [${traceId ?? 'RicevutaFallback'}] fallback fallito paymentId=$paymentId');
+    return false;
+  }
+
+  Future<void> _apriPdfInApp(File file, {String? title}) async {
+    if (!mounted) return;
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: AppBar(
+            title: Text(title ?? 'Documento PDF'),
+          ),
+          body: PDFView(
+            filePath: file.path,
+            enableSwipe: true,
+            swipeHorizontal: false,
+            autoSpacing: true,
+            pageSnap: true,
+            onRender: (pages) {
+              print('📄 [PdfView] render completed pages=$pages path=${file.path}');
+            },
+            onError: (error) {
+              print('❌ [PdfView] onError: $error path=${file.path}');
+            },
+            onPageError: (page, error) {
+              print('❌ [PdfView] onPageError page=$page error=$error path=${file.path}');
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _apriRicevutaWeb(String url) async {
+    final openedGoogleGs = await _apriConGoogleGs(
+      url,
+      title: 'Ricevuta (Google GS)',
+    );
+
+    if (!openedGoogleGs && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.cannotOpenFile),
+          backgroundColor: Colors.red,
         ),
       );
     }
-  }
-
-  String _buildViewerUrl(String sourceUrl) {
-    // Evita Google gview su Android WebView: può fallire con ERR_BLOCKED_BY_ORB.
-    // Carichiamo direttamente il PDF/URL originale.
-    return sourceUrl;
   }
 
   String _extractFileName(String? rawPathOrUrl) {
@@ -781,46 +1209,128 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return sanitized;
   }
 
-  Future<void> _visualizzaDocumentoUnico(String url) async {
+  Future<void> _visualizzaDocumentoUnico({
+    required int richiestaId,
+    bool forceMerge = false,
+    String? fallbackUrl,
+  }) async {
     if (!mounted) return;
+    print('📄 [DocMergedUI] avvio visualizzazione richiestaId=$richiestaId forceMerge=$forceMerge');
 
-    final uri = Uri.tryParse(url);
-    if (uri != null) {
-      final openedExternal = await launchUrl(uri, mode: LaunchMode.externalApplication);
-      if (openedExternal) {
-        print('✅ [DocSigned] documento aperto esternamente: $url');
-        return;
-      }
-    }
-
-    final viewerUrl = _buildViewerUrl(url);
-
-    final controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (String startedUrl) {
-            print('🌐 [DocSigned] onPageStarted: $startedUrl');
-          },
-          onPageFinished: (String finishedUrl) {
-            print('✅ [DocSigned] onPageFinished: $finishedUrl');
-          },
-          onWebResourceError: (WebResourceError error) {
-            print('❌ [DocSigned] WebView error code=${error.errorCode} type=${error.errorType} description=${error.description}');
-          },
-        ),
-      )
-      ..loadRequest(Uri.parse(viewerUrl));
-
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Scaffold(
-          appBar: AppBar(title: const Text('Documento Unico Firmato')),
-          body: WebViewWidget(controller: controller),
-        ),
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
       ),
     );
+
+    try {
+      final result = await SocioService.getDocumentoUnicoMergedPdf(
+        richiestaId,
+        forceMerge: forceMerge,
+      );
+      print('📄 [DocMergedUI] esito service success=${result['success']} keys=${result.keys.toList()}');
+
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+
+      if (result['success'] == true) {
+        final pdfBytes = result['pdf_bytes'] as List<int>?;
+        final filename = result['filename'] as String? ?? 'Documento_Unico_$richiestaId.pdf';
+        print('📄 [DocMergedUI] filename=$filename bytes=${pdfBytes?.length ?? 0}');
+
+        if (pdfBytes == null || pdfBytes.isEmpty) {
+          print('❌ [DocMergedUI] PDF vuoto o assente per richiestaId=$richiestaId');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('❌ Documento PDF non disponibile'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          return;
+        }
+
+        final normalizedPdfBytes = _normalizzaPdfBytes(
+          pdfBytes,
+          context: 'documento_unico_$richiestaId',
+        );
+        final isValid = _isPdfBytesProbablyValid(normalizedPdfBytes);
+        print('📄 [DocMergedUI] bytes validazione pdf: $isValid');
+
+        if (!isValid && fallbackUrl != null && _isValidWebUrl(fallbackUrl)) {
+          print('⚠️ [DocMergedUI] bytes merged non validi, uso fallback URL: $fallbackUrl');
+          final opened = await _apriPdfFallbackWeb(fallbackUrl);
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  opened
+                      ? '⚠️ PDF merged non valido, aperto fallback web'
+                      : '❌ PDF non valido e fallback non disponibile',
+                ),
+                backgroundColor: opened ? Colors.orange : Colors.red,
+              ),
+            );
+          }
+          return;
+        }
+
+        final savedFile = await _salvaPdfLocale(normalizedPdfBytes, filename);
+        if (savedFile == null) {
+          print('❌ [DocMergedUI] salvataggio file fallito richiestaId=$richiestaId');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('❌ Impossibile salvare il documento PDF'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          return;
+        }
+
+        await _apriPdfInApp(savedFile, title: filename);
+        print('✅ [DocMerged] PDF salvato e aperto in-app: ${savedFile.path}');
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('✅ Documento salvato: ${savedFile.path.split('/').last}'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+
+        return;
+      }
+
+      if (mounted) {
+        print('❌ [DocMergedUI] errore service message=${result['message']}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ ${result['message'] ?? 'Errore download documento unico'}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } catch (e) {
+      print('❌ [DocMergedUI] eccezione imprevista: $e');
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Errore download documento unico: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    }
   }
 
   void _apriRichiestaById(String id) {
@@ -1619,7 +2129,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         if (documentoUnicoUrl != null) ...[
                           const SizedBox(height: 12),
                           OutlinedButton.icon(
-                            onPressed: () => _visualizzaDocumentoUnico(documentoUnicoUrl),
+                            onPressed: firmaRichiestaId == null
+                                ? null
+                                : () {
+                                    print('🖱️ [DocMergedUI] tap Visualizza Documento Unico richiestaId=$firmaRichiestaId stato=$stato isGiaFirmata=$isGiaFirmata');
+                                    _visualizzaDocumentoUnico(
+                                      richiestaId: firmaRichiestaId,
+                                      fallbackUrl: documentoUnicoUrl,
+                                    );
+                                  },
                             icon: const Icon(Icons.description_outlined),
                             label: const Text('Visualizza Documento Unico'),
                             style: OutlinedButton.styleFrom(

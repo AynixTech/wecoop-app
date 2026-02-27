@@ -714,6 +714,141 @@ class SocioService {
     }
   }
 
+  /// Scarica Documento Unico (PDF merged con attestato firma quando disponibile)
+  /// GET /documento-unico/{id}/download-merged
+  static Future<Map<String, dynamic>> getDocumentoUnicoMergedPdf(
+    int richiestaId, {
+    bool forceMerge = false,
+  }) async {
+    try {
+      final token = await storage.read(key: 'jwt_token');
+
+      if (token == null) {
+        print('Token JWT mancante');
+        return {'success': false, 'message': 'Utente non autenticato'};
+      }
+
+      final querySuffix = forceMerge ? '?force_merge=true' : '';
+      final url = '$baseUrl/documento-unico/$richiestaId/download-merged$querySuffix';
+      print('🔄 Chiamata GET /documento-unico/$richiestaId/download-merged forceMerge=$forceMerge...');
+      print('🔄 [DocMerged] URL completo: $url');
+
+      final headers = await _getHeaders();
+      print('🔄 [DocMerged] hasAuthHeader=${headers.containsKey('Authorization')}');
+      print('🔄 [DocMerged] acceptLanguage=${headers['Accept-Language']}');
+      final response = await http
+          .get(Uri.parse(url), headers: headers)
+          .timeout(const Duration(seconds: 30));
+
+      print('📥 GET /documento-unico/$richiestaId/download-merged status: ${response.statusCode}');
+      print('📥 [DocMerged] content-type=${response.headers['content-type']}');
+      print('📥 [DocMerged] content-disposition=${response.headers['content-disposition']}');
+      print('📥 [DocMerged] content-length=${response.headers['content-length']}');
+
+      if (response.statusCode == 200) {
+        final contentType = response.headers['content-type'] ?? '';
+
+        if (contentType.contains('application/pdf')) {
+          final contentDisposition = response.headers['content-disposition'] ?? '';
+          String filename = 'Documento_Unico_$richiestaId.pdf';
+
+          final filenameMatch = RegExp(r'filename="(.+?)"').firstMatch(contentDisposition);
+          if (filenameMatch != null) {
+            filename = filenameMatch.group(1) ?? filename;
+          }
+
+          final pdfBytes = response.bodyBytes;
+          final pdfBase64 = base64Encode(pdfBytes);
+
+          print('✅ Documento Unico merged ricevuto: $filename (${pdfBytes.length} bytes)');
+          print('✅ [DocMerged] first-bytes=${pdfBytes.take(8).toList()}');
+
+          return {
+            'success': true,
+            'pdf_bytes': pdfBytes,
+            'pdf_base64': pdfBase64,
+            'filename': filename,
+            'size': pdfBytes.length,
+          };
+        }
+
+        return {
+          'success': false,
+          'message': 'Risposta non valida: atteso PDF',
+        };
+      }
+
+      final errorBodyPreview = response.body.length > 800
+          ? '${response.body.substring(0, 800)}...'
+          : response.body;
+      print('❌ [DocMerged] body preview: $errorBodyPreview');
+
+      if (response.statusCode == 401) {
+        return {'success': false, 'message': 'Utente non autenticato'};
+      }
+
+      if (response.statusCode == 403) {
+        return {
+          'success': false,
+          'message': 'Non hai accesso a questo documento',
+        };
+      }
+
+      if (response.statusCode == 404) {
+        String message = 'Documento unico non disponibile';
+
+        try {
+          final body = jsonDecode(response.body);
+          if (body is Map<String, dynamic>) {
+            final code = (body['code'] ?? '').toString();
+            if (code == 'invalid_request') {
+              message = 'Richiesta non valida o non trovata';
+            } else if (code == 'document_not_found') {
+              message = 'Documento unico non ancora disponibile';
+            } else if (code == 'attestato_missing') {
+              message = 'Documento firmato ma attestato firma mancante';
+            } else if (body['message'] != null) {
+              message = body['message'].toString();
+            }
+          }
+        } catch (_) {}
+
+        return {'success': false, 'message': message};
+      }
+
+      if (response.statusCode == 500) {
+        try {
+          final body = jsonDecode(response.body);
+          if (body is Map<String, dynamic>) {
+            final backendCode = body['code'];
+            final backendMessage = body['message'];
+            print('❌ [DocMerged] backend 500 code=$backendCode message=$backendMessage');
+          }
+        } catch (_) {
+          print('❌ [DocMerged] backend 500 body non-JSON');
+        }
+        return {
+          'success': false,
+          'message': 'Errore tecnico durante il merge PDF',
+        };
+      }
+
+      return {
+        'success': false,
+        'message': 'Errore durante il download del documento unico',
+      };
+    } on TimeoutException {
+      print('❌ [DocMerged] TimeoutException richiestaId=$richiestaId forceMerge=$forceMerge');
+      return {'success': false, 'message': 'Timeout: il server non risponde'};
+    } on SocketException {
+      print('❌ [DocMerged] SocketException richiestaId=$richiestaId forceMerge=$forceMerge');
+      return {'success': false, 'message': 'Nessuna connessione internet'};
+    } catch (e) {
+      print('❌ Errore durante GET /documento-unico/$richiestaId/download-merged: $e');
+      return {'success': false, 'message': 'Errore: ${e.toString()}'};
+    }
+  }
+
   /// Completa il profilo dell'utente loggato
   /// POST /soci/me/completa-profilo
   /// Tutti i campi sono opzionali

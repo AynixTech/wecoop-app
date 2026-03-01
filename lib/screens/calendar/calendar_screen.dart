@@ -158,6 +158,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
         return Colors.blue;
       case 'completed':
       case 'completata':
+      case 'paid':
+      case 'pagato':
         return Colors.green;
       case 'cancelled':
       case 'annullata':

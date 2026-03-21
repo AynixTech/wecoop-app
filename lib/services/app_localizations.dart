@@ -571,6 +571,8 @@ class AppLocalizations {
       'homeMortgage': 'Hai un mutuo sulla casa (prima o seconda casa)?',
       'pensionIncome': 'Hai un reddito da pensione?',
       'requiredDocuments': 'Documenti richiesti',
+      'alreadyUploaded': 'Già caricato',
+      'uploadMissingDocuments': 'Carica documenti mancanti',
       'fiscalYear': 'Anno fiscale',
       'hasDeductibleExpenses': 'Hai spese detraibili/deducibili?',
       'notesAndAdditionalInfo': 'Note e informazioni aggiuntive',
@@ -1310,6 +1312,8 @@ class AppLocalizations {
       'homeMortgage': 'Do you have a mortgage on your home (primary or secondary)?',
       'pensionIncome': 'Do you have pension income?',
       'requiredDocuments': 'Required documents',
+      'alreadyUploaded': 'Already uploaded',
+      'uploadMissingDocuments': 'Upload missing documents',
       'fiscalYear': 'Fiscal year',
       'hasDeductibleExpenses': 'Do you have deductible expenses?',
       'notesAndAdditionalInfo': 'Notes and additional information',
@@ -2073,6 +2077,8 @@ class AppLocalizations {
       'homeMortgage': '¿Tienes una hipoteca sobre tu casa (primera o segunda vivienda)?',
       'pensionIncome': '¿Tienes ingresos de pensión?',
       'requiredDocuments': 'Documentos requeridos',
+      'alreadyUploaded': 'Ya cargado',
+      'uploadMissingDocuments': 'Cargar documentos faltantes',
       'fiscalYear': 'Año fiscal',
       'hasDeductibleExpenses': '¿Tienes gastos deducibles?',
       'notesAndAdditionalInfo': 'Notas e información adicional',
@@ -2731,6 +2737,8 @@ class AppLocalizations {
   String get homeMortgage => translate('homeMortgage');
   String get pensionIncome => translate('pensionIncome');
   String get requiredDocuments => translate('requiredDocuments');
+  String get alreadyUploaded => translate('alreadyUploaded');
+  String get uploadMissingDocuments => translate('uploadMissingDocuments');
   String get fiscalYear => translate('fiscalYear');
   String get hasDeductibleExpenses => translate('hasDeductibleExpenses');
   String get notesAndAdditionalInfo => translate('notesAndAdditionalInfo');

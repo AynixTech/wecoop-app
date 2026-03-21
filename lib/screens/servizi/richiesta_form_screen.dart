@@ -1301,10 +1301,10 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                 color: _documentiMancanti.isEmpty ? Colors.green : Colors.orange,
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'DOCUMENTI RICHIESTI',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.requiredDocuments.toUpperCase(),
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
@@ -1314,26 +1314,48 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
           ),
           const SizedBox(height: 12),
           ...widget.documentiRichiesti!.map((tipo) {
+            final l10n = AppLocalizations.of(context)!;
             final haDocumento = !_documentiMancanti.contains(tipo);
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(
                 children: [
                   Icon(
-                    haDocumento ? Icons.check_circle : Icons.cancel,
-                    color: haDocumento ? Colors.green : Colors.red,
+                    haDocumento ? Icons.check_circle : Icons.radio_button_unchecked,
+                    color: haDocumento ? Colors.green : Colors.grey.shade400,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       TipoDocumento.getDisplayName(tipo),
-                      style: TextStyle(
-                        fontSize: 14,
-                        decoration: haDocumento ? TextDecoration.lineThrough : null,
-                      ),
+                      style: const TextStyle(fontSize: 14),
                     ),
                   ),
+                  if (haDocumento)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade100,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.green.shade400),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.check, size: 12, color: Colors.green.shade700),
+                          const SizedBox(width: 4),
+                          Text(
+                            l10n.alreadyUploaded,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.green.shade700,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                 ],
               ),
             );
@@ -1353,7 +1375,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   await _checkDocumenti();
                 },
                 icon: const Icon(Icons.upload),
-                label: const Text('Carica documenti mancanti'),
+                label: Text(AppLocalizations.of(context)!.uploadMissingDocuments),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange,
                   foregroundColor: Colors.white,

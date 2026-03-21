@@ -103,10 +103,23 @@ class ContattiScreen extends StatelessWidget {
                   _buildContactCard(
                     icon: Icons.phone,
                     iconColor: Colors.green,
-                    title: '+39 02 1234567',
+                    title: '+39 351 511 2113',
                     subtitle: l10n.callUs,
                     onTap: () {
-                      _launchUrl('tel:+390212345678');
+                      _launchUrl('tel:+393515112113');
+                    },
+                  ),
+                  
+                  const SizedBox(height: 12),
+                  
+                  // WhatsApp
+                  _buildContactCard(
+                    icon: Icons.chat,
+                    iconColor: const Color(0xFF25D366),
+                    title: 'WhatsApp',
+                    subtitle: '+39 351 511 2113',
+                    onTap: () {
+                      _launchUrl('https://wa.me/393515112113');
                     },
                   ),
                   

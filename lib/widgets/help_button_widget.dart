@@ -1,12 +1,11 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-/// Widget che mostra un pulsante di aiuto dopo 10 secondi di inattività
-/// Appare in basso a destra e permette di creare una richiesta di supporto
+/// Bubble button fisso in basso a destra che apre la modale di supporto al click
 class HelpButtonWidget extends StatefulWidget {
   /// Nome del servizio corrente (es: "Vivere in Italia")
   final String serviceName;
@@ -17,11 +16,15 @@ class HelpButtonWidget extends StatefulWidget {
   /// Schermata corrente (per debugging e analytics)
   final String? currentScreen;
 
+  /// Distanza dal basso per posizionare il bubble sopra il pulsante di invio
+  final double bottomOffset;
+
   const HelpButtonWidget({
     super.key,
     required this.serviceName,
     this.serviceCategory,
     this.currentScreen,
+    this.bottomOffset = 104,
   });
 
   @override
@@ -29,47 +32,11 @@ class HelpButtonWidget extends StatefulWidget {
 }
 
 class _HelpButtonWidgetState extends State<HelpButtonWidget> {
-  Timer? _inactivityTimer;
   bool _isSubmitting = false;
-  bool _userDismissedHelp = false; // Traccia se l'utente ha cliccato "No, grazie"
   final _storage = SecureStorageService();
 
-  @override
-  void initState() {
-    super.initState();
-    _startInactivityTimer();
-  }
-
-  @override
-  void dispose() {
-    _inactivityTimer?.cancel();
-    super.dispose();
-  }
-
-  /// Avvia il timer di inattività (10 secondi)
-  void _startInactivityTimer() {
-    // Non avviare il timer se l'utente ha già rifiutato l'aiuto
-    if (_userDismissedHelp) return;
-    
-    _inactivityTimer?.cancel();
-    _inactivityTimer = Timer(const Duration(seconds: 10), () {
-      if (mounted && !_userDismissedHelp) {
-        // Mostra direttamente il dialog invece del pulsante
-        _showHelpDialog();
-      }
-    });
-  }
-
-  /// Resetta il timer quando l'utente interagisce
-  void _resetInactivityTimer() {
-    _startInactivityTimer();
-  }
-
-  /// Mostra il dialog "Hai bisogno di aiuto?"
+  /// Mostra il dialog "Hai bisogno di aiuto?" quando l'utente clicca il bubble
   void _showHelpDialog() {
-    // Non mostrare se l'utente ha già detto "No, grazie"
-    if (_userDismissedHelp) return;
-    
     final localizations = AppLocalizations.of(context);
     if (localizations == null) return;
     
@@ -108,11 +75,6 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              // L'utente ha rifiutato l'aiuto, non mostrare più la modale
-              setState(() {
-                _userDismissedHelp = true;
-              });
-              _inactivityTimer?.cancel(); // Ferma definitivamente il timer
             },
             child: Text(localizations.noThanks),
           ),
@@ -171,9 +133,9 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
         'user_email': userEmail ?? '',
         'user_name': userName ?? '',
         'user_phone': userPhone ?? '',
-        'tipo_richiesta': 'aiuto_automatico',
+        'tipo_richiesta': 'aiuto_manuale',
         'priorita': 'media',
-        'messaggio': 'L\'utente ha richiesto aiuto dopo 10 secondi di inattività nel servizio ${widget.serviceName}',
+        'messaggio': 'L\'utente ha richiesto aiuto cliccando il bubble WhatsApp nel servizio ${widget.serviceName}',
         'timestamp': DateTime.now().toIso8601String(),
       };
 
@@ -293,7 +255,6 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              _resetInactivityTimer();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
@@ -319,7 +280,38 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // Widget invisibile, il dialog si apre automaticamente dopo 10 secondi
-    return const SizedBox.shrink();
+    return Positioned(
+      right: 16,
+      bottom: widget.bottomOffset,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _showHelpDialog,
+          borderRadius: BorderRadius.circular(28),
+          child: Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: const Color(0xFF25D366),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.22),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: const Center(
+              child: FaIcon(
+                FontAwesomeIcons.whatsapp,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

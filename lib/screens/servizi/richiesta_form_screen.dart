@@ -819,6 +819,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
             serviceName: widget.servizio,
             serviceCategory: widget.categoria,
             currentScreen: 'RichiestaFormScreen',
+            bottomOffset: MediaQuery.of(context).viewPadding.bottom + 84,
           ),
         ],
       ),

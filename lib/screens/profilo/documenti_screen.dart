@@ -36,32 +36,117 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
     final fonte = await _scegliSorgenteDocumento();
     if (fonte == null) return;
 
-    // Mostra dialog per selezionare la data di scadenza
-    final dataScadenza = await _selezionaDataScadenza();
-    if (dataScadenza == null) return;
-
-    Documento? documento;
-    
-    if (fonte == 'camera') {
-      documento = await _documentoService.caricaDocumentoDaFotocamera(
-        tipo: tipo,
-        dataScadenza: dataScadenza,
-      );
-    } else if (fonte == 'gallery') {
-      documento = await _documentoService.caricaDocumentoDaGalleria(
-        tipo: tipo,
-        dataScadenza: dataScadenza,
-      );
+    if (fonte == 'file') {
+      // File singolo: PDF o immagine, nessun fronte/retro
+      final documento = await _documentoService.caricaDocumento(tipo: tipo);
+      if (documento != null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Documento caricato con successo!')),
+        );
+        _loadDocumenti();
+      }
     } else {
-      documento = await _documentoService.caricaDocumento(
-        tipo: tipo,
-        dataScadenza: dataScadenza,
-      );
+      // Camera o Galleria: chiede fronte e poi retro
+      await _caricaDocumentoFronteRetro(tipo, fonte);
     }
+  }
 
-    if (documento != null && mounted) {
+  /// Flusso a 2 step per fotocamera/galleria: FRONTE poi RETRO
+  Future<void> _caricaDocumentoFronteRetro(String tipo, String fonte) async {
+    // --- STEP 1: FRONTE ---
+    if (!mounted) return;
+    final procediFrente = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Row(
+          children: [
+            Icon(Icons.flip_to_front, color: Colors.blue, size: 28),
+            SizedBox(width: 10),
+            Flexible(child: Text('Fronte del documento')),
+          ],
+        ),
+        content: Text(
+          fonte == 'camera'
+              ? 'Scatta una foto al lato FRONTE del documento.'
+              : 'Seleziona dalla galleria la foto del lato FRONTE del documento.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Annulla'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Procedi'),
+          ),
+        ],
+      ),
+    );
+    if (procediFrente != true || !mounted) return;
+
+    final fileFrente = fonte == 'camera'
+        ? await _documentoService.prendiImmagineDaFotocamera()
+        : await _documentoService.prendiImmagineDaGalleria();
+    if (fileFrente == null || !mounted) return;
+
+    // --- STEP 2: RETRO ---
+    final procediRetro = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Row(
+          children: [
+            Icon(Icons.flip_to_back, color: Colors.green, size: 28),
+            SizedBox(width: 10),
+            Flexible(child: Text('Retro del documento')),
+          ],
+        ),
+        content: Text(
+          fonte == 'camera'
+              ? 'Ottimo! Ora scatta una foto al lato RETRO del documento.'
+              : 'Ottimo! Ora seleziona dalla galleria la foto del lato RETRO del documento.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Annulla'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Procedi'),
+          ),
+        ],
+      ),
+    );
+    if (procediRetro != true || !mounted) return;
+
+    final fileRetro = fonte == 'camera'
+        ? await _documentoService.prendiImmagineDaFotocamera()
+        : await _documentoService.prendiImmagineDaGalleria();
+    if (fileRetro == null || !mounted) return;
+
+    // Upload fronte + retro
+    setState(() => _isLoading = true);
+    final documento = await _documentoService.caricaDocumentoDueLati(
+      tipo: tipo,
+      fileFrente: fileFrente,
+      fileRetro: fileRetro,
+    );
+
+    if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Documento caricato con successo!')),
+        SnackBar(
+          content: Text(
+            documento != null
+                ? 'Documento caricato con successo (fronte e retro)!'
+                : 'Errore durante il caricamento. Riprova.',
+          ),
+          backgroundColor: documento != null ? Colors.green : Colors.red,
+        ),
       );
       _loadDocumenti();
     }
@@ -122,7 +207,7 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              'Usa la fotocamera',
+                              'Scatta fronte e retro con la fotocamera',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey,
@@ -175,7 +260,7 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              'Scegli foto esistente',
+                              'Scegli fronte e retro dalla galleria',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey,
@@ -228,7 +313,7 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              'Carica PDF o immagine',
+                              'Carica un singolo file (PDF o immagine)',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey,
@@ -252,18 +337,6 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Future<DateTime?> _selezionaDataScadenza() async {
-    return showDatePicker(
-      context: context,
-      initialDate: DateTime.now().add(const Duration(days: 365)),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 3650)),
-      helpText: 'Seleziona data di scadenza',
-      cancelText: 'Annulla',
-      confirmText: 'Conferma',
     );
   }
 
@@ -480,15 +553,36 @@ class _DocumentoCard extends StatelessWidget {
                       ),
                       if (hasDocumento) ...[
                         const SizedBox(height: 4),
-                        Text(
-                          documento!.fileName,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
+                        if (documento!.filePathRetro != null)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.shade50,
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: Colors.blue.shade200),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.flip, size: 13, color: Colors.blue),
+                                SizedBox(width: 4),
+                                Text(
+                                  'Fronte + Retro',
+                                  style: TextStyle(fontSize: 11, color: Colors.blue, fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                          )
+                        else
+                          Text(
+                            documento!.fileName,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
                         if (documento!.dataScadenza != null) ...[
                           const SizedBox(height: 4),
                           Text(

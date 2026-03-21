@@ -103,28 +103,116 @@ class DocumentoService {
     );
   }
 
-  // Carica un nuovo documento con la fotocamera
-  Future<Documento?> caricaDocumentoDaFotocamera({
-    required String tipo,
-    DateTime? dataScadenza,
-  }) async {
+  // Cattura una singola immagine con la fotocamera (restituisce solo il File, senza salvare)
+  Future<File?> prendiImmagineDaFotocamera() async {
     final ImagePicker picker = ImagePicker();
-    
-    // Scatta la foto
     final XFile? photo = await picker.pickImage(
       source: ImageSource.camera,
       imageQuality: 85,
       maxWidth: 1920,
       maxHeight: 1920,
     );
+    if (photo == null) return null;
+    return File(photo.path);
+  }
 
-    if (photo == null) {
-      return null;
+  // Seleziona una singola immagine dalla galleria (restituisce solo il File, senza salvare)
+  Future<File?> prendiImmagineDaGalleria() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
+    if (image == null) return null;
+    return File(image.path);
+  }
+
+  // Carica un documento con FRONTE e RETRO (da fotocamera o galleria)
+  Future<Documento?> caricaDocumentoDueLati({
+    required String tipo,
+    required File fileFrente,
+    required File fileRetro,
+  }) async {
+    print('🔍 DEBUG: caricaDocumentoDueLati() tipo=$tipo');
+
+    final appDir = await getApplicationDocumentsDirectory();
+    final documentiDir = Directory('${appDir.path}/documenti');
+    if (!await documentiDir.exists()) {
+      await documentiDir.create(recursive: true);
     }
 
-    final file = File(photo.path);
-    final fileName = '${tipo}_foto_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
 
+    final extFrente = _getFileExtension(fileFrente.path.split('/').last);
+    final newFileNameFrente = '${tipo}_fronte_$timestamp$extFrente';
+    final savedFrente = await fileFrente.copy('${documentiDir.path}/$newFileNameFrente');
+
+    final extRetro = _getFileExtension(fileRetro.path.split('/').last);
+    final newFileNameRetro = '${tipo}_retro_$timestamp$extRetro';
+    final savedRetro = await fileRetro.copy('${documentiDir.path}/$newFileNameRetro');
+
+    try {
+      // Upload fronte
+      print('📤 Upload fronte...');
+      final uploadFrente = await SocioService.uploadDocumento(
+        file: savedFrente,
+        tipoDocumento: '${tipo}_fronte',
+      );
+      if (uploadFrente['success'] != true) {
+        print('❌ Errore upload fronte: ${uploadFrente['message']}');
+        await savedFrente.delete();
+        await savedRetro.delete();
+        return null;
+      }
+
+      // Upload retro
+      print('📤 Upload retro...');
+      final uploadRetro = await SocioService.uploadDocumento(
+        file: savedRetro,
+        tipoDocumento: '${tipo}_retro',
+      );
+      if (uploadRetro['success'] != true) {
+        print('❌ Errore upload retro: ${uploadRetro['message']}');
+        await savedFrente.delete();
+        await savedRetro.delete();
+        return null;
+      }
+
+      print('✅ Fronte e retro caricati!');
+
+      final backendId = uploadFrente['data']?['id'];
+      final documento = Documento(
+        id: backendId?.toString() ?? timestamp.toString(),
+        tipo: tipo,
+        filePath: savedFrente.path,
+        fileName: newFileNameFrente,
+        filePathRetro: savedRetro.path,
+        fileNameRetro: newFileNameRetro,
+        dataCaricamento: DateTime.now(),
+      );
+
+      await rimuoviDocumentoByTipo(tipo);
+      final documenti = await getDocumenti();
+      documenti.add(documento);
+      await _saveDocumenti(documenti);
+
+      return documento;
+    } catch (e) {
+      print('❌ Eccezione caricaDocumentoDueLati: $e');
+      if (await savedFrente.exists()) await savedFrente.delete();
+      if (await savedRetro.exists()) await savedRetro.delete();
+      return null;
+    }
+  }
+
+  // Carica un nuovo documento con la fotocamera (lato singolo, usato come fallback)
+  Future<Documento?> caricaDocumentoDaFotocamera({
+    required String tipo,
+    DateTime? dataScadenza,
+  }) async {
+    final file = await prendiImmagineDaFotocamera();
+    if (file == null) return null;
+    final fileName = '${tipo}_foto_${DateTime.now().millisecondsSinceEpoch}.jpg';
     return _salvaDocumento(
       file: file,
       fileName: fileName,
@@ -133,26 +221,14 @@ class DocumentoService {
     );
   }
 
-  // Carica un nuovo documento dalla galleria
+  // Carica un nuovo documento dalla galleria (lato singolo, usato come fallback)
   Future<Documento?> caricaDocumentoDaGalleria({
     required String tipo,
     DateTime? dataScadenza,
   }) async {
-    final ImagePicker picker = ImagePicker();
-    
-    // Seleziona dalla galleria
-    final XFile? image = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 85,
-    );
-
-    if (image == null) {
-      return null;
-    }
-
-    final file = File(image.path);
-    final fileName = image.name;
-
+    final file = await prendiImmagineDaGalleria();
+    if (file == null) return null;
+    final fileName = file.path.split('/').last;
     return _salvaDocumento(
       file: file,
       fileName: fileName,

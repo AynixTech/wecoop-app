@@ -3,6 +3,9 @@ class Documento {
   final String tipo; // permesso_soggiorno, passaporto, codice_fiscale, carta_identita
   final String filePath;
   final String fileName;
+  /// Percorso lato retro (solo per foto/galleria - fronte e retro)
+  final String? filePathRetro;
+  final String? fileNameRetro;
   final DateTime dataCaricamento;
   final DateTime? dataScadenza;
 
@@ -11,6 +14,8 @@ class Documento {
     required this.tipo,
     required this.filePath,
     required this.fileName,
+    this.filePathRetro,
+    this.fileNameRetro,
     required this.dataCaricamento,
     this.dataScadenza,
   });
@@ -22,6 +27,8 @@ class Documento {
       tipo: json['tipo'] as String,
       filePath: json['filePath'] as String,
       fileName: json['fileName'] as String,
+      filePathRetro: json['filePathRetro'] as String?,
+      fileNameRetro: json['fileNameRetro'] as String?,
       dataCaricamento: DateTime.parse(json['dataCaricamento'] as String),
       dataScadenza: json['dataScadenza'] != null
           ? DateTime.parse(json['dataScadenza'] as String)
@@ -36,6 +43,8 @@ class Documento {
       'tipo': tipo,
       'filePath': filePath,
       'fileName': fileName,
+      'filePathRetro': filePathRetro,
+      'fileNameRetro': fileNameRetro,
       'dataCaricamento': dataCaricamento.toIso8601String(),
       'dataScadenza': dataScadenza?.toIso8601String(),
     };
@@ -61,6 +70,8 @@ class Documento {
     String? tipo,
     String? filePath,
     String? fileName,
+    String? filePathRetro,
+    String? fileNameRetro,
     DateTime? dataCaricamento,
     DateTime? dataScadenza,
   }) {
@@ -69,6 +80,8 @@ class Documento {
       tipo: tipo ?? this.tipo,
       filePath: filePath ?? this.filePath,
       fileName: fileName ?? this.fileName,
+      filePathRetro: filePathRetro ?? this.filePathRetro,
+      fileNameRetro: fileNameRetro ?? this.fileNameRetro,
       dataCaricamento: dataCaricamento ?? this.dataCaricamento,
       dataScadenza: dataScadenza ?? this.dataScadenza,
     );

@@ -15,7 +15,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController prefixController = TextEditingController(text: '+39');
+  final TextEditingController prefixController = TextEditingController(
+    text: '+39',
+  );
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final storage = SecureStorageService();
@@ -47,13 +49,16 @@ class _LoginScreenState extends State<LoginScreen> {
     // El username es el número de teléfono completo (solo números)
     // Ejemplo: +39 333 1234567 → 393331234567
     var phone = phoneController.text.trim().replaceAll(RegExp(r'[^\d]'), '');
-    final prefix = prefixController.text.trim().replaceAll(RegExp(r'[^\d]'), ''); // Ej: +39 → 39
-    
+    final prefix = prefixController.text.trim().replaceAll(
+      RegExp(r'[^\d]'),
+      '',
+    ); // Ej: +39 → 39
+
     // Si el número no empieza con el prefijo, lo agregamos
     if (prefix.isNotEmpty && !phone.startsWith(prefix)) {
       phone = prefix + phone;
     }
-    
+
     final password = passwordController.text;
 
     final url = Uri.parse('https://www.wecoop.org/wp-json/jwt-auth/v1/token');
@@ -77,6 +82,8 @@ class _LoginScreenState extends State<LoginScreen> {
         print('Login riuscito. Token ricevuto: ${data['token']}');
 
         await storage.write(key: 'jwt_token', value: data['token']);
+        await storage.write(key: 'auth_username', value: phone);
+        await storage.write(key: 'auth_password', value: password);
         await storage.write(key: 'user_email', value: data['user_email']);
         await storage.write(
           key: 'user_display_name',
@@ -99,6 +106,9 @@ class _LoginScreenState extends State<LoginScreen> {
         if (rememberPassword) {
           await storage.write(key: 'saved_phone', value: phone);
           await storage.write(key: 'saved_password', value: password);
+        } else {
+          await storage.delete(key: 'saved_phone');
+          await storage.delete(key: 'saved_password');
         }
 
         // Recupera metadati utente
@@ -189,25 +199,44 @@ class _LoginScreenState extends State<LoginScreen> {
             value: data['user_id'].toString(),
           );
         }
-        if (data['nome'] != null) await storage.write(key: 'first_name', value: data['nome']);
-        if (data['cognome'] != null) await storage.write(key: 'last_name', value: data['cognome']);
+        if (data['nome'] != null)
+          await storage.write(key: 'first_name', value: data['nome']);
+        if (data['cognome'] != null)
+          await storage.write(key: 'last_name', value: data['cognome']);
         if (data['codice_fiscale'] != null) {
           await storage.write(
             key: 'codice_fiscale',
             value: data['codice_fiscale'],
           );
         }
-        if (data['data_nascita'] != null) await storage.write(key: 'data_nascita', value: data['data_nascita']);
-        if (data['luogo_nascita'] != null) await storage.write(key: 'luogo_nascita', value: data['luogo_nascita']);
-        if (data['indirizzo'] != null) await storage.write(key: 'indirizzo', value: data['indirizzo']);
-        if (data['citta'] != null) await storage.write(key: 'citta', value: data['citta']);
-        if (data['cap'] != null) await storage.write(key: 'cap', value: data['cap']);
-        if (data['provincia'] != null) await storage.write(key: 'provincia', value: data['provincia']);
-        if (data['telefono'] != null) await storage.write(key: 'telefono', value: data['telefono']);
-        if (data['professione'] != null) await storage.write(key: 'professione', value: data['professione']);
-        if (data['paese_origine'] != null) await storage.write(key: 'paese_origine', value: data['paese_origine']);
-        if (data['nazionalita'] != null) await storage.write(key: 'nazionalita', value: data['nazionalita']);
-        if (data['status_socio'] != null) await storage.write(key: 'stato_socio', value: data['status_socio']);
+        if (data['data_nascita'] != null)
+          await storage.write(key: 'data_nascita', value: data['data_nascita']);
+        if (data['luogo_nascita'] != null)
+          await storage.write(
+            key: 'luogo_nascita',
+            value: data['luogo_nascita'],
+          );
+        if (data['indirizzo'] != null)
+          await storage.write(key: 'indirizzo', value: data['indirizzo']);
+        if (data['citta'] != null)
+          await storage.write(key: 'citta', value: data['citta']);
+        if (data['cap'] != null)
+          await storage.write(key: 'cap', value: data['cap']);
+        if (data['provincia'] != null)
+          await storage.write(key: 'provincia', value: data['provincia']);
+        if (data['telefono'] != null)
+          await storage.write(key: 'telefono', value: data['telefono']);
+        if (data['professione'] != null)
+          await storage.write(key: 'professione', value: data['professione']);
+        if (data['paese_origine'] != null)
+          await storage.write(
+            key: 'paese_origine',
+            value: data['paese_origine'],
+          );
+        if (data['nazionalita'] != null)
+          await storage.write(key: 'nazionalita', value: data['nazionalita']);
+        if (data['status_socio'] != null)
+          await storage.write(key: 'stato_socio', value: data['status_socio']);
         if (data['data_adesione'] != null) {
           await storage.write(
             key: 'data_iscrizione',
@@ -220,7 +249,8 @@ class _LoginScreenState extends State<LoginScreen> {
             value: data['numero_tessera'],
           );
         }
-        if (data['tessera_url'] != null) await storage.write(key: 'tessera_url', value: data['tessera_url']);
+        if (data['tessera_url'] != null)
+          await storage.write(key: 'tessera_url', value: data['tessera_url']);
         if (data['quota_pagata'] != null) {
           await storage.write(
             key: 'quota_pagata',
@@ -268,9 +298,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.login),
-        actions: const [
-          LanguageSelector(),
-        ],
+        actions: const [LanguageSelector()],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -302,7 +330,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: InputDecoration(
                       labelText: l10n.translate('phoneNumber'),
                       hintText: '3891234567',
-                      helperStyle: const TextStyle(fontSize: 11, color: Colors.grey),
+                      helperStyle: const TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey,
+                      ),
                       prefixIcon: const Icon(Icons.phone),
                     ),
                   ),
@@ -344,26 +375,29 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: isLoading ? null : _login,
-              child: isLoading
-                  ? Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              child:
+                  isLoading
+                      ? Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(l10n.sending),
-                      ],
-                    )
-                  : Text(l10n.login),
+                          const SizedBox(width: 12),
+                          Text(l10n.sending),
+                        ],
+                      )
+                      : Text(l10n.login),
             ),
             const SizedBox(height: 16),
-            
+
             // Password Dimenticata
             TextButton(
               onPressed: () {
@@ -374,9 +408,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: const TextStyle(fontSize: 14),
               ),
             ),
-            
+
             const SizedBox(height: 8),
-            
+
             TextButton.icon(
               onPressed: () {
                 Navigator.pushReplacementNamed(context, '/home');
@@ -386,9 +420,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 l10n.translate('continueWithoutLogin'),
                 style: const TextStyle(fontSize: 14),
               ),
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.grey[700],
-              ),
+              style: TextButton.styleFrom(foregroundColor: Colors.grey[700]),
             ),
           ],
         ),

@@ -30,7 +30,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
 
   String selectedLanguageCode = 'it';
   String selectedInterest = 'culture';
-  
+
   List<Evento> _mieiEventi = [];
   bool _isLoadingEventi = false;
 
@@ -53,7 +53,10 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
           });
         }
         // Salva in storage
-        await storage.write(key: 'profilo_completo', value: isCompleto.toString());
+        await storage.write(
+          key: 'profilo_completo',
+          value: isCompleto.toString(),
+        );
       }
     } catch (e) {
       print('Errore verifica profilo: $e');
@@ -105,15 +108,15 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     try {
       print('🔄 Caricamento miei eventi...');
       final response = await EventiService.getMieiEventi();
-      
+
       print('📥 Risposta getMieiEventi RAW: $response');
       print('📥 success=${response['success']}');
       print('📥 totale=${response['totale']}');
-      
+
       if (response['success'] == true) {
         final eventiList = (response['eventi'] as List?)?.cast<Evento>() ?? [];
         print('✅ ${eventiList.length} miei eventi caricati');
-        
+
         // Log dettagliato per ogni evento
         for (var i = 0; i < eventiList.length; i++) {
           final evento = eventiList[i];
@@ -121,12 +124,16 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
           print('   - ID: ${evento.id}');
           print('   - Data: ${evento.dataInizio} ${evento.oraInizio ?? ""}');
           print('   - Categoria: ${evento.categoria ?? "nessuna"}');
-          print('   - Immagine copertina: ${evento.immagineCopertina ?? "NESSUNA"}');
-          print('   - Luogo: ${evento.luogo ?? evento.citta ?? "non specificato"}');
+          print(
+            '   - Immagine copertina: ${evento.immagineCopertina ?? "NESSUNA"}',
+          );
+          print(
+            '   - Luogo: ${evento.luogo ?? evento.citta ?? "non specificato"}',
+          );
           print('   - Online: ${evento.online}');
           print('   - Sono iscritto: ${evento.sonoIscritto}');
         }
-        
+
         if (mounted) {
           setState(() {
             _mieiEventi = eventiList;
@@ -171,6 +178,8 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
 
     // Cancella token e credenziali
     await storage.delete(key: 'jwt_token');
+    await storage.delete(key: 'auth_username');
+    await storage.delete(key: 'auth_password');
     await storage.delete(key: 'user_email');
     await storage.delete(key: 'user_display_name');
     await storage.delete(key: 'user_nicename');
@@ -256,7 +265,10 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700),
+                        Icon(
+                          Icons.warning_amber_rounded,
+                          color: Colors.orange.shade700,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -286,7 +298,8 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                           final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const CompletaProfiloScreen(),
+                              builder:
+                                  (context) => const CompletaProfiloScreen(),
                             ),
                           );
                           if (result == true) {
@@ -545,9 +558,10 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => EventoDetailScreen(
-                                    eventoId: evento.id,
-                                  ),
+                                  builder:
+                                      (context) => EventoDetailScreen(
+                                        eventoId: evento.id,
+                                      ),
                                 ),
                               );
                             },
@@ -556,7 +570,8 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 8),
                               child: Row(
                                 children: [
-                                  if (evento.immagineCopertina != null && evento.immagineCopertina!.isNotEmpty)
+                                  if (evento.immagineCopertina != null &&
+                                      evento.immagineCopertina!.isNotEmpty)
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
                                       child: Image.network(
@@ -564,18 +579,22 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                                         width: 60,
                                         height: 60,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (_, __, ___) => Container(
-                                          width: 60,
-                                          height: 60,
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFF2196F3).withOpacity(0.1),
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          child: const Icon(
-                                            Icons.event,
-                                            color: Color(0xFF2196F3),
-                                          ),
-                                        ),
+                                        errorBuilder:
+                                            (_, __, ___) => Container(
+                                              width: 60,
+                                              height: 60,
+                                              decoration: BoxDecoration(
+                                                color: const Color(
+                                                  0xFF2196F3,
+                                                ).withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: const Icon(
+                                                Icons.event,
+                                                color: Color(0xFF2196F3),
+                                              ),
+                                            ),
                                       ),
                                     )
                                   else
@@ -583,7 +602,9 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                                       width: 60,
                                       height: 60,
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFF2196F3).withOpacity(0.1),
+                                        color: const Color(
+                                          0xFF2196F3,
+                                        ).withOpacity(0.1),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: const Icon(
@@ -594,13 +615,15 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           evento.titolo,
-                                          style: theme.textTheme.bodyMedium?.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                          style: theme.textTheme.bodyMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w600,
+                                              ),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -615,9 +638,10 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                                             const SizedBox(width: 4),
                                             Text(
                                               evento.dataInizio,
-                                              style: theme.textTheme.bodySmall?.copyWith(
-                                                color: Colors.grey.shade600,
-                                              ),
+                                              style: theme.textTheme.bodySmall
+                                                  ?.copyWith(
+                                                    color: Colors.grey.shade600,
+                                                  ),
                                             ),
                                             if (evento.luogo != null) ...[
                                               const SizedBox(width: 12),
@@ -630,11 +654,18 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                                               Expanded(
                                                 child: Text(
                                                   evento.luogo!,
-                                                  style: theme.textTheme.bodySmall?.copyWith(
-                                                    color: Colors.grey.shade600,
-                                                  ),
+                                                  style: theme
+                                                      .textTheme
+                                                      .bodySmall
+                                                      ?.copyWith(
+                                                        color:
+                                                            Colors
+                                                                .grey
+                                                                .shade600,
+                                                      ),
                                                   maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
                                               ),
                                             ],
@@ -686,7 +717,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
               },
             ),
             const SizedBox(height: 16),
-            
+
             // CTA Completa Profilo
             Card(
               elevation: 2,
@@ -767,7 +798,10 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
               ),
               child: InkWell(
                 onTap: () async {
-                  final result = await Navigator.pushNamed(context, '/change-password');
+                  final result = await Navigator.pushNamed(
+                    context,
+                    '/change-password',
+                  );
                   if (result == true && mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(

@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'secure_storage_service.dart';
+import 'http_client_service.dart';
 import '../models/pagamento_model.dart';
 
 class PagamentoService {
@@ -31,13 +31,11 @@ class PagamentoService {
         return null;
       }
 
-      final url = '$baseUrl/payment/$paymentId';
+      final url = Uri.parse('$baseUrl/payment/$paymentId');
       print('🔄 Chiamata GET /payment/$paymentId...');
 
       final headers = await _getHeaders();
-      final response = await http
-          .get(Uri.parse(url), headers: headers)
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(url, headers: headers);
 
       print('📥 GET /payment/$paymentId status: ${response.statusCode}');
 
@@ -71,13 +69,11 @@ class PagamentoService {
         return [];
       }
 
-      final url = '$baseUrl/payments/user/$userId';
+      final url = Uri.parse('$baseUrl/payments/user/$userId');
       print('🔄 Chiamata GET /payments/user/$userId...');
 
       final headers = await _getHeaders();
-      final response = await http
-          .get(Uri.parse(url), headers: headers)
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(url, headers: headers);
 
       print('📥 GET /payments/user/$userId status: ${response.statusCode}');
 
@@ -104,19 +100,21 @@ class PagamentoService {
         return null;
       }
 
-      final url = '$baseUrl/payment/richiesta/$richiestaId';
+      final url = Uri.parse('$baseUrl/payment/richiesta/$richiestaId');
       print('🔄 Chiamata GET /payment/richiesta/$richiestaId...');
 
       final headers = await _getHeaders();
-      final response = await http
-          .get(Uri.parse(url), headers: headers)
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(url, headers: headers);
 
-      print('📥 GET /payment/richiesta/$richiestaId status: ${response.statusCode}');
+      print(
+        '📥 GET /payment/richiesta/$richiestaId status: ${response.statusCode}',
+      );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
-        print('✅ Pagamento trovato per richiesta $richiestaId: ID ${data['id']}, Importo €${data['importo']}, Stato: ${data['stato']}');
+        print(
+          '✅ Pagamento trovato per richiesta $richiestaId: ID ${data['id']}, Importo €${data['importo']}, Stato: ${data['stato']}',
+        );
         return Pagamento.fromJson(data);
       } else if (response.statusCode == 404) {
         print('ℹ️ Nessun pagamento trovato per richiesta $richiestaId');
@@ -150,7 +148,7 @@ class PagamentoService {
         return {'success': false, 'message': 'Token JWT mancante'};
       }
 
-      final url = '$baseUrl/payment/$paymentId/confirm';
+      final url = Uri.parse('$baseUrl/payment/$paymentId/confirm');
       print('🔄 Chiamata POST /payment/$paymentId/confirm...');
 
       final body = {
@@ -160,15 +158,15 @@ class PagamentoService {
       };
 
       final headers = await _getHeaders();
-      final response = await http
-          .post(
-            Uri.parse(url),
-            headers: headers,
-            body: jsonEncode(body),
-          )
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.post(
+        url,
+        headers: headers,
+        body: jsonEncode(body),
+      );
 
-      print('📥 POST /payment/$paymentId/confirm status: ${response.statusCode}');
+      print(
+        '📥 POST /payment/$paymentId/confirm status: ${response.statusCode}',
+      );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -201,8 +199,12 @@ class PagamentoService {
   }) async {
     try {
       // Nota: questo endpoint deve essere creato sul backend WordPress
-      final url = 'https://www.wecoop.org/wp-json/wecoop/v1/create-payment-intent';
-      print('🔄 Chiamata POST /create-payment-intent (importo: €$importo, paymentId: $paymentId)...');
+      final url = Uri.parse(
+        'https://www.wecoop.org/wp-json/wecoop/v1/create-payment-intent',
+      );
+      print(
+        '🔄 Chiamata POST /create-payment-intent (importo: €$importo, paymentId: $paymentId)...',
+      );
 
       final headers = await _getHeaders();
       final body = {
@@ -213,13 +215,11 @@ class PagamentoService {
 
       print('📤 Body richiesta: ${jsonEncode(body)}');
 
-      final response = await http
-          .post(
-            Uri.parse(url),
-            headers: headers,
-            body: jsonEncode(body),
-          )
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.post(
+        url,
+        headers: headers,
+        body: jsonEncode(body),
+      );
 
       print('📥 POST /create-payment-intent status: ${response.statusCode}');
       print('📥 Response body: ${response.body}');
@@ -227,7 +227,7 @@ class PagamentoService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final clientSecret = data['clientSecret'] as String?;
-        
+
         if (clientSecret != null) {
           print('✅ Client Secret ricevuto');
           return clientSecret;

@@ -1,22 +1,24 @@
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:http/http.dart' as http;
 import 'package:wecoop_app/services/secure_storage_service.dart';
+import 'package:wecoop_app/services/http_client_service.dart';
 
 /// Servizio per gestire le notifiche push Firebase
 class PushNotificationService {
-  static final PushNotificationService _instance = PushNotificationService._internal();
+  static final PushNotificationService _instance =
+      PushNotificationService._internal();
   factory PushNotificationService() => _instance;
   PushNotificationService._internal();
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
   final SecureStorageService _storage = SecureStorageService();
-  
+
   // Callback per navigazione
   Function(RemoteMessage)? onMessageTap;
-  
+
   // URL API WordPress
   static const String apiUrl = 'https://www.wecoop.org/wp-json';
 
@@ -32,13 +34,13 @@ class PushNotificationService {
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       print('✅ Permessi notifiche concessi');
-      
+
       // Inizializza local notifications
       await _initializeLocalNotifications();
-      
+
       // Ottieni FCM token
       await _getFCMToken();
-      
+
       // Configura handlers
       _configureMessageHandlers();
     } else {
@@ -48,10 +50,10 @@ class PushNotificationService {
 
   /// Inizializza local notifications per foreground
   Future<void> _initializeLocalNotifications() async {
-    const AndroidInitializationSettings androidSettings = 
+    const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    
-    const DarwinInitializationSettings iosSettings = 
+
+    const DarwinInitializationSettings iosSettings =
         DarwinInitializationSettings(
           requestSoundPermission: true,
           requestBadgePermission: true,
@@ -79,16 +81,16 @@ class PushNotificationService {
   Future<void> _getFCMToken() async {
     try {
       String? token = await _firebaseMessaging.getToken();
-      
+
       if (token != null) {
         print('📱 FCM Token: ${token.substring(0, 20)}...');
-        
+
         // Salva token localmente
         await _storage.write(key: 'fcm_token', value: token);
-        
+
         // Invia token al backend WordPress
         await _sendTokenToBackend(token);
-        
+
         // Listener per refresh token
         _firebaseMessaging.onTokenRefresh.listen(_sendTokenToBackend);
       }
@@ -101,10 +103,10 @@ class PushNotificationService {
   Future<void> _sendTokenToBackend(String token) async {
     try {
       print('🔄 Inizio invio FCM token al backend...');
-      
+
       // Recupera JWT token
       final jwtToken = await _storage.read(key: 'jwt_token');
-      
+
       if (jwtToken == null) {
         print('⚠️ JWT token non trovato, impossibile salvare FCM token');
         print('💡 Verifica che il login sia stato completato correttamente');
@@ -118,20 +120,21 @@ class PushNotificationService {
 
       final url = Uri.parse('$apiUrl/push/v1/token');
       print('📡 POST $url');
-      print('📝 Headers: Authorization: Bearer ${jwtToken.substring(0, 20)}...');
-      print('📝 Body: {"token": "${token.substring(0, 20)}...", "device_info": "$deviceInfo"}');
+      print(
+        '📝 Headers: Authorization: Bearer ${jwtToken.substring(0, 20)}...',
+      );
+      print(
+        '📝 Body: {"token": "${token.substring(0, 20)}...", "device_info": "$deviceInfo"}',
+      );
 
-      final response = await http.post(
+      final response = await HttpClientService.post(
         url,
         headers: {
           'Authorization': 'Bearer $jwtToken',
           'Content-Type': 'application/json',
         },
-        body: json.encode({
-          'token': token,
-          'device_info': deviceInfo,
-        }),
-      ).timeout(const Duration(seconds: 30));
+        body: json.encode({'token': token, 'device_info': deviceInfo}),
+      );
 
       print('📥 Response Status: ${response.statusCode}');
       print('📥 Response Body: ${response.body}');
@@ -151,7 +154,9 @@ class PushNotificationService {
       }
     } catch (e) {
       print('❌ Errore invio token a backend: $e');
-      print('💡 Verifica connessione internet e che il server sia raggiungibile');
+      print(
+        '💡 Verifica connessione internet e che il server sia raggiungibile',
+      );
     }
   }
 
@@ -182,8 +187,9 @@ class PushNotificationService {
 
   /// Controlla se app aperta da notifica quando era terminated
   Future<void> _checkInitialMessage() async {
-    RemoteMessage? initialMessage = await _firebaseMessaging.getInitialMessage();
-    
+    RemoteMessage? initialMessage =
+        await _firebaseMessaging.getInitialMessage();
+
     if (initialMessage != null) {
       print('📬 App aperta da notifica (terminated)');
       _handleNotificationTap(initialMessage.data);
@@ -196,14 +202,15 @@ class PushNotificationService {
     final data = message.data;
 
     if (notification != null) {
-      const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-        'wecoop_channel',
-        'WeCoop Notifications',
-        channelDescription: 'Notifiche dalla piattaforma WeCoop',
-        importance: Importance.high,
-        priority: Priority.high,
-        showWhen: true,
-      );
+      const AndroidNotificationDetails androidDetails =
+          AndroidNotificationDetails(
+            'wecoop_channel',
+            'WeCoop Notifications',
+            channelDescription: 'Notifiche dalla piattaforma WeCoop',
+            importance: Importance.high,
+            priority: Priority.high,
+            showWhen: true,
+          );
 
       const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
         presentAlert: true,
@@ -229,7 +236,7 @@ class PushNotificationService {
   /// Gestisci tap su notifica
   void _handleNotificationTap(Map<String, dynamic> data) {
     print('👆 Tap su notifica: $data');
-    
+
     if (onMessageTap != null) {
       onMessageTap!(RemoteMessage(data: data));
     } else {
@@ -253,21 +260,21 @@ class PushNotificationService {
           print('🔄 Navigazione a EventDetail: $id');
         }
         break;
-      
+
       case 'ServiceDetail':
         if (id != null) {
           print('🔄 Navigazione a ServiceDetail: $id');
         }
         break;
-      
+
       case 'Profile':
         print('🔄 Navigazione a Profile');
         break;
-      
+
       case 'Notifications':
         print('🔄 Navigazione a Notifications');
         break;
-      
+
       default:
         print('🔄 Schermata sconosciuta: $screen');
     }
@@ -277,14 +284,12 @@ class PushNotificationService {
   Future<void> removeToken() async {
     try {
       final jwtToken = await _storage.read(key: 'jwt_token');
-      
+
       if (jwtToken == null) return;
 
-      final response = await http.delete(
+      final response = await HttpClientService.delete(
         Uri.parse('$apiUrl/push/v1/token'),
-        headers: {
-          'Authorization': 'Bearer $jwtToken',
-        },
+        headers: {'Authorization': 'Bearer $jwtToken'},
       );
 
       if (response.statusCode == 200) {

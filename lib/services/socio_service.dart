@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:wecoop_app/services/secure_storage_service.dart';
+import 'package:wecoop_app/services/http_client_service.dart';
 import 'dart:async';
 import 'dart:io';
 import '../utils/html_utils.dart';
@@ -10,20 +11,22 @@ class SocioService {
   static final storage = SecureStorageService();
 
   /// Ottiene gli headers comuni per tutte le richieste
-  static Future<Map<String, String>> _getHeaders({bool includeAuth = true}) async {
+  static Future<Map<String, String>> _getHeaders({
+    bool includeAuth = true,
+  }) async {
     final languageCode = await storage.read(key: 'language_code') ?? 'it';
     final headers = {
       'Content-Type': 'application/json',
       'Accept-Language': languageCode,
     };
-    
+
     if (includeAuth) {
       final token = await storage.read(key: 'jwt_token');
       if (token != null) {
         headers['Authorization'] = 'Bearer $token';
       }
     }
-    
+
     return headers;
   }
 
@@ -42,9 +45,7 @@ class SocioService {
       final url = '$baseUrl/soci/verifica/$encodedEmail';
       print('Verifico socio su: $url');
 
-      final response = await http
-          .get(Uri.parse(url))
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(Uri.parse(url));
 
       print('Status code: ${response.statusCode}');
       print('Response body: ${response.body}');
@@ -53,10 +54,12 @@ class SocioService {
         // Verifica se la risposta contiene warning PHP invece di JSON
         if (response.body.trim().startsWith('<')) {
           print('⚠️ Risposta contiene HTML/warning PHP invece di JSON');
-          print('💡 Configura WordPress: WP_DEBUG_DISPLAY = false in wp-config.php');
+          print(
+            '💡 Configura WordPress: WP_DEBUG_DISPLAY = false in wp-config.php',
+          );
           return false;
         }
-        
+
         final rawData = jsonDecode(response.body);
         final data = decodeHtmlInMap(rawData);
         // Nuova API ritorna: {"success": true, "is_socio": true, "status": "attivo", "data_adesione": "2024-01-10"}
@@ -66,8 +69,12 @@ class SocioService {
     } catch (e) {
       print('Errore verifica socio: $e');
       if (e is FormatException) {
-        print('💡 Il backend WordPress sta restituendo warning PHP invece di JSON');
-        print('💡 Soluzione: Aggiungi in wp-config.php -> define("WP_DEBUG_DISPLAY", false);');
+        print(
+          '💡 Il backend WordPress sta restituendo warning PHP invece di JSON',
+        );
+        print(
+          '💡 Soluzione: Aggiungi in wp-config.php -> define("WP_DEBUG_DISPLAY", false);',
+        );
       }
       return false;
     }
@@ -85,9 +92,7 @@ class SocioService {
       final encodedEmail = Uri.encodeComponent(email);
       final url = '$baseUrl/soci/verifica/$encodedEmail';
 
-      final response = await http
-          .get(Uri.parse(url))
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
         // Verifica se la risposta contiene warning PHP invece di JSON
@@ -95,7 +100,7 @@ class SocioService {
           print('⚠️ Risposta contiene HTML/warning PHP invece di JSON');
           return false;
         }
-        
+
         final rawData = jsonDecode(response.body);
         final data = decodeHtmlInMap(rawData);
         // Se success è true ma is_socio è false, significa che c'è una richiesta pending
@@ -106,7 +111,9 @@ class SocioService {
     } catch (e) {
       print('Errore verifica richiesta: $e');
       if (e is FormatException) {
-        print('💡 Il backend sta restituendo warning PHP. Configura WP_DEBUG_DISPLAY = false');
+        print(
+          '💡 Il backend sta restituendo warning PHP. Configura WP_DEBUG_DISPLAY = false',
+        );
       }
       return false;
     }
@@ -145,32 +152,37 @@ class SocioService {
         'cognome': cognome,
         'prefix': prefix,
         'telefono': telefono,
-        'nazionalita': nazionalita.toUpperCase(), // Assicura maiuscolo ISO (IT, EC, ES)
+        'nazionalita':
+            nazionalita.toUpperCase(), // Assicura maiuscolo ISO (IT, EC, ES)
         'email': email,
         'privacy_accepted': privacyAccepted,
       };
 
       // Aggiungi campi opzionali solo se valorizzati
-      if (codiceFiscale != null && codiceFiscale.isNotEmpty) bodyData['codice_fiscale'] = codiceFiscale;
-      if (dataNascita != null && dataNascita.isNotEmpty) bodyData['data_nascita'] = dataNascita;
-      if (luogoNascita != null && luogoNascita.isNotEmpty) bodyData['luogo_nascita'] = luogoNascita;
-      if (indirizzo != null && indirizzo.isNotEmpty) bodyData['indirizzo'] = indirizzo;
+      if (codiceFiscale != null && codiceFiscale.isNotEmpty)
+        bodyData['codice_fiscale'] = codiceFiscale;
+      if (dataNascita != null && dataNascita.isNotEmpty)
+        bodyData['data_nascita'] = dataNascita;
+      if (luogoNascita != null && luogoNascita.isNotEmpty)
+        bodyData['luogo_nascita'] = luogoNascita;
+      if (indirizzo != null && indirizzo.isNotEmpty)
+        bodyData['indirizzo'] = indirizzo;
       if (citta != null && citta.isNotEmpty) bodyData['citta'] = citta;
       if (cap != null && cap.isNotEmpty) bodyData['cap'] = cap;
-      if (provincia != null && provincia.isNotEmpty) bodyData['provincia'] = provincia;
-      if (professione != null && professione.isNotEmpty) bodyData['professione'] = professione;
+      if (provincia != null && provincia.isNotEmpty)
+        bodyData['provincia'] = provincia;
+      if (professione != null && professione.isNotEmpty)
+        bodyData['professione'] = professione;
 
       final body = jsonEncode(bodyData);
       print('Body: $body');
 
       final headers = await _getHeaders(includeAuth: false);
-      final response = await http
-          .post(
-            Uri.parse(url),
-            headers: headers,
-            body: body,
-          )
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.post(
+        Uri.parse(url),
+        headers: headers,
+        body: body,
+      );
 
       print('Status code: ${response.statusCode}');
       print('Response body: ${response.body}');
@@ -181,8 +193,7 @@ class SocioService {
         // Nuova API ritorna: {"success": true, "message": "...", "data": {"username": "socio_123", "password": "abc123", "tessera_url": "..."}}
         return {
           'success': data['success'] ?? true,
-          'message':
-              data['message'] ?? 'Registrazione completata con successo',
+          'message': data['message'] ?? 'Registrazione completata con successo',
           'username': data['data']?['username'],
           'password': data['data']?['password'],
           'tessera_url': data['data']?['tessera_url'],
@@ -242,7 +253,9 @@ class SocioService {
       final token = await storage.read(key: 'jwt_token');
       final url = '$baseUrl/richiesta-servizio';
 
-      print('\n🎯 ==================== RICHIESTA SERVIZIO ====================');
+      print(
+        '\n🎯 ==================== RICHIESTA SERVIZIO ====================',
+      );
       print('🚀 URL: $url');
       print('🔑 Token presente: ${token != null}');
       print('📋 Servizio: $servizio');
@@ -263,9 +276,11 @@ class SocioService {
         headers['Authorization'] = 'Bearer $token';
       }
 
-      final response = await http
-          .post(Uri.parse(url), headers: headers, body: body)
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.post(
+        Uri.parse(url),
+        headers: headers,
+        body: body,
+      );
 
       print('\n📡 RESPONSE RICEVUTA:');
       print('   Status code: ${response.statusCode}');
@@ -280,7 +295,7 @@ class SocioService {
         print('   requires_payment: ${data['requires_payment']}');
         print('   payment_id: ${data['payment_id']}');
         print('   importo: ${data['importo']}');
-        
+
         if (data['requires_payment'] == true) {
           print('\n💰 PAGAMENTO RICHIESTO!');
           print('   💳 Payment ID: ${data['payment_id']}');
@@ -289,12 +304,14 @@ class SocioService {
           print('\n✅ Servizio gratuito - nessun pagamento richiesto');
         }
         print('==========================================================\n');
-        
+
         print('✅ Richiesta creata con successo');
         if (data['requires_payment'] == true) {
-          print('💰 Pagamento richiesto: €${data['importo']} - Payment ID: ${data['payment_id']}');
+          print(
+            '💰 Pagamento richiesto: €${data['importo']} - Payment ID: ${data['payment_id']}',
+          );
         }
-        
+
         // Nuova API ritorna: {"success": true, "message": "...", "id": 789, "numero_pratica": "...", "requires_payment": true, "payment_id": 123, "importo": 50.00}
         return {
           'success': data['success'] ?? true,
@@ -356,9 +373,10 @@ class SocioService {
       print('🔄 Chiamata GET /soci/me...');
 
       final headers = await _getHeaders();
-      final response = await http
-          .get(Uri.parse(url), headers: headers)
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(
+        Uri.parse(url),
+        headers: headers,
+      );
 
       print('📥 GET /soci/me status: ${response.statusCode}');
 
@@ -415,9 +433,7 @@ class SocioService {
       print('🔄 Chiamata GET /soci...');
 
       final headers = await _getHeaders();
-      final response = await http
-          .get(uri, headers: headers)
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(uri, headers: headers);
 
       print('📥 GET /soci status: ${response.statusCode}');
 
@@ -466,9 +482,7 @@ class SocioService {
       print('🔄 Chiamata GET /mie-richieste...');
 
       final headers = await _getHeaders();
-      final response = await http
-          .get(uri, headers: headers)
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(uri, headers: headers);
 
       print('📥 GET /mie-richieste status: ${response.statusCode}');
 
@@ -511,9 +525,10 @@ class SocioService {
       print('🔄 Chiamata GET /richiesta-servizio/$id...');
 
       final headers = await _getHeaders();
-      final response = await http
-          .get(Uri.parse(url), headers: headers)
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(
+        Uri.parse(url),
+        headers: headers,
+      );
 
       print('📥 GET /richiesta-servizio/$id status: ${response.statusCode}');
 
@@ -554,9 +569,10 @@ class SocioService {
       print('🔄 Chiamata DELETE /richiesta-servizio/$id...');
 
       final headers = await _getHeaders();
-      final response = await http
-          .delete(Uri.parse(url), headers: headers)
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.delete(
+        Uri.parse(url),
+        headers: headers,
+      );
 
       print('📥 DELETE /richiesta-servizio/$id status: ${response.statusCode}');
       print('📥 Response body: ${response.body}');
@@ -588,8 +604,7 @@ class SocioService {
         return {
           'success': false,
           'message':
-              errorData['message'] ??
-              'Impossibile eliminare questa richiesta',
+              errorData['message'] ?? 'Impossibile eliminare questa richiesta',
         };
       }
 
@@ -622,33 +637,41 @@ class SocioService {
       print('🔄 Chiamata GET /pagamento/$paymentId/ricevuta...');
 
       final headers = await _getHeaders();
-      final response = await http
-          .get(Uri.parse(url), headers: headers)
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(
+        Uri.parse(url),
+        headers: headers,
+      );
 
-      print('📥 GET /pagamento/$paymentId/ricevuta status: ${response.statusCode}');
-      
+      print(
+        '📥 GET /pagamento/$paymentId/ricevuta status: ${response.statusCode}',
+      );
+
       // Il backend ritorna il PDF direttamente (Content-Type: application/pdf)
       if (response.statusCode == 200) {
         // Verifica se è un PDF o JSON
         final contentType = response.headers['content-type'] ?? '';
-        
+
         if (contentType.contains('application/pdf')) {
           // Risposta PDF binaria - estrai filename dall'header Content-Disposition
-          final contentDisposition = response.headers['content-disposition'] ?? '';
+          final contentDisposition =
+              response.headers['content-disposition'] ?? '';
           String filename = 'ricevuta_$paymentId.pdf';
-          
-          final filenameMatch = RegExp(r'filename="(.+?)"').firstMatch(contentDisposition);
+
+          final filenameMatch = RegExp(
+            r'filename="(.+?)"',
+          ).firstMatch(contentDisposition);
           if (filenameMatch != null) {
             filename = filenameMatch.group(1) ?? filename;
           }
-          
-          print('✅ PDF ricevuto: $filename (${response.bodyBytes.length} bytes)');
-          
+
+          print(
+            '✅ PDF ricevuto: $filename (${response.bodyBytes.length} bytes)',
+          );
+
           // Ritorna i dati PDF come base64 per poterli salvare/condividere
           final pdfBytes = response.bodyBytes;
           final pdfBase64 = base64Encode(pdfBytes);
-          
+
           return {
             'success': true,
             'pdf_bytes': pdfBytes,
@@ -729,30 +752,45 @@ class SocioService {
       }
 
       final querySuffix = forceMerge ? '?force_merge=true' : '';
-      final url = '$baseUrl/documento-unico/$richiestaId/download-merged$querySuffix';
-      print('🔄 Chiamata GET /documento-unico/$richiestaId/download-merged forceMerge=$forceMerge...');
+      final url =
+          '$baseUrl/documento-unico/$richiestaId/download-merged$querySuffix';
+      print(
+        '🔄 Chiamata GET /documento-unico/$richiestaId/download-merged forceMerge=$forceMerge...',
+      );
       print('🔄 [DocMerged] URL completo: $url');
 
       final headers = await _getHeaders();
-      print('🔄 [DocMerged] hasAuthHeader=${headers.containsKey('Authorization')}');
+      print(
+        '🔄 [DocMerged] hasAuthHeader=${headers.containsKey('Authorization')}',
+      );
       print('🔄 [DocMerged] acceptLanguage=${headers['Accept-Language']}');
-      final response = await http
-          .get(Uri.parse(url), headers: headers)
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(
+        Uri.parse(url),
+        headers: headers,
+      );
 
-      print('📥 GET /documento-unico/$richiestaId/download-merged status: ${response.statusCode}');
+      print(
+        '📥 GET /documento-unico/$richiestaId/download-merged status: ${response.statusCode}',
+      );
       print('📥 [DocMerged] content-type=${response.headers['content-type']}');
-      print('📥 [DocMerged] content-disposition=${response.headers['content-disposition']}');
-      print('📥 [DocMerged] content-length=${response.headers['content-length']}');
+      print(
+        '📥 [DocMerged] content-disposition=${response.headers['content-disposition']}',
+      );
+      print(
+        '📥 [DocMerged] content-length=${response.headers['content-length']}',
+      );
 
       if (response.statusCode == 200) {
         final contentType = response.headers['content-type'] ?? '';
 
         if (contentType.contains('application/pdf')) {
-          final contentDisposition = response.headers['content-disposition'] ?? '';
+          final contentDisposition =
+              response.headers['content-disposition'] ?? '';
           String filename = 'Documento_Unico_$richiestaId.pdf';
 
-          final filenameMatch = RegExp(r'filename="(.+?)"').firstMatch(contentDisposition);
+          final filenameMatch = RegExp(
+            r'filename="(.+?)"',
+          ).firstMatch(contentDisposition);
           if (filenameMatch != null) {
             filename = filenameMatch.group(1) ?? filename;
           }
@@ -760,7 +798,9 @@ class SocioService {
           final pdfBytes = response.bodyBytes;
           final pdfBase64 = base64Encode(pdfBytes);
 
-          print('✅ Documento Unico merged ricevuto: $filename (${pdfBytes.length} bytes)');
+          print(
+            '✅ Documento Unico merged ricevuto: $filename (${pdfBytes.length} bytes)',
+          );
           print('✅ [DocMerged] first-bytes=${pdfBytes.take(8).toList()}');
 
           return {
@@ -772,15 +812,13 @@ class SocioService {
           };
         }
 
-        return {
-          'success': false,
-          'message': 'Risposta non valida: atteso PDF',
-        };
+        return {'success': false, 'message': 'Risposta non valida: atteso PDF'};
       }
 
-      final errorBodyPreview = response.body.length > 800
-          ? '${response.body.substring(0, 800)}...'
-          : response.body;
+      final errorBodyPreview =
+          response.body.length > 800
+              ? '${response.body.substring(0, 800)}...'
+              : response.body;
       print('❌ [DocMerged] body preview: $errorBodyPreview');
 
       if (response.statusCode == 401) {
@@ -822,7 +860,9 @@ class SocioService {
           if (body is Map<String, dynamic>) {
             final backendCode = body['code'];
             final backendMessage = body['message'];
-            print('❌ [DocMerged] backend 500 code=$backendCode message=$backendMessage');
+            print(
+              '❌ [DocMerged] backend 500 code=$backendCode message=$backendMessage',
+            );
           }
         } catch (_) {
           print('❌ [DocMerged] backend 500 body non-JSON');
@@ -838,13 +878,19 @@ class SocioService {
         'message': 'Errore durante il download del documento unico',
       };
     } on TimeoutException {
-      print('❌ [DocMerged] TimeoutException richiestaId=$richiestaId forceMerge=$forceMerge');
+      print(
+        '❌ [DocMerged] TimeoutException richiestaId=$richiestaId forceMerge=$forceMerge',
+      );
       return {'success': false, 'message': 'Timeout: il server non risponde'};
     } on SocketException {
-      print('❌ [DocMerged] SocketException richiestaId=$richiestaId forceMerge=$forceMerge');
+      print(
+        '❌ [DocMerged] SocketException richiestaId=$richiestaId forceMerge=$forceMerge',
+      );
       return {'success': false, 'message': 'Nessuna connessione internet'};
     } catch (e) {
-      print('❌ Errore durante GET /documento-unico/$richiestaId/download-merged: $e');
+      print(
+        '❌ Errore durante GET /documento-unico/$richiestaId/download-merged: $e',
+      );
       return {'success': false, 'message': 'Errore: ${e.toString()}'};
     }
   }
@@ -852,7 +898,7 @@ class SocioService {
   /// Completa il profilo dell'utente loggato
   /// POST /soci/me/completa-profilo
   /// Tutti i campi sono opzionali
-  /// Campi obbligatori per profilo completo (9): nome, cognome, email, telefono, 
+  /// Campi obbligatori per profilo completo (9): nome, cognome, email, telefono,
   /// citta, indirizzo, codice_fiscale, data_nascita, nazionalita
   static Future<Map<String, dynamic>> completaProfilo({
     String? nome,
@@ -889,19 +935,18 @@ class SocioService {
       if (cap != null) body['cap'] = cap;
       if (provincia != null) body['provincia'] = provincia;
       if (professione != null) body['professione'] = professione;
-      if (paeseProvenienza != null) body['paese_provenienza'] = paeseProvenienza;
+      if (paeseProvenienza != null)
+        body['paese_provenienza'] = paeseProvenienza;
       if (nazionalita != null) body['nazionalita'] = nazionalita;
 
       print('📤 Completamento profilo su: $url');
       print('📝 Dati: ${body.keys.join(", ")}');
 
-      final response = await http
-          .post(
-            Uri.parse(url),
-            headers: headers,
-            body: jsonEncode(body),
-          )
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.post(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode(body),
+      );
 
       print('📥 Response status: ${response.statusCode}');
       final responseData = jsonDecode(response.body);
@@ -909,29 +954,38 @@ class SocioService {
       // Salva dati aggiornati in storage se successo
       if (response.statusCode == 200) {
         if (nome != null || cognome != null) {
-          await storage.write(key: 'full_name', value: '${nome ?? ''} ${cognome ?? ''}'.trim());
+          await storage.write(
+            key: 'full_name',
+            value: '${nome ?? ''} ${cognome ?? ''}'.trim(),
+          );
         }
         if (email != null) await storage.write(key: 'user_email', value: email);
-        if (telefono != null) await storage.write(key: 'telefono', value: telefono);
+        if (telefono != null)
+          await storage.write(key: 'telefono', value: telefono);
         if (citta != null) await storage.write(key: 'citta', value: citta);
-        if (indirizzo != null) await storage.write(key: 'indirizzo', value: indirizzo);
+        if (indirizzo != null)
+          await storage.write(key: 'indirizzo', value: indirizzo);
         if (cap != null) await storage.write(key: 'cap', value: cap);
-        if (provincia != null) await storage.write(key: 'provincia', value: provincia);
-        if (codiceFiscale != null) await storage.write(key: 'codice_fiscale', value: codiceFiscale);
-        if (dataNascita != null) await storage.write(key: 'data_nascita', value: dataNascita);
-        if (luogoNascita != null) await storage.write(key: 'luogo_nascita', value: luogoNascita);
-        if (professione != null) await storage.write(key: 'professione', value: professione);
-        if (paeseProvenienza != null) await storage.write(key: 'paese_origine', value: paeseProvenienza);
-        if (nazionalita != null) await storage.write(key: 'nazionalita', value: nazionalita);
+        if (provincia != null)
+          await storage.write(key: 'provincia', value: provincia);
+        if (codiceFiscale != null)
+          await storage.write(key: 'codice_fiscale', value: codiceFiscale);
+        if (dataNascita != null)
+          await storage.write(key: 'data_nascita', value: dataNascita);
+        if (luogoNascita != null)
+          await storage.write(key: 'luogo_nascita', value: luogoNascita);
+        if (professione != null)
+          await storage.write(key: 'professione', value: professione);
+        if (paeseProvenienza != null)
+          await storage.write(key: 'paese_origine', value: paeseProvenienza);
+        if (nazionalita != null)
+          await storage.write(key: 'nazionalita', value: nazionalita);
       }
 
       return responseData;
     } catch (e) {
       print('❌ Errore completamento profilo: $e');
-      return {
-        'success': false,
-        'message': 'Errore di connessione: $e',
-      };
+      return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
 
@@ -944,12 +998,10 @@ class SocioService {
 
       print('📤 GET /soci/me');
 
-      final response = await http
-          .get(
-            Uri.parse(url),
-            headers: headers,
-          )
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(
+        Uri.parse(url),
+        headers: headers,
+      );
 
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
@@ -970,7 +1022,9 @@ class SocioService {
   }) async {
     try {
       final headers = await _getHeaders(includeAuth: true);
-      headers.remove('Content-Type'); // MultipartRequest gestisce il Content-Type
+      headers.remove(
+        'Content-Type',
+      ); // MultipartRequest gestisce il Content-Type
 
       final url = '$baseUrl/soci/me/upload-documento';
       final request = http.MultipartRequest('POST', Uri.parse(url));
@@ -981,9 +1035,7 @@ class SocioService {
       });
 
       // Aggiungi file
-      request.files.add(
-        await http.MultipartFile.fromPath('file', file.path),
-      );
+      request.files.add(await http.MultipartFile.fromPath('file', file.path));
 
       // Aggiungi tipo documento
       request.fields['tipo_documento'] = tipoDocumento;
@@ -991,7 +1043,9 @@ class SocioService {
       print('📤 Upload documento: ${file.path.split('/').last}');
       print('📝 Tipo: $tipoDocumento');
 
-      final streamedResponse = await request.send().timeout(const Duration(seconds: 60));
+      final streamedResponse = await request.send().timeout(
+        const Duration(seconds: 60),
+      );
       final response = await http.Response.fromStream(streamedResponse);
 
       print('📥 Response status: ${response.statusCode}');
@@ -1006,10 +1060,7 @@ class SocioService {
       }
     } catch (e) {
       print('❌ Errore upload documento: $e');
-      return {
-        'success': false,
-        'message': 'Errore di connessione: $e',
-      };
+      return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
 
@@ -1019,12 +1070,10 @@ class SocioService {
     try {
       final cleanUsername = username.trim().replaceAll(RegExp(r'[^\d]'), '');
       final url = '$baseUrl/soci/check-username?username=$cleanUsername';
-      
+
       print('📤 GET /soci/check-username?username=$cleanUsername');
 
-      final response = await http
-          .get(Uri.parse(url))
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(Uri.parse(url));
 
       print('📥 Response status: ${response.statusCode}');
       print('📥 Response body: ${response.body}');
@@ -1039,10 +1088,7 @@ class SocioService {
       }
     } catch (e) {
       print('❌ Errore verifica username: $e');
-      return {
-        'esiste': false,
-        'error': 'Errore di connessione: $e',
-      };
+      return {'esiste': false, 'error': 'Errore di connessione: $e'};
     }
   }
 
@@ -1063,7 +1109,7 @@ class SocioService {
 
       final url = '$baseUrl/soci/reset-password';
       final headers = await _getHeaders(includeAuth: false);
-      
+
       final body = <String, dynamic>{};
       if (telefono != null) {
         // Pulisci il telefono da simboli
@@ -1076,13 +1122,11 @@ class SocioService {
       print('📤 POST /soci/reset-password');
       print('📤 Body: $body');
 
-      final response = await http
-          .post(
-            Uri.parse(url),
-            headers: headers,
-            body: jsonEncode(body),
-          )
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.post(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode(body),
+      );
 
       print('📥 Response status: ${response.statusCode}');
       print('📥 Response body: ${response.body}');
@@ -1092,7 +1136,8 @@ class SocioService {
       if (response.statusCode == 200) {
         return {
           'success': true,
-          'message': data['message'] ?? 'Password resettata. Controlla la tua email.',
+          'message':
+              data['message'] ?? 'Password resettata. Controlla la tua email.',
           'email_sent_to': data['email_sent_to'],
         };
       } else {
@@ -1104,10 +1149,7 @@ class SocioService {
       }
     } catch (e) {
       print('❌ Errore reset password: $e');
-      return {
-        'success': false,
-        'message': 'Errore di connessione: $e',
-      };
+      return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
 
@@ -1121,23 +1163,18 @@ class SocioService {
     try {
       final url = '$baseUrl/soci/me/change-password';
       final headers = await _getHeaders(includeAuth: true);
-      
-      final body = {
-        'old_password': oldPassword,
-        'new_password': newPassword,
-      };
+
+      final body = {'old_password': oldPassword, 'new_password': newPassword};
 
       print('📤 POST /soci/me/change-password');
       // Non logghiamo le password per sicurezza
       print('📤 Body: {old_password: ***, new_password: ***}');
 
-      final response = await http
-          .post(
-            Uri.parse(url),
-            headers: headers,
-            body: jsonEncode(body),
-          )
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.post(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode(body),
+      );
 
       print('📥 Response status: ${response.statusCode}');
       print('📥 Response body: ${response.body}');
@@ -1158,10 +1195,7 @@ class SocioService {
       }
     } catch (e) {
       print('❌ Errore cambio password: $e');
-      return {
-        'success': false,
-        'message': 'Errore di connessione: $e',
-      };
+      return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
 
@@ -1175,9 +1209,10 @@ class SocioService {
 
       print('📤 GET $url');
 
-      final response = await http
-          .get(Uri.parse(url), headers: headers)
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(
+        Uri.parse(url),
+        headers: headers,
+      );
 
       print('📥 Response status: ${response.statusCode}');
       print('📥 Response body: ${response.body}');
@@ -1185,12 +1220,9 @@ class SocioService {
       if (response.statusCode == 200) {
         final rawData = jsonDecode(response.body);
         final data = decodeHtmlInMap(rawData);
-        
+
         if (data['success'] == true && data['data'] != null) {
-          return {
-            'success': true,
-            'data': data['data'],
-          };
+          return {'success': true, 'data': data['data']};
         }
       } else if (response.statusCode == 401) {
         return {
@@ -1208,10 +1240,7 @@ class SocioService {
       };
     } catch (e) {
       print('❌ Errore get profilo: $e');
-      return {
-        'success': false,
-        'message': 'Errore di connessione: $e',
-      };
+      return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
 }

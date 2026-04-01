@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:wecoop_app/services/secure_storage_service.dart';
+import 'package:wecoop_app/services/http_client_service.dart';
 import '../models/evento_model.dart';
 import '../utils/html_utils.dart';
 
@@ -52,9 +52,7 @@ class EventiService {
       ).replace(queryParameters: queryParams);
       final headers = await _getHeaders();
 
-      final response = await http
-          .get(uri, headers: headers)
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(uri, headers: headers);
 
       print('GET $uri - Status: ${response.statusCode}');
 
@@ -85,9 +83,7 @@ class EventiService {
       final uri = Uri.parse('$baseUrl/eventi/$eventoId');
       final headers = await _getHeaders();
 
-      final response = await http
-          .get(uri, headers: headers)
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(uri, headers: headers);
 
       print('GET $uri - Status: ${response.statusCode}');
 
@@ -157,9 +153,11 @@ class EventiService {
         }
       });
 
-      final response = await http
-          .post(uri, headers: headers, body: jsonEncode(body))
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.post(
+        uri,
+        headers: headers,
+        body: jsonEncode(body),
+      );
 
       print('📥 Status: ${response.statusCode}');
       print('📥 Response completa: ${response.body}');
@@ -207,9 +205,7 @@ class EventiService {
 
       final headers = await _getHeaders();
 
-      final response = await http
-          .delete(uri, headers: headers)
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.delete(uri, headers: headers);
 
       print('DELETE $uri - Status: ${response.statusCode}');
 
@@ -285,12 +281,9 @@ class EventiService {
         }
       }
 
-      final response = await http
-          .get(uri, headers: headers)
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(uri, headers: headers);
 
-      print('📥 Status: ${response.statusCode}');
-      print('📥 Response Body: ${response.body}');
+      print('GET $uri - Status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final rawData = jsonDecode(response.body);
@@ -357,9 +350,7 @@ class EventiService {
 
       final headers = await _getHeaders();
 
-      final response = await http
-          .get(uri, headers: headers)
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(uri, headers: headers);
 
       print('📥 Status: ${response.statusCode}');
       print('📥 Response: ${response.body}');
@@ -392,9 +383,7 @@ class EventiService {
 
       final headers = await _getHeaders();
 
-      final response = await http
-          .get(uri, headers: headers)
-          .timeout(const Duration(seconds: 30));
+      final response = await HttpClientService.get(uri, headers: headers);
 
       print('📥 Status: ${response.statusCode}');
       print('📥 Response: ${response.body}');

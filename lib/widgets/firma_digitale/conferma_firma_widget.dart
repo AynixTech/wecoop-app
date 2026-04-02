@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/firma_digitale_provider.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';
@@ -51,6 +52,7 @@ class _ConfermaFirmaWidgetState extends State<ConfermaFirmaWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Consumer<FirmaDigitaleProvider>(
       builder: (context, provider, _) {
         final documento = provider.documento;
@@ -74,14 +76,14 @@ class _ConfermaFirmaWidgetState extends State<ConfermaFirmaWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Conferma Firma Documento',
+                        l10n.translate('confirmSignatureTitle'),
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Controlla i dettagli prima di firmare',
+                        l10n.translate('checkDetailsBeforeSigning'),
                         style:
                             Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Colors.grey.shade700,
@@ -95,18 +97,18 @@ class _ConfermaFirmaWidgetState extends State<ConfermaFirmaWidget> {
                 // Dettagli documento
                 _buildDetailSection(
                   context,
-                  title: '📄 Documento',
+                  title: '📄 ${l10n.translate('documentSectionTitle')}',
                   children: [
                     _buildDetailRow(
-                      'Nome',
+                      l10n.translate('nameLabel'),
                       documento?.nome ?? '-',
                     ),
                     _buildDetailRow(
-                      'Hash SHA-256',
+                      l10n.translate('hashSha256Label'),
                       _truncateHash(documento?.hashSha256 ?? ''),
                     ),
                     _buildDetailRow(
-                      'Generato',
+                      l10n.translate('generatedLabel'),
                       _formatData(
                           documento?.dataGenerazione ?? DateTime.now()),
                     ),
@@ -117,14 +119,14 @@ class _ConfermaFirmaWidgetState extends State<ConfermaFirmaWidget> {
                 // Dettagli OTP
                 _buildDetailSection(
                   context,
-                  title: '🔐 Verifica OTP',
+                  title: '🔐 ${l10n.translate('otpVerificationTitle')}',
                   children: [
                     _buildDetailRow(
-                      'Status',
-                      '✅ Verificato',
+                      l10n.status,
+                      '✅ ${l10n.translate('otpVerified')}',
                     ),
                     _buildDetailRow(
-                      'Scadenza OTP',
+                      l10n.translate('otpExpiry'),
                       _formatData(otpGenerata?.scadenza ?? DateTime.now()),
                     ),
                   ],
@@ -134,18 +136,18 @@ class _ConfermaFirmaWidgetState extends State<ConfermaFirmaWidget> {
                 // Dettagli dispositivo
                 _buildDetailSection(
                   context,
-                  title: '📱 Dispositivo',
+                  title: '📱 ${l10n.translate('deviceLabel')}',
                   children: [
                     _buildDetailRow(
-                      'Tipo',
-                      _deviceType ?? 'Rilevamento...',
+                      l10n.translate('typeLabel'),
+                      _deviceType ?? l10n.translate('detecting'),
                     ),
                     _buildDetailRow(
-                      'Modello',
-                      _deviceModel ?? 'Rilevamento...',
+                      l10n.translate('modelLabel'),
+                      _deviceModel ?? l10n.translate('detecting'),
                     ),
                     _buildDetailRow(
-                      'App Version',
+                      l10n.translate('appVersionLabel'),
                       _appVersion,
                     ),
                   ],
@@ -161,7 +163,7 @@ class _ConfermaFirmaWidgetState extends State<ConfermaFirmaWidget> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    '📋 Dichiari di voler firmare questo documento in modo digitale. La firma sarà legale e tracciabile.',
+                    '📋 ${l10n.translate('signatureDeclaration')}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Colors.grey.shade700,
                         ),
@@ -182,7 +184,7 @@ class _ConfermaFirmaWidgetState extends State<ConfermaFirmaWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '❌ Errore',
+                          '❌ ${l10n.error}',
                           style: Theme.of(context)
                               .textTheme
                               .bodyLarge
@@ -193,7 +195,7 @@ class _ConfermaFirmaWidgetState extends State<ConfermaFirmaWidget> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          provider.errorMessage ?? 'Errore sconosciuto',
+                          provider.errorMessage ?? l10n.translate('unknownError'),
                           style: Theme.of(context)
                               .textTheme
                               .bodyMedium
@@ -213,7 +215,7 @@ class _ConfermaFirmaWidgetState extends State<ConfermaFirmaWidget> {
                     Expanded(
                       child: OutlinedButton(
                         onPressed: provider.isLoading ? null : () => Navigator.pop(context),
-                        child: const Text('Annulla'),
+                        child: Text(l10n.cancel),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -248,8 +250,8 @@ class _ConfermaFirmaWidgetState extends State<ConfermaFirmaWidget> {
                                       Colors.white),
                                 ),
                               )
-                            : const Text(
-                                'Firma',
+                            : Text(
+                              l10n.translate('sign'),
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,

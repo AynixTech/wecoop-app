@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'dart:convert';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -23,7 +24,8 @@ class CalendarScreen extends StatefulWidget {
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-class _CalendarScreenState extends State<CalendarScreen> {
+class _CalendarScreenState extends State<CalendarScreen>
+  with WidgetsBindingObserver {
   CalendarFormat _calendarFormat = CalendarFormat.week;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
@@ -36,11 +38,54 @@ class _CalendarScreenState extends State<CalendarScreen> {
   final storage = SecureStorageService();
   String? _richiestaIdToOpen;
   final Map<int, FirmaStatus> _firmaStatusByRichiesta = {};
+  bool _isOpeningDettaglioRichiesta = false;
+  Timer? _autoRefreshTimer;
+  DateTime? _lastAutoRefreshAt;
+
+  static const Duration _autoRefreshInterval = Duration(seconds: 45);
+  static const Duration _minAutoRefreshGap = Duration(seconds: 10);
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _selectedDay = _focusedDay;
+    _startAutoRefreshTimer();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _autoRefreshTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _triggerAutoRefresh(reason: 'app_resumed');
+    }
+  }
+
+  void _startAutoRefreshTimer() {
+    _autoRefreshTimer?.cancel();
+    _autoRefreshTimer = Timer.periodic(_autoRefreshInterval, (_) {
+      _triggerAutoRefresh(reason: 'periodic_timer');
+    });
+  }
+
+  Future<void> _triggerAutoRefresh({required String reason}) async {
+    if (!mounted || _isLoading) return;
+
+    final now = DateTime.now();
+    if (_lastAutoRefreshAt != null &&
+        now.difference(_lastAutoRefreshAt!) < _minAutoRefreshGap) {
+      return;
+    }
+
+    _lastAutoRefreshAt = now;
+    print('🔄 [CalendarAutoRefresh] start reason=$reason');
+    await _caricaRichieste();
   }
 
   @override
@@ -393,6 +438,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Future<void> _mostraDettaglioRichiesta(Map<String, dynamic> richiesta) async {
+    if (_isOpeningDettaglioRichiesta) {
+      print('ℹ️ [Dettaglio] apertura già in corso, ignoro tap duplicato');
+      return;
+    }
+
+    _isOpeningDettaglioRichiesta = true;
+
+    try {
     final richiestaDettaglio = Map<String, dynamic>.from(richiesta);
     final firmaRichiestaId = _resolveFirmaRichiestaId(richiesta);
 
@@ -443,12 +496,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
     if (!mounted) return;
 
-    showModalBottomSheet(
+    await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => _buildDettaglioSheet(richiestaDettaglio),
     );
+    } finally {
+      _isOpeningDettaglioRichiesta = false;
+    }
   }
 
   Future<void> _confermaEliminaRichiesta(Map<String, dynamic> richiesta, {bool fromBottomSheet = false}) async {

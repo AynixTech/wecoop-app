@@ -301,6 +301,28 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     return input
         .toLowerCase()
         .trim()
+        .replaceAll('à', 'a')
+        .replaceAll('á', 'a')
+        .replaceAll('â', 'a')
+        .replaceAll('ä', 'a')
+        .replaceAll('è', 'e')
+        .replaceAll('é', 'e')
+        .replaceAll('ê', 'e')
+        .replaceAll('ë', 'e')
+        .replaceAll('ì', 'i')
+        .replaceAll('í', 'i')
+        .replaceAll('î', 'i')
+        .replaceAll('ï', 'i')
+        .replaceAll('ò', 'o')
+        .replaceAll('ó', 'o')
+        .replaceAll('ô', 'o')
+        .replaceAll('ö', 'o')
+        .replaceAll('ù', 'u')
+        .replaceAll('ú', 'u')
+        .replaceAll('û', 'u')
+        .replaceAll('ü', 'u')
+        .replaceAll('ñ', 'n')
+        .replaceAll('ç', 'c')
         .replaceAll(RegExp(r'[^a-z0-9\s]'), ' ')
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
@@ -325,11 +347,19 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   bool _matchesCurrentFlow(List<String> patterns) {
     final normalizedCategoria = _normalizeFieldLabel(widget.categoria);
     final normalizedServizio = _normalizeFieldLabel(widget.servizio);
+    final normalizedCategoriaStandard = _normalizeFieldLabel(
+      _getStandardCategoria(widget.categoria),
+    );
+    final normalizedServizioStandard = _normalizeFieldLabel(
+      _getStandardServizio(widget.servizio),
+    );
 
     for (final pattern in patterns) {
       final normalizedPattern = _normalizeFieldLabel(pattern);
       if (normalizedCategoria.contains(normalizedPattern) ||
-          normalizedServizio.contains(normalizedPattern)) {
+          normalizedServizio.contains(normalizedPattern) ||
+          normalizedCategoriaStandard.contains(normalizedPattern) ||
+          normalizedServizioStandard.contains(normalizedPattern)) {
         return true;
       }
     }
@@ -343,6 +373,9 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       'per lavoro subordinato',
       'trabajo subordinado',
       'por trabajo subordinado',
+      'subordinate work',
+      'subordinate employment',
+      'employment',
     ]);
   }
 
@@ -389,18 +422,151 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
 
   bool _isContractTypeFieldLabel(String label) {
     final normalized = _normalizeFieldLabel(label);
-    return normalized.contains('tipo di contratto') ||
-        normalized.contains('tipo contratto') ||
-        normalized.contains('contract type') ||
-        normalized.contains('tipo de contrato');
+    final hasTypeWord =
+      normalized.contains('tipo') ||
+      normalized.contains('type') ||
+      normalized.contains('tipologia') ||
+      normalized.contains('clase');
+    final hasContractWord =
+      normalized.contains('contratto') ||
+      normalized.contains('contrato') ||
+      normalized.contains('contract') ||
+      normalized.contains('employment') ||
+      normalized.contains('trabajo') ||
+      normalized.contains('empleo') ||
+      normalized.contains('impiego');
+    return hasTypeWord && hasContractWord;
+  }
+
+  String _extractStableFieldIdentifier(Map<String, dynamic> campo) {
+    const candidateKeys = ['api_key', 'field_key', 'key', 'name', 'slug', 'id'];
+    for (final key in candidateKeys) {
+      final value = campo[key];
+      if (value == null) continue;
+      final parsed = value.toString().trim();
+      if (parsed.isNotEmpty) {
+        return _normalizeFieldLabel(parsed);
+      }
+    }
+
+    final label = (campo['label'] ?? '').toString();
+    return _normalizeFieldLabel(label);
+  }
+
+  bool _isContractTypeFieldIdentifier(String identifier) {
+    return identifier.contains('tipo_contratto') ||
+        identifier.contains('tipo_contrato') ||
+        identifier.contains('contract_type') ||
+        identifier.contains('employment_type') ||
+        identifier.contains('tipo_empleo') ||
+        identifier.contains('tipo_impiego');
+  }
+
+  bool _isContractDurationFieldIdentifier(String identifier) {
+    return identifier.contains('durata_contratto') ||
+        identifier.contains('duracion_contrato') ||
+        identifier.contains('contract_duration') ||
+        identifier.contains('employment_duration') ||
+        identifier.contains('durata_impiego') ||
+        identifier.contains('durata_lavoro') ||
+        identifier.contains('duracion_empleo');
+  }
+
+  bool _isDocumentExpiryFieldIdentifier(String identifier) {
+    return identifier.contains('data_scadenza') ||
+        identifier.contains('documento_scadenza') ||
+        identifier.contains('document_expiry') ||
+        identifier.contains('expiry_date') ||
+        identifier.contains('expiration_date') ||
+        identifier.contains('fecha_caducidad') ||
+        identifier.contains('caducidad_documento');
+  }
+
+  bool _isFamilyDocumentFieldIdentifier(String identifier) {
+    return identifier.contains('documento_identita_familiare') ||
+        identifier.contains('family_id_document') ||
+        identifier.contains('documento_identidad_familiar') ||
+        identifier.contains('permesso_familiare_tipo') ||
+        identifier.contains('family_permit_type');
+  }
+
+  bool _isItalianLanguageCertificationFieldIdentifier(String identifier) {
+    return identifier.contains('certificazione_lingua_italiana') ||
+        identifier.contains('certificato_lingua_italiana') ||
+        identifier.contains('italian_language_certification') ||
+        identifier.contains('certificacion_idioma_italiano') ||
+        identifier.contains('certificacion_lingua_italiana');
+  }
+
+  bool _isTouristVisaOptionalDateFieldIdentifier(String identifier) {
+    return identifier.contains('data_arrivo_prevista') ||
+        identifier.contains('data_partenza_prevista') ||
+        identifier.contains('expected_arrival_date') ||
+        identifier.contains('expected_departure_date') ||
+        identifier.contains('fecha_llegada_prevista') ||
+        identifier.contains('fecha_salida_prevista');
+  }
+
+  bool _isContractTypeCampo(Map<String, dynamic> campo) {
+    final id = _extractStableFieldIdentifier(campo);
+    final label = (campo['label'] ?? '').toString();
+    return _isContractTypeFieldIdentifier(id) || _isContractTypeFieldLabel(label);
+  }
+
+  bool _isContractDurationCampo(Map<String, dynamic> campo) {
+    final id = _extractStableFieldIdentifier(campo);
+    final label = (campo['label'] ?? '').toString();
+    return _isContractDurationFieldIdentifier(id) ||
+        _isContractDurationFieldLabel(label);
+  }
+
+  bool _isDocumentExpiryCampo(Map<String, dynamic> campo) {
+    final id = _extractStableFieldIdentifier(campo);
+    final label = (campo['label'] ?? '').toString();
+    return _isDocumentExpiryFieldIdentifier(id) ||
+        _isDocumentExpiryFieldLabel(label);
+  }
+
+  bool _isFamilyDocumentCampo(Map<String, dynamic> campo) {
+    final id = _extractStableFieldIdentifier(campo);
+    final label = (campo['label'] ?? '').toString();
+    return _isFamilyDocumentFieldIdentifier(id) ||
+        _isFamilyDocumentFieldLabel(label);
+  }
+
+  bool _isItalianLanguageCertificationCampo(Map<String, dynamic> campo) {
+    final id = _extractStableFieldIdentifier(campo);
+    final label = (campo['label'] ?? '').toString();
+    return _isItalianLanguageCertificationFieldIdentifier(id) ||
+        _isItalianLanguageCertificationFieldLabel(label);
+  }
+
+  bool _isTouristVisaOptionalDateCampo(Map<String, dynamic> campo) {
+    final id = _extractStableFieldIdentifier(campo);
+    final label = (campo['label'] ?? '').toString();
+    return _isTouristVisaOptionalDateFieldIdentifier(id) ||
+        _isTouristVisaOptionalDateFieldLabel(label);
   }
 
   bool _isContractDurationFieldLabel(String label) {
     final normalized = _normalizeFieldLabel(label);
-    return normalized.contains('durata contratto') ||
-        normalized.contains('contract duration') ||
-        normalized.contains('duracion contrato') ||
-        normalized.contains('duración contrato');
+    final hasDurationWord =
+      normalized.contains('durata') ||
+      normalized.contains('duration') ||
+      normalized.contains('duracion') ||
+      normalized.contains('term') ||
+      normalized.contains('length') ||
+      normalized.contains('plazo') ||
+      normalized.contains('termino');
+    final hasContractWord =
+      normalized.contains('contratto') ||
+      normalized.contains('contrato') ||
+      normalized.contains('contract') ||
+      normalized.contains('employment') ||
+      normalized.contains('trabajo') ||
+      normalized.contains('empleo') ||
+      normalized.contains('impiego');
+    return hasDurationWord && hasContractWord;
   }
 
   bool _isDocumentExpiryFieldLabel(String label) {
@@ -449,37 +615,44 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   }
 
   bool _isPermanentContractSelected() {
-    for (final entry in _formData.entries) {
-      if (_isContractTypeFieldLabel(entry.key)) {
-        final normalizedValue = _normalizeFieldLabel('${entry.value ?? ''}');
-        if (normalizedValue.contains('tempo indeterminato') ||
-            normalizedValue.contains('indeterminato') ||
-            normalizedValue.contains('indefinido') ||
-            normalizedValue.contains('indefinite')) {
-          return true;
-        }
+    for (final campo in widget.campi) {
+      if (!_isContractTypeCampo(campo)) continue;
+      final label = (campo['label'] ?? '').toString();
+      final value = _formData[label] ?? _controllers[label]?.text;
+      if (value == null) continue;
+
+      final normalizedValue = _normalizeFieldLabel('$value');
+      if (normalizedValue.contains('tempo indeterminato') ||
+          normalizedValue.contains('indeterminat') ||
+          normalizedValue.contains('tiempo indeterminado') ||
+          normalizedValue.contains('indefinid') ||
+          normalizedValue.contains('indefinite') ||
+          normalizedValue.contains('open ended') ||
+          normalizedValue.contains('permanent') ||
+          normalizedValue.contains('sin fecha de fin')) {
+        return true;
       }
     }
     return false;
   }
 
-  void _clearFieldData(bool Function(String label) matcher) {
-    _formData.removeWhere((key, value) => matcher(key));
-    for (final entry in _controllers.entries) {
-      if (matcher(entry.key)) {
-        entry.value.clear();
-      }
+  void _clearContractDurationData() {
+    for (final campo in widget.campi) {
+      if (!_isContractDurationCampo(campo)) continue;
+      final label = (campo['label'] ?? '').toString();
+      _formData.remove(label);
+      _controllers[label]?.clear();
     }
   }
 
-  bool _shouldHideField(String label) {
+  bool _shouldHideField(Map<String, dynamic> campo) {
     if ((_isLavoroSubordinatoFlow() || _isLavoroAutonomoFlow()) &&
-        _isDocumentExpiryFieldLabel(label)) {
+        _isDocumentExpiryCampo(campo)) {
       return true;
     }
 
     if (_isLavoroSubordinatoFlow() &&
-        _isContractDurationFieldLabel(label) &&
+        _isContractDurationCampo(campo) &&
         _isPermanentContractSelected()) {
       return true;
     }
@@ -487,20 +660,21 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     return false;
   }
 
-  bool _isFieldRequired(String label, bool required) {
+  bool _isFieldRequired(Map<String, dynamic> campo, bool required) {
     if (!required) return false;
-    if (_shouldHideField(label)) return false;
+    if (_shouldHideField(campo)) return false;
 
     if (_isVistoTuristicoFlow() &&
-        _isTouristVisaOptionalDateFieldLabel(label)) {
+        _isTouristVisaOptionalDateCampo(campo)) {
       return false;
     }
 
     return true;
   }
 
-  String _getDisplayedFieldLabel(String label) {
-    if (_isMotiviFamiliariFlow() && _isFamilyDocumentFieldLabel(label)) {
+  String _getDisplayedFieldLabel(Map<String, dynamic> campo) {
+    final label = (campo['label'] ?? '').toString();
+    if (_isMotiviFamiliariFlow() && _isFamilyDocumentCampo(campo)) {
       return AppLocalizations.of(context)!.familyResidencePermitType;
     }
     return label;
@@ -1201,10 +1375,10 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     final l10n = AppLocalizations.of(context)!;
     final label = campo['label'] as String;
     final type = campo['type'] as String;
-    final required = _isFieldRequired(label, campo['required'] as bool);
-    final displayedLabel = _getDisplayedFieldLabel(label);
+    final required = _isFieldRequired(campo, campo['required'] as bool);
+    final displayedLabel = _getDisplayedFieldLabel(campo);
 
-    if (_shouldHideField(label)) {
+    if (_shouldHideField(campo)) {
       return const SizedBox.shrink();
     }
 
@@ -1284,7 +1458,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                 .toList();
 
         if (_isCittadinanzaFlow() &&
-            _isItalianLanguageCertificationFieldLabel(label) &&
+            _isItalianLanguageCertificationCampo(campo) &&
             !options.any(
               (option) => _normalizeFieldLabel(
                 option,
@@ -1309,9 +1483,8 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
           onChanged: (value) {
             setState(() {
               _formData[label] = value;
-              if (_isContractTypeFieldLabel(label) &&
-                  _isPermanentContractSelected()) {
-                _clearFieldData(_isContractDurationFieldLabel);
+              if (_isContractTypeCampo(campo) && _isPermanentContractSelected()) {
+                _clearContractDurationData();
               }
             });
           },

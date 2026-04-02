@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/firma_digitale_provider.dart';
 
 class RichiestaOTPWidget extends StatefulWidget {
@@ -17,6 +18,7 @@ class RichiestaOTPWidget extends StatefulWidget {
 class _RichiestaOTPWidgetState extends State<RichiestaOTPWidget> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Consumer<FirmaDigitaleProvider>(
       builder: (context, provider, _) {
         return Center(
@@ -44,7 +46,7 @@ class _RichiestaOTPWidgetState extends State<RichiestaOTPWidget> {
 
                   // Titolo
                   Text(
-                    'Verifica Identità',
+                    l10n.translate('verifyIdentityTitle'),
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -54,7 +56,7 @@ class _RichiestaOTPWidgetState extends State<RichiestaOTPWidget> {
 
                   // Descrizione
                   Text(
-                    'Riceverai lo stesso codice OTP via SMS al numero ${provider.telefono} e via email',
+                    '${l10n.translate('otpSentToPhoneAndEmail')} ${provider.telefono} ${l10n.translate('andByEmail')}',
                     style: Theme.of(context).textTheme.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
@@ -73,7 +75,7 @@ class _RichiestaOTPWidgetState extends State<RichiestaOTPWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '❌ Errore',
+                            '❌ ${l10n.error}',
                             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.red,
@@ -81,7 +83,7 @@ class _RichiestaOTPWidgetState extends State<RichiestaOTPWidget> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            provider.errorMessage ?? 'Errore sconosciuto',
+                            provider.errorMessage ?? l10n.translate('unknownError'),
                             style:
                                 Theme.of(context).textTheme.bodyMedium?.copyWith(
                                       color: Colors.red.shade700,
@@ -123,8 +125,8 @@ class _RichiestaOTPWidgetState extends State<RichiestaOTPWidget> {
                                     Colors.white),
                               ),
                             )
-                          : const Text(
-                              'Invia OTP via SMS + Email',
+                            : Text(
+                              l10n.translate('sendOtpSmsEmail'),
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
@@ -137,7 +139,7 @@ class _RichiestaOTPWidgetState extends State<RichiestaOTPWidget> {
 
                   // Info
                   Text(
-                    'Il codice sarà valido per 5 minuti (stesso OTP su SMS ed email)',
+                    l10n.translate('otpValidFiveMinutes'),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Colors.grey.shade600,
                         ),

@@ -103,14 +103,6 @@ class _FirmaDocumentoScreenState extends State<FirmaDocumentoScreen> {
               // Step 5: Risultato Firma
               RisultatoFirmaWidget(
                 onChiudi: _chiudi,
-                onVisualizzaRicevuta: () {
-                  // TODO: Implementare scaricamento ricevuta
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(l10n.translate('receiptDownloadedSimple')),
-                    ),
-                  );
-                },
               ),
             ],
           );
@@ -135,7 +127,7 @@ class _FirmaDocumentoScreenState extends State<FirmaDocumentoScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Step ${currentStep + 1} di $totalSteps',
+                    '${AppLocalizations.of(context)!.translate('stepLabel')} ${currentStep + 1} ${AppLocalizations.of(context)!.translate('ofLabel')} $totalSteps',
                     style: Theme.of(context).textTheme.labelSmall,
                   ),
                   const SizedBox(height: 8),

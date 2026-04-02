@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/firma_digitale_provider.dart';
 
 class RisultatoFirmaWidget extends StatelessWidget {
@@ -14,6 +15,7 @@ class RisultatoFirmaWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Consumer<FirmaDigitaleProvider>(
       builder: (context, provider, _) {
         final firma = provider.firmaCreata;
@@ -43,7 +45,7 @@ class RisultatoFirmaWidget extends StatelessWidget {
 
                   // Titolo
                   Text(
-                    '✅ Firma Completata',
+                    '✅ ${l10n.translate('signatureCompleted')}',
                     style:
                         Theme.of(context).textTheme.headlineSmall?.copyWith(
                               fontWeight: FontWeight.bold,
@@ -55,7 +57,7 @@ class RisultatoFirmaWidget extends StatelessWidget {
 
                   // Sottotitolo
                   Text(
-                    'Il tuo documento è stato firmato digitalmente con successo',
+                    l10n.translate('documentSignedSuccess'),
                     style: Theme.of(context).textTheme.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
@@ -73,29 +75,29 @@ class RisultatoFirmaWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildDetailRow(
-                          '🆔 ID Firma',
+                          '🆔 ${l10n.translate('signatureIdLabel')}',
                           firma?.id ?? '-',
                         ),
                         const Divider(height: 16),
                         _buildDetailRow(
-                          '⏰ Data Firma',
+                          '⏰ ${l10n.translate('signatureDateLabel')}',
                           _formatData(
                               firma?.firmaTimestamp ?? DateTime.now()),
                         ),
                         const Divider(height: 16),
                         _buildDetailRow(
-                          '📋 Metodo',
-                          'Firma Elettronica Semplice (FES)',
+                          '📋 ${l10n.translate('signatureMethodLabel')}',
+                          l10n.translate('simpleElectronicSignatureFes'),
                         ),
                         const Divider(height: 16),
                         _buildDetailRow(
-                          '✔️ Status',
+                          '✔️ ${l10n.translate('signatureStatusLabel')}',
                           firma?.status ?? '-',
                         ),
                         const Divider(height: 16),
                         _buildDetailRow(
-                          '🔐 Hash Verificato',
-                          firma?.hashVerificato ?? false ? '✅ Si' : '❌ No',
+                          '🔐 ${l10n.translate('hashVerifiedLabel')}',
+                          firma?.hashVerificato ?? false ? '✅ ${l10n.translate('yesSimple')}' : '❌ No',
                         ),
                       ],
                     ),
@@ -114,7 +116,7 @@ class RisultatoFirmaWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '💡 Cosa succede next?',
+                          '💡 ${l10n.translate('whatHappensNext')}',
                           style: Theme.of(context)
                               .textTheme
                               .bodyMedium
@@ -125,9 +127,9 @@ class RisultatoFirmaWidget extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '• La firma è stata salvata nel sistema\n'
-                          '• Riceverai un\'email di conferma\n'
-                          '• Il documento è legalmente vincolante',
+                          '• ${l10n.translate('signatureSavedInSystem')}\n'
+                          '• ${l10n.translate('emailConfirmationSoon')}\n'
+                          '• ${l10n.translate('documentLegallyBinding')}',
                           style: Theme.of(context)
                               .textTheme
                               .bodySmall
@@ -152,8 +154,8 @@ class RisultatoFirmaWidget extends StatelessWidget {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
                           ),
-                          child: const Text(
-                            'Torna alla Home',
+                          child: Text(
+                            l10n.backToHome,
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,

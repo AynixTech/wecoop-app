@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/firma_digitale_provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -51,8 +52,9 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
           },
           onWebResourceError: (WebResourceError error) {
             print('❌ [DocView] WebView error code=${error.errorCode} type=${error.errorType} description=${error.description}');
+            final l10n = AppLocalizations.of(context)!;
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Errore caricamento: ${error.description}')),
+              SnackBar(content: Text('${l10n.translate('docViewLoadError')}: ${error.description}')),
             );
           },
           onNavigationRequest: (NavigationRequest request) {
@@ -97,11 +99,12 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
   }
 
   Future<void> _apriDocumentoEsterno(String url) async {
+    final l10n = AppLocalizations.of(context)!;
     final uri = Uri.tryParse(url);
     if (uri == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('URL documento non valido')),
+        SnackBar(content: Text(l10n.translate('invalidDocumentUrl'))),
       );
       return;
     }
@@ -109,13 +112,14 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
     final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!opened && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Impossibile aprire il documento esternamente')),
+        SnackBar(content: Text(l10n.translate('cannotOpenDocumentExternally'))),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Consumer<FirmaDigitaleProvider>(
       builder: (context, provider, _) {
         print('📄 [DocView] build step=${provider.step} isLoading=${provider.isLoading} hasDoc=${provider.documento != null} hasError=${provider.hasError}');
@@ -129,13 +133,13 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Documento Unico',
+                    l10n.translate('singleDocumentLabel'),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 8),
                   if (provider.documento != null)
                     Text(
-                      'Generato il ${_formatData(provider.documento!.dataGenerazione)}',
+                      '${l10n.translate('generatedOn')} ${_formatData(provider.documento!.dataGenerazione)}',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                 ],
@@ -150,7 +154,7 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
                         children: [
                           const CircularProgressIndicator(),
                           const SizedBox(height: 16),
-                          const Text('Caricamento documento...'),
+                          Text(l10n.translate('loadingDocument')),
                         ],
                       ),
                     )
@@ -166,13 +170,13 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'Errore: ${provider.errorMessage}',
+                                '${l10n.error}: ${provider.errorMessage}',
                                 textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 16),
                               ElevatedButton(
                                 onPressed: _loadDocumento,
-                                child: const Text('Riprova'),
+                                child: Text(l10n.retry),
                               ),
                             ],
                           ),
@@ -195,7 +199,7 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
                           child: OutlinedButton.icon(
                             onPressed: _loadDocumento,
                             icon: const Icon(Icons.refresh),
-                            label: const Text('Ricarica anteprima'),
+                            label: Text(l10n.translate('reloadPreview')),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -203,7 +207,7 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
                           child: OutlinedButton.icon(
                             onPressed: () => _apriDocumentoEsterno(provider.documento!.url),
                             icon: const Icon(Icons.open_in_new),
-                            label: const Text('Apri nel browser'),
+                            label: Text(l10n.translate('openInBrowser')),
                           ),
                         ),
                       ],
@@ -221,8 +225,8 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
                         backgroundColor: Colors.blue,
                         disabledBackgroundColor: Colors.grey.shade300,
                       ),
-                      child: const Text(
-                        'Firma Documento',
+                      child: Text(
+                        l10n.translate('signDocument'),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,

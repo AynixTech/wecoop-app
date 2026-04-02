@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/firma_digitale_provider.dart';
 
 class VerificaOTPWidget extends StatefulWidget {
@@ -39,6 +40,7 @@ class _VerificaOTPWidgetState extends State<VerificaOTPWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Consumer<FirmaDigitaleProvider>(
       builder: (context, provider, _) {
         final tentativiRimasti = provider.tentativiRimasti ?? 3;
@@ -71,7 +73,7 @@ class _VerificaOTPWidgetState extends State<VerificaOTPWidget> {
 
                 // Titolo
                 Text(
-                  'Inserisci Codice OTP',
+                  l10n.translate('enterOtpCode'),
                   style:
                       Theme.of(context).textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.bold,
@@ -82,7 +84,7 @@ class _VerificaOTPWidgetState extends State<VerificaOTPWidget> {
 
                 // Descrizione
                 Text(
-                  'Abbiamo inviato lo stesso codice di 6 cifre via SMS ed email',
+                  l10n.translate('otpSentSixDigitsSmsEmail'),
                   style: Theme.of(context).textTheme.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
@@ -91,7 +93,7 @@ class _VerificaOTPWidgetState extends State<VerificaOTPWidget> {
                 // Tempo rimanente
                 if (minutiRimasti > 0)
                   Text(
-                    '⏱️ Scade tra $minutiRimasti min',
+                    '⏱️ ${l10n.translate('otpExpiresIn')} $minutiRimasti ${l10n.translate('minutesShort')}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Colors.orange,
                           fontWeight: FontWeight.bold,
@@ -153,7 +155,7 @@ class _VerificaOTPWidgetState extends State<VerificaOTPWidget> {
                 // Conteggio tentativi
                 if (tentativiRimasti < 3)
                   Text(
-                    '⚠️ Tentativi rimasti: $tentativiRimasti',
+                    '⚠️ ${l10n.translate('attemptsRemaining')}: $tentativiRimasti',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: tentativiRimasti == 1
                               ? Colors.red
@@ -176,7 +178,7 @@ class _VerificaOTPWidgetState extends State<VerificaOTPWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '❌ Errore',
+                          '❌ ${l10n.error}',
                           style: Theme.of(context)
                               .textTheme
                               .bodyLarge
@@ -187,7 +189,7 @@ class _VerificaOTPWidgetState extends State<VerificaOTPWidget> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          provider.errorMessage ?? 'Errore sconosciuto',
+                          provider.errorMessage ?? l10n.translate('unknownError'),
                           style: Theme.of(context)
                               .textTheme
                               .bodyMedium
@@ -233,8 +235,8 @@ class _VerificaOTPWidgetState extends State<VerificaOTPWidget> {
                                   Colors.white),
                             ),
                           )
-                        : const Text(
-                            'Verifica OTP',
+                        : Text(
+                          l10n.translate('verifyOtp'),
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,

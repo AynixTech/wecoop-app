@@ -43,6 +43,22 @@ class AppLocalizations {
       'volunteering': 'Volontariato',
       'socialServices': 'Servizi sociali',
       'rememberPassword': 'Ricorda password',
+      'loginWithBiometrics': 'Accedi con biometria',
+      'biometricAuthReason':
+          'Autenticati con impronta digitale o volto per accedere',
+      'biometricNotAvailable':
+          'Biometria non disponibile su questo dispositivo',
+      'biometricCredentialsMissing':
+          'Effettua almeno un login manuale prima di usare la biometria',
+      'biometricAuthFailed': 'Autenticazione biometrica non riuscita',
+      'biometricDisabledInSettings':
+          'La biometria è disattivata nelle impostazioni',
+      'usePasswordInstead': 'Usa password invece',
+      'useBiometricsInstead': 'Usa biometria invece',
+      'useBiometricLoginSetting': 'Usa biometria per accedere',
+      'useBiometricLoginSettingDescription':
+          'Attiva impronta digitale o Face ID per un accesso rapido',
+      'biometricSettingUpdated': 'Preferenza biometria aggiornata',
       'networkError': 'Errore di rete',
       'upcomingEvents': 'Prossimi eventi',
       'activeProjects': 'Progetti attivi',
@@ -1029,6 +1045,22 @@ class AppLocalizations {
       'volunteering': 'Volunteering',
       'socialServices': 'Social services',
       'rememberPassword': 'Remember password',
+      'loginWithBiometrics': 'Login with biometrics',
+      'biometricAuthReason':
+          'Authenticate with fingerprint or face to sign in',
+      'biometricNotAvailable':
+          'Biometric authentication is not available on this device',
+      'biometricCredentialsMissing':
+          'Please complete a manual login before using biometrics',
+      'biometricAuthFailed': 'Biometric authentication failed',
+      'biometricDisabledInSettings':
+          'Biometric login is disabled in settings',
+      'usePasswordInstead': 'Use password instead',
+      'useBiometricsInstead': 'Use biometrics instead',
+      'useBiometricLoginSetting': 'Use biometrics to log in',
+      'useBiometricLoginSettingDescription':
+          'Enable fingerprint or Face ID for faster access',
+      'biometricSettingUpdated': 'Biometric preference updated',
       'networkError': 'Network error',
       'upcomingEvents': 'Upcoming events',
       'activeProjects': 'Active projects',
@@ -1985,6 +2017,22 @@ class AppLocalizations {
       'volunteering': 'Voluntariado',
       'socialServices': 'Servicios sociales',
       'rememberPassword': 'Recordar contraseña',
+      'loginWithBiometrics': 'Iniciar con biometría',
+      'biometricAuthReason':
+          'Autentícate con huella o rostro para iniciar sesión',
+      'biometricNotAvailable':
+          'La biometría no está disponible en este dispositivo',
+      'biometricCredentialsMissing':
+          'Haz al menos un inicio de sesión manual antes de usar biometría',
+      'biometricAuthFailed': 'La autenticación biométrica falló',
+      'biometricDisabledInSettings':
+          'La biometría está desactivada en ajustes',
+      'usePasswordInstead': 'Usar contraseña en su lugar',
+      'useBiometricsInstead': 'Usar biometría en su lugar',
+      'useBiometricLoginSetting': 'Usar biometría para iniciar sesión',
+      'useBiometricLoginSettingDescription':
+          'Activa huella o Face ID para un acceso más rápido',
+      'biometricSettingUpdated': 'Preferencia biométrica actualizada',
       'networkError': 'Error de red',
       'upcomingEvents': 'Próximos eventos',
       'activeProjects': 'Proyectos activos',

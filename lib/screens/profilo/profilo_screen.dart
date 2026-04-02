@@ -30,6 +30,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
 
   String selectedLanguageCode = 'it';
   String selectedInterest = 'culture';
+  bool _biometricLoginEnabled = true;
 
   List<Evento> _mieiEventi = [];
   bool _isLoadingEventi = false;
@@ -71,6 +72,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     final url = await storage.read(key: 'tessera_url');
     final langCode = await storage.read(key: 'language_code');
     final interest = await storage.read(key: 'selected_interest');
+    final biometricSetting = await storage.read(key: 'biometric_login_enabled');
 
     if (mounted) {
       setState(() {
@@ -80,8 +82,35 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
         tesseraUrl = url;
         selectedLanguageCode = langCode ?? 'it';
         selectedInterest = interest ?? 'culture';
+        _biometricLoginEnabled =
+            biometricSetting == null || biometricSetting == 'true';
       });
     }
+  }
+
+  Future<void> _toggleBiometricLogin(bool value) async {
+    await storage.write(
+      key: 'biometric_login_enabled',
+      value: value.toString(),
+    );
+
+    if (!value) {
+      await storage.delete(key: 'biometric_username');
+      await storage.delete(key: 'biometric_password');
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _biometricLoginEnabled = value;
+    });
+
+    final l10n = AppLocalizations.of(context)!;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.translate('biometricSettingUpdated')),
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   Future<void> _loadMieiEventi() async {
@@ -715,6 +744,17 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                   _changeLanguage(value);
                 }
               },
+            ),
+            const SizedBox(height: 12),
+            SwitchListTile.adaptive(
+              contentPadding: EdgeInsets.zero,
+              value: _biometricLoginEnabled,
+              onChanged: _toggleBiometricLogin,
+              title: Text(l10n.translate('useBiometricLoginSetting')),
+              subtitle: Text(
+                l10n.translate('useBiometricLoginSettingDescription'),
+              ),
+              secondary: const Icon(Icons.fingerprint),
             ),
             const SizedBox(height: 16),
 

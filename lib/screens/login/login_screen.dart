@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:local_auth/local_auth.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/push_notification_service.dart';
@@ -21,14 +22,24 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final storage = SecureStorageService();
+  final LocalAuthentication _localAuth = LocalAuthentication();
   bool rememberPassword = false;
   bool isLoading = false;
   bool _obscurePassword = true;
+  bool _canUseBiometrics = false;
+  bool _hasStoredBiometricCredentials = false;
+  bool _biometricLoginEnabled = true;
+  bool _forceShowPasswordLogin = false;
 
   @override
   void initState() {
     super.initState();
-    _loadLastPhone();
+    _initializeLoginHelpers();
+  }
+
+  Future<void> _initializeLoginHelpers() async {
+    await _loadLastPhone();
+    await _loadBiometricState();
   }
 
   /// Carga el último teléfono usado para el login
@@ -39,13 +50,29 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> _login() async {
-    if (mounted) {
-      setState(() {
-        isLoading = true;
-      });
-    }
+  Future<void> _loadBiometricState() async {
+    final supportsBiometrics =
+        await _localAuth.canCheckBiometrics || await _localAuth.isDeviceSupported();
+    final savedUser =
+      await storage.read(key: 'biometric_username') ??
+      await storage.read(key: 'auth_username');
+    final savedPass =
+      await storage.read(key: 'biometric_password') ??
+      await storage.read(key: 'auth_password');
+    final biometricSetting = await storage.read(key: 'biometric_login_enabled');
+    final biometricEnabled = biometricSetting == null || biometricSetting == 'true';
 
+    if (!mounted) return;
+    setState(() {
+      _canUseBiometrics = supportsBiometrics;
+      _biometricLoginEnabled = biometricEnabled;
+      _hasStoredBiometricCredentials =
+          (savedUser != null && savedUser.isNotEmpty) &&
+          (savedPass != null && savedPass.isNotEmpty);
+    });
+  }
+
+  Future<void> _login() async {
     // El username es el número de teléfono completo (solo números)
     // Ejemplo: +39 333 1234567 → 393331234567
     var phone = phoneController.text.trim().replaceAll(RegExp(r'[^\d]'), '');
@@ -60,6 +87,73 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     final password = passwordController.text;
+
+    await _loginWithCredentials(phone: phone, password: password);
+  }
+
+  Future<void> _loginWithBiometrics() async {
+    final l10n = AppLocalizations.of(context)!;
+
+    if (!_biometricLoginEnabled) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.translate('biometricDisabledInSettings'))),
+      );
+      return;
+    }
+
+    if (!_canUseBiometrics) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.translate('biometricNotAvailable'))),
+      );
+      return;
+    }
+
+    final savedPhone =
+      await storage.read(key: 'biometric_username') ??
+      await storage.read(key: 'auth_username');
+    final savedPassword =
+      await storage.read(key: 'biometric_password') ??
+      await storage.read(key: 'auth_password');
+
+    if (savedPhone == null || savedPhone.isEmpty ||
+        savedPassword == null || savedPassword.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.translate('biometricCredentialsMissing'))),
+      );
+      return;
+    }
+
+    try {
+      final authenticated = await _localAuth.authenticate(
+        localizedReason: l10n.translate('biometricAuthReason'),
+        options: const AuthenticationOptions(
+          biometricOnly: true,
+          stickyAuth: true,
+        ),
+      );
+
+      if (!authenticated) return;
+
+      await _loginWithCredentials(
+        phone: savedPhone,
+        password: savedPassword,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.translate('biometricAuthFailed'))),
+      );
+    }
+  }
+
+  Future<void> _loginWithCredentials({
+    required String phone,
+    required String password,
+  }) async {
+    if (mounted) {
+      setState(() {
+        isLoading = true;
+      });
+    }
 
     final url = Uri.parse('https://www.wecoop.org/wp-json/jwt-auth/v1/token');
 
@@ -84,6 +178,11 @@ class _LoginScreenState extends State<LoginScreen> {
         await storage.write(key: 'jwt_token', value: data['token']);
         await storage.write(key: 'auth_username', value: phone);
         await storage.write(key: 'auth_password', value: password);
+
+        if (_biometricLoginEnabled) {
+          await storage.write(key: 'biometric_username', value: phone);
+          await storage.write(key: 'biometric_password', value: password);
+        }
         await storage.write(key: 'user_email', value: data['user_email']);
         await storage.write(
           key: 'user_display_name',
@@ -113,6 +212,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
         // Recupera metadati utente
         await _fetchUserMeta(data['token'], data['user_nicename']);
+
+        // Aggiorna stato biometria (credenziali ora disponibili)
+        await _loadBiometricState();
 
         // Inizializza push notifications (salverà FCM token automaticamente)
         try {
@@ -295,136 +397,212 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final biometricsReady =
+        _biometricLoginEnabled &&
+        _canUseBiometrics &&
+        _hasStoredBiometricCredentials;
+    final showPasswordForm = !biometricsReady || _forceShowPasswordLogin;
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.login),
         actions: const [LanguageSelector()],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 40),
-            Image.asset('assets/images/wecoop_logo.png', height: 120),
-            const SizedBox(height: 32),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: 100,
-                  child: TextField(
-                    controller: prefixController,
-                    keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(
-                      labelText: l10n.translate('prefix'),
-                      hintText: '+39',
-                      prefixIcon: const Icon(Icons.flag, size: 20),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextField(
-                    controller: phoneController,
-                    keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(
-                      labelText: l10n.translate('phoneNumber'),
-                      hintText: '3891234567',
-                      helperStyle: const TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey,
+      body: showPasswordForm
+          ? SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 40),
+                  Image.asset('assets/images/wecoop_logo.png', height: 120),
+                  const SizedBox(height: 32),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 100,
+                    child: TextField(
+                      controller: prefixController,
+                      keyboardType: TextInputType.phone,
+                      decoration: InputDecoration(
+                        labelText: l10n.translate('prefix'),
+                        hintText: '+39',
+                        prefixIcon: const Icon(Icons.flag, size: 20),
                       ),
-                      prefixIcon: const Icon(Icons.phone),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: passwordController,
-              obscureText: _obscurePassword,
-              decoration: InputDecoration(
-                labelText: l10n.password,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: InputDecoration(
+                        labelText: l10n.translate('phoneNumber'),
+                        hintText: '3891234567',
+                        helperStyle: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey,
+                        ),
+                        prefixIcon: const Icon(Icons.phone),
+                      ),
+                    ),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    });
-                  },
+                ],
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: passwordController,
+                obscureText: _obscurePassword,
+                decoration: InputDecoration(
+                  labelText: l10n.password,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Checkbox(
-                  value: rememberPassword,
-                  onChanged: (value) {
-                    setState(() {
-                      rememberPassword = value ?? false;
-                    });
-                  },
-                ),
-                Text(l10n.rememberPassword),
-              ],
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: isLoading ? null : _login,
-              child:
-                  isLoading
-                      ? Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Checkbox(
+                    value: rememberPassword,
+                    onChanged: (value) {
+                      setState(() {
+                        rememberPassword = value ?? false;
+                      });
+                    },
+                  ),
+                  Text(l10n.rememberPassword),
+                ],
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: isLoading ? null : _login,
+                child:
+                    isLoading
+                        ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(l10n.sending),
-                        ],
-                      )
-                      : Text(l10n.login),
-            ),
-            const SizedBox(height: 16),
+                            const SizedBox(width: 12),
+                            Text(l10n.sending),
+                          ],
+                        )
+                        : Text(l10n.login),
+              ),
+              if (biometricsReady) ...[
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          setState(() {
+                            _forceShowPasswordLogin = false;
+                          });
+                        },
+                  child: Text(l10n.translate('useBiometricsInstead')),
+                ),
+              ],
+                  const SizedBox(height: 16),
 
-            // Password Dimenticata
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/forgot-password');
-              },
-              child: Text(
-                l10n.translate('forgotPassword'),
-                style: const TextStyle(fontSize: 14),
+                  // Password Dimenticata
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/forgot-password');
+                    },
+                    child: Text(
+                      l10n.translate('forgotPassword'),
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(context, '/home');
+                    },
+                    icon: const Icon(Icons.home),
+                    label: Text(
+                      l10n.translate('continueWithoutLogin'),
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.grey[700],
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 360),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset('assets/images/wecoop_logo.png', height: 120),
+                      const SizedBox(height: 24),
+                      ElevatedButton.icon(
+                        onPressed: isLoading ? null : _loginWithBiometrics,
+                        icon: const Icon(Icons.fingerprint),
+                        label: Text(l10n.translate('loginWithBiometrics')),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton(
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                setState(() {
+                                  _forceShowPasswordLogin = true;
+                                });
+                              },
+                        child: Text(l10n.translate('usePasswordInstead')),
+                      ),
+                      const SizedBox(height: 16),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/forgot-password');
+                        },
+                        child: Text(
+                          l10n.translate('forgotPassword'),
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton.icon(
+                        onPressed: () {
+                          Navigator.pushReplacementNamed(context, '/home');
+                        },
+                        icon: const Icon(Icons.home),
+                        label: Text(
+                          l10n.translate('continueWithoutLogin'),
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.grey[700],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-
-            const SizedBox(height: 8),
-
-            TextButton.icon(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/home');
-              },
-              icon: const Icon(Icons.home),
-              label: Text(
-                l10n.translate('continueWithoutLogin'),
-                style: const TextStyle(fontSize: 14),
-              ),
-              style: TextButton.styleFrom(foregroundColor: Colors.grey[700]),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

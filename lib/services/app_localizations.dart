@@ -327,6 +327,7 @@ class AppLocalizations {
       'paymentStatusPending': 'In attesa',
       'paymentStatusAwaitingPayment': 'In attesa di pagamento',
       'paymentStatusPaid': 'Pagato',
+      'paymentStatusAwaitingSignature': 'Da Firmare',
       'paymentStatusCompleted': 'Completato',
       'paymentStatusFailed': 'Fallito',
       'paymentStatusCancelled': 'Annullato',
@@ -1191,6 +1192,7 @@ class AppLocalizations {
       'paymentStatusPending': 'Pending',
       'paymentStatusAwaitingPayment': 'Awaiting payment',
       'paymentStatusPaid': 'Paid',
+      'paymentStatusAwaitingSignature': 'Awaiting Signature',
       'paymentStatusCompleted': 'Completed',
       'paymentStatusFailed': 'Failed',
       'paymentStatusCancelled': 'Cancelled',
@@ -2092,6 +2094,7 @@ class AppLocalizations {
       'paymentStatusPending': 'Pendiente',
       'paymentStatusAwaitingPayment': 'En espera de pago',
       'paymentStatusPaid': 'Pagado',
+      'paymentStatusAwaitingSignature': 'Pendiente de Firma',
       'paymentStatusCompleted': 'Completado',
       'paymentStatusFailed': 'Fallido',
       'paymentStatusCancelled': 'Cancelado',
@@ -2895,6 +2898,8 @@ class AppLocalizations {
   String get paymentStatusAwaitingPayment =>
       translate('paymentStatusAwaitingPayment');
   String get paymentStatusPaid => translate('paymentStatusPaid');
+  String get paymentStatusAwaitingSignature =>
+      translate('paymentStatusAwaitingSignature');
   String get paymentStatusCompleted => translate('paymentStatusCompleted');
   String get paymentStatusFailed => translate('paymentStatusFailed');
   String get paymentStatusCancelled => translate('paymentStatusCancelled');

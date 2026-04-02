@@ -127,7 +127,6 @@ class RisultatoFirmaWidget extends StatelessWidget {
                         Text(
                           '• La firma è stata salvata nel sistema\n'
                           '• Riceverai un\'email di conferma\n'
-                          '• Puoi scaricare la ricevuta sottostante\n'
                           '• Il documento è legalmente vincolante',
                           style: Theme.of(context)
                               .textTheme
@@ -144,18 +143,6 @@ class RisultatoFirmaWidget extends StatelessWidget {
                   // Azioni
                   Column(
                     children: [
-                      // Visualizza ricevuta
-                      if (onVisualizzaRicevuta != null)
-                        SizedBox(
-                          width: double.infinity,
-                          height: 48,
-                          child: OutlinedButton(
-                            onPressed: onVisualizzaRicevuta,
-                            child: const Text('Scarica Ricevuta'),
-                          ),
-                        ),
-                      if (onVisualizzaRicevuta != null)
-                        const SizedBox(height: 12),
                       // Chiudi / Torna
                       SizedBox(
                         width: double.infinity,

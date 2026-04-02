@@ -2,6 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
+import 'package:wecoop_app/utils/response_utils.dart';
 import 'dart:async';
 import 'dart:io';
 import '../utils/html_utils.dart';
@@ -60,7 +61,7 @@ class SocioService {
           return false;
         }
 
-        final rawData = jsonDecode(response.body);
+        final rawData = ResponseUtils.decodeJson(response);
         final data = decodeHtmlInMap(rawData);
         // Nuova API ritorna: {"success": true, "is_socio": true, "status": "attivo", "data_adesione": "2024-01-10"}
         return data['is_socio'] == true && data['status'] == 'attivo';
@@ -101,7 +102,7 @@ class SocioService {
           return false;
         }
 
-        final rawData = jsonDecode(response.body);
+        final rawData = ResponseUtils.decodeJson(response);
         final data = decodeHtmlInMap(rawData);
         // Se success è true ma is_socio è false, significa che c'è una richiesta pending
         // Quando approvata: is_socio=true, status=attivo
@@ -188,7 +189,7 @@ class SocioService {
       print('Response body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final rawData = jsonDecode(response.body);
+        final rawData = ResponseUtils.decodeJson(response);
         final data = decodeHtmlInMap(rawData);
         // Nuova API ritorna: {"success": true, "message": "...", "data": {"username": "socio_123", "password": "abc123", "tessera_url": "..."}}
         return {
@@ -199,14 +200,14 @@ class SocioService {
           'tessera_url': data['data']?['tessera_url'],
         };
       } else if (response.statusCode == 400) {
-        final rawData = jsonDecode(response.body);
+        final rawData = ResponseUtils.decodeJson(response);
         final errorData = decodeHtmlInMap(rawData);
         return {
           'success': false,
           'message': errorData['message'] ?? 'Parametro mancante o non valido',
         };
       } else if (response.statusCode == 409) {
-        final rawData = jsonDecode(response.body);
+        final rawData = ResponseUtils.decodeJson(response);
         final errorData = decodeHtmlInMap(rawData);
         return {
           'success': false,
@@ -215,7 +216,7 @@ class SocioService {
               'Esiste già una registrazione con questo telefono o email',
         };
       } else {
-        final rawData = jsonDecode(response.body);
+        final rawData = ResponseUtils.decodeJson(response);
         final errorData = decodeHtmlInMap(rawData);
         return {
           'success': false,
@@ -324,7 +325,7 @@ class SocioService {
           'importo': data['importo'],
         };
       } else if (response.statusCode == 400) {
-        final errorData = jsonDecode(response.body);
+        final errorData = ResponseUtils.decodeJson(response);
         return {
           'success': false,
           'message': errorData['message'] ?? 'Campo obbligatorio mancante',
@@ -341,7 +342,7 @@ class SocioService {
               'Non hai i permessi. Solo i soci possono richiedere servizi.',
         };
       } else {
-        final errorData = jsonDecode(response.body);
+        final errorData = ResponseUtils.decodeJson(response);
         return {
           'success': false,
           'message':

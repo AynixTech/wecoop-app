@@ -7,6 +7,7 @@ import 'package:wecoop_app/services/secure_storage_service.dart';
 import '../../services/firma_digitale_service.dart';
 import '../../models/firma_digitale_models.dart';
 import '../../services/socio_service.dart';
+import '../../services/http_client_service.dart';
 import '../servizi/pagamento_screen.dart';
 import '../firma_digitale/firma_documento_screen.dart';
 import 'dart:io';
@@ -199,6 +200,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
       return 'awaiting_payment';
     }
 
+    if (normalized == 'awaiting_signature' ||
+        normalized == 'da_firmare' ||
+        normalized == 'pending_firma' ||
+        normalized == 'pending_digital_signature' ||
+        normalized == 'in_attesa_di_firma' ||
+        normalized == 'in_attesa_firma' ||
+        normalized == 'pendiente_de_firma' ||
+        (normalized.contains('firma') && normalized.contains('attesa')) ||
+        (normalized.contains('firma') && normalized.contains('pending'))) {
+      return 'awaiting_signature';
+    }
+
     if (normalized == 'completed' ||
         normalized == 'completata' ||
         normalized == 'completato') {
@@ -215,7 +228,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       return 'processing';
     }
 
-    if (normalized == 'paid' || normalized == 'pagato') {
+    if (normalized == 'paid' || normalized == 'pagato' || normalized == 'pagado') {
       return 'paid';
     }
 
@@ -229,11 +242,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Color _getStatoColor(String stato) {
     switch (_canonicalStato(stato)) {
       case 'awaiting_payment':
-        return Colors.orange;
+        return const Color(0xFF9c27b0); // Viola
+      case 'paid':
+        return const Color(0xFF673ab7); // Viola scuro
+      case 'awaiting_signature':
+        return const Color(0xFFff6f00); // Arancione scuro
       case 'processing':
         return Colors.blue;
       case 'completed':
-      case 'paid':
         return Colors.green;
       case 'cancelled':
         return Colors.red;
@@ -248,6 +264,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
     switch (_canonicalStato(stato)) {
       case 'awaiting_payment':
         return Icons.payment;
+      case 'paid':
+        return Icons.paid;
+      case 'awaiting_signature':
+        return Icons.edit_document;
       case 'processing':
         return Icons.hourglass_empty;
       case 'completed':
@@ -272,6 +292,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
         return l10n.paymentStatusAwaitingPayment;
       case 'paid':
         return l10n.paymentStatusPaid;
+      case 'awaiting_signature':
+        return l10n.paymentStatusAwaitingSignature;
       case 'completed':
         return l10n.paymentStatusCompleted;
       case 'failed':
@@ -1082,41 +1104,65 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Future<bool> _apriPdfFallbackWeb(String url) async {
-    final openedGoogleGs = await _apriConGoogleGs(
-      url,
-      title: 'Documento (Google GS)',
-    );
-    if (openedGoogleGs) {
+    final openedAuthPdf = await _apriPdfFallbackAutenticato(url);
+    if (openedAuthPdf) {
       return true;
     }
 
-    final directUri = Uri.tryParse(url);
-    if (directUri != null) {
-      try {
-        await _apriUrlInAppWebView(
-          directUri,
-          title: 'Documento',
-        );
-        print('✅ [PdfFallback] aperto URL diretto in-app: $url');
-        return true;
-      } catch (e) {
-        print('❌ [PdfFallback] URL diretto in-app fallito: $e');
-      }
-    }
-
-    if (directUri != null) {
-      final openedDirectExternal = await launchUrl(
-        directUri,
-        mode: LaunchMode.externalApplication,
-      );
-      if (openedDirectExternal) {
-        print('✅ [PdfFallback] aperto esterno URL diretto: $url');
-        return true;
-      }
-    }
-
-    print('❌ [PdfFallback] apertura fallback fallita: $url');
+    // Evita Google Docs su Documento Unico: su URL protette mostra spesso
+    // "anteprima non disponibile". Se il download autenticato fallisce,
+    // consideriamo fallito il fallback.
+    print('❌ [PdfFallback] apertura fallback autenticata fallita (Google disabilitato): $url');
     return false;
+  }
+
+  Future<bool> _apriPdfFallbackAutenticato(String url) async {
+    try {
+      final uri = Uri.tryParse(url);
+      if (uri == null) {
+        return false;
+      }
+
+      final token = await storage.read(key: 'jwt_token');
+      final headers = <String, String>{
+        'Accept': 'application/pdf,application/octet-stream,*/*',
+      };
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
+      final response = await HttpClientService.get(uri, headers: headers);
+      if (response.statusCode != 200) {
+        print('⚠️ [PdfFallbackAuth] status=${response.statusCode} url=$url');
+        return false;
+      }
+
+      final normalizedPdfBytes = _normalizzaPdfBytes(
+        response.bodyBytes,
+        context: 'fallback_auth_pdf',
+      );
+      final isValid = _isPdfBytesProbablyValid(normalizedPdfBytes);
+      if (!isValid) {
+        print('⚠️ [PdfFallbackAuth] bytes non validi url=$url');
+        return false;
+      }
+
+      final filename = _extractFileName(url) == 'N/A'
+          ? 'documento_unico.pdf'
+          : _extractFileName(url);
+      final savedFile = await _salvaPdfLocale(normalizedPdfBytes, filename);
+      if (savedFile == null) {
+        print('❌ [PdfFallbackAuth] salvataggio file fallito url=$url');
+        return false;
+      }
+
+      await _apriPdfInApp(savedFile, title: filename);
+      print('✅ [PdfFallbackAuth] PDF aperto in-app da URL autenticata');
+      return true;
+    } catch (e) {
+      print('❌ [PdfFallbackAuth] eccezione: $e');
+      return false;
+    }
   }
 
   Future<bool> _apriRicevutaFallbackWeb({
@@ -1310,6 +1356,26 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
         if (pdfBytes == null || pdfBytes.isEmpty) {
           print('❌ [DocMergedUI] PDF vuoto o assente per richiestaId=$richiestaId');
+          if (fallbackUrl != null && _isValidWebUrl(fallbackUrl)) {
+            print('⚠️ [DocMergedUI] PDF assente, provo fallback avanzato richiestaId=$richiestaId');
+            final opened = await _tryOpenDocumentoUnicoFallbacks(
+              richiestaId: richiestaId,
+              preferredUrl: fallbackUrl,
+            );
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    opened
+                        ? '⚠️ ${AppLocalizations.of(context)!.translate('invalidMergedPdfFallbackOpened')}'
+                        : '❌ ${AppLocalizations.of(context)!.translate('invalidPdfFallbackUnavailable')}',
+                  ),
+                  backgroundColor: opened ? Colors.orange : Colors.red,
+                ),
+              );
+            }
+            return;
+          }
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -1328,9 +1394,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
         final isValid = _isPdfBytesProbablyValid(normalizedPdfBytes);
         print('📄 [DocMergedUI] bytes validazione pdf: $isValid');
 
-        if (!isValid && fallbackUrl != null && _isValidWebUrl(fallbackUrl)) {
-          print('⚠️ [DocMergedUI] bytes merged non validi, uso fallback URL: $fallbackUrl');
-          final opened = await _apriPdfFallbackWeb(fallbackUrl);
+        if (!isValid) {
+          print('⚠️ [DocMergedUI] bytes merged non validi, provo fallback avanzato richiestaId=$richiestaId');
+          final opened = await _tryOpenDocumentoUnicoFallbacks(
+            richiestaId: richiestaId,
+            preferredUrl: fallbackUrl,
+          );
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -1377,6 +1446,37 @@ class _CalendarScreenState extends State<CalendarScreen> {
         return;
       }
 
+      if (!forceMerge) {
+        print('⚠️ [DocMergedUI] primo tentativo fallito, retry con forceMerge=true richiestaId=$richiestaId');
+        await _visualizzaDocumentoUnico(
+          richiestaId: richiestaId,
+          forceMerge: true,
+          fallbackUrl: fallbackUrl,
+        );
+        return;
+      }
+
+      {
+        print('⚠️ [DocMergedUI] service non riuscito, provo fallback avanzato richiestaId=$richiestaId');
+        final opened = await _tryOpenDocumentoUnicoFallbacks(
+          richiestaId: richiestaId,
+          preferredUrl: fallbackUrl,
+        );
+        if (opened) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  '⚠️ ${AppLocalizations.of(context)!.translate('invalidMergedPdfFallbackOpened')}',
+                ),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          }
+          return;
+        }
+      }
+
       if (mounted) {
         print('❌ [DocMergedUI] errore service message=${result['message']}');
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1393,6 +1493,30 @@ class _CalendarScreenState extends State<CalendarScreen> {
       print('❌ [DocMergedUI] eccezione imprevista: $e');
       if (mounted) {
         Navigator.of(context, rootNavigator: true).pop();
+      }
+
+      {
+        print('⚠️ [DocMergedUI] eccezione service, provo fallback avanzato richiestaId=$richiestaId');
+        final opened = await _tryOpenDocumentoUnicoFallbacks(
+          richiestaId: richiestaId,
+          preferredUrl: fallbackUrl,
+        );
+        if (opened) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  '⚠️ ${AppLocalizations.of(context)!.translate('invalidMergedPdfFallbackOpened')}',
+                ),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          }
+          return;
+        }
+      }
+
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -1404,6 +1528,82 @@ class _CalendarScreenState extends State<CalendarScreen> {
         );
       }
     }
+  }
+
+  List<String> _extractUrlsFromMetadata(Map<String, dynamic>? metadata) {
+    if (metadata == null || metadata.isEmpty) {
+      return const [];
+    }
+
+    const keys = [
+      'documento_unico_merged_url',
+      'attestato_firma_url',
+      'documento_download_url',
+      'documento_url',
+      'merged_url',
+      'download_url',
+      'url',
+    ];
+
+    final urls = <String>[];
+    for (final key in keys) {
+      final value = metadata[key]?.toString();
+      if (_isValidWebUrl(value)) {
+        urls.add(value!.trim());
+      }
+    }
+
+    return urls;
+  }
+
+  Future<bool> _tryOpenDocumentoUnicoFallbacks({
+    required int richiestaId,
+    String? preferredUrl,
+  }) async {
+    final candidates = <String>[];
+
+    if (_isValidWebUrl(preferredUrl)) {
+      candidates.add(preferredUrl!.trim());
+    }
+
+    try {
+      final status = await FirmaDigitaleService.ottieniStatoFirma(richiestaId);
+      if (mounted) {
+        setState(() {
+          _firmaStatusByRichiesta[richiestaId] = status;
+        });
+      }
+
+      if (_isValidWebUrl(status.documentoDownloadUrl)) {
+        candidates.add(status.documentoDownloadUrl!.trim());
+      }
+      if (_isValidWebUrl(status.documentoUrl)) {
+        candidates.add(status.documentoUrl!.trim());
+      }
+
+      candidates.addAll(_extractUrlsFromMetadata(status.metadata));
+    } catch (e) {
+      print('⚠️ [DocMergedUI] impossibile recuperare stato firma aggiornato richiestaId=$richiestaId: $e');
+    }
+
+    final uniqueCandidates = <String>[];
+    for (final c in candidates) {
+      if (!uniqueCandidates.contains(c)) {
+        uniqueCandidates.add(c);
+      }
+    }
+
+    print('📄 [DocMergedUI] fallback candidates richiestaId=$richiestaId count=${uniqueCandidates.length}');
+
+    for (final candidate in uniqueCandidates) {
+      final opened = await _apriPdfFallbackWeb(candidate);
+      print('📄 [DocMergedUI] fallback candidate opened=$opened url=$candidate');
+      if (opened) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   void _apriRichiestaById(String id) {
@@ -1959,7 +2159,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         ),
                       ],
 
-                      if (isFirmabile && isGiaFirmata) ...[
+                      if (isGiaFirmata) ...[
                         const SizedBox(height: 12),
                         Container(
                           padding: const EdgeInsets.all(12),
@@ -2211,30 +2411,47 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           ),
                         ),
 
-                        if (documentoUnicoUrl != null) ...[
-                          const SizedBox(height: 12),
-                          OutlinedButton.icon(
-                            onPressed: firmaRichiestaId == null
-                                ? null
-                                : () {
-                                    print('🖱️ [DocMergedUI] tap Visualizza Documento Unico richiestaId=$firmaRichiestaId stato=$stato isGiaFirmata=$isGiaFirmata');
-                                    _visualizzaDocumentoUnico(
-                                      richiestaId: firmaRichiestaId,
-                                      fallbackUrl: documentoUnicoUrl,
-                                    );
-                                  },
-                            icon: const Icon(Icons.description_outlined),
-                            label: Text(
-                              AppLocalizations.of(context)!.translate('viewMergedDocument'),
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: Colors.blue,
-                              side: BorderSide(color: Colors.blue.shade300),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              minimumSize: const Size(double.infinity, 0),
-                            ),
+                      ],
+
+                      if (documentoUnicoUrl != null || firmaRichiestaId != null) ...[
+                        const SizedBox(height: 12),
+                        OutlinedButton.icon(
+                          onPressed: () async {
+                            print('🖱️ [DocMergedUI] tap Visualizza Documento Unico richiestaId=$firmaRichiestaId stato=$stato isGiaFirmata=$isGiaFirmata fallbackUrl=$documentoUnicoUrl');
+
+                            if (firmaRichiestaId != null) {
+                              await _visualizzaDocumentoUnico(
+                                richiestaId: firmaRichiestaId,
+                                fallbackUrl: documentoUnicoUrl,
+                              );
+                              return;
+                            }
+
+                            if (documentoUnicoUrl != null) {
+                              final opened = await _apriPdfFallbackWeb(documentoUnicoUrl);
+                              if (!opened && mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      '❌ ${AppLocalizations.of(context)!.translate('invalidPdfFallbackUnavailable')}',
+                                    ),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                          icon: const Icon(Icons.description_outlined),
+                          label: Text(
+                            AppLocalizations.of(context)!.translate('viewMergedDocument'),
                           ),
-                        ],
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.blue,
+                            side: BorderSide(color: Colors.blue.shade300),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            minimumSize: const Size(double.infinity, 0),
+                          ),
+                        ),
                       ],
                     ],
                   ),
@@ -2292,6 +2509,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final List<Map<String, String?>> filtriStato = [
       {'label': l10n.all, 'value': null},
       {'label': l10n.paymentStatusAwaitingPayment, 'value': 'awaiting_payment'},
+      {'label': l10n.paymentStatusPaid, 'value': 'paid'},
+      {'label': l10n.paymentStatusAwaitingSignature, 'value': 'awaiting_signature'},
       {'label': l10n.paymentStatusCompleted, 'value': 'completed'},
     ];
     

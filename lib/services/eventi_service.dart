@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
+import 'package:wecoop_app/utils/response_utils.dart';
 import '../models/evento_model.dart';
 import '../utils/html_utils.dart';
 

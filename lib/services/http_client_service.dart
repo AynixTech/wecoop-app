@@ -9,6 +9,39 @@ class HttpClientService {
   static final storage = SecureStorageService();
   static bool _isRefreshing = false;
 
+  /// Decodifica JSON dalla risposta HTTP mantenendo l'encoding UTF-8 corretto
+  /// 
+  /// Usa utf8.decode(response.bodyBytes) invece di response.body per garantire
+  /// che i caratteri accentati (é, à, ù, etc.) non vengano corrotti.
+  /// 
+  /// Verifica anche l'header Content-Type per debug.
+  static dynamic decodeJsonResponse(http.Response response) {
+    // Verifica se il server invia charset corretto
+    final contentType = response.headers['content-type'] ?? '';
+    final hasCharset = contentType.contains('charset=utf-8');
+    
+    if (!hasCharset) {
+      print('⚠️ Header Warning: Content-Type non contiene charset=utf-8');
+      print('   Content-Type riportato: $contentType');
+    }
+
+    try {
+      // Metodo corretto: decodifica i byte come UTF-8 prima di fare jsonDecode
+      final jsonString = utf8.decode(response.bodyBytes);
+      final decoded = jsonDecode(jsonString);
+      return decoded;
+    } catch (e) {
+      print('⚠️ Errore UTF-8 decode, fallback a response.body: $e');
+      try {
+        // Fallback se utf8.decode fallisce
+        return jsonDecode(response.body);
+      } catch (e2) {
+        print('❌ Errore nel parsing JSON: $e2');
+        rethrow;
+      }
+    }
+  }
+
   /// Rinfresca il JWT token usando le credenziali salvate
   static Future<bool> refreshToken() async {
     // Evita refresh multipli simultanei
@@ -53,7 +86,7 @@ class HttpClientService {
       print('📥 Refresh Response Status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final data = decodeJsonResponse(response);
 
         if (data['token'] != null) {
           final newToken = data['token'];
@@ -146,7 +179,7 @@ class HttpClientService {
       // Se il token è scaduto, tenta il refresh
       if (response.statusCode == 403) {
         try {
-          final body = jsonDecode(response.body);
+          final body = decodeJsonResponse(response);
           if (body['code'] == 'jwt_auth_invalid_token' ||
               body['message']?.contains('Expired') == true) {
             print('⚠️ Token scaduto rilevato in: $requestUrl');

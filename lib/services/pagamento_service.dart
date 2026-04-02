@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:wecoop_app/utils/response_utils.dart';
 import 'secure_storage_service.dart';
 import 'http_client_service.dart';
 import '../models/pagamento_model.dart';
@@ -40,7 +41,7 @@ class PagamentoService {
       print('📥 GET /payment/$paymentId status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        final data = ResponseUtils.decodeJson(response) as Map<String, dynamic>;
         return Pagamento.fromJson(data);
       } else if (response.statusCode == 404) {
         print('⚠️ Pagamento non trovato');
@@ -78,7 +79,7 @@ class PagamentoService {
       print('📥 GET /payments/user/$userId status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
+        final List<dynamic> data = ResponseUtils.decodeJson(response);
         return data.map((json) => Pagamento.fromJson(json)).toList();
       }
 
@@ -111,7 +112,7 @@ class PagamentoService {
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        final data = ResponseUtils.decodeJson(response) as Map<String, dynamic>;
         print(
           '✅ Pagamento trovato per richiesta $richiestaId: ID ${data['id']}, Importo €${data['importo']}, Stato: ${data['stato']}',
         );
@@ -169,7 +170,7 @@ class PagamentoService {
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final data = ResponseUtils.decodeJson(response);
         return {
           'success': true,
           'message': data['message'] ?? 'Pagamento confermato',
@@ -179,7 +180,7 @@ class PagamentoService {
       } else if (response.statusCode == 403) {
         return {'success': false, 'message': 'Non autorizzato'};
       } else {
-        final errorData = jsonDecode(response.body);
+        final errorData = ResponseUtils.decodeJson(response);
         return {
           'success': false,
           'message': errorData['message'] ?? 'Errore durante la conferma',
@@ -225,7 +226,7 @@ class PagamentoService {
       print('📥 Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final data = ResponseUtils.decodeJson(response);
         final clientSecret = data['clientSecret'] as String?;
 
         if (clientSecret != null) {

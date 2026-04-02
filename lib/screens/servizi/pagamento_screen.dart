@@ -23,6 +23,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
   Pagamento? _pagamento;
   bool _isLoading = true;
   String? _errorMessage;
+  bool _isStripeLoadingDialogVisible = false;
 
   @override
   void initState() {
@@ -120,11 +121,13 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       // Mostra loading
       showDialog(
         context: context,
+        useRootNavigator: true,
         barrierDismissible: false,
         builder: (context) => const Center(
           child: CircularProgressIndicator(),
         ),
       );
+      _isStripeLoadingDialogVisible = true;
 
       print('🔄 Creo Payment Intent per €${_pagamento!.importo}...');
 
@@ -137,7 +140,13 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       print('✅ Client Secret ricevuto: ${clientSecret != null ? "OK" : "NULL"}');
 
       if (!mounted) return;
-      Navigator.pop(context); // Chiudi loading
+      if (_isStripeLoadingDialogVisible &&
+          Navigator.of(context, rootNavigator: true).canPop()) {
+        Navigator.of(context, rootNavigator: true).pop();
+        _isStripeLoadingDialogVisible = false;
+        // Attendi la fine dell'animazione di chiusura del dialog prima di mostrare Stripe.
+        await Future<void>.delayed(const Duration(milliseconds: 220));
+      }
 
       if (clientSecret == null) {
         _showErrorDialog(
@@ -197,9 +206,10 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       print('❌ StripeException: ${e.error.code} - ${e.error.message}');
       if (!mounted) return;
       
-      // Chiudi loading solo se non è già chiuso
-      if (Navigator.canPop(context)) {
-        Navigator.pop(context);
+      if (_isStripeLoadingDialogVisible &&
+          Navigator.of(context, rootNavigator: true).canPop()) {
+        Navigator.of(context, rootNavigator: true).pop();
+        _isStripeLoadingDialogVisible = false;
       }
 
       // Gestisci errori Stripe specifici
@@ -213,7 +223,11 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
     } catch (e) {
       print('❌ Errore generico: $e');
       if (!mounted) return;
-      Navigator.pop(context); // Chiudi loading se aperto
+      if (_isStripeLoadingDialogVisible &&
+          Navigator.of(context, rootNavigator: true).canPop()) {
+        Navigator.of(context, rootNavigator: true).pop();
+        _isStripeLoadingDialogVisible = false;
+      }
       _showErrorDialog('Errore imprevisto: $e');
     }
   }

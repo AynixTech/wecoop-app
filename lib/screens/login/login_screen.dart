@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:local_auth/local_auth.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'package:wecoop_app/services/http_client_service.dart';
+import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/services/push_notification_service.dart';
 import '../../widgets/language_selector.dart';
 import '../../utils/html_utils.dart';
@@ -161,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
     print('Username (telefono): $phone');
 
     try {
-      final response = await http.post(
+      final response = await HttpClientService.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'username': phone, 'password': password}),
@@ -271,6 +273,7 @@ class _LoginScreenState extends State<LoginScreen> {
         url,
         headers: {'Authorization': 'Bearer $token'},
       );
+      await MaintenanceHandler.handleHttpStatusCode(response.statusCode);
 
       print('📥 GET /soci/me status: ${response.statusCode}');
       print('📥 GET /soci/me body: ${response.body}');

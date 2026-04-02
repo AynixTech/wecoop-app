@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/push_notification_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/screens/main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -401,6 +402,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
+      await MaintenanceHandler.handleHttpStatusCode(response.statusCode);
 
       print('\n📥 RISPOSTA RICEVUTA:');
       print('   - Status Code: ${response.statusCode}');
@@ -642,6 +644,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'username': username, 'password': password}),
       );
+      await MaintenanceHandler.handleHttpStatusCode(response.statusCode);
 
       print('\n📥 RISPOSTA LOGIN:');
       print('   Status: ${response.statusCode}');
@@ -777,6 +780,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
           'Content-Type': 'application/json',
         },
       );
+      await MaintenanceHandler.handleHttpStatusCode(response.statusCode);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

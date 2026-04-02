@@ -10,6 +10,7 @@ import 'package:wecoop_app/services/locale_provider.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/push_notification_service.dart';
 import 'package:wecoop_app/services/deep_link_service.dart';
+import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/utils/deep_link_handler.dart';
 import 'screens/main_screen.dart';
 import 'screens/login/login_screen.dart';
@@ -32,6 +33,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
   @override
   void initState() {
     super.initState();
+    MaintenanceHandler.bindNavigatorKey(_navigatorKey);
     _initializePushNotifications();
     _initializeDeepLinks();
   }

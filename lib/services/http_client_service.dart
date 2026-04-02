@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 
 /// Servizio HTTP centralizzato con gestione automatica del refresh token
@@ -175,6 +176,8 @@ class HttpClientService {
   ) async {
     try {
       var response = await request();
+
+      await MaintenanceHandler.handleHttpStatusCode(response.statusCode);
 
       // Se il token è scaduto, tenta il refresh
       if (response.statusCode == 403) {

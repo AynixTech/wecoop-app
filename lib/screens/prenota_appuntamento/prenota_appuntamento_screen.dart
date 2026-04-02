@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'package:wecoop_app/services/maintenance_handler.dart';
 
 class PrenotaAppuntamentoScreen extends StatefulWidget {
   @override
@@ -38,6 +39,7 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
     final response = await http.get(
       Uri.parse('https://www.wecoop.org/wp-json/wecoop/v1/appuntamenti'),
     );
+    await MaintenanceHandler.handleHttpStatusCode(response.statusCode);
     if (response.statusCode == 200) {
       final dati = json.decode(response.body);
       dati.sort((a, b) {
@@ -92,6 +94,7 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
         'orario': selectedOrario,
       }),
     );
+    await MaintenanceHandler.handleHttpStatusCode(response.statusCode);
 
     final result = json.decode(response.body);
     if (response.statusCode == 200 && result['success'] == true) {

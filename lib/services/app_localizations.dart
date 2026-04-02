@@ -59,6 +59,9 @@ class AppLocalizations {
       'useBiometricLoginSettingDescription':
           'Attiva impronta digitale o Face ID per un accesso rapido',
       'biometricSettingUpdated': 'Preferenza biometria aggiornata',
+      'maintenanceTitle': 'Manutenzione in corso',
+      'maintenanceMessage':
+          'Il sito al momento è in manutenzione. Riprova più tardi.',
       'networkError': 'Errore di rete',
       'upcomingEvents': 'Prossimi eventi',
       'activeProjects': 'Progetti attivi',
@@ -1061,6 +1064,9 @@ class AppLocalizations {
       'useBiometricLoginSettingDescription':
           'Enable fingerprint or Face ID for faster access',
       'biometricSettingUpdated': 'Biometric preference updated',
+      'maintenanceTitle': 'Maintenance in progress',
+      'maintenanceMessage':
+          'The site is currently under maintenance. Please try again later.',
       'networkError': 'Network error',
       'upcomingEvents': 'Upcoming events',
       'activeProjects': 'Active projects',
@@ -2033,6 +2039,9 @@ class AppLocalizations {
       'useBiometricLoginSettingDescription':
           'Activa huella o Face ID para un acceso más rápido',
       'biometricSettingUpdated': 'Preferencia biométrica actualizada',
+      'maintenanceTitle': 'Mantenimiento en curso',
+      'maintenanceMessage':
+          'El sitio está actualmente en mantenimiento. Inténtalo de nuevo más tarde.',
       'networkError': 'Error de red',
       'upcomingEvents': 'Próximos eventos',
       'activeProjects': 'Proyectos activos',

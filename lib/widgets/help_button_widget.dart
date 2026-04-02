@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -154,6 +155,7 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
         },
         body: jsonEncode(body),
       );
+      await MaintenanceHandler.handleHttpStatusCode(response.statusCode);
 
       print('\n📥 RISPOSTA SUPPORTO:');
       print('   Status: ${response.statusCode}');

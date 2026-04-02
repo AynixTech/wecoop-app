@@ -1,8 +1,28 @@
+class DocumentoSoggetto {
+  static const String richiedente = 'richiedente';
+  static const String familiare = 'familiare';
+
+  static List<String> get all => [richiedente, familiare];
+
+  static String getDisplayName(String soggetto) {
+    switch (soggetto) {
+      case familiare:
+        return 'Familiare';
+      case richiedente:
+      default:
+        return 'Richiedente';
+    }
+  }
+}
+
 class Documento {
   final String id;
-  final String tipo; // permesso_soggiorno, passaporto, codice_fiscale, carta_identita
+  final String soggetto;
+  final String
+  tipo; // permesso_soggiorno, passaporto, codice_fiscale, carta_identita
   final String filePath;
   final String fileName;
+
   /// Percorso lato retro (solo per foto/galleria - fronte e retro)
   final String? filePathRetro;
   final String? fileNameRetro;
@@ -11,6 +31,7 @@ class Documento {
 
   Documento({
     required this.id,
+    this.soggetto = DocumentoSoggetto.richiedente,
     required this.tipo,
     required this.filePath,
     required this.fileName,
@@ -24,15 +45,17 @@ class Documento {
   factory Documento.fromJson(Map<String, dynamic> json) {
     return Documento(
       id: json['id'] as String,
+      soggetto: (json['soggetto'] as String?) ?? DocumentoSoggetto.richiedente,
       tipo: json['tipo'] as String,
       filePath: json['filePath'] as String,
       fileName: json['fileName'] as String,
       filePathRetro: json['filePathRetro'] as String?,
       fileNameRetro: json['fileNameRetro'] as String?,
       dataCaricamento: DateTime.parse(json['dataCaricamento'] as String),
-      dataScadenza: json['dataScadenza'] != null
-          ? DateTime.parse(json['dataScadenza'] as String)
-          : null,
+      dataScadenza:
+          json['dataScadenza'] != null
+              ? DateTime.parse(json['dataScadenza'] as String)
+              : null,
     );
   }
 
@@ -40,6 +63,7 @@ class Documento {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'soggetto': soggetto,
       'tipo': tipo,
       'filePath': filePath,
       'fileName': fileName,
@@ -67,6 +91,7 @@ class Documento {
   // Copia con modifiche
   Documento copyWith({
     String? id,
+    String? soggetto,
     String? tipo,
     String? filePath,
     String? fileName,
@@ -77,6 +102,7 @@ class Documento {
   }) {
     return Documento(
       id: id ?? this.id,
+      soggetto: soggetto ?? this.soggetto,
       tipo: tipo ?? this.tipo,
       filePath: filePath ?? this.filePath,
       fileName: fileName ?? this.fileName,
@@ -96,11 +122,11 @@ class TipoDocumento {
   static const String cartaIdentita = 'carta_identita';
 
   static List<String> get all => [
-        permessoSoggiorno,
-        passaporto,
-        codiceFiscale,
-        cartaIdentita,
-      ];
+    permessoSoggiorno,
+    passaporto,
+    codiceFiscale,
+    cartaIdentita,
+  ];
 
   static String getDisplayName(String tipo) {
     switch (tipo) {

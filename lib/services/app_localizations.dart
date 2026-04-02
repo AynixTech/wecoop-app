@@ -60,7 +60,8 @@ class AppLocalizations {
       'accountingSupport': 'Supporto contabile per P.IVA forfettaria',
       'taxGuidanceAndClarifications': 'Orientamento e chiarimenti fiscali',
       'familyReunification': 'Ricongiungimento familiare',
-      'familyReunificationDesc': 'Richiesta di ricongiungimento con familiari (coniuge, figli, genitori)',
+      'familyReunificationDesc':
+          'Richiesta di ricongiungimento con familiari (coniuge, figli, genitori)',
       'selectFamilyMember': 'Seleziona il familiare da ricongiungere',
       'spouse': 'Coniuge',
       'spouseDesc': 'Ricongiungimento con il/la coniuge',
@@ -93,10 +94,12 @@ class AppLocalizations {
       'employedWorker': 'Lavoratore dipendente',
       'domesticWorker': 'Lavoratore domestico',
       'businessOwner': 'Titolare ditta individuale o partecipazione in società',
-      'coCoCoWorker': 'Contratto di lavoro per collaborazione coordinata e continuativa (Co.Co.Co.)',
+      'coCoCoWorker':
+          'Contratto di lavoro per collaborazione coordinata e continuativa (Co.Co.Co.)',
       'workerPartner': 'Socio lavoratore',
       'freelanceProfessional': 'Libero professionista',
-      'haveRentalOrSuitableHouse': 'Hai un contratto di affitto o una casa idonea?',
+      'haveRentalOrSuitableHouse':
+          'Hai un contratto di affitto o una casa idonea?',
       'latestArticles': 'Ultimi articoli',
       'errorLoading': 'Errore',
       'noArticlesAvailable': 'Nessun articolo disponibile.',
@@ -118,11 +121,13 @@ class AppLocalizations {
       'close': 'Chiudi',
       'becomeMember': 'Diventa Socio WECOOP',
       'requestSent': 'Richiesta inviata!',
-      'requestReceived': 'Abbiamo ricevuto la tua richiesta di adesione. Ti contatteremo presto per completare il processo.',
+      'requestReceived':
+          'Abbiamo ricevuto la tua richiesta di adesione. Ti contatteremo presto per completare il processo.',
       'ok': 'OK',
       'error': 'Errore',
       'emailAlreadyRegistered': 'Email già registrata',
-      'emailExistsMessage': 'Questa email risulta già registrata nel nostro sistema. Vuoi accedere con le tue credenziali?',
+      'emailExistsMessage':
+          'Questa email risulta già registrata nel nostro sistema. Vuoi accedere con le tue credenziali?',
       'cancel': 'Annulla',
       'goToLogin': 'Vai al Login',
       'personalInfo': 'Dati Personali',
@@ -158,7 +163,8 @@ class AppLocalizations {
       'eventConcluded': 'EVENTO CONCLUSO',
       'loading': 'Caricamento...',
       'confirmCancellation': 'Conferma cancellazione',
-      'confirmCancellationMessage': 'Sei sicuro di voler cancellare la tua iscrizione?',
+      'confirmCancellationMessage':
+          'Sei sicuro di voler cancellare la tua iscrizione?',
       'cancelEnrollment': 'Cancella iscrizione',
       'date': 'Data',
       'end': 'Fine',
@@ -216,9 +222,11 @@ class AppLocalizations {
       'familyReunificationPermit': 'Ricongiungimento',
       'familyReunificationPermitDesc': 'Ricongiungimento con familiari',
       'duplicatePermit': 'Duplicato permesso di soggiorno',
-      'duplicatePermitDesc': 'Richiesta duplicato per perdita, furto o deterioramento',
+      'duplicatePermitDesc':
+          'Richiesta duplicato per perdita, furto o deterioramento',
       'longTermPermitUpdate': 'Aggiornamento permesso lungo periodo',
-      'longTermPermitUpdateDesc': 'Aggiornamento dati permesso CE soggiornanti lungo periodo',
+      'longTermPermitUpdateDesc':
+          'Aggiornamento dati permesso CE soggiornanti lungo periodo',
       'currentPermitType': 'Tipo permesso attuale',
       'permitExpiryDate': 'Data scadenza permesso',
       'currentPermitNumber': 'Numero permesso attuale',
@@ -258,13 +266,15 @@ class AppLocalizations {
       'expensesSection': 'Sezione Spese',
       'completeProfile': 'Completa il Profilo',
       'profileIncomplete': 'Profilo Incompleto',
-      'completeProfileMessage': 'Completa i tuoi dati per accedere a tutti i servizi',
+      'completeProfileMessage':
+          'Completa i tuoi dati per accedere a tutti i servizi',
       'completeNow': 'Completa Ora',
       'updateYourPersonalData': 'Aggiorna i tuoi dati personali',
       'personalData': 'Dati Personali',
       'documents': 'Documenti',
       'uploadDocumentsOptional': 'Carica i tuoi documenti (opzionale)',
-      'whatsappDocumentSupport': 'Hai problemi a caricare i documenti? Scrivici su WhatsApp',
+      'whatsappDocumentSupport':
+          'Hai problemi a caricare i documenti? Scrivici su WhatsApp',
       'identityCard': 'Carta d\'Identità',
       'fiscalCodeDocument': 'Codice Fiscale',
       'requiredField': 'Campo obbligatorio',
@@ -288,22 +298,28 @@ class AppLocalizations {
       'deductions': 'Detrazioni',
       'send730': 'Invia 730',
       'citizenshipService': 'Cittadinanza',
-      'citizenshipIntro': 'Servizio di supporto per ottenere la cittadinanza italiana',
-      'citizenshipDescription': 'Compila il questionario per verificare se hai i requisiti necessari.',
+      'citizenshipIntro':
+          'Servizio di supporto per ottenere la cittadinanza italiana',
+      'citizenshipDescription':
+          'Compila il questionario per verificare se hai i requisiti necessari.',
       'requirementsNotMet': 'Requisiti non soddisfatti',
-      'requirementsMessage': 'Al momento non soddisfi tutti i requisiti necessari per richiedere la cittadinanza. Ti consigliamo di contattarci per una consulenza personalizzata.',
+      'requirementsMessage':
+          'Al momento non soddisfi tutti i requisiti necessari per richiedere la cittadinanza. Ti consigliamo di contattarci per una consulenza personalizzata.',
       'understand': 'Ho capito',
       'contactUs': 'Contattaci',
       'yes': 'Sì',
       'no': 'No',
       'needLogin': 'Servizio riservato ai soci',
-      'needLoginMessage': 'Per accedere a questo servizio devi essere registrato come socio WECOOP.',
+      'needLoginMessage':
+          'Per accedere a questo servizio devi essere registrato come socio WECOOP.',
       'goBack': 'Torna indietro',
       'notMemberYet': 'Non sei ancora socio?',
-      'notMemberMessage': 'Per accedere a questo servizio devi essere socio di WECOOP.',
+      'notMemberMessage':
+          'Per accedere a questo servizio devi essere socio di WECOOP.',
       'backToHome': 'Torna alla home',
       'serviceNotAvailable': 'Servizio non disponibile',
-      'serviceNotAvailableMessage': 'Questo servizio non è ancora attivo. Torna più tardi o contatta il nostro supporto per maggiori informazioni.',
+      'serviceNotAvailableMessage':
+          'Questo servizio non è ancora attivo. Torna più tardi o contatta il nostro supporto per maggiori informazioni.',
       'all': 'Tutti',
       'pending': 'In attesa',
       'approved': 'Approvato',
@@ -335,7 +351,8 @@ class AppLocalizations {
       'bankCoordinates': 'Coordinate bancarie:',
       'sendEmail': 'Invia Email',
       'instructionsSent': 'Istruzioni inviate',
-      'instructionsSentMessage': 'Ti abbiamo inviato una email con le istruzioni per il bonifico.',
+      'instructionsSentMessage':
+          'Ti abbiamo inviato una email con le istruzioni per il bonifico.',
       'fileNumber': 'Numero Pratica',
       'status': 'Stato',
       'requestDate': 'Data Richiesta',
@@ -364,15 +381,18 @@ class AppLocalizations {
       'errorDownloadingReceipt': 'Errore download ricevuta',
       'errorSharingReceipt': 'Errore condivisione ricevuta',
       'paymentRequiredAmount': 'Pagamento richiesto',
-      'canCompletePaymentFromRequests': 'Potrai completare il pagamento dalla sezione "Le Mie Richieste".',
-      'willBeContactedByEmail': 'Sarai contattato via email per i prossimi passi.',
+      'canCompletePaymentFromRequests':
+          'Potrai completare il pagamento dalla sezione "Le Mie Richieste".',
+      'willBeContactedByEmail':
+          'Sarai contattato via email per i prossimi passi.',
       'requestSentPaymentRequired': 'Richiesta Inviata - Pagamento Richiesto',
       'payLater': 'Paga Dopo',
       'noRequestsThisDay': 'Nessuna richiesta per questo giorno',
       'noRequestsFound': 'Nessuna richiesta trovata',
       'transaction': 'Transazione',
       'selectServiceYouNeed': 'Seleziona il servizio di cui hai bisogno',
-      'guideStepByStep': 'Ti guideremo passo dopo passo per completare la tua richiesta',
+      'guideStepByStep':
+          'Ti guideremo passo dopo passo per completare la tua richiesta',
       'residencePermitDesc': 'Richiesta, rinnovo e informazioni',
       'citizenship': 'Cittadinanza',
       'citizenshipDesc': 'Richiesta cittadinanza italiana',
@@ -380,11 +400,16 @@ class AppLocalizations {
       'politicalAsylumDesc': 'Protezione internazionale',
       'touristVisa': 'Visto per Turismo',
       'touristVisaDesc': 'Richiesta visto turistico',
-      'loginToAccessServices': 'Effettua il login per accedere a tutti i servizi riservati ai soci.',
-      'membershipPendingApproval': 'La tua richiesta di adesione come socio è in fase di approvazione.',
-      'confirmationWithin24to48Hours': 'Riceverai una conferma via email entro 24-48 ore.',
-      'onceApprovedAccessAllServices': 'Una volta approvata, potrai accedere a tutti i servizi.',
-      'toAccessServicesBecomeMember': 'Per accedere ai servizi di {serviceName} devi essere socio di WECOOP.',
+      'loginToAccessServices':
+          'Effettua il login per accedere a tutti i servizi riservati ai soci.',
+      'membershipPendingApproval':
+          'La tua richiesta di adesione come socio è in fase di approvazione.',
+      'confirmationWithin24to48Hours':
+          'Riceverai una conferma via email entro 24-48 ore.',
+      'onceApprovedAccessAllServices':
+          'Una volta approvata, potrai accedere a tutti i servizi.',
+      'toAccessServicesBecomeMember':
+          'Per accedere ai servizi di {serviceName} devi essere socio di WECOOP.',
       'becomeMemberToAccess': 'Diventa socio per accedere a:',
       'whyBecomeMember': 'Perché diventare socio?',
       'credentialsSentTo': 'Abbiamo inviato le credenziali a:',
@@ -401,9 +426,11 @@ class AppLocalizations {
       'selectNationality': 'Seleziona la nazionalità',
       'selectYourCountryOfOrigin': 'Seleziona il tuo paese di origine',
       'iAcceptDataProcessing': 'Accetto il trattamento dei dati personali *',
-      'dataWillBeProcessed': 'I tuoi dati saranno trattati secondo la normativa sulla privacy',
+      'dataWillBeProcessed':
+          'I tuoi dati saranno trattati secondo la normativa sulla privacy',
       'fillToSpeedUp': 'Compila per velocizzare il completamento del profilo',
-      'fiscalCodeMustBe16Chars': 'Il codice fiscale deve essere di 16 caratteri',
+      'fiscalCodeMustBe16Chars':
+          'Il codice fiscale deve essere di 16 caratteri',
       'birthPlace': 'Luogo di Nascita',
       'invalidPostalCode': 'CAP non valido',
       'provinceExample': 'Es: MI, RM, TO',
@@ -415,7 +442,8 @@ class AppLocalizations {
       'supportNetwork': 'Rete di supporto e comunità',
       'fillFollowingFields': 'Compila i seguenti campi',
       'sendingError': 'Errore durante l\'invio',
-      'internationalProtectionRequest': 'La richiesta di protezione internazionale è un processo delicato. Ti aiuteremo a preparare la documentazione.',
+      'internationalProtectionRequest':
+          'La richiesta di protezione internazionale è un processo delicato. Ti aiuteremo a preparare la documentazione.',
       'internationalProtection': 'Protezione Internazionale',
       'dateOfArrivalInItaly': 'Data di arrivo in Italia',
       'reasonForRequest': 'Motivo della richiesta',
@@ -457,9 +485,12 @@ class AppLocalizations {
       'within1to2Months': 'Entro 1–2 mesi',
       'evaluating': 'Sto valutando',
       'manageVatNumber': 'Gestione contabile – Partita IVA forfettaria',
-      'ordinaryAccountingInvoicing': 'Contabilità ordinaria, fatturazione, registrazioni',
-      'hasActiveVatForfettario': 'Hai una Partita IVA attiva in regime forfettario?',
-      'forfettarioServiceOnly': 'Questo servizio è riservato alle Partite IVA in regime forfettario. Possiamo aiutarti con altri servizi fiscali.',
+      'ordinaryAccountingInvoicing':
+          'Contabilità ordinaria, fatturazione, registrazioni',
+      'hasActiveVatForfettario':
+          'Hai una Partita IVA attiva in regime forfettario?',
+      'forfettarioServiceOnly':
+          'Questo servizio è riservato alle Partite IVA in regime forfettario. Possiamo aiutarti con altri servizi fiscali.',
       'vatActiveFrom': 'Da quando è attiva la tua Partita IVA?',
       'currentYear': 'Anno in corso',
       'previousYears': 'Anni precedenti',
@@ -483,7 +514,8 @@ class AppLocalizations {
       'personalizedExplanations': 'Spiegazioni personalizzate',
       'taxPositionVerification': 'Verifica posizione fiscale',
       'taxRegimeChange': 'Cambio regime fiscale',
-      'questionsNotSureWhereToStart': 'Ho delle domande ma non so da dove partire',
+      'questionsNotSureWhereToStart':
+          'Ho delle domande ma non so da dove partire',
       'workSituationQuestion': 'La tua situazione lavorativa',
       'notWorkingOther': 'Non lavoro / altro',
       'urgencyQuestion': 'Quanto è urgente la tua richiesta?',
@@ -546,7 +578,8 @@ class AppLocalizations {
       'reason': 'Motivazione',
       'selectFiscalService': 'Seleziona il servizio fiscale',
       'tax730Declaration': '730 per dipendenti e pensionati',
-      'tax730Description': 'Compilazione modello 730 per dipendenti e pensionati',
+      'tax730Description':
+          'Compilazione modello 730 per dipendenti e pensionati',
       'taxReturn730': 'Dichiarazione dei Redditi (730)',
       'formCompilation': 'Compilazione Modelli',
       'asylumRequest': 'Richiesta Asilo',
@@ -557,7 +590,8 @@ class AppLocalizations {
       'taxConsultation': 'Consulenza Fiscale',
       'taxDebtManagement': 'Gestione Debiti Fiscali',
       'individualPerson': 'Modello Persona Fisica (ex Unico)',
-      'individualPersonDescription': 'Dichiarazione redditi per persone fisiche',
+      'individualPersonDescription':
+          'Dichiarazione redditi per persone fisiche',
       'taxpayerType': 'Tipologia contribuente',
       'employee': 'Lavoratore dipendente',
       'pensioner': 'Pensionato',
@@ -566,13 +600,80 @@ class AppLocalizations {
       'caregiver': 'Badante',
       'babysitter': 'Babysitter',
       'selfEmployedForfettario': 'Autonomo (solo Forfetario)',
-      'missedTax730Deadline': 'Sei un dipendente e: non hai fatto il 730 entro il termine previsto del 30 settembre e hai ricevuto la lettera dall\'Agenzia dell\'Entrate?',
-      'multipleContracts': 'Nel corso dell\'anno scorso hai avuto più di un datore di lavoro o contratto?',
+      'missedTax730Deadline':
+          'Sei un dipendente e: non hai fatto il 730 entro il termine previsto del 30 settembre e hai ricevuto la lettera dall\'Agenzia dell\'Entrate?',
+      'multipleContracts':
+          'Nel corso dell\'anno scorso hai avuto più di un datore di lavoro o contratto?',
       'homeMortgage': 'Hai un mutuo sulla casa (prima o seconda casa)?',
       'pensionIncome': 'Hai un reddito da pensione?',
       'requiredDocuments': 'Documenti richiesti',
       'alreadyUploaded': 'Già caricato',
       'uploadMissingDocuments': 'Carica documenti mancanti',
+      'familyResidencePermitType':
+          'Tipo di permesso di soggiorno del familiare',
+      'documentsManagedSeparately':
+          'I documenti del richiedente e quelli del familiare sono gestiti separatamente.',
+      'documentsApplicantTitle': 'Documenti del richiedente',
+      'documentsFamilyTitle': 'Documenti del familiare',
+      'documentsApplicantSubtitle':
+          'Verificati in base ai documenti già caricati dal tuo profilo.',
+      'documentsFamilySubtitle':
+          'Caricati in modo separato rispetto ai documenti del richiedente.',
+      'documentsPersonalSubtitle': 'Usati per le tue richieste personali.',
+      'documentsFamilyUploadSubtitle':
+          'Carica qui i documenti separati richiesti per il familiare.',
+      'documentsSelectSubject': 'Seleziona i documenti da gestire',
+      'documentsApplicantAndFamilyTitle': 'Documenti richiedente e familiare',
+      'myDocumentsTitle': 'I miei documenti',
+      'manageYourDocuments': 'Carica e gestisci i tuoi documenti',
+      'documentSourcesHint':
+          'Puoi scattare foto, scegliere dalla galleria o caricare file',
+      'supportedFormats': 'Formati supportati: JPG, PNG, PDF',
+      'uploadDocumentSuccess': 'Documento {subject} caricato con successo!',
+      'uploadDocumentSuccessFrontBack':
+          'Documento {subject} caricato con successo (fronte e retro)!',
+      'documentFrontTitle': 'Fronte del documento',
+      'documentBackTitle': 'Retro del documento',
+      'documentFrontCameraPrompt':
+          'Scatta una foto al lato FRONTE del documento.',
+      'documentFrontGalleryPrompt':
+          'Seleziona dalla galleria la foto del lato FRONTE del documento.',
+      'documentBackCameraPrompt':
+          'Ottimo! Ora scatta una foto al lato RETRO del documento.',
+      'documentBackGalleryPrompt':
+          'Ottimo! Ora seleziona dalla galleria la foto del lato RETRO del documento.',
+      'proceed': 'Procedi',
+      'uploadDocumentHow': 'Come vuoi caricare il documento?',
+      'takePhoto': 'Scatta foto',
+      'takePhotoHint': 'Scatta fronte e retro con la fotocamera',
+      'chooseGallery': 'Galleria',
+      'chooseGalleryHint': 'Scegli fronte e retro dalla galleria',
+      'uploadFileLabel': 'Carica file',
+      'uploadFileHint': 'Carica un singolo file (PDF o immagine)',
+      'deleteDocumentTitle': 'Elimina documento',
+      'deleteDocumentConfirm':
+          'Sei sicuro di voler eliminare questo documento?',
+      'documentDeleted': 'Documento eliminato',
+      'cannotOpenWhatsApp': 'Impossibile aprire WhatsApp',
+      'applicant': 'Richiedente',
+      'familyMember': 'Familiare',
+      'frontAndBack': 'Fronte + Retro',
+      'expiryDateLabel': 'Scadenza: {date}',
+      'documentExpiredUpdateNow': 'Documento scaduto! Aggiorna subito',
+      'documentExpiringInDays': 'Documento in scadenza tra {days} giorni',
+      'updateLabel': 'Aggiorna',
+      'uploadLabel': 'Carica',
+      'viewLabel': 'Visualizza',
+      'deleteLabel': 'Elimina',
+      'documentsComplete': 'Documenti completi',
+      'missingDocumentsCount': 'Mancano {count} documenti',
+      'missingDocumentsTitle': 'Documenti mancanti',
+      'missingDocumentsIntro':
+          'Per procedere con questa richiesta devi caricare i seguenti documenti:',
+      'documentsSeparatedNotice':
+          'I documenti del richiedente e quelli del familiare sono separati.',
+      'formDataPreserved': 'I dati del form verranno conservati.',
+      'reloadFamilyDocuments': 'Ricaricare documenti del familiare',
       'fiscalYear': 'Anno fiscale',
       'hasDeductibleExpenses': 'Hai spese detraibili/deducibili?',
       'notesAndAdditionalInfo': 'Note e informazioni aggiuntive',
@@ -591,10 +692,14 @@ class AppLocalizations {
       'womenCategory': 'Donne',
       'sportsCategory': 'Sport',
       'migrantsCategory': 'Migranti',
-      'mafaldaDescription': 'Progetto europeo dedicato ai giovani per lo sviluppo di competenze e opportunità di mobilità internazionale.',
-      'womentorDescription': 'Programma di mentoring e networking intergenerazionale tra donne per la crescita personale e professionale.',
-      'sportunityDescription': 'Integrazione sociale e inclusione attraverso lo sport e attività ricreative per tutta la comunità.',
-      'passaparolaDescription': 'Sportello dedicato ai migranti per supporto documentale, orientamento e integrazione sociale.',
+      'mafaldaDescription':
+          'Progetto europeo dedicato ai giovani per lo sviluppo di competenze e opportunità di mobilità internazionale.',
+      'womentorDescription':
+          'Programma di mentoring e networking intergenerazionale tra donne per la crescita personale e professionale.',
+      'sportunityDescription':
+          'Integrazione sociale e inclusione attraverso lo sport e attività ricreative per tutta la comunità.',
+      'passaparolaDescription':
+          'Sportello dedicato ai migranti per supporto documentale, orientamento e integrazione sociale.',
       'mafaldaService1': 'Progettazione Europea',
       'mafaldaService2': 'Mobilità Giovanile',
       'mafaldaService3': 'Sviluppo Competenze',
@@ -612,17 +717,27 @@ class AppLocalizations {
       'passaparolaService3': 'Orientamento Legale',
       'passaparolaService4': 'Integrazione Sociale',
       'chatbotTitle': 'Assistenza & FAQ',
-      'chatbotWelcome': 'Ciao! 👋 Sono l\'assistente virtuale WECOOP. Come posso aiutarti oggi?',
-      'chatbotServicesResponse': 'Offriamo diversi servizi:\n\n• Vivere in Italia\n• Mediazione Fiscale\n• Supporto contabile per P.IVA forfettaria\n• Servizi per Migranti\n\nQuale ti interessa?',
-      'chatbotProjectsResponse': 'Abbiamo 4 macro-categorie di progetti:\n\n🔵 Giovani (MAFALDA)\n🟣 Donne (WOMENTOR)\n🟢 Sport (SPORTUNITY)\n🟠 Migranti (PASSAPAROLA)\n\nVuoi saperne di più?',
-      'chatbotPermitResponse': 'Ti serve il permesso di soggiorno? Possiamo aiutarti con:\n\n• Lavoro Subordinato\n• Lavoro Autonomo\n• Studio\n• Famiglia\n\nSeleziona il tipo che ti interessa.',
-      'chatbotCitizenshipResponse': 'Per la cittadinanza italiana ti aiutiamo a:\n\n• Verificare i requisiti\n• Preparare la documentazione\n• Presentare la domanda\n\nVuoi iniziare la richiesta?',
-      'chatbotAsylumResponse': 'Ti aiutiamo con la richiesta di protezione internazionale. È un processo delicato e ti seguiremo passo passo.\n\nVuoi iniziare?',
-      'chatbotTaxResponse': 'Ti serve aiuto con il 730 o altri servizi fiscali?\n\nOffriamo:\n• Dichiarazione 730\n• Consulenza fiscale\n• Supporto contabile per P.IVA forfettaria',
-      'chatbotAppointmentResponse': 'Vuoi prenotare un appuntamento? Puoi farlo facilmente dalla nostra app!',
+      'chatbotWelcome':
+          'Ciao! 👋 Sono l\'assistente virtuale WECOOP. Come posso aiutarti oggi?',
+      'chatbotServicesResponse':
+          'Offriamo diversi servizi:\n\n• Vivere in Italia\n• Mediazione Fiscale\n• Supporto contabile per P.IVA forfettaria\n• Servizi per Migranti\n\nQuale ti interessa?',
+      'chatbotProjectsResponse':
+          'Abbiamo 4 macro-categorie di progetti:\n\n🔵 Giovani (MAFALDA)\n🟣 Donne (WOMENTOR)\n🟢 Sport (SPORTUNITY)\n🟠 Migranti (PASSAPAROLA)\n\nVuoi saperne di più?',
+      'chatbotPermitResponse':
+          'Ti serve il permesso di soggiorno? Possiamo aiutarti con:\n\n• Lavoro Subordinato\n• Lavoro Autonomo\n• Studio\n• Famiglia\n\nSeleziona il tipo che ti interessa.',
+      'chatbotCitizenshipResponse':
+          'Per la cittadinanza italiana ti aiutiamo a:\n\n• Verificare i requisiti\n• Preparare la documentazione\n• Presentare la domanda\n\nVuoi iniziare la richiesta?',
+      'chatbotAsylumResponse':
+          'Ti aiutiamo con la richiesta di protezione internazionale. È un processo delicato e ti seguiremo passo passo.\n\nVuoi iniziare?',
+      'chatbotTaxResponse':
+          'Ti serve aiuto con il 730 o altri servizi fiscali?\n\nOffriamo:\n• Dichiarazione 730\n• Consulenza fiscale\n• Supporto contabile per P.IVA forfettaria',
+      'chatbotAppointmentResponse':
+          'Vuoi prenotare un appuntamento? Puoi farlo facilmente dalla nostra app!',
       'chatbotGreeting': 'Ciao! Come posso aiutarti oggi? 😊',
-      'chatbotThanksResponse': 'Prego! Sono qui per aiutarti. C\'è altro che posso fare per te?',
-      'chatbotDefaultResponse': 'Non sono sicuro di aver capito. Puoi dirmi:\n\n• "Servizi" per vedere i nostri servizi\n• "Progetti" per i nostri progetti\n• "Permesso di soggiorno"\n• "Cittadinanza"\n• "730" per servizi fiscali\n• "Appuntamento" per prenotare\n\nOppure seleziona una domanda qui sotto:',
+      'chatbotThanksResponse':
+          'Prego! Sono qui per aiutarti. C\'è altro che posso fare per te?',
+      'chatbotDefaultResponse':
+          'Non sono sicuro di aver capito. Puoi dirmi:\n\n• "Servizi" per vedere i nostri servizi\n• "Progetti" per i nostri progetti\n• "Permesso di soggiorno"\n• "Cittadinanza"\n• "730" per servizi fiscali\n• "Appuntamento" per prenotare\n\nOppure seleziona una domanda qui sotto:',
       'chatbotGoToServices': 'Vai ai servizi',
       'chatbotRequestCitizenship': 'Richiedi Cittadinanza',
       'chatbotStartRequest': 'Inizia Richiesta',
@@ -635,9 +750,11 @@ class AppLocalizations {
       'chatbotFiscalService': 'Mediazione Fiscale',
       'chatbotMigrantsService': 'Servizi per Migranti',
       'taxesAndContributions': 'Tasse e Contributi',
-      'taxesAndContributionsDesc': 'Orientamento su IMU, TARI, TASI, imposte sul reddito e contributi',
+      'taxesAndContributionsDesc':
+          'Orientamento su IMU, TARI, TASI, imposte sul reddito e contributi',
       'clarificationsAndConsulting': 'Chiarimenti e Consulenza',
-      'clarificationsAndConsultingDesc': 'Consulenza fiscale su detrazioni, rimborsi IVA e regimi fiscali',
+      'clarificationsAndConsultingDesc':
+          'Consulenza fiscale su detrazioni, rimborsi IVA e regimi fiscali',
       'selectServiceCategory': 'Seleziona la categoria di servizio',
       'taxType': 'Tipo di tassa/contributo',
       'incomeTax': 'Imposta sul reddito',
@@ -647,7 +764,8 @@ class AppLocalizations {
       'fiscalRegime': 'Regime fiscale',
       'taxDeclaration': 'Dichiarazione dei redditi',
       'questionDetail': 'Dettaglio della domanda',
-      'chatbotWelcomeDetail': 'Il servizio di Accoglienza ti aiuta con orientamento e supporto iniziale. Vuoi maggiori informazioni?',
+      'chatbotWelcomeDetail':
+          'Il servizio di Accoglienza ti aiuta con orientamento e supporto iniziale. Vuoi maggiori informazioni?',
       'chatbotGoToService': 'Vai al Servizio',
       'chatbotYouthBtn': 'Giovani',
       'chatbotWomenBtn': 'Donne',
@@ -664,31 +782,39 @@ class AppLocalizations {
       'chatbotAppointmentQuick': 'Appuntamento',
       'chatbotFAQTitle': '❓ Domande Frequenti (FAQ)',
       'chatbotFAQ1Question': 'Come posso richiedere il permesso di soggiorno?',
-      'chatbotFAQ1Answer': 'Vai su Servizi > Servizi per Migranti > Permesso di Soggiorno e seleziona la categoria appropriata.',
+      'chatbotFAQ1Answer':
+          'Vai su Servizi > Servizi per Migranti > Permesso di Soggiorno e seleziona la categoria appropriata.',
       'chatbotFAQ2Question': 'Quali documenti servono per il 730?',
-      'chatbotFAQ2Answer': 'Ti serviranno: CU, documenti di spesa detraibili, codice fiscale. Possiamo aiutarti nella compilazione!',
+      'chatbotFAQ2Answer':
+          'Ti serviranno: CU, documenti di spesa detraibili, codice fiscale. Possiamo aiutarti nella compilazione!',
       'chatbotFAQ3Question': 'Che progetti avete per i giovani?',
-      'chatbotFAQ3Answer': 'Il progetto MAFALDA offre opportunità di mobilità europea, formazione e sviluppo competenze.',
+      'chatbotFAQ3Answer':
+          'Il progetto MAFALDA offre opportunità di mobilità europea, formazione e sviluppo competenze.',
       'chatbotFAQ4Question': 'Come posso diventare socio?',
-      'chatbotFAQ4Answer': 'Dal tuo profilo clicca su "Diventa Socio WECOOP" e compila il modulo di adesione.',
+      'chatbotFAQ4Answer':
+          'Dal tuo profilo clicca su "Diventa Socio WECOOP" e compila il modulo di adesione.',
       'chatbotFAQ5Question': 'Come prenoto un appuntamento?',
-      'chatbotFAQ5Answer': 'Puoi prenotare direttamente dall\'app cliccando su "Prenota Appuntamento".',
+      'chatbotFAQ5Answer':
+          'Puoi prenotare direttamente dall\'app cliccando su "Prenota Appuntamento".',
       'chatbotInputHint': 'Scrivi un messaggio...',
       'alreadyRegisteredLogin': 'Se sei già registrato effettua il login',
       'continueWithoutLogin': 'Continua senza loggarti',
       'alreadyRegistered': 'Sei già registrato?',
       'loginToAccess': 'Accedi per utilizzare tutti i servizi',
-      
+
       // Password Management
       'forgotPassword': 'Password dimenticata?',
       'resetPassword': 'Reset Password',
       'resetPasswordTitle': 'Recupera la tua password',
-      'resetPasswordDescription': 'Inserisci il tuo numero di telefono o email per ricevere una nuova password',
-      'resetPasswordHelp': 'Riceverai una nuova password via email. Potrai cambiarla dopo aver effettuato il login.',
+      'resetPasswordDescription':
+          'Inserisci il tuo numero di telefono o email per ricevere una nuova password',
+      'resetPasswordHelp':
+          'Riceverai una nuova password via email. Potrai cambiarla dopo aver effettuato il login.',
       'backToLogin': 'Torna al Login',
       'changePassword': 'Cambia Password',
       'changePasswordTitle': 'Modifica la tua password',
-      'changePasswordDescription': 'Crea una nuova password sicura per il tuo account',
+      'changePasswordDescription':
+          'Crea una nuova password sicura per il tuo account',
       'currentPassword': 'Password Attuale',
       'enterCurrentPassword': 'Inserisci la password attuale',
       'newPassword': 'Nuova Password',
@@ -697,7 +823,8 @@ class AppLocalizations {
       'confirmNewPassword': 'Conferma la nuova password',
       'passwordMinLength': 'Minimo 6 caratteri',
       'passwordTooShort': 'La password deve essere di almeno 6 caratteri',
-      'passwordMustBeDifferent': 'La nuova password deve essere diversa da quella attuale',
+      'passwordMustBeDifferent':
+          'La nuova password deve essere diversa da quella attuale',
       'passwordsDoNotMatch': 'Le password non corrispondono',
       'passwordChangedSuccess': 'Password cambiata con successo',
       'updateYourPassword': 'Aggiorna la tua password',
@@ -715,9 +842,11 @@ class AppLocalizations {
       'noThanks': 'No, grazie',
       'yesHelpMe': 'Sì, aiutami',
       'requestSentSuccess': 'Richiesta inviata!',
-      'supportRequestCreated': 'La tua richiesta di supporto è stata creata con successo.',
+      'supportRequestCreated':
+          'La tua richiesta di supporto è stata creata con successo.',
       'ticketNumber': 'Numero Ticket:',
-      'operatorWillContact': 'Un operatore ti contatterà al più presto per assisterti.',
+      'operatorWillContact':
+          'Un operatore ti contatterà al più presto per assisterti.',
       'errorNotAuthenticated': 'Errore: utente non autenticato',
       'errorSendingRequest': 'Errore durante l\'invio della richiesta',
       'welcomeExclamation': 'Benvenuto!',
@@ -727,8 +856,10 @@ class AppLocalizations {
       'prefixRequired': 'Pref. *',
       'phoneRequired': 'Telefono *',
       'continue': 'Continua',
-      'afterRegistrationInfo': 'Dopo la registrazione, potrai accedere a tutti i servizi. Un operatore ti contatterà per completare l\'adesione come socio.',
-      'completeDataToAccessServices': 'Completa i tuoi dati per accedere a tutti i servizi',
+      'afterRegistrationInfo':
+          'Dopo la registrazione, potrai accedere a tutti i servizi. Un operatore ti contatterà per completare l\'adesione come socio.',
+      'completeDataToAccessServices':
+          'Completa i tuoi dati per accedere a tutti i servizi',
       'nameIsMandatory': 'Il nome è obbligatorio',
       'nameMinLength': 'Il nome deve avere almeno 2 caratteri',
       'surnameIsMandatory': 'Il cognome è obbligatorio',
@@ -737,7 +868,8 @@ class AppLocalizations {
       'phoneMust10Digits': 'Deve essere 10 cifre (es: 3331234567)',
       'phoneInvalid': 'Numero telefono non valido',
       'autoLoginFailed': 'Login Automatico Fallito',
-      'registrationCompletedLoginFailed': 'Registrazione completata, ma il login automatico è fallito.',
+      'registrationCompletedLoginFailed':
+          'Registrazione completata, ma il login automatico è fallito.',
       'canLoginManually': 'Puoi effettuare il login manualmente.',
       'accountCreatedSuccess': 'Account creato con successo!',
       'yourLoginCredentials': 'Ecco le tue credenziali di accesso:',
@@ -764,13 +896,17 @@ class AppLocalizations {
       'getDirections': 'Ottieni indicazioni',
       'callUs': 'Chiamaci',
       'contactSendEmail': 'Invia email',
-      'documentAlreadySignedCannotResign': 'Documento già firmato. Non è possibile rifirmare questa richiesta.',
-      'documentAlreadySignedOtpUnavailable': 'Documento già firmato. La firma OTP non è più disponibile.',
+      'documentAlreadySignedCannotResign':
+          'Documento già firmato. Non è possibile rifirmare questa richiesta.',
+      'documentAlreadySignedOtpUnavailable':
+          'Documento già firmato. La firma OTP non è più disponibile.',
       'digitalSignatureDetails': 'Dettagli firma digitale',
       'tapToExpand': 'Tocca per espandere',
       'viewMergedDocument': 'Visualizza documento unico',
-      'invalidDigitalSignatureRequestId': 'ID richiesta non valido per firma digitale',
-      'missingDigitalSignatureUserData': 'Dati utente non disponibili per la firma digitale (user_id/socio_id o telefono mancanti)',
+      'invalidDigitalSignatureRequestId':
+          'ID richiesta non valido per firma digitale',
+      'missingDigitalSignatureUserData':
+          'Dati utente non disponibili per la firma digitale (user_id/socio_id o telefono mancanti)',
       'openMergedDocumentAndSignOtp': 'Apri modello unico e firma con OTP',
       'signedLabel': 'Firmato',
       'signatureIdLabel': 'Firma ID',
@@ -787,8 +923,10 @@ class AppLocalizations {
       'paymentProcessingMessage': 'Il sistema sta elaborando il tuo pagamento.',
       'paymentDetailsLabel': 'Dettagli pagamento:',
       'pdfDocumentUnavailable': 'Documento PDF non disponibile',
-      'invalidMergedPdfFallbackOpened': 'PDF merged non valido, aperto fallback web',
-      'invalidPdfFallbackUnavailable': 'PDF non valido e fallback non disponibile',
+      'invalidMergedPdfFallbackOpened':
+          'PDF merged non valido, aperto fallback web',
+      'invalidPdfFallbackUnavailable':
+          'PDF non valido e fallback non disponibile',
       'cannotSavePdfDocument': 'Impossibile salvare il documento PDF',
       'documentSavedMessage': 'Documento salvato:',
       'errorDownloadingMergedDocument': 'Errore download documento unico',
@@ -801,14 +939,16 @@ class AppLocalizations {
       'documentSectionTitle': 'Documento',
       'singleDocumentLabel': 'Documento unico',
       'readyToSignQuestion': 'Pronto per la firma?',
-      'signWithOtpHint': 'Firma il documento digitalmente tramite SMS OTP.\nRiceverai un codice al tuo numero di telefono.',
+      'signWithOtpHint':
+          'Firma il documento digitalmente tramite SMS OTP.\nRiceverai un codice al tuo numero di telefono.',
       'signedDocumentTitle': 'Documento firmato',
       'signatureLegallyValid': 'La firma è legalmente valida',
     },
     'en': {
       'appTitle': 'WECOOP',
       'hello': 'Hello',
-      'welcome': 'Welcome to WECOOP! Explore events, services and projects near you.',
+      'welcome':
+          'Welcome to WECOOP! Explore events, services and projects near you.',
       'user': 'User',
       'profile': 'Profile',
       'home': 'Home',
@@ -871,11 +1011,13 @@ class AppLocalizations {
       'close': 'Close',
       'becomeMember': 'Become a WECOOP Member',
       'requestSent': 'Request sent!',
-      'requestReceived': 'We have received your membership request. We will contact you soon to complete the process.',
+      'requestReceived':
+          'We have received your membership request. We will contact you soon to complete the process.',
       'ok': 'OK',
       'error': 'Error',
       'emailAlreadyRegistered': 'Email already registered',
-      'emailExistsMessage': 'This email is already registered in our system. Do you want to login with your credentials?',
+      'emailExistsMessage':
+          'This email is already registered in our system. Do you want to login with your credentials?',
       'cancel': 'Cancel',
       'goToLogin': 'Go to Login',
       'personalInfo': 'Personal Information',
@@ -911,7 +1053,8 @@ class AppLocalizations {
       'eventConcluded': 'EVENT CONCLUDED',
       'loading': 'Loading...',
       'confirmCancellation': 'Confirm cancellation',
-      'confirmCancellationMessage': 'Are you sure you want to cancel your enrollment?',
+      'confirmCancellationMessage':
+          'Are you sure you want to cancel your enrollment?',
       'cancelEnrollment': 'Cancel enrollment',
       'date': 'Date',
       'end': 'End',
@@ -956,9 +1099,11 @@ class AppLocalizations {
       'selectType': 'Select type',
       'residencePermit': 'Residence Permit',
       'duplicatePermit': 'Duplicate residence permit',
-      'duplicatePermitDesc': 'Request for duplicate due to loss, theft or deterioration',
+      'duplicatePermitDesc':
+          'Request for duplicate due to loss, theft or deterioration',
       'longTermPermitUpdate': 'Long-term permit update',
-      'longTermPermitUpdateDesc': 'Update of EC long-term residents permit data',
+      'longTermPermitUpdateDesc':
+          'Update of EC long-term residents permit data',
       'checkRequirements': 'Check requirements',
       'forEmployment': 'For Employment',
       'forEmploymentDesc': 'Employment contract',
@@ -1005,7 +1150,8 @@ class AppLocalizations {
       'personalData': 'Personal Data',
       'documents': 'Documents',
       'uploadDocumentsOptional': 'Upload your documents (optional)',
-      'whatsappDocumentSupport': 'Having trouble uploading documents? Contact us on WhatsApp',
+      'whatsappDocumentSupport':
+          'Having trouble uploading documents? Contact us on WhatsApp',
       'identityCard': 'Identity Card',
       'fiscalCodeDocument': 'Tax ID',
       'requiredField': 'Required field',
@@ -1030,11 +1176,14 @@ class AppLocalizations {
       'send730': 'Send 730',
       'citizenshipService': 'Citizenship',
       'citizenshipIntro': 'Support service to obtain Italian citizenship',
-      'citizenshipDescription': 'Fill out the questionnaire to check if you meet the necessary requirements.',
+      'citizenshipDescription':
+          'Fill out the questionnaire to check if you meet the necessary requirements.',
       'requirementsNotMet': 'Requirements not met',
-      'requirementsMessage': 'You currently do not meet all the necessary requirements to apply for citizenship. We recommend contacting us for personalized advice.',
+      'requirementsMessage':
+          'You currently do not meet all the necessary requirements to apply for citizenship. We recommend contacting us for personalized advice.',
       'serviceNotAvailable': 'Service not available',
-      'serviceNotAvailableMessage': 'This service is not yet active. Come back later or contact our support for more information.',
+      'serviceNotAvailableMessage':
+          'This service is not yet active. Come back later or contact our support for more information.',
       'all': 'All',
       'pending': 'Pending',
       'approved': 'Approved',
@@ -1066,7 +1215,8 @@ class AppLocalizations {
       'bankCoordinates': 'Bank details:',
       'sendEmail': 'Send Email',
       'instructionsSent': 'Instructions sent',
-      'instructionsSentMessage': 'We have sent you an email with the bank transfer instructions.',
+      'instructionsSentMessage':
+          'We have sent you an email with the bank transfer instructions.',
       'fileNumber': 'File Number',
       'status': 'Status',
       'requestDate': 'Request Date',
@@ -1095,15 +1245,18 @@ class AppLocalizations {
       'errorDownloadingReceipt': 'Error downloading receipt',
       'errorSharingReceipt': 'Error sharing receipt',
       'paymentRequiredAmount': 'Payment required',
-      'canCompletePaymentFromRequests': 'You can complete the payment from the "My Requests" section.',
-      'willBeContactedByEmail': 'You will be contacted via email for next steps.',
+      'canCompletePaymentFromRequests':
+          'You can complete the payment from the "My Requests" section.',
+      'willBeContactedByEmail':
+          'You will be contacted via email for next steps.',
       'requestSentPaymentRequired': 'Request Sent - Payment Required',
       'payLater': 'Pay Later',
       'noRequestsThisDay': 'No requests for this day',
       'noRequestsFound': 'No requests found',
       'transaction': 'Transaction',
       'selectServiceYouNeed': 'Select the service you need',
-      'guideStepByStep': 'We will guide you step by step to complete your request',
+      'guideStepByStep':
+          'We will guide you step by step to complete your request',
       'residencePermitDesc': 'Application, renewal and information',
       'citizenship': 'Citizenship',
       'citizenshipDesc': 'Italian citizenship application',
@@ -1116,16 +1269,22 @@ class AppLocalizations {
       'yes': 'Yes',
       'no': 'No',
       'needLogin': 'Members only service',
-      'needLoginMessage': 'To access this service you must be registered as a WECOOP member.',
+      'needLoginMessage':
+          'To access this service you must be registered as a WECOOP member.',
       'goBack': 'Go back',
       'notMemberYet': 'Not a member yet?',
       'notMemberMessage': 'To access this service you must be a WECOOP member.',
       'backToHome': 'Back to home',
-      'loginToAccessServices': 'Log in to access all services reserved for members.',
-      'membershipPendingApproval': 'Your membership application is pending approval.',
-      'confirmationWithin24to48Hours': 'You will receive an email confirmation within 24-48 hours.',
-      'onceApprovedAccessAllServices': 'Once approved, you will be able to access all services.',
-      'toAccessServicesBecomeMember': 'To access {serviceName} services you must be a WECOOP member.',
+      'loginToAccessServices':
+          'Log in to access all services reserved for members.',
+      'membershipPendingApproval':
+          'Your membership application is pending approval.',
+      'confirmationWithin24to48Hours':
+          'You will receive an email confirmation within 24-48 hours.',
+      'onceApprovedAccessAllServices':
+          'Once approved, you will be able to access all services.',
+      'toAccessServicesBecomeMember':
+          'To access {serviceName} services you must be a WECOOP member.',
       'becomeMemberToAccess': 'Become a member to access:',
       'whyBecomeMember': 'Why become a member?',
       'credentialsSentTo': 'We have sent credentials to:',
@@ -1142,7 +1301,8 @@ class AppLocalizations {
       'selectNationality': 'Select nationality',
       'selectYourCountryOfOrigin': 'Select your country of origin',
       'iAcceptDataProcessing': 'I accept the processing of personal data *',
-      'dataWillBeProcessed': 'Your data will be processed according to privacy regulations',
+      'dataWillBeProcessed':
+          'Your data will be processed according to privacy regulations',
       'fillToSpeedUp': 'Fill in to speed up profile completion',
       'provinceExample': 'Ex: MI, RM, TO',
       'accessToAllServices': 'Access to all assistance services',
@@ -1156,7 +1316,8 @@ class AppLocalizations {
       'invalidEmail': 'Invalid email',
       'fillFollowingFields': 'Fill in the following fields',
       'sendingError': 'Error during submission',
-      'internationalProtectionRequest': 'The international protection request is a delicate process. We will help you prepare the documentation.',
+      'internationalProtectionRequest':
+          'The international protection request is a delicate process. We will help you prepare the documentation.',
       'internationalProtection': 'International Protection',
       'dateOfArrivalInItaly': 'Date of arrival in Italy',
       'reasonForRequest': 'Reason for request',
@@ -1198,9 +1359,12 @@ class AppLocalizations {
       'within1to2Months': 'Within 1–2 months',
       'evaluating': 'I am evaluating',
       'manageVatNumber': 'Accounting management – Flat-rate VAT',
-      'ordinaryAccountingInvoicing': 'Ordinary accounting, invoicing, registrations',
-      'hasActiveVatForfettario': 'Do you have an active VAT number in flat-rate regime?',
-      'forfettarioServiceOnly': 'This service is reserved for flat-rate VAT numbers. We can help you with other tax services.',
+      'ordinaryAccountingInvoicing':
+          'Ordinary accounting, invoicing, registrations',
+      'hasActiveVatForfettario':
+          'Do you have an active VAT number in flat-rate regime?',
+      'forfettarioServiceOnly':
+          'This service is reserved for flat-rate VAT numbers. We can help you with other tax services.',
       'vatActiveFrom': 'Since when has your VAT number been active?',
       'currentYear': 'Current year',
       'previousYears': 'Previous years',
@@ -1224,7 +1388,8 @@ class AppLocalizations {
       'personalizedExplanations': 'Personalized explanations',
       'taxPositionVerification': 'Tax position verification',
       'taxRegimeChange': 'Tax regime change',
-      'questionsNotSureWhereToStart': 'I have questions but I don\'t know where to start',
+      'questionsNotSureWhereToStart':
+          'I have questions but I don\'t know where to start',
       'workSituationQuestion': 'Your work situation',
       'notWorkingOther': 'Not working / other',
       'urgencyQuestion': 'How urgent is your request?',
@@ -1240,7 +1405,8 @@ class AppLocalizations {
       'forfettarioRegime': 'Flat-rate',
       'otherRegime': 'Other',
       'dontKnowRegime': 'I don\'t know',
-      'verifyBestSolution': 'We will verify the most suitable solution together.',
+      'verifyBestSolution':
+          'We will verify the most suitable solution together.',
       'whenProceed': 'When do you want to proceed?',
       'businessType': 'Type of business',
       'trade': 'Trade',
@@ -1307,13 +1473,80 @@ class AppLocalizations {
       'caregiver': 'Caregiver',
       'babysitter': 'Babysitter',
       'selfEmployedForfettario': 'Self-employed (Flat-rate only)',
-      'missedTax730Deadline': 'Are you an employee and: did you not file form 730 by the September 30 deadline and received a letter from the Tax Agency?',
-      'multipleContracts': 'Did you have more than one employer or contract during the past year?',
-      'homeMortgage': 'Do you have a mortgage on your home (primary or secondary)?',
+      'missedTax730Deadline':
+          'Are you an employee and: did you not file form 730 by the September 30 deadline and received a letter from the Tax Agency?',
+      'multipleContracts':
+          'Did you have more than one employer or contract during the past year?',
+      'homeMortgage':
+          'Do you have a mortgage on your home (primary or secondary)?',
       'pensionIncome': 'Do you have pension income?',
       'requiredDocuments': 'Required documents',
       'alreadyUploaded': 'Already uploaded',
       'uploadMissingDocuments': 'Upload missing documents',
+      'familyResidencePermitType': 'Family member residence permit type',
+      'documentsManagedSeparately':
+          'Applicant and family member documents are managed separately.',
+      'documentsApplicantTitle': 'Applicant documents',
+      'documentsFamilyTitle': 'Family member documents',
+      'documentsApplicantSubtitle':
+          'Verified against the documents already uploaded in your profile.',
+      'documentsFamilySubtitle':
+          'Uploaded separately from the applicant documents.',
+      'documentsPersonalSubtitle': 'Used for your personal requests.',
+      'documentsFamilyUploadSubtitle':
+          'Upload here the separate documents required for the family member.',
+      'documentsSelectSubject': 'Select which documents to manage',
+      'documentsApplicantAndFamilyTitle':
+          'Applicant and family member documents',
+      'myDocumentsTitle': 'My documents',
+      'manageYourDocuments': 'Upload and manage your documents',
+      'documentSourcesHint':
+          'You can take photos, choose from the gallery or upload files',
+      'supportedFormats': 'Supported formats: JPG, PNG, PDF',
+      'uploadDocumentSuccess': '{subject} document uploaded successfully!',
+      'uploadDocumentSuccessFrontBack':
+          '{subject} document uploaded successfully (front and back)!',
+      'documentFrontTitle': 'Front of the document',
+      'documentBackTitle': 'Back of the document',
+      'documentFrontCameraPrompt':
+          'Take a photo of the FRONT side of the document.',
+      'documentFrontGalleryPrompt':
+          'Select from the gallery the photo of the FRONT side of the document.',
+      'documentBackCameraPrompt':
+          'Great! Now take a photo of the BACK side of the document.',
+      'documentBackGalleryPrompt':
+          'Great! Now select from the gallery the photo of the BACK side of the document.',
+      'proceed': 'Proceed',
+      'uploadDocumentHow': 'How do you want to upload the document?',
+      'takePhoto': 'Take photo',
+      'takePhotoHint': 'Take front and back with the camera',
+      'chooseGallery': 'Gallery',
+      'chooseGalleryHint': 'Choose front and back from the gallery',
+      'uploadFileLabel': 'Upload file',
+      'uploadFileHint': 'Upload a single file (PDF or image)',
+      'deleteDocumentTitle': 'Delete document',
+      'deleteDocumentConfirm': 'Are you sure you want to delete this document?',
+      'documentDeleted': 'Document deleted',
+      'cannotOpenWhatsApp': 'Unable to open WhatsApp',
+      'applicant': 'Applicant',
+      'familyMember': 'Family member',
+      'frontAndBack': 'Front + Back',
+      'expiryDateLabel': 'Expiry: {date}',
+      'documentExpiredUpdateNow': 'Document expired! Update it now',
+      'documentExpiringInDays': 'Document expiring in {days} days',
+      'updateLabel': 'Update',
+      'uploadLabel': 'Upload',
+      'viewLabel': 'View',
+      'deleteLabel': 'Delete',
+      'documentsComplete': 'Documents complete',
+      'missingDocumentsCount': '{count} documents missing',
+      'missingDocumentsTitle': 'Missing documents',
+      'missingDocumentsIntro':
+          'To proceed with this request you need to upload the following documents:',
+      'documentsSeparatedNotice':
+          'Applicant and family member documents are separate.',
+      'formDataPreserved': 'Form data will be preserved.',
+      'reloadFamilyDocuments': 'Reload family member documents',
       'fiscalYear': 'Fiscal year',
       'hasDeductibleExpenses': 'Do you have deductible expenses?',
       'notesAndAdditionalInfo': 'Notes and additional information',
@@ -1332,10 +1565,14 @@ class AppLocalizations {
       'womenCategory': 'Women',
       'sportsCategory': 'Sports',
       'migrantsCategory': 'Migrants',
-      'mafaldaDescription': 'European project dedicated to young people for skills development and international mobility opportunities.',
-      'womentorDescription': 'Intergenerational mentoring and networking program among women for personal and professional growth.',
-      'sportunityDescription': 'Social integration and inclusion through sports and recreational activities for the entire community.',
-      'passaparolaDescription': 'Dedicated desk for migrants providing document support, guidance and social integration.',
+      'mafaldaDescription':
+          'European project dedicated to young people for skills development and international mobility opportunities.',
+      'womentorDescription':
+          'Intergenerational mentoring and networking program among women for personal and professional growth.',
+      'sportunityDescription':
+          'Social integration and inclusion through sports and recreational activities for the entire community.',
+      'passaparolaDescription':
+          'Dedicated desk for migrants providing document support, guidance and social integration.',
       'mafaldaService1': 'European Project Design',
       'mafaldaService2': 'Youth Mobility',
       'mafaldaService3': 'Skills Development',
@@ -1353,17 +1590,27 @@ class AppLocalizations {
       'passaparolaService3': 'Legal Guidance',
       'passaparolaService4': 'Social Integration',
       'chatbotTitle': 'Assistance & FAQ',
-      'chatbotWelcome': 'Hello! 👋 I\'m the WECOOP virtual assistant. How can I help you today?',
-      'chatbotServicesResponse': 'We offer several services:\n\n• Welcome and Orientation\n• Tax Mediation\n• Accounting Support\n• Migrant Services\n\nWhich one interests you?',
-      'chatbotProjectsResponse': 'We have 4 macro-categories of projects:\n\n🔵 Youth (MAFALDA)\n🟣 Women (WOMENTOR)\n🟢 Sport (SPORTUNITY)\n🟠 Migrants (PASSAPAROLA)\n\nWould you like to know more?',
-      'chatbotPermitResponse': 'Do you need a residence permit? We can help you with:\n\n• Employed Work\n• Self-Employment\n• Study\n• Family\n\nSelect the type that interests you.',
-      'chatbotCitizenshipResponse': 'For Italian citizenship we help you:\n\n• Verify requirements\n• Prepare documentation\n• Submit the application\n\nWould you like to start the request?',
-      'chatbotAsylumResponse': 'We help you with the international protection request. It\'s a delicate process and we will guide you step by step.\n\nWould you like to start?',
-      'chatbotTaxResponse': 'Do you need help with the 730 or other tax services?\n\nWe offer:\n• 730 Declaration\n• Tax Consulting\n• Accounting Support',
-      'chatbotAppointmentResponse': 'Would you like to book an appointment? You can easily do it from our app!',
+      'chatbotWelcome':
+          'Hello! 👋 I\'m the WECOOP virtual assistant. How can I help you today?',
+      'chatbotServicesResponse':
+          'We offer several services:\n\n• Welcome and Orientation\n• Tax Mediation\n• Accounting Support\n• Migrant Services\n\nWhich one interests you?',
+      'chatbotProjectsResponse':
+          'We have 4 macro-categories of projects:\n\n🔵 Youth (MAFALDA)\n🟣 Women (WOMENTOR)\n🟢 Sport (SPORTUNITY)\n🟠 Migrants (PASSAPAROLA)\n\nWould you like to know more?',
+      'chatbotPermitResponse':
+          'Do you need a residence permit? We can help you with:\n\n• Employed Work\n• Self-Employment\n• Study\n• Family\n\nSelect the type that interests you.',
+      'chatbotCitizenshipResponse':
+          'For Italian citizenship we help you:\n\n• Verify requirements\n• Prepare documentation\n• Submit the application\n\nWould you like to start the request?',
+      'chatbotAsylumResponse':
+          'We help you with the international protection request. It\'s a delicate process and we will guide you step by step.\n\nWould you like to start?',
+      'chatbotTaxResponse':
+          'Do you need help with the 730 or other tax services?\n\nWe offer:\n• 730 Declaration\n• Tax Consulting\n• Accounting Support',
+      'chatbotAppointmentResponse':
+          'Would you like to book an appointment? You can easily do it from our app!',
       'chatbotGreeting': 'Hello! How can I help you today? 😊',
-      'chatbotThanksResponse': 'You\'re welcome! I\'m here to help. Is there anything else I can do for you?',
-      'chatbotDefaultResponse': 'I\'m not sure I understood. You can tell me:\n\n• "Services" to see our services\n• "Projects" for our projects\n• "Residence permit"\n• "Citizenship"\n• "730" for tax services\n• "Appointment" to book\n\nOr select a question below:',
+      'chatbotThanksResponse':
+          'You\'re welcome! I\'m here to help. Is there anything else I can do for you?',
+      'chatbotDefaultResponse':
+          'I\'m not sure I understood. You can tell me:\n\n• "Services" to see our services\n• "Projects" for our projects\n• "Residence permit"\n• "Citizenship"\n• "730" for tax services\n• "Appointment" to book\n\nOr select a question below:',
       'chatbotGoToServices': 'Go to services',
       'chatbotRequestCitizenship': 'Request Citizenship',
       'chatbotStartRequest': 'Start Request',
@@ -1375,7 +1622,8 @@ class AppLocalizations {
       'chatbotWelcomeService': 'Welcome and Orientation',
       'chatbotFiscalService': 'Tax Mediation',
       'chatbotMigrantsService': 'Migrant Services',
-      'chatbotWelcomeDetail': 'The Welcome service helps you with orientation and initial support. Would you like more information?',
+      'chatbotWelcomeDetail':
+          'The Welcome service helps you with orientation and initial support. Would you like more information?',
       'chatbotGoToService': 'Go to Service',
       'chatbotYouthBtn': 'Youth',
       'chatbotWomenBtn': 'Women',
@@ -1392,31 +1640,39 @@ class AppLocalizations {
       'chatbotAppointmentQuick': 'Appointment',
       'chatbotFAQTitle': '❓ Frequently Asked Questions (FAQ)',
       'chatbotFAQ1Question': 'How can I request a residence permit?',
-      'chatbotFAQ1Answer': 'Go to Services > Migrant Services > Residence Permit and select the appropriate category.',
+      'chatbotFAQ1Answer':
+          'Go to Services > Migrant Services > Residence Permit and select the appropriate category.',
       'chatbotFAQ2Question': 'What documents are needed for the 730?',
-      'chatbotFAQ2Answer': 'You will need: CU, deductible expense documents, tax code. We can help you with the compilation!',
+      'chatbotFAQ2Answer':
+          'You will need: CU, deductible expense documents, tax code. We can help you with the compilation!',
       'chatbotFAQ3Question': 'What projects do you have for young people?',
-      'chatbotFAQ3Answer': 'The MAFALDA project offers European mobility, training and skills development opportunities.',
+      'chatbotFAQ3Answer':
+          'The MAFALDA project offers European mobility, training and skills development opportunities.',
       'chatbotFAQ4Question': 'How can I become a member?',
-      'chatbotFAQ4Answer': 'From your profile click on "Become a WECOOP Member" and fill out the membership form.',
+      'chatbotFAQ4Answer':
+          'From your profile click on "Become a WECOOP Member" and fill out the membership form.',
       'chatbotFAQ5Question': 'How do I book an appointment?',
-      'chatbotFAQ5Answer': 'You can book directly from the app by clicking on "Book Appointment".',
+      'chatbotFAQ5Answer':
+          'You can book directly from the app by clicking on "Book Appointment".',
       'chatbotInputHint': 'Write a message...',
       'alreadyRegisteredLogin': 'If you are already registered, log in',
       'continueWithoutLogin': 'Continue without logging in',
       'alreadyRegistered': 'Already registered?',
       'loginToAccess': 'Login to access all services',
-      
+
       // Password Management
       'forgotPassword': 'Forgot password?',
       'resetPassword': 'Reset Password',
       'resetPasswordTitle': 'Recover your password',
-      'resetPasswordDescription': 'Enter your phone number or email to receive a new password',
-      'resetPasswordHelp': 'You will receive a new password via email. You can change it after logging in.',
+      'resetPasswordDescription':
+          'Enter your phone number or email to receive a new password',
+      'resetPasswordHelp':
+          'You will receive a new password via email. You can change it after logging in.',
       'backToLogin': 'Back to Login',
       'changePassword': 'Change Password',
       'changePasswordTitle': 'Change your password',
-      'changePasswordDescription': 'Create a new secure password for your account',
+      'changePasswordDescription':
+          'Create a new secure password for your account',
       'currentPassword': 'Current Password',
       'enterCurrentPassword': 'Enter current password',
       'newPassword': 'New Password',
@@ -1425,7 +1681,8 @@ class AppLocalizations {
       'confirmNewPassword': 'Confirm new password',
       'passwordMinLength': 'Minimum 6 characters',
       'passwordTooShort': 'Password must be at least 6 characters',
-      'passwordMustBeDifferent': 'New password must be different from current password',
+      'passwordMustBeDifferent':
+          'New password must be different from current password',
       'passwordsDoNotMatch': 'Passwords do not match',
       'passwordChangedSuccess': 'Password changed successfully',
       'updateYourPassword': 'Update your password',
@@ -1443,7 +1700,8 @@ class AppLocalizations {
       'noThanks': 'No, thanks',
       'yesHelpMe': 'Yes, help me',
       'requestSentSuccess': 'Request sent!',
-      'supportRequestCreated': 'Your support request has been created successfully.',
+      'supportRequestCreated':
+          'Your support request has been created successfully.',
       'ticketNumber': 'Ticket Number:',
       'operatorWillContact': 'An operator will contact you soon to assist you.',
       'errorNotAuthenticated': 'Error: user not authenticated',
@@ -1455,8 +1713,10 @@ class AppLocalizations {
       'prefixRequired': 'Prefix *',
       'phoneRequired': 'Phone *',
       'continue': 'Continue',
-      'afterRegistrationInfo': 'After registration, you will be able to access all services. An operator will contact you to complete the membership.',
-      'completeDataToAccessServices': 'Complete your details to access all services',
+      'afterRegistrationInfo':
+          'After registration, you will be able to access all services. An operator will contact you to complete the membership.',
+      'completeDataToAccessServices':
+          'Complete your details to access all services',
       'nameIsMandatory': 'Name is required',
       'nameMinLength': 'Name must be at least 2 characters',
       'surnameIsMandatory': 'Surname is required',
@@ -1465,7 +1725,8 @@ class AppLocalizations {
       'phoneMust10Digits': 'Must be 10 digits (e.g.: 3331234567)',
       'phoneInvalid': 'Invalid phone number',
       'autoLoginFailed': 'Auto Login Failed',
-      'registrationCompletedLoginFailed': 'Registration completed, but auto login failed.',
+      'registrationCompletedLoginFailed':
+          'Registration completed, but auto login failed.',
       'canLoginManually': 'You can login manually.',
       'accountCreatedSuccess': 'Account created successfully!',
       'yourLoginCredentials': 'Here are your login credentials:',
@@ -1507,10 +1768,12 @@ class AppLocalizations {
       'employedWorker': 'Employed worker',
       'domesticWorker': 'Domestic worker',
       'businessOwner': 'Business owner or partner in company',
-      'coCoCoWorker': 'Coordinated and continuous collaboration contract (Co.Co.Co.)',
+      'coCoCoWorker':
+          'Coordinated and continuous collaboration contract (Co.Co.Co.)',
       'workerPartner': 'Worker partner',
       'freelanceProfessional': 'Freelance professional',
-      'haveRentalOrSuitableHouse': 'Do you have a rental contract or suitable housing?',
+      'haveRentalOrSuitableHouse':
+          'Do you have a rental contract or suitable housing?',
       // Tax Services
       'taxGuidanceAndClarifications': 'Tax Guidance and Clarifications',
       // Residence Permits
@@ -1536,13 +1799,17 @@ class AppLocalizations {
       'getDirections': 'Get directions',
       'callUs': 'Call us',
       'contactSendEmail': 'Send email',
-      'documentAlreadySignedCannotResign': 'Document already signed. This request cannot be signed again.',
-      'documentAlreadySignedOtpUnavailable': 'Document already signed. OTP signature is no longer available.',
+      'documentAlreadySignedCannotResign':
+          'Document already signed. This request cannot be signed again.',
+      'documentAlreadySignedOtpUnavailable':
+          'Document already signed. OTP signature is no longer available.',
       'digitalSignatureDetails': 'Digital signature details',
       'tapToExpand': 'Tap to expand',
       'viewMergedDocument': 'View merged document',
-      'invalidDigitalSignatureRequestId': 'Invalid request ID for digital signature',
-      'missingDigitalSignatureUserData': 'User data not available for digital signature (missing user_id/socio_id or phone)',
+      'invalidDigitalSignatureRequestId':
+          'Invalid request ID for digital signature',
+      'missingDigitalSignatureUserData':
+          'User data not available for digital signature (missing user_id/socio_id or phone)',
       'openMergedDocumentAndSignOtp': 'Open merged document and sign with OTP',
       'signedLabel': 'Signed',
       'signatureIdLabel': 'Signature ID',
@@ -1559,7 +1826,8 @@ class AppLocalizations {
       'paymentProcessingMessage': 'The system is processing your payment.',
       'paymentDetailsLabel': 'Payment details:',
       'pdfDocumentUnavailable': 'PDF document not available',
-      'invalidMergedPdfFallbackOpened': 'Invalid merged PDF, web fallback opened',
+      'invalidMergedPdfFallbackOpened':
+          'Invalid merged PDF, web fallback opened',
       'invalidPdfFallbackUnavailable': 'Invalid PDF and fallback not available',
       'cannotSavePdfDocument': 'Cannot save the PDF document',
       'documentSavedMessage': 'Document saved:',
@@ -1573,7 +1841,8 @@ class AppLocalizations {
       'documentSectionTitle': 'Document',
       'singleDocumentLabel': 'Merged document',
       'readyToSignQuestion': 'Ready to sign?',
-      'signWithOtpHint': 'Sign the document digitally via SMS OTP.\nYou will receive a code on your phone number.',
+      'signWithOtpHint':
+          'Sign the document digitally via SMS OTP.\nYou will receive a code on your phone number.',
       'signedDocumentTitle': 'Signed document',
       'signatureLegallyValid': 'The signature is legally valid',
     },
@@ -1643,11 +1912,13 @@ class AppLocalizations {
       'close': 'Cerrar',
       'becomeMember': 'Hacerse Socio WECOOP',
       'requestSent': '¡Solicitud enviada!',
-      'requestReceived': 'Hemos recibido tu solicitud de membresía. Nos pondremos en contacto contigo pronto para completar el proceso.',
+      'requestReceived':
+          'Hemos recibido tu solicitud de membresía. Nos pondremos en contacto contigo pronto para completar el proceso.',
       'ok': 'OK',
       'error': 'Error',
       'emailAlreadyRegistered': 'Email ya registrado',
-      'emailExistsMessage': 'Este email ya está registrado en nuestro sistema. ¿Quieres iniciar sesión con tus credenciales?',
+      'emailExistsMessage':
+          'Este email ya está registrado en nuestro sistema. ¿Quieres iniciar sesión con tus credenciales?',
       'cancel': 'Cancelar',
       'goToLogin': 'Ir al Login',
       'personalInfo': 'Información Personal',
@@ -1683,7 +1954,8 @@ class AppLocalizations {
       'eventConcluded': 'EVENTO CONCLUIDO',
       'loading': 'Cargando...',
       'confirmCancellation': 'Confirmar cancelación',
-      'confirmCancellationMessage': '¿Estás seguro de que quieres cancelar tu inscripción?',
+      'confirmCancellationMessage':
+          '¿Estás seguro de que quieres cancelar tu inscripción?',
       'cancelEnrollment': 'Cancelar inscripción',
       'date': 'Fecha',
       'end': 'Fin',
@@ -1728,9 +2000,11 @@ class AppLocalizations {
       'selectType': 'Selecciona el tipo',
       'residencePermit': 'Permiso de Residencia',
       'duplicatePermit': 'Duplicado permiso de residencia',
-      'duplicatePermitDesc': 'Solicitud de duplicado por pérdida, robo o deterioro',
+      'duplicatePermitDesc':
+          'Solicitud de duplicado por pérdida, robo o deterioro',
       'longTermPermitUpdate': 'Actualización permiso larga duración',
-      'longTermPermitUpdateDesc': 'Actualización de datos del permiso CE de residentes de larga duración',
+      'longTermPermitUpdateDesc':
+          'Actualización de datos del permiso CE de residentes de larga duración',
       'checkRequirements': 'Verificar requisitos',
       'forEmployment': 'Por Trabajo Subordinado',
       'forEmploymentDesc': 'Contrato de trabajo dependiente',
@@ -1771,7 +2045,8 @@ class AppLocalizations {
       'expensesSection': 'Sección Gastos',
       'completeProfile': 'Completar Perfil',
       'profileIncomplete': 'Perfil Incompleto',
-      'completeProfileMessage': 'Completa tus datos para acceder a todos los servicios',
+      'completeProfileMessage':
+          'Completa tus datos para acceder a todos los servicios',
       'completeNow': 'Completar Ahora',
       'updateYourPersonalData': 'Actualiza tus datos personales',
       'personalData': 'Datos Personales',
@@ -1800,12 +2075,16 @@ class AppLocalizations {
       'deductions': 'Deducciones',
       'send730': 'Enviar 730',
       'citizenshipService': 'Ciudadanía',
-      'citizenshipIntro': 'Servicio de apoyo para obtener la ciudadanía italiana',
-      'citizenshipDescription': 'Completa el cuestionario para verificar si cumples con los requisitos necesarios.',
+      'citizenshipIntro':
+          'Servicio de apoyo para obtener la ciudadanía italiana',
+      'citizenshipDescription':
+          'Completa el cuestionario para verificar si cumples con los requisitos necesarios.',
       'requirementsNotMet': 'Requisitos no cumplidos',
-      'requirementsMessage': 'Actualmente no cumples con todos los requisitos necesarios para solicitar la ciudadanía. Te recomendamos contactarnos para asesoramiento personalizado.',
+      'requirementsMessage':
+          'Actualmente no cumples con todos los requisitos necesarios para solicitar la ciudadanía. Te recomendamos contactarnos para asesoramiento personalizado.',
       'serviceNotAvailable': 'Servicio no disponible',
-      'serviceNotAvailableMessage': 'Este servicio aún no está activo. Vuelve más tarde o contacta a nuestro soporte para más información.',
+      'serviceNotAvailableMessage':
+          'Este servicio aún no está activo. Vuelve más tarde o contacta a nuestro soporte para más información.',
       'all': 'Todos',
       'pending': 'Pendiente',
       'approved': 'Aprobado',
@@ -1842,7 +2121,8 @@ class AppLocalizations {
       'paymentReceived': 'Pago recibido',
       'paymentRequired': 'Pago requerido',
       'deleteRequest': 'Eliminar Solicitud',
-      'deleteRequestConfirm': '¿Estás seguro de que quieres eliminar esta solicitud?',
+      'deleteRequestConfirm':
+          '¿Estás seguro de que quieres eliminar esta solicitud?',
       'deleteRequestWarning': '⚠️ Esta acción no se puede deshacer',
       'requestDeleted': 'Solicitud eliminada con éxito',
       'cannotDeleteRequest': 'No se puede eliminar la solicitud',
@@ -1859,8 +2139,10 @@ class AppLocalizations {
       'errorDownloadingReceipt': 'Error al descargar recibo',
       'errorSharingReceipt': 'Error al compartir recibo',
       'paymentRequiredAmount': 'Pago requerido',
-      'canCompletePaymentFromRequests': 'Podrás completar el pago desde la sección "Mis Solicitudes".',
-      'willBeContactedByEmail': 'Serás contactado por email para los próximos pasos.',
+      'canCompletePaymentFromRequests':
+          'Podrás completar el pago desde la sección "Mis Solicitudes".',
+      'willBeContactedByEmail':
+          'Serás contactado por email para los próximos pasos.',
       'requestSentPaymentRequired': 'Solicitud Enviada - Pago Requerido',
       'payLater': 'Pagar Después',
       'noRequestsThisDay': 'No hay solicitudes para este día',
@@ -1880,16 +2162,23 @@ class AppLocalizations {
       'yes': 'Sí',
       'no': 'No',
       'needLogin': 'Servicio exclusivo para socios',
-      'needLoginMessage': 'Para acceder a este servicio debes estar registrado como socio WECOOP.',
+      'needLoginMessage':
+          'Para acceder a este servicio debes estar registrado como socio WECOOP.',
       'goBack': 'Volver',
       'notMemberYet': '¿Aún no eres socio?',
-      'notMemberMessage': 'Para acceder a este servicio debes ser socio de WECOOP.',
+      'notMemberMessage':
+          'Para acceder a este servicio debes ser socio de WECOOP.',
       'backToHome': 'Volver al inicio',
-      'loginToAccessServices': 'Inicia sesión para acceder a todos los servicios reservados para socios.',
-      'membershipPendingApproval': 'Tu solicitud de membresía está pendiente de aprobación.',
-      'confirmationWithin24to48Hours': 'Recibirás una confirmación por email dentro de 24-48 horas.',
-      'onceApprovedAccessAllServices': 'Una vez aprobada, podrás acceder a todos los servicios.',
-      'toAccessServicesBecomeMember': 'Para acceder a los servicios de {serviceName} debes ser socio de WECOOP.',
+      'loginToAccessServices':
+          'Inicia sesión para acceder a todos los servicios reservados para socios.',
+      'membershipPendingApproval':
+          'Tu solicitud de membresía está pendiente de aprobación.',
+      'confirmationWithin24to48Hours':
+          'Recibirás una confirmación por email dentro de 24-48 horas.',
+      'onceApprovedAccessAllServices':
+          'Una vez aprobada, podrás acceder a todos los servicios.',
+      'toAccessServicesBecomeMember':
+          'Para acceder a los servicios de {serviceName} debes ser socio de WECOOP.',
       'becomeMemberToAccess': 'Hazte socio para acceder a:',
       'whyBecomeMember': '¿Por qué hacerse socio?',
       'credentialsSentTo': 'Hemos enviado las credenciales a:',
@@ -1906,7 +2195,8 @@ class AppLocalizations {
       'selectNationality': 'Selecciona la nacionalidad',
       'selectYourCountryOfOrigin': 'Selecciona tu país de origen',
       'iAcceptDataProcessing': 'Acepto el tratamiento de datos personales *',
-      'dataWillBeProcessed': 'Tus datos serán tratados según la normativa de privacidad',
+      'dataWillBeProcessed':
+          'Tus datos serán tratados según la normativa de privacidad',
       'fillToSpeedUp': 'Completa para acelerar la finalización del perfil',
       'provinceExample': 'Ej: MI, RM, TO',
       'accessToAllServices': 'Acceso a todos los servicios de asistencia',
@@ -1921,7 +2211,8 @@ class AppLocalizations {
       'invalidEmail': 'Email no válido',
       'fillFollowingFields': 'Completa los siguientes campos',
       'sendingError': 'Error durante el envío',
-      'internationalProtectionRequest': 'La solicitud de protección internacional es un proceso delicado. Te ayudaremos a preparar la documentación.',
+      'internationalProtectionRequest':
+          'La solicitud de protección internacional es un proceso delicado. Te ayudaremos a preparar la documentación.',
       'internationalProtection': 'Protección Internacional',
       'dateOfArrivalInItaly': 'Fecha de llegada a Italia',
       'reasonForRequest': 'Motivo de la solicitud',
@@ -1963,9 +2254,12 @@ class AppLocalizations {
       'within1to2Months': 'Dentro de 1–2 meses',
       'evaluating': 'Estoy evaluando',
       'manageVatNumber': 'Gestión contable – Partita IVA plana',
-      'ordinaryAccountingInvoicing': 'Contabilidad ordinaria, facturación, registros',
-      'hasActiveVatForfettario': '¿Tienes una Partita IVA activa en régimen de tarifa plana?',
-      'forfettarioServiceOnly': 'Este servicio está reservado para Partitas IVA en régimen de tarifa plana. Podemos ayudarte con otros servicios fiscales.',
+      'ordinaryAccountingInvoicing':
+          'Contabilidad ordinaria, facturación, registros',
+      'hasActiveVatForfettario':
+          '¿Tienes una Partita IVA activa en régimen de tarifa plana?',
+      'forfettarioServiceOnly':
+          'Este servicio está reservado para Partitas IVA en régimen de tarifa plana. Podemos ayudarte con otros servicios fiscales.',
       'vatActiveFrom': '¿Desde cuándo está activa tu Partita IVA?',
       'currentYear': 'Año en curso',
       'previousYears': 'Años anteriores',
@@ -1989,7 +2283,8 @@ class AppLocalizations {
       'personalizedExplanations': 'Explicaciones personalizadas',
       'taxPositionVerification': 'Verificación de posición fiscal',
       'taxRegimeChange': 'Cambio de régimen fiscal',
-      'questionsNotSureWhereToStart': 'Tengo preguntas pero no sé por dónde empezar',
+      'questionsNotSureWhereToStart':
+          'Tengo preguntas pero no sé por dónde empezar',
       'workSituationQuestion': 'Tu situación laboral',
       'notWorkingOther': 'No trabajo / otro',
       'urgencyQuestion': '¿Qué tan urgente es tu solicitud?',
@@ -2052,7 +2347,8 @@ class AppLocalizations {
       'reason': 'Motivo',
       'selectFiscalService': 'Selecciona el servicio fiscal',
       'tax730Declaration': '730 - Declaración de la Renta',
-      'tax730Description': 'Preparación del modelo 730 para empleados y pensionistas',
+      'tax730Description':
+          'Preparación del modelo 730 para empleados y pensionistas',
       'taxReturn730': 'Declaración de la Renta (730)',
       'formCompilation': 'Compilación de Formularios',
       'asylumRequest': 'Solicitud de Asilo',
@@ -2063,7 +2359,8 @@ class AppLocalizations {
       'taxConsultation': 'Consultoría Fiscal',
       'taxDebtManagement': 'Gestión de Deudas Fiscales',
       'individualPerson': 'Persona Física',
-      'individualPersonDescription': 'Declaración de la renta para personas físicas',
+      'individualPersonDescription':
+          'Declaración de la renta para personas físicas',
       'taxpayerType': 'Tipo de contribuyente',
       'employee': 'Trabajador empleado',
       'pensioner': 'Pensionista',
@@ -2072,13 +2369,81 @@ class AppLocalizations {
       'caregiver': 'Cuidador/a',
       'babysitter': 'Niñera',
       'selfEmployedForfettario': 'Autónomo (solo Régimen de tarifa plana)',
-      'missedTax730Deadline': '¿Eres un empleado y: no presentaste el modelo 730 antes del plazo del 30 de septiembre y recibiste una carta de la Agencia Tributaria?',
-      'multipleContracts': '¿Tuviste más de un empleador o contrato durante el año pasado?',
-      'homeMortgage': '¿Tienes una hipoteca sobre tu casa (primera o segunda vivienda)?',
+      'missedTax730Deadline':
+          '¿Eres un empleado y: no presentaste el modelo 730 antes del plazo del 30 de septiembre y recibiste una carta de la Agencia Tributaria?',
+      'multipleContracts':
+          '¿Tuviste más de un empleador o contrato durante el año pasado?',
+      'homeMortgage':
+          '¿Tienes una hipoteca sobre tu casa (primera o segunda vivienda)?',
       'pensionIncome': '¿Tienes ingresos de pensión?',
       'requiredDocuments': 'Documentos requeridos',
       'alreadyUploaded': 'Ya cargado',
       'uploadMissingDocuments': 'Cargar documentos faltantes',
+      'familyResidencePermitType': 'Tipo de permiso de residencia del familiar',
+      'documentsManagedSeparately':
+          'Los documentos del solicitante y del familiar se gestionan por separado.',
+      'documentsApplicantTitle': 'Documentos del solicitante',
+      'documentsFamilyTitle': 'Documentos del familiar',
+      'documentsApplicantSubtitle':
+          'Verificados según los documentos ya cargados en tu perfil.',
+      'documentsFamilySubtitle':
+          'Cargados por separado respecto a los documentos del solicitante.',
+      'documentsPersonalSubtitle':
+          'Utilizados para tus solicitudes personales.',
+      'documentsFamilyUploadSubtitle':
+          'Carga aquí los documentos separados requeridos para el familiar.',
+      'documentsSelectSubject': 'Selecciona qué documentos gestionar',
+      'documentsApplicantAndFamilyTitle':
+          'Documentos del solicitante y del familiar',
+      'myDocumentsTitle': 'Mis documentos',
+      'manageYourDocuments': 'Carga y gestiona tus documentos',
+      'documentSourcesHint':
+          'Puedes tomar fotos, elegir desde la galería o cargar archivos',
+      'supportedFormats': 'Formatos compatibles: JPG, PNG, PDF',
+      'uploadDocumentSuccess': '¡Documento de {subject} cargado correctamente!',
+      'uploadDocumentSuccessFrontBack':
+          '¡Documento de {subject} cargado correctamente (anverso y reverso)!',
+      'documentFrontTitle': 'Anverso del documento',
+      'documentBackTitle': 'Reverso del documento',
+      'documentFrontCameraPrompt':
+          'Toma una foto del lado ANVERSO del documento.',
+      'documentFrontGalleryPrompt':
+          'Selecciona de la galería la foto del lado ANVERSO del documento.',
+      'documentBackCameraPrompt':
+          'Perfecto. Ahora toma una foto del lado REVERSO del documento.',
+      'documentBackGalleryPrompt':
+          'Perfecto. Ahora selecciona de la galería la foto del lado REVERSO del documento.',
+      'proceed': 'Continuar',
+      'uploadDocumentHow': '¿Cómo quieres cargar el documento?',
+      'takePhoto': 'Tomar foto',
+      'takePhotoHint': 'Toma anverso y reverso con la cámara',
+      'chooseGallery': 'Galería',
+      'chooseGalleryHint': 'Elige anverso y reverso desde la galería',
+      'uploadFileLabel': 'Cargar archivo',
+      'uploadFileHint': 'Carga un único archivo (PDF o imagen)',
+      'deleteDocumentTitle': 'Eliminar documento',
+      'deleteDocumentConfirm': '¿Seguro que quieres eliminar este documento?',
+      'documentDeleted': 'Documento eliminado',
+      'cannotOpenWhatsApp': 'No se puede abrir WhatsApp',
+      'applicant': 'Solicitante',
+      'familyMember': 'Familiar',
+      'frontAndBack': 'Anverso + Reverso',
+      'expiryDateLabel': 'Caducidad: {date}',
+      'documentExpiredUpdateNow': '¡Documento caducado! Actualízalo ahora',
+      'documentExpiringInDays': 'Documento a punto de caducar en {days} días',
+      'updateLabel': 'Actualizar',
+      'uploadLabel': 'Cargar',
+      'viewLabel': 'Ver',
+      'deleteLabel': 'Eliminar',
+      'documentsComplete': 'Documentos completos',
+      'missingDocumentsCount': 'Faltan {count} documentos',
+      'missingDocumentsTitle': 'Documentos faltantes',
+      'missingDocumentsIntro':
+          'Para continuar con esta solicitud debes cargar los siguientes documentos:',
+      'documentsSeparatedNotice':
+          'Los documentos del solicitante y del familiar están separados.',
+      'formDataPreserved': 'Los datos del formulario se conservarán.',
+      'reloadFamilyDocuments': 'Recargar documentos del familiar',
       'fiscalYear': 'Año fiscal',
       'hasDeductibleExpenses': '¿Tienes gastos deducibles?',
       'notesAndAdditionalInfo': 'Notas e información adicional',
@@ -2097,10 +2462,14 @@ class AppLocalizations {
       'womenCategory': 'Mujeres',
       'sportsCategory': 'Deportes',
       'migrantsCategory': 'Migrantes',
-      'mafaldaDescription': 'Proyecto europeo dedicado a los jóvenes para el desarrollo de competencias y oportunidades de movilidad internacional.',
-      'womentorDescription': 'Programa de mentoría y networking intergeneracional entre mujeres para el crecimiento personal y profesional.',
-      'sportunityDescription': 'Integración social e inclusión a través del deporte y actividades recreativas para toda la comunidad.',
-      'passaparolaDescription': 'Oficina dedicada a los migrantes para apoyo documental, orientación e integración social.',
+      'mafaldaDescription':
+          'Proyecto europeo dedicado a los jóvenes para el desarrollo de competencias y oportunidades de movilidad internacional.',
+      'womentorDescription':
+          'Programa de mentoría y networking intergeneracional entre mujeres para el crecimiento personal y profesional.',
+      'sportunityDescription':
+          'Integración social e inclusión a través del deporte y actividades recreativas para toda la comunidad.',
+      'passaparolaDescription':
+          'Oficina dedicada a los migrantes para apoyo documental, orientación e integración social.',
       'mafaldaService1': 'Diseño de Proyectos Europeos',
       'mafaldaService2': 'Movilidad Juvenil',
       'mafaldaService3': 'Desarrollo de Competencias',
@@ -2118,17 +2487,27 @@ class AppLocalizations {
       'passaparolaService3': 'Orientación Legal',
       'passaparolaService4': 'Integración Social',
       'chatbotTitle': 'Asistencia & FAQ',
-      'chatbotWelcome': '¡Hola! 👋 Soy el asistente virtual de WECOOP. ¿Cómo puedo ayudarte hoy?',
-      'chatbotServicesResponse': 'Ofrecemos varios servicios:\n\n• Acogida y Orientación\n• Mediación Fiscal\n• Apoyo Contable\n• Servicios para Migrantes\n\n¿Cuál te interesa?',
-      'chatbotProjectsResponse': 'Tenemos 4 macro-categorías de proyectos:\n\n🔵 Jóvenes (MAFALDA)\n🟣 Mujeres (WOMENTOR)\n🟢 Deporte (SPORTUNITY)\n🟠 Migrantes (PASSAPAROLA)\n\n¿Quieres saber más?',
-      'chatbotPermitResponse': '¿Necesitas el permiso de residencia? Podemos ayudarte con:\n\n• Trabajo Subordinado\n• Trabajo Autónomo\n• Estudio\n• Familia\n\nSelecciona el tipo que te interesa.',
-      'chatbotCitizenshipResponse': 'Para la ciudadanía italiana te ayudamos a:\n\n• Verificar los requisitos\n• Preparar la documentación\n• Presentar la solicitud\n\n¿Quieres iniciar la solicitud?',
-      'chatbotAsylumResponse': 'Te ayudamos con la solicitud de protección internacional. Es un proceso delicado y te guiaremos paso a paso.\n\n¿Quieres empezar?',
-      'chatbotTaxResponse': '¿Necesitas ayuda con el 730 u otros servicios fiscales?\n\nOfrecemos:\n• Declaración 730\n• Consultoría fiscal\n• Apoyo contable',
-      'chatbotAppointmentResponse': '¿Quieres reservar una cita? ¡Puedes hacerlo fácilmente desde nuestra app!',
+      'chatbotWelcome':
+          '¡Hola! 👋 Soy el asistente virtual de WECOOP. ¿Cómo puedo ayudarte hoy?',
+      'chatbotServicesResponse':
+          'Ofrecemos varios servicios:\n\n• Acogida y Orientación\n• Mediación Fiscal\n• Apoyo Contable\n• Servicios para Migrantes\n\n¿Cuál te interesa?',
+      'chatbotProjectsResponse':
+          'Tenemos 4 macro-categorías de proyectos:\n\n🔵 Jóvenes (MAFALDA)\n🟣 Mujeres (WOMENTOR)\n🟢 Deporte (SPORTUNITY)\n🟠 Migrantes (PASSAPAROLA)\n\n¿Quieres saber más?',
+      'chatbotPermitResponse':
+          '¿Necesitas el permiso de residencia? Podemos ayudarte con:\n\n• Trabajo Subordinado\n• Trabajo Autónomo\n• Estudio\n• Familia\n\nSelecciona el tipo que te interesa.',
+      'chatbotCitizenshipResponse':
+          'Para la ciudadanía italiana te ayudamos a:\n\n• Verificar los requisitos\n• Preparar la documentación\n• Presentar la solicitud\n\n¿Quieres iniciar la solicitud?',
+      'chatbotAsylumResponse':
+          'Te ayudamos con la solicitud de protección internacional. Es un proceso delicado y te guiaremos paso a paso.\n\n¿Quieres empezar?',
+      'chatbotTaxResponse':
+          '¿Necesitas ayuda con el 730 u otros servicios fiscales?\n\nOfrecemos:\n• Declaración 730\n• Consultoría fiscal\n• Apoyo contable',
+      'chatbotAppointmentResponse':
+          '¿Quieres reservar una cita? ¡Puedes hacerlo fácilmente desde nuestra app!',
       'chatbotGreeting': '¡Hola! ¿Cómo puedo ayudarte hoy? 😊',
-      'chatbotThanksResponse': '¡De nada! Estoy aquí para ayudarte. ¿Hay algo más que pueda hacer por ti?',
-      'chatbotDefaultResponse': 'No estoy seguro de haber entendido. Puedes decirme:\n\n• "Servicios" para ver nuestros servicios\n• "Proyectos" para nuestros proyectos\n• "Permiso de residencia"\n• "Ciudadanía"\n• "730" para servicios fiscales\n• "Cita" para reservar\n\nO selecciona una pregunta a continuación:',
+      'chatbotThanksResponse':
+          '¡De nada! Estoy aquí para ayudarte. ¿Hay algo más que pueda hacer por ti?',
+      'chatbotDefaultResponse':
+          'No estoy seguro de haber entendido. Puedes decirme:\n\n• "Servicios" para ver nuestros servicios\n• "Proyectos" para nuestros proyectos\n• "Permiso de residencia"\n• "Ciudadanía"\n• "730" para servicios fiscales\n• "Cita" para reservar\n\nO selecciona una pregunta a continuación:',
       'chatbotGoToServices': 'Ir a servicios',
       'chatbotRequestCitizenship': 'Solicitar Ciudadanía',
       'chatbotStartRequest': 'Iniciar Solicitud',
@@ -2140,7 +2519,8 @@ class AppLocalizations {
       'chatbotWelcomeService': 'Acogida y Orientación',
       'chatbotFiscalService': 'Mediación Fiscal',
       'chatbotMigrantsService': 'Servicios para Migrantes',
-      'chatbotWelcomeDetail': 'El servicio de Acogida te ayuda con orientación y apoyo inicial. ¿Quieres más información?',
+      'chatbotWelcomeDetail':
+          'El servicio de Acogida te ayuda con orientación y apoyo inicial. ¿Quieres más información?',
       'chatbotGoToService': 'Ir al Servicio',
       'chatbotYouthBtn': 'Jóvenes',
       'chatbotWomenBtn': 'Mujeres',
@@ -2157,31 +2537,39 @@ class AppLocalizations {
       'chatbotAppointmentQuick': 'Cita',
       'chatbotFAQTitle': '❓ Preguntas Frecuentes (FAQ)',
       'chatbotFAQ1Question': '¿Cómo puedo solicitar el permiso de residencia?',
-      'chatbotFAQ1Answer': 'Ve a Servicios > Servicios para Migrantes > Permiso de Residencia y selecciona la categoría apropiada.',
+      'chatbotFAQ1Answer':
+          'Ve a Servicios > Servicios para Migrantes > Permiso de Residencia y selecciona la categoría apropiada.',
       'chatbotFAQ2Question': '¿Qué documentos se necesitan para el 730?',
-      'chatbotFAQ2Answer': 'Necesitarás: CU, documentos de gastos deducibles, código fiscal. ¡Podemos ayudarte con la compilación!',
+      'chatbotFAQ2Answer':
+          'Necesitarás: CU, documentos de gastos deducibles, código fiscal. ¡Podemos ayudarte con la compilación!',
       'chatbotFAQ3Question': '¿Qué proyectos tienen para jóvenes?',
-      'chatbotFAQ3Answer': 'El proyecto MAFALDA ofrece oportunidades de movilidad europea, formación y desarrollo de competencias.',
+      'chatbotFAQ3Answer':
+          'El proyecto MAFALDA ofrece oportunidades de movilidad europea, formación y desarrollo de competencias.',
       'chatbotFAQ4Question': '¿Cómo puedo hacerme socio?',
-      'chatbotFAQ4Answer': 'Desde tu perfil haz clic en "Hazte Socio de WECOOP" y completa el formulario de adhesión.',
+      'chatbotFAQ4Answer':
+          'Desde tu perfil haz clic en "Hazte Socio de WECOOP" y completa el formulario de adhesión.',
       'chatbotFAQ5Question': '¿Cómo reservo una cita?',
-      'chatbotFAQ5Answer': 'Puedes reservar directamente desde la app haciendo clic en "Reservar Cita".',
+      'chatbotFAQ5Answer':
+          'Puedes reservar directamente desde la app haciendo clic en "Reservar Cita".',
       'chatbotInputHint': 'Escribe un mensaje...',
       'alreadyRegisteredLogin': 'Si ya estás registrado, inicia sesión',
       'continueWithoutLogin': 'Continuar sin iniciar sesión',
       'alreadyRegistered': '¿Ya estás registrado?',
       'loginToAccess': 'Inicia sesión para acceder a todos los servicios',
-      
+
       // Password Management
       'forgotPassword': '¿Olvidaste tu contraseña?',
       'resetPassword': 'Restablecer Contraseña',
       'resetPasswordTitle': 'Recupera tu contraseña',
-      'resetPasswordDescription': 'Ingresa tu número de teléfono o email para recibir una nueva contraseña',
-      'resetPasswordHelp': 'Recibirás una nueva contraseña por email. Podrás cambiarla después de iniciar sesión.',
+      'resetPasswordDescription':
+          'Ingresa tu número de teléfono o email para recibir una nueva contraseña',
+      'resetPasswordHelp':
+          'Recibirás una nueva contraseña por email. Podrás cambiarla después de iniciar sesión.',
       'backToLogin': 'Volver al Login',
       'changePassword': 'Cambiar Contraseña',
       'changePasswordTitle': 'Modifica tu contraseña',
-      'changePasswordDescription': 'Crea una nueva contraseña segura para tu cuenta',
+      'changePasswordDescription':
+          'Crea una nueva contraseña segura para tu cuenta',
       'currentPassword': 'Contraseña Actual',
       'enterCurrentPassword': 'Ingresa la contraseña actual',
       'newPassword': 'Nueva Contraseña',
@@ -2190,7 +2578,8 @@ class AppLocalizations {
       'confirmNewPassword': 'Confirma la nueva contraseña',
       'passwordMinLength': 'Mínimo 6 caracteres',
       'passwordTooShort': 'La contraseña debe tener al menos 6 caracteres',
-      'passwordMustBeDifferent': 'La nueva contraseña debe ser diferente de la actual',
+      'passwordMustBeDifferent':
+          'La nueva contraseña debe ser diferente de la actual',
       'passwordsDoNotMatch': 'Las contraseñas no coinciden',
       'passwordChangedSuccess': 'Contraseña cambiada exitosamente',
       'updateYourPassword': 'Actualiza tu contraseña',
@@ -2208,7 +2597,8 @@ class AppLocalizations {
       'noThanks': 'No, gracias',
       'yesHelpMe': 'Sí, ayúdame',
       'requestSentSuccess': '¡Solicitud enviada!',
-      'supportRequestCreated': 'Tu solicitud de soporte ha sido creada exitosamente.',
+      'supportRequestCreated':
+          'Tu solicitud de soporte ha sido creada exitosamente.',
       'ticketNumber': 'Número de Ticket:',
       'operatorWillContact': 'Un operador te contactará pronto para asistirte.',
       'errorNotAuthenticated': 'Error: usuario no autenticado',
@@ -2220,8 +2610,10 @@ class AppLocalizations {
       'prefixRequired': 'Pref. *',
       'phoneRequired': 'Teléfono *',
       'continue': 'Continuar',
-      'afterRegistrationInfo': 'Después del registro, podrás acceder a todos los servicios. Un operador te contactará para completar la adhesión como socio.',
-      'completeDataToAccessServices': 'Completa tus datos para acceder a todos los servicios',
+      'afterRegistrationInfo':
+          'Después del registro, podrás acceder a todos los servicios. Un operador te contactará para completar la adhesión como socio.',
+      'completeDataToAccessServices':
+          'Completa tus datos para acceder a todos los servicios',
       'nameIsMandatory': 'El nombre es obligatorio',
       'nameMinLength': 'El nombre debe tener al menos 2 caracteres',
       'surnameIsMandatory': 'El apellido es obligatorio',
@@ -2230,7 +2622,8 @@ class AppLocalizations {
       'phoneMust10Digits': 'Debe ser 10 dígitos (ej: 3331234567)',
       'phoneInvalid': 'Número de teléfono inválido',
       'autoLoginFailed': 'Login Automático Fallido',
-      'registrationCompletedLoginFailed': 'Registro completado, pero el login automático falló.',
+      'registrationCompletedLoginFailed':
+          'Registro completado, pero el login automático falló.',
       'canLoginManually': 'Puedes iniciar sesión manualmente.',
       'accountCreatedSuccess': '¡Cuenta creada exitosamente!',
       'yourLoginCredentials': 'Aquí están tus credenciales de acceso:',
@@ -2272,10 +2665,12 @@ class AppLocalizations {
       'employedWorker': 'Trabajador dependiente',
       'domesticWorker': 'Trabajador doméstico',
       'businessOwner': 'Propietario de empresa o socio en sociedad',
-      'coCoCoWorker': 'Contrato de colaboración coordinada y continuada (Co.Co.Co.)',
+      'coCoCoWorker':
+          'Contrato de colaboración coordinada y continuada (Co.Co.Co.)',
       'workerPartner': 'Socio trabajador',
       'freelanceProfessional': 'Profesional independiente',
-      'haveRentalOrSuitableHouse': '¿Tienes un contrato de alquiler o una vivienda adecuada?',
+      'haveRentalOrSuitableHouse':
+          '¿Tienes un contrato de alquiler o una vivienda adecuada?',
       // Servicios fiscales
       'taxGuidanceAndClarifications': 'Orientación y Aclaraciones Fiscales',
       // Permisos de Residencia
@@ -2301,13 +2696,17 @@ class AppLocalizations {
       'getDirections': 'Obtener indicaciones',
       'callUs': 'Llámanos',
       'contactSendEmail': 'Enviar correo',
-      'documentAlreadySignedCannotResign': 'Documento ya firmado. No es posible volver a firmar esta solicitud.',
-      'documentAlreadySignedOtpUnavailable': 'Documento ya firmado. La firma OTP ya no está disponible.',
+      'documentAlreadySignedCannotResign':
+          'Documento ya firmado. No es posible volver a firmar esta solicitud.',
+      'documentAlreadySignedOtpUnavailable':
+          'Documento ya firmado. La firma OTP ya no está disponible.',
       'digitalSignatureDetails': 'Detalles de firma digital',
       'tapToExpand': 'Toca para expandir',
       'viewMergedDocument': 'Ver documento único',
-      'invalidDigitalSignatureRequestId': 'ID de solicitud no válido para firma digital',
-      'missingDigitalSignatureUserData': 'Datos de usuario no disponibles para firma digital (faltan user_id/socio_id o teléfono)',
+      'invalidDigitalSignatureRequestId':
+          'ID de solicitud no válido para firma digital',
+      'missingDigitalSignatureUserData':
+          'Datos de usuario no disponibles para firma digital (faltan user_id/socio_id o teléfono)',
       'openMergedDocumentAndSignOtp': 'Abrir documento único y firmar con OTP',
       'signedLabel': 'Firmado',
       'signatureIdLabel': 'ID de firma',
@@ -2324,7 +2723,8 @@ class AppLocalizations {
       'paymentProcessingMessage': 'El sistema está procesando tu pago.',
       'paymentDetailsLabel': 'Detalles del pago:',
       'pdfDocumentUnavailable': 'Documento PDF no disponible',
-      'invalidMergedPdfFallbackOpened': 'PDF combinado no válido, se abrió el fallback web',
+      'invalidMergedPdfFallbackOpened':
+          'PDF combinado no válido, se abrió el fallback web',
       'invalidPdfFallbackUnavailable': 'PDF no válido y fallback no disponible',
       'cannotSavePdfDocument': 'No se puede guardar el documento PDF',
       'documentSavedMessage': 'Documento guardado:',
@@ -2338,7 +2738,8 @@ class AppLocalizations {
       'documentSectionTitle': 'Documento',
       'singleDocumentLabel': 'Documento único',
       'readyToSignQuestion': '¿Listo para firmar?',
-      'signWithOtpHint': 'Firma el documento digitalmente mediante SMS OTP.\nRecibirás un código en tu número de teléfono.',
+      'signWithOtpHint':
+          'Firma el documento digitalmente mediante SMS OTP.\nRecibirás un código en tu número de teléfono.',
       'signedDocumentTitle': 'Documento firmado',
       'signatureLegallyValid': 'La firma es legalmente válida',
     },
@@ -2435,7 +2836,8 @@ class AppLocalizations {
   String get province => translate('province');
   String get postalCode => translate('postalCode');
   String get additionalInfo => translate('additionalInfo');
-  String get additionalInfoPlaceholder => translate('additionalInfoPlaceholder');
+  String get additionalInfoPlaceholder =>
+      translate('additionalInfoPlaceholder');
   String get privacyConsent => translate('privacyConsent');
   String get sendRequest => translate('sendRequest');
   String get myEvents => translate('myEvents');
@@ -2483,13 +2885,15 @@ class AppLocalizations {
   String get notMemberMessage => translate('notMemberMessage');
   String get backToHome => translate('backToHome');
   String get serviceNotAvailable => translate('serviceNotAvailable');
-  String get serviceNotAvailableMessage => translate('serviceNotAvailableMessage');
+  String get serviceNotAvailableMessage =>
+      translate('serviceNotAvailableMessage');
   String get all => translate('all');
   String get pending => translate('pending');
   String get approved => translate('approved');
   String get rejected => translate('rejected');
   String get paymentStatusPending => translate('paymentStatusPending');
-  String get paymentStatusAwaitingPayment => translate('paymentStatusAwaitingPayment');
+  String get paymentStatusAwaitingPayment =>
+      translate('paymentStatusAwaitingPayment');
   String get paymentStatusPaid => translate('paymentStatusPaid');
   String get paymentStatusCompleted => translate('paymentStatusCompleted');
   String get paymentStatusFailed => translate('paymentStatusFailed');
@@ -2544,9 +2948,11 @@ class AppLocalizations {
   String get errorDownloadingReceipt => translate('errorDownloadingReceipt');
   String get errorSharingReceipt => translate('errorSharingReceipt');
   String get paymentRequiredAmount => translate('paymentRequiredAmount');
-  String get canCompletePaymentFromRequests => translate('canCompletePaymentFromRequests');
+  String get canCompletePaymentFromRequests =>
+      translate('canCompletePaymentFromRequests');
   String get willBeContactedByEmail => translate('willBeContactedByEmail');
-  String get requestSentPaymentRequired => translate('requestSentPaymentRequired');
+  String get requestSentPaymentRequired =>
+      translate('requestSentPaymentRequired');
   String get payLater => translate('payLater');
   String get noRequestsThisDay => translate('noRequestsThisDay');
   String get noRequestsFound => translate('noRequestsFound');
@@ -2561,10 +2967,14 @@ class AppLocalizations {
   String get touristVisa => translate('touristVisa');
   String get touristVisaDesc => translate('touristVisaDesc');
   String get loginToAccessServices => translate('loginToAccessServices');
-  String get membershipPendingApproval => translate('membershipPendingApproval');
-  String get confirmationWithin24to48Hours => translate('confirmationWithin24to48Hours');
-  String get onceApprovedAccessAllServices => translate('onceApprovedAccessAllServices');
-  String get toAccessServicesBecomeMember => translate('toAccessServicesBecomeMember');
+  String get membershipPendingApproval =>
+      translate('membershipPendingApproval');
+  String get confirmationWithin24to48Hours =>
+      translate('confirmationWithin24to48Hours');
+  String get onceApprovedAccessAllServices =>
+      translate('onceApprovedAccessAllServices');
+  String get toAccessServicesBecomeMember =>
+      translate('toAccessServicesBecomeMember');
   String get becomeMemberToAccess => translate('becomeMemberToAccess');
   String get whyBecomeMember => translate('whyBecomeMember');
   String get operationCompleted => translate('operationCompleted');
@@ -2574,7 +2984,8 @@ class AppLocalizations {
   String get invalidEmail => translate('invalidEmail');
   String get fillFollowingFields => translate('fillFollowingFields');
   String get sendingError => translate('sendingError');
-  String get internationalProtectionRequest => translate('internationalProtectionRequest');
+  String get internationalProtectionRequest =>
+      translate('internationalProtectionRequest');
   String get internationalProtection => translate('internationalProtection');
   String get fullName => translate('fullName');
   String get dateOfBirth => translate('dateOfBirth');
@@ -2583,7 +2994,8 @@ class AppLocalizations {
   String get reasonForRequest => translate('reasonForRequest');
   String get politicalPersecution => translate('politicalPersecution');
   String get religiousPersecution => translate('religiousPersecution');
-  String get persecutionSexualOrientation => translate('persecutionSexualOrientation');
+  String get persecutionSexualOrientation =>
+      translate('persecutionSexualOrientation');
   String get war => translate('war');
   String get other => translate('other');
   String get situationDescription => translate('situationDescription');
@@ -2600,7 +3012,8 @@ class AppLocalizations {
   String get tourism => translate('tourism');
   String get familyVisit => translate('familyVisit');
   String get business => translate('business');
-  String get accommodationAddressItaly => translate('accommodationAddressItaly');
+  String get accommodationAddressItaly =>
+      translate('accommodationAddressItaly');
   String get fillRequest => translate('fillRequest');
   String get vatManagementAccounting => translate('vatManagementAccounting');
   String get openVatNumber => translate('openVatNumber');
@@ -2621,7 +3034,8 @@ class AppLocalizations {
   String get within1to2Months => translate('within1to2Months');
   String get evaluating => translate('evaluating');
   String get manageVatNumber => translate('manageVatNumber');
-  String get ordinaryAccountingInvoicing => translate('ordinaryAccountingInvoicing');
+  String get ordinaryAccountingInvoicing =>
+      translate('ordinaryAccountingInvoicing');
   String get hasActiveVatForfettario => translate('hasActiveVatForfettario');
   String get forfettarioServiceOnly => translate('forfettarioServiceOnly');
   String get vatActiveFrom => translate('vatActiveFrom');
@@ -2647,15 +3061,19 @@ class AppLocalizations {
   String get personalizedExplanations => translate('personalizedExplanations');
   String get taxPositionVerification => translate('taxPositionVerification');
   String get taxRegimeChange => translate('taxRegimeChange');
-  String get questionsNotSureWhereToStart => translate('questionsNotSureWhereToStart');
+  String get questionsNotSureWhereToStart =>
+      translate('questionsNotSureWhereToStart');
   String get workSituationQuestion => translate('workSituationQuestion');
   String get notWorkingOther => translate('notWorkingOther');
   String get urgencyQuestion => translate('urgencyQuestion');
   String get closeDeadline => translate('closeDeadline');
-  String get questionsAccountingSupport => translate('questionsAccountingSupport');
+  String get questionsAccountingSupport =>
+      translate('questionsAccountingSupport');
   String get closeChangeActivity => translate('closeChangeActivity');
-  String get businessTerminationModification => translate('businessTerminationModification');
-  String get whatDoYouWantToDoActivity => translate('whatDoYouWantToDoActivity');
+  String get businessTerminationModification =>
+      translate('businessTerminationModification');
+  String get whatDoYouWantToDoActivity =>
+      translate('whatDoYouWantToDoActivity');
   String get closeVatActivity => translate('closeVatActivity');
   String get suspendTemporarily => translate('suspendTemporarily');
   String get changeActivityAteco => translate('changeActivityAteco');
@@ -2723,7 +3141,8 @@ class AppLocalizations {
   String get taxConsultation => translate('taxConsultation');
   String get taxDebtManagement => translate('taxDebtManagement');
   String get individualPerson => translate('individualPerson');
-  String get individualPersonDescription => translate('individualPersonDescription');
+  String get individualPersonDescription =>
+      translate('individualPersonDescription');
   String get taxpayerType => translate('taxpayerType');
   String get employee => translate('employee');
   String get pensioner => translate('pensioner');
@@ -2777,11 +3196,12 @@ class AppLocalizations {
   String get passaparolaService2 => translate('passaparolaService2');
   String get passaparolaService3 => translate('passaparolaService3');
   String get passaparolaService4 => translate('passaparolaService4');
-  
+
   // Event detail translations
   String get loading => translate('loading');
   String get confirmCancellation => translate('confirmCancellation');
-  String get confirmCancellationMessage => translate('confirmCancellationMessage');
+  String get confirmCancellationMessage =>
+      translate('confirmCancellationMessage');
   String get cancelEnrollment => translate('cancelEnrollment');
   String get date => translate('date');
   String get end => translate('end');
@@ -2859,7 +3279,8 @@ class AppLocalizations {
   String get next => translate('next');
   String get back => translate('back');
   String get complete => translate('complete');
-  String get profileUpdatedSuccessfully => translate('profileUpdatedSuccessfully');
+  String get profileUpdatedSuccessfully =>
+      translate('profileUpdatedSuccessfully');
   String get registrationCompleted => translate('registrationCompleted');
   String get saveTheseCredentials => translate('saveTheseCredentials');
   String get credentialsNeededToLogin => translate('credentialsNeededToLogin');
@@ -2875,7 +3296,8 @@ class AppLocalizations {
   String get phoneRequired => translate('phoneRequired');
   String get continue_ => translate('continue');
   String get afterRegistrationInfo => translate('afterRegistrationInfo');
-  String get completeDataToAccessServices => translate('completeDataToAccessServices');
+  String get completeDataToAccessServices =>
+      translate('completeDataToAccessServices');
   String get nameIsMandatory => translate('nameIsMandatory');
   String get nameMinLength => translate('nameMinLength');
   String get surnameIsMandatory => translate('surnameIsMandatory');
@@ -2884,29 +3306,33 @@ class AppLocalizations {
   String get phoneMust10Digits => translate('phoneMust10Digits');
   String get phoneInvalid => translate('phoneInvalid');
   String get autoLoginFailed => translate('autoLoginFailed');
-  String get registrationCompletedLoginFailed => translate('registrationCompletedLoginFailed');
+  String get registrationCompletedLoginFailed =>
+      translate('registrationCompletedLoginFailed');
   String get canLoginManually => translate('canLoginManually');
   String get accountCreatedSuccess => translate('accountCreatedSuccess');
   String get yourLoginCredentials => translate('yourLoginCredentials');
   String get phoneAlreadyRegistered => translate('phoneAlreadyRegistered');
   String get alreadyHaveAccount => translate('alreadyHaveAccount');
   String get welcomeSuccess => translate('welcomeSuccess');
-  
+
   // Chatbot translations
   String get chatbotTitle => translate('chatbotTitle');
   String get chatbotWelcome => translate('chatbotWelcome');
   String get chatbotServicesResponse => translate('chatbotServicesResponse');
   String get chatbotProjectsResponse => translate('chatbotProjectsResponse');
   String get chatbotPermitResponse => translate('chatbotPermitResponse');
-  String get chatbotCitizenshipResponse => translate('chatbotCitizenshipResponse');
+  String get chatbotCitizenshipResponse =>
+      translate('chatbotCitizenshipResponse');
   String get chatbotAsylumResponse => translate('chatbotAsylumResponse');
   String get chatbotTaxResponse => translate('chatbotTaxResponse');
-  String get chatbotAppointmentResponse => translate('chatbotAppointmentResponse');
+  String get chatbotAppointmentResponse =>
+      translate('chatbotAppointmentResponse');
   String get chatbotGreeting => translate('chatbotGreeting');
   String get chatbotThanksResponse => translate('chatbotThanksResponse');
   String get chatbotDefaultResponse => translate('chatbotDefaultResponse');
   String get chatbotGoToServices => translate('chatbotGoToServices');
-  String get chatbotRequestCitizenship => translate('chatbotRequestCitizenship');
+  String get chatbotRequestCitizenship =>
+      translate('chatbotRequestCitizenship');
   String get chatbotStartRequest => translate('chatbotStartRequest');
   String get chatbotFiscalServices => translate('chatbotFiscalServices');
   String get chatbotBookNow => translate('chatbotBookNow');
@@ -2921,7 +3347,8 @@ class AppLocalizations {
   String get chatbotYouthBtn => translate('chatbotYouthBtn');
   String get chatbotWomenBtn => translate('chatbotWomenBtn');
   String get chatbotSportBtn => translate('chatbotSportBtn');
-  String get chatbotMigrantsProjectBtn => translate('chatbotMigrantsProjectBtn');
+  String get chatbotMigrantsProjectBtn =>
+      translate('chatbotMigrantsProjectBtn');
   String get chatbotYouthProjects => translate('chatbotYouthProjects');
   String get chatbotWomenProjects => translate('chatbotWomenProjects');
   String get chatbotSportProjects => translate('chatbotSportProjects');
@@ -2943,13 +3370,13 @@ class AppLocalizations {
   String get chatbotFAQ5Question => translate('chatbotFAQ5Question');
   String get chatbotFAQ5Answer => translate('chatbotFAQ5Answer');
   String get chatbotInputHint => translate('chatbotInputHint');
-  
+
   // Login & Registration
   String get alreadyRegisteredLogin => translate('alreadyRegisteredLogin');
   String get continueWithoutLogin => translate('continueWithoutLogin');
   String get alreadyRegistered => translate('alreadyRegistered');
   String get loginToAccess => translate('loginToAccess');
-  
+
   // Help Widget
   String get needHelp => translate('needHelp');
   String get usingService => translate('usingService');
@@ -2962,17 +3389,85 @@ class AppLocalizations {
   String get operatorWillContact => translate('operatorWillContact');
   String get errorNotAuthenticated => translate('errorNotAuthenticated');
   String get errorSendingRequest => translate('errorSendingRequest');
-  
+
   // WhatsApp Support
   String get whatsappDocumentSupport => translate('whatsappDocumentSupport');
-  
+  String get familyResidencePermitType =>
+      translate('familyResidencePermitType');
+  String get documentsManagedSeparately =>
+      translate('documentsManagedSeparately');
+  String get documentsApplicantTitle => translate('documentsApplicantTitle');
+  String get documentsFamilyTitle => translate('documentsFamilyTitle');
+  String get documentsApplicantSubtitle =>
+      translate('documentsApplicantSubtitle');
+  String get documentsFamilySubtitle => translate('documentsFamilySubtitle');
+  String get documentsPersonalSubtitle =>
+      translate('documentsPersonalSubtitle');
+  String get documentsFamilyUploadSubtitle =>
+      translate('documentsFamilyUploadSubtitle');
+  String get documentsSelectSubject => translate('documentsSelectSubject');
+  String get documentsApplicantAndFamilyTitle =>
+      translate('documentsApplicantAndFamilyTitle');
+  String get myDocumentsTitle => translate('myDocumentsTitle');
+  String get manageYourDocuments => translate('manageYourDocuments');
+  String get documentSourcesHint => translate('documentSourcesHint');
+  String get supportedFormats => translate('supportedFormats');
+  String get documentFrontTitle => translate('documentFrontTitle');
+  String get documentBackTitle => translate('documentBackTitle');
+  String get documentFrontCameraPrompt =>
+      translate('documentFrontCameraPrompt');
+  String get documentFrontGalleryPrompt =>
+      translate('documentFrontGalleryPrompt');
+  String get documentBackCameraPrompt => translate('documentBackCameraPrompt');
+  String get documentBackGalleryPrompt =>
+      translate('documentBackGalleryPrompt');
+  String get proceed => translate('proceed');
+  String get uploadDocumentHow => translate('uploadDocumentHow');
+  String get takePhoto => translate('takePhoto');
+  String get takePhotoHint => translate('takePhotoHint');
+  String get chooseGallery => translate('chooseGallery');
+  String get chooseGalleryHint => translate('chooseGalleryHint');
+  String get uploadFileLabel => translate('uploadFileLabel');
+  String get uploadFileHint => translate('uploadFileHint');
+  String get deleteDocumentTitle => translate('deleteDocumentTitle');
+  String get deleteDocumentConfirm => translate('deleteDocumentConfirm');
+  String get documentDeleted => translate('documentDeleted');
+  String get cannotOpenWhatsApp => translate('cannotOpenWhatsApp');
+  String get applicant => translate('applicant');
+  String get familyMember => translate('familyMember');
+  String get frontAndBack => translate('frontAndBack');
+  String get documentExpiredUpdateNow => translate('documentExpiredUpdateNow');
+  String get updateLabel => translate('updateLabel');
+  String get uploadLabel => translate('uploadLabel');
+  String get viewLabel => translate('viewLabel');
+  String get deleteLabel => translate('deleteLabel');
+  String get documentsComplete => translate('documentsComplete');
+  String get missingDocumentsTitle => translate('missingDocumentsTitle');
+  String get missingDocumentsIntro => translate('missingDocumentsIntro');
+  String get documentsSeparatedNotice => translate('documentsSeparatedNotice');
+  String get formDataPreserved => translate('formDataPreserved');
+  String get reloadFamilyDocuments => translate('reloadFamilyDocuments');
+
+  String uploadDocumentSuccess(String subject) =>
+      translate('uploadDocumentSuccess').replaceAll('{subject}', subject);
+  String uploadDocumentSuccessFrontBack(String subject) => translate(
+    'uploadDocumentSuccessFrontBack',
+  ).replaceAll('{subject}', subject);
+  String expiryDateLabel(String date) =>
+      translate('expiryDateLabel').replaceAll('{date}', date);
+  String documentExpiringInDays(int days) =>
+      translate('documentExpiringInDays').replaceAll('{days}', days.toString());
+  String missingDocumentsCount(int count) => translate(
+    'missingDocumentsCount',
+  ).replaceAll('{count}', count.toString());
+
   // Delivery Methods
   String get deliveryMethodsTitle => translate('deliveryMethodsTitle');
   String get selectDeliveryMethods => translate('selectDeliveryMethods');
   String get courierShipping => translate('courierShipping');
   String get pickupAtOffice => translate('pickupAtOffice');
   String get emailDelivery => translate('emailDelivery');
-  
+
   // Contacts
   String get contacts => translate('contacts');
   String get contactsTitle => translate('contactsTitle');

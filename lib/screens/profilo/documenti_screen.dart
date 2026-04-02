@@ -7,7 +7,14 @@ import '../../services/app_localizations.dart';
 import '../../services/documento_service.dart';
 
 class DocumentiScreen extends StatefulWidget {
-  const DocumentiScreen({super.key});
+  final bool showFamilyDocuments;
+  final String initialSoggetto;
+
+  const DocumentiScreen({
+    super.key,
+    this.showFamilyDocuments = false,
+    this.initialSoggetto = DocumentoSoggetto.richiedente,
+  });
 
   @override
   State<DocumentiScreen> createState() => _DocumentiScreenState();
@@ -16,10 +23,22 @@ class DocumentiScreen extends StatefulWidget {
 class _DocumentiScreenState extends State<DocumentiScreen> {
   final DocumentoService _documentoService = DocumentoService();
   bool _isLoading = true;
+  late String _selectedSoggetto;
+
+  String _localizedSoggettoLabel(String soggetto) {
+    final l10n = AppLocalizations.of(context)!;
+    return soggetto == DocumentoSoggetto.familiare
+        ? l10n.familyMember.toLowerCase()
+        : l10n.applicant.toLowerCase();
+  }
 
   @override
   void initState() {
     super.initState();
+    _selectedSoggetto =
+        widget.showFamilyDocuments
+            ? widget.initialSoggetto
+            : DocumentoSoggetto.richiedente;
     _loadDocumenti();
   }
 
@@ -31,102 +50,123 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
     });
   }
 
-  Future<void> _caricaDocumento(String tipo) async {
+  Future<void> _caricaDocumento(String tipo, String soggetto) async {
+    final l10n = AppLocalizations.of(context)!;
     // Mostra dialog per scegliere la fonte
     final fonte = await _scegliSorgenteDocumento();
     if (fonte == null) return;
 
     if (fonte == 'file') {
       // File singolo: PDF o immagine, nessun fronte/retro
-      final documento = await _documentoService.caricaDocumento(tipo: tipo);
+      final documento = await _documentoService.caricaDocumento(
+        tipo: tipo,
+        soggetto: soggetto,
+      );
       if (documento != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Documento caricato con successo!')),
+          SnackBar(
+            content: Text(
+              l10n.uploadDocumentSuccess(_localizedSoggettoLabel(soggetto)),
+            ),
+          ),
         );
         _loadDocumenti();
       }
     } else {
       // Camera o Galleria: chiede fronte e poi retro
-      await _caricaDocumentoFronteRetro(tipo, fonte);
+      await _caricaDocumentoFronteRetro(tipo, fonte, soggetto);
     }
   }
 
   /// Flusso a 2 step per fotocamera/galleria: FRONTE poi RETRO
-  Future<void> _caricaDocumentoFronteRetro(String tipo, String fonte) async {
+  Future<void> _caricaDocumentoFronteRetro(
+    String tipo,
+    String fonte,
+    String soggetto,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
     // --- STEP 1: FRONTE ---
     if (!mounted) return;
     final procediFrente = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
-          children: [
-            Icon(Icons.flip_to_front, color: Colors.blue, size: 28),
-            SizedBox(width: 10),
-            Flexible(child: Text('Fronte del documento')),
-          ],
-        ),
-        content: Text(
-          fonte == 'camera'
-              ? 'Scatta una foto al lato FRONTE del documento.'
-              : 'Seleziona dalla galleria la foto del lato FRONTE del documento.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+      builder:
+          (_) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                const Icon(Icons.flip_to_front, color: Colors.blue, size: 28),
+                const SizedBox(width: 10),
+                Flexible(child: Text(l10n.documentFrontTitle)),
+              ],
+            ),
+            content: Text(
+              fonte == 'camera'
+                  ? l10n.documentFrontCameraPrompt
+                  : l10n.documentFrontGalleryPrompt,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(l10n.proceed),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Procedi'),
-          ),
-        ],
-      ),
     );
     if (procediFrente != true || !mounted) return;
 
-    final fileFrente = fonte == 'camera'
-        ? await _documentoService.prendiImmagineDaFotocamera()
-        : await _documentoService.prendiImmagineDaGalleria();
+    final fileFrente =
+        fonte == 'camera'
+            ? await _documentoService.prendiImmagineDaFotocamera()
+            : await _documentoService.prendiImmagineDaGalleria();
     if (fileFrente == null || !mounted) return;
 
     // --- STEP 2: RETRO ---
     final procediRetro = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
-          children: [
-            Icon(Icons.flip_to_back, color: Colors.green, size: 28),
-            SizedBox(width: 10),
-            Flexible(child: Text('Retro del documento')),
-          ],
-        ),
-        content: Text(
-          fonte == 'camera'
-              ? 'Ottimo! Ora scatta una foto al lato RETRO del documento.'
-              : 'Ottimo! Ora seleziona dalla galleria la foto del lato RETRO del documento.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+      builder:
+          (_) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                const Icon(Icons.flip_to_back, color: Colors.green, size: 28),
+                const SizedBox(width: 10),
+                Flexible(child: Text(l10n.documentBackTitle)),
+              ],
+            ),
+            content: Text(
+              fonte == 'camera'
+                  ? l10n.documentBackCameraPrompt
+                  : l10n.documentBackGalleryPrompt,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancel),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(l10n.proceed),
+              ),
+            ],
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Procedi'),
-          ),
-        ],
-      ),
     );
     if (procediRetro != true || !mounted) return;
 
-    final fileRetro = fonte == 'camera'
-        ? await _documentoService.prendiImmagineDaFotocamera()
-        : await _documentoService.prendiImmagineDaGalleria();
+    final fileRetro =
+        fonte == 'camera'
+            ? await _documentoService.prendiImmagineDaFotocamera()
+            : await _documentoService.prendiImmagineDaGalleria();
     if (fileRetro == null || !mounted) return;
 
     // Upload fronte + retro
@@ -135,6 +175,7 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
       tipo: tipo,
       fileFrente: fileFrente,
       fileRetro: fileRetro,
+      soggetto: soggetto,
     );
 
     if (mounted) {
@@ -142,8 +183,10 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
         SnackBar(
           content: Text(
             documento != null
-                ? 'Documento caricato con successo (fronte e retro)!'
-                : 'Errore durante il caricamento. Riprova.',
+                ? l10n.uploadDocumentSuccessFrontBack(
+                  _localizedSoggettoLabel(soggetto),
+                )
+                : '${l10n.error}. ${l10n.retry}.',
           ),
           backgroundColor: documento != null ? Colors.green : Colors.red,
         ),
@@ -153,218 +196,223 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
   }
 
   Future<String?> _scegliSorgenteDocumento() async {
+    final l10n = AppLocalizations.of(context)!;
     return showDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Row(
-          children: [
-            Icon(Icons.upload_file, color: Colors.blue),
-            SizedBox(width: 12),
-            Expanded(
-              child: Text('Come vuoi caricare il documento?'),
+      builder:
+          (context) => AlertDialog(
+            title: Row(
+              children: [
+                const Icon(Icons.upload_file, color: Colors.blue),
+                const SizedBox(width: 12),
+                Expanded(child: Text(l10n.uploadDocumentHow)),
+              ],
             ),
-          ],
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              InkWell(
-                onTap: () => Navigator.pop(context, 'camera'),
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.blue.shade200),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  InkWell(
+                    onTap: () => Navigator.pop(context, 'camera'),
                     borderRadius: BorderRadius.circular(12),
-                    color: Colors.blue.shade50,
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          color: Colors.white,
-                          size: 28,
-                        ),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.blue.shade200),
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.blue.shade50,
                       ),
-                      const SizedBox(width: 16),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Scatta foto',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Scatta fronte e retro con la fotocamera',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey,
-                              ),
+                            child: const Icon(
+                              Icons.camera_alt,
+                              color: Colors.white,
+                              size: 28,
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.takePhoto,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  l10n.takePhotoHint,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.arrow_forward_ios, size: 16),
+                        ],
                       ),
-                      const Icon(Icons.arrow_forward_ios, size: 16),
-                    ],
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 12),
+                  InkWell(
+                    onTap: () => Navigator.pop(context, 'gallery'),
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.purple.shade200),
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.purple.shade50,
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.purple,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.photo_library,
+                              color: Colors.white,
+                              size: 28,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.chooseGallery,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  l10n.chooseGalleryHint,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.arrow_forward_ios, size: 16),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  InkWell(
+                    onTap: () => Navigator.pop(context, 'file'),
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.green.shade200),
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.green.shade50,
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.insert_drive_file,
+                              color: Colors.white,
+                              size: 28,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.uploadFileLabel,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  l10n.uploadFileHint,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.arrow_forward_ios, size: 16),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
-              InkWell(
-                onTap: () => Navigator.pop(context, 'gallery'),
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.purple.shade200),
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.purple.shade50,
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.purple,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.photo_library,
-                          color: Colors.white,
-                          size: 28,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Galleria',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Scegli fronte e retro dalla galleria',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Icon(Icons.arrow_forward_ios, size: 16),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              InkWell(
-                onTap: () => Navigator.pop(context, 'file'),
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.green.shade200),
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.green.shade50,
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.insert_drive_file,
-                          color: Colors.white,
-                          size: 28,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Carica file',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Carica un singolo file (PDF o immagine)',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Icon(Icons.arrow_forward_ios, size: 16),
-                    ],
-                  ),
-                ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(l10n.cancel),
               ),
             ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Annulla'),
-          ),
-        ],
-      ),
     );
   }
 
   Future<void> _rimuoviDocumento(Documento documento) async {
+    final l10n = AppLocalizations.of(context)!;
     final conferma = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Elimina documento'),
-        content: const Text('Sei sicuro di voler eliminare questo documento?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+      builder:
+          (context) => AlertDialog(
+            title: Text(l10n.deleteDocumentTitle),
+            content: Text(l10n.deleteDocumentConfirm),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(
+                  l10n.deleteLabel,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Elimina', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
     );
 
     if (conferma == true) {
       await _documentoService.rimuoviDocumento(documento.id);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Documento eliminato')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.documentDeleted)));
         _loadDocumenti();
       }
     }
@@ -376,15 +424,19 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
 
   Future<void> _openWhatsAppSupport() async {
     const phoneNumber = '393515112113';
-    final message = Uri.encodeComponent('Ciao, ho problemi con il caricamento dei documenti');
+    final message = Uri.encodeComponent(
+      'Ciao, ho problemi con il caricamento dei documenti',
+    );
     final uri = Uri.parse('https://wa.me/$phoneNumber?text=$message');
-    
+
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Impossibile aprire WhatsApp')),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.cannotOpenWhatsApp),
+          ),
         );
       }
     }
@@ -394,87 +446,198 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('I miei documenti'),
+        title: Text(
+          widget.showFamilyDocuments
+              ? AppLocalizations.of(context)!.documentsApplicantAndFamilyTitle
+              : AppLocalizations.of(context)!.myDocumentsTitle,
+        ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                const Text(
-                  'Carica e gestisci i tuoi documenti',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Puoi scattare foto, scegliere dalla galleria o caricare file',
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Formati supportati: JPG, PNG, PDF',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-                const SizedBox(height: 24),
-                ...TipoDocumento.all.map((tipo) {
-                  final doc = _documentoService.getDocumentoByTipo(tipo);
-                  return _DocumentoCard(
-                    tipo: tipo,
-                    documento: doc,
-                    onCarica: () => _caricaDocumento(tipo),
-                    onRimuovi: doc != null ? () => _rimuoviDocumento(doc) : null,
-                    onApri: doc != null ? () => _apriDocumento(doc) : null,
-                  );
-                }),
-                const SizedBox(height: 16),
-                // WhatsApp Support Card
-                InkWell(
-                  onTap: _openWhatsAppSupport,
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF25D366).withOpacity(0.1),
-                      border: Border.all(color: const Color(0xFF25D366), width: 1.5),
-                      borderRadius: BorderRadius.circular(12),
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.manageYourDocuments,
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    AppLocalizations.of(context)!.documentSourcesHint,
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    AppLocalizations.of(context)!.supportedFormats,
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 24),
+                  if (widget.showFamilyDocuments) ...[
+                    _buildSoggettoSelector(),
+                    const SizedBox(height: 16),
+                    _buildDocumentSection(
+                      title:
+                          _selectedSoggetto == DocumentoSoggetto.familiare
+                              ? AppLocalizations.of(
+                                context,
+                              )!.documentsFamilyTitle
+                              : AppLocalizations.of(
+                                context,
+                              )!.documentsApplicantTitle,
+                      soggetto: _selectedSoggetto,
+                      subtitle:
+                          _selectedSoggetto == DocumentoSoggetto.familiare
+                              ? AppLocalizations.of(
+                                context,
+                              )!.documentsFamilyUploadSubtitle
+                              : AppLocalizations.of(
+                                context,
+                              )!.documentsPersonalSubtitle,
                     ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF25D366),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.chat,
-                            color: Colors.white,
-                            size: 24,
-                          ),
+                  ] else
+                    _buildDocumentSection(
+                      title:
+                          AppLocalizations.of(context)!.documentsApplicantTitle,
+                      soggetto: DocumentoSoggetto.richiedente,
+                      subtitle:
+                          AppLocalizations.of(
+                            context,
+                          )!.documentsPersonalSubtitle,
+                    ),
+                  const SizedBox(height: 16),
+                  // WhatsApp Support Card
+                  InkWell(
+                    onTap: _openWhatsAppSupport,
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF25D366).withOpacity(0.1),
+                        border: Border.all(
+                          color: const Color(0xFF25D366),
+                          width: 1.5,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            AppLocalizations.of(context)!.whatsappDocumentSupport,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFF25D366),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF25D366),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.chat,
+                              color: Colors.white,
+                              size: 24,
                             ),
                           ),
-                        ),
-                        const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: Color(0xFF25D366),
-                        ),
-                      ],
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              AppLocalizations.of(
+                                context,
+                              )!.whatsappDocumentSupport,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF25D366),
+                              ),
+                            ),
+                          ),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: Color(0xFF25D366),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 40),
-              ],
+                  const SizedBox(height: 40),
+                ],
+              ),
+    );
+  }
+
+  Widget _buildDocumentSection({
+    required String title,
+    required String soggetto,
+    String? subtitle,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        if (subtitle != null) ...[
+          const SizedBox(height: 4),
+          Text(
+            subtitle,
+            style: const TextStyle(fontSize: 13, color: Colors.grey),
+          ),
+        ],
+        const SizedBox(height: 12),
+        ...TipoDocumento.all.map((tipo) {
+          final doc = _documentoService.getDocumentoByTipo(
+            tipo,
+            soggetto: soggetto,
+          );
+          return _DocumentoCard(
+            tipo: tipo,
+            documento: doc,
+            onCarica: () => _caricaDocumento(tipo, soggetto),
+            onRimuovi: doc != null ? () => _rimuoviDocumento(doc) : null,
+            onApri: doc != null ? () => _apriDocumento(doc) : null,
+          );
+        }),
+      ],
+    );
+  }
+
+  Widget _buildSoggettoSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          AppLocalizations.of(context)!.documentsSelectSubject,
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: ChoiceChip(
+                label: Text(AppLocalizations.of(context)!.applicant),
+                selected: _selectedSoggetto == DocumentoSoggetto.richiedente,
+                onSelected: (selected) {
+                  if (!selected) return;
+                  setState(() {
+                    _selectedSoggetto = DocumentoSoggetto.richiedente;
+                  });
+                },
+              ),
             ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ChoiceChip(
+                label: Text(AppLocalizations.of(context)!.familyMember),
+                selected: _selectedSoggetto == DocumentoSoggetto.familiare,
+                onSelected: (selected) {
+                  if (!selected) return;
+                  setState(() {
+                    _selectedSoggetto = DocumentoSoggetto.familiare;
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -530,13 +693,14 @@ class _DocumentoCard extends StatelessWidget {
               children: [
                 Icon(
                   hasDocumento ? Icons.check_circle : Icons.upload_file,
-                  color: isScaduto
-                      ? Colors.red
-                      : staPerScadere
+                  color:
+                      isScaduto
+                          ? Colors.red
+                          : staPerScadere
                           ? Colors.orange
                           : hasDocumento
-                              ? Colors.green
-                              : Colors.grey,
+                          ? Colors.green
+                          : Colors.grey,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -554,20 +718,31 @@ class _DocumentoCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         if (documento!.filePathRetro != null)
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.blue.shade50,
                               borderRadius: BorderRadius.circular(6),
                               border: Border.all(color: Colors.blue.shade200),
                             ),
-                            child: const Row(
+                            child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.flip, size: 13, color: Colors.blue),
-                                SizedBox(width: 4),
+                                const Icon(
+                                  Icons.flip,
+                                  size: 13,
+                                  color: Colors.blue,
+                                ),
+                                const SizedBox(width: 4),
                                 Text(
-                                  'Fronte + Retro',
-                                  style: TextStyle(fontSize: 11, color: Colors.blue, fontWeight: FontWeight.w600),
+                                  AppLocalizations.of(context)!.frontAndBack,
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ],
                             ),
@@ -585,17 +760,23 @@ class _DocumentoCard extends StatelessWidget {
                         if (documento!.dataScadenza != null) ...[
                           const SizedBox(height: 4),
                           Text(
-                            'Scadenza: ${DateFormat('dd/MM/yyyy').format(documento!.dataScadenza!)}',
+                            AppLocalizations.of(context)!.expiryDateLabel(
+                              DateFormat(
+                                'dd/MM/yyyy',
+                              ).format(documento!.dataScadenza!),
+                            ),
                             style: TextStyle(
                               fontSize: 12,
-                              color: isScaduto
-                                  ? Colors.red
-                                  : staPerScadere
+                              color:
+                                  isScaduto
+                                      ? Colors.red
+                                      : staPerScadere
                                       ? Colors.orange
                                       : Colors.grey,
-                              fontWeight: isScaduto || staPerScadere
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
+                              fontWeight:
+                                  isScaduto || staPerScadere
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
                             ),
                           ),
                         ],
@@ -609,7 +790,7 @@ class _DocumentoCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(
-                  '⚠️ Documento scaduto! Aggiorna subito',
+                  '⚠️ ${AppLocalizations.of(context)!.documentExpiredUpdateNow}',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.red.shade700,
@@ -621,7 +802,7 @@ class _DocumentoCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(
-                  '⚠️ Documento in scadenza tra ${documento!.dataScadenza!.difference(DateTime.now()).inDays} giorni',
+                  '⚠️ ${AppLocalizations.of(context)!.documentExpiringInDays(documento!.dataScadenza!.difference(DateTime.now()).inDays)}',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.orange.shade700,
@@ -636,7 +817,11 @@ class _DocumentoCard extends StatelessWidget {
                   child: ElevatedButton.icon(
                     onPressed: onCarica,
                     icon: Icon(hasDocumento ? Icons.refresh : Icons.upload),
-                    label: Text(hasDocumento ? 'Aggiorna' : 'Carica'),
+                    label: Text(
+                      hasDocumento
+                          ? AppLocalizations.of(context)!.updateLabel
+                          : AppLocalizations.of(context)!.uploadLabel,
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           hasDocumento ? Colors.orange : Colors.blue,
@@ -649,13 +834,13 @@ class _DocumentoCard extends StatelessWidget {
                   IconButton(
                     onPressed: onApri,
                     icon: const Icon(Icons.visibility),
-                    tooltip: 'Visualizza',
+                    tooltip: AppLocalizations.of(context)!.viewLabel,
                   ),
                   IconButton(
                     onPressed: onRimuovi,
                     icon: const Icon(Icons.delete),
                     color: Colors.red,
-                    tooltip: 'Elimina',
+                    tooltip: AppLocalizations.of(context)!.deleteLabel,
                   ),
                 ],
               ],

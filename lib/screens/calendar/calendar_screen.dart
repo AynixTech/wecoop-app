@@ -27,25 +27,36 @@ class _CalendarScreenState extends State<CalendarScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   bool _isLoading = true;
+  bool _hasLoadedOnLanding = false;
   List<Map<String, dynamic>> _tutteRichieste = [];
   String? _filtroStato;
   bool _localeInitialized = false;
+  String _calendarLocale = 'it_IT';
   final storage = SecureStorageService();
   String? _richiestaIdToOpen;
   final Map<int, FirmaStatus> _firmaStatusByRichiesta = {};
-
-  List<Map<String, dynamic>> _filtriStato = [];
 
   @override
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
-    _initializeLocale();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
+    final appLocale = Localizations.localeOf(context);
+    final resolvedLocale = _resolveCalendarLocale(appLocale);
+    if (!_localeInitialized || _calendarLocale != resolvedLocale) {
+      _initializeLocale(resolvedLocale);
+    }
+
+    // Aggiorna automaticamente le richieste al primo atterraggio sulla schermata.
+    if (!_hasLoadedOnLanding) {
+      _hasLoadedOnLanding = true;
+      _caricaRichieste();
+    }
     
     // Controlla se c'è un ID richiesta da aprire (da deep link)
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
@@ -63,12 +74,26 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
   }
 
-  Future<void> _initializeLocale() async {
-    await initializeDateFormatting('it_IT', null);
-    if (mounted) {
-      setState(() => _localeInitialized = true);
+  String _resolveCalendarLocale(Locale locale) {
+    switch (locale.languageCode) {
+      case 'es':
+        return 'es_ES';
+      case 'en':
+        return 'en_US';
+      case 'it':
+      default:
+        return 'it_IT';
     }
-    _caricaRichieste();
+  }
+
+  Future<void> _initializeLocale(String localeCode) async {
+    await initializeDateFormatting(localeCode, null);
+    if (mounted) {
+      setState(() {
+        _calendarLocale = localeCode;
+        _localeInitialized = true;
+      });
+    }
   }
 
   Future<void> _caricaRichieste() async {
@@ -93,7 +118,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       final result = await SocioService.getRichiesteUtente(
         page: 1,
         perPage: 100,
-        stato: _filtroStato,
+        stato: null,
       );
 
       if (result['success'] == true) {
@@ -139,7 +164,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   List<Map<String, dynamic>> _getRichiesteDelGiorno(DateTime day) {
-    return _tutteRichieste.where((richiesta) {
+    return _getRichiesteFiltrate().where((richiesta) {
       final dataRichiesta = DateTime.tryParse(
         richiesta['data_richiesta'] ?? '',
       );
@@ -148,21 +173,69 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }).toList();
   }
 
+  List<Map<String, dynamic>> _getRichiesteFiltrate() {
+    if (_filtroStato == null) return _tutteRichieste;
+
+    return _tutteRichieste.where((richiesta) {
+      final stato = (richiesta['stato'] ?? '').toString();
+      final canonical = _canonicalStato(stato);
+      return canonical == _filtroStato;
+    }).toList();
+  }
+
+  String _normalizeStato(String stato) {
+    return stato.trim().toLowerCase().replaceAll(' ', '_');
+  }
+
+  String _canonicalStato(String stato) {
+    final normalized = _normalizeStato(stato);
+
+    if (normalized == 'awaiting_payment' ||
+        normalized == 'pending_payment' ||
+        normalized == 'in_attesa_di_pagamento' ||
+        normalized == 'in_attesa_pagamento' ||
+        normalized == 'in_attesa_del_pagamento' ||
+        (normalized.contains('attesa') && normalized.contains('pagament'))) {
+      return 'awaiting_payment';
+    }
+
+    if (normalized == 'completed' ||
+        normalized == 'completata' ||
+        normalized == 'completato') {
+      return 'completed';
+    }
+
+    if (normalized == 'cancelled' ||
+        normalized == 'annullata' ||
+        normalized == 'annullato') {
+      return 'cancelled';
+    }
+
+    if (normalized == 'processing' || normalized == 'in_lavorazione') {
+      return 'processing';
+    }
+
+    if (normalized == 'paid' || normalized == 'pagato') {
+      return 'paid';
+    }
+
+    return normalized;
+  }
+
+  bool _isAwaitingPaymentStatus(String stato) {
+    return _canonicalStato(stato) == 'awaiting_payment';
+  }
+
   Color _getStatoColor(String stato) {
-    switch (stato) {
+    switch (_canonicalStato(stato)) {
       case 'awaiting_payment':
-      case 'pending_payment':
         return Colors.orange;
       case 'processing':
-      case 'in_lavorazione':
         return Colors.blue;
       case 'completed':
-      case 'completata':
       case 'paid':
-      case 'pagato':
         return Colors.green;
       case 'cancelled':
-      case 'annullata':
         return Colors.red;
       case 'in_attesa':
         return Colors.amber;
@@ -172,18 +245,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   IconData _getStatoIcon(String stato) {
-    switch (stato) {
+    switch (_canonicalStato(stato)) {
       case 'awaiting_payment':
-      case 'pending_payment':
         return Icons.payment;
       case 'processing':
-      case 'in_lavorazione':
         return Icons.hourglass_empty;
       case 'completed':
-      case 'completata':
         return Icons.check_circle;
       case 'cancelled':
-      case 'annullata':
         return Icons.cancel;
       case 'in_attesa':
         return Icons.schedule;
@@ -196,24 +265,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final l10n = AppLocalizations.of(context);
     if (l10n == null) return stato;
     
-    switch (stato) {
+    switch (_canonicalStato(stato)) {
       case 'pending':
         return l10n.paymentStatusPending;
       case 'awaiting_payment':
-      case 'pending_payment':
         return l10n.paymentStatusAwaitingPayment;
       case 'paid':
         return l10n.paymentStatusPaid;
       case 'completed':
-      case 'completata':
         return l10n.paymentStatusCompleted;
       case 'failed':
         return l10n.paymentStatusFailed;
       case 'cancelled':
-      case 'annullata':
         return l10n.paymentStatusCancelled;
       case 'processing':
-      case 'in_lavorazione':
         return l10n.processing;
       case 'in_attesa':
         return l10n.pending;
@@ -1631,7 +1696,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     print('📋 =========================================================');
     
     // Stato awaiting_payment significa che c'è un pagamento da effettuare
-    final isAwaitingPayment = stato == 'awaiting_payment' || stato == 'pending_payment';
+    final isAwaitingPayment = _isAwaitingPaymentStatus(stato);
 
     return DraggableScrollableSheet(
       initialChildSize: 0.7,
@@ -2224,15 +2289,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
-    // Inizializza filtri con traduzioni
-    if (_filtriStato.isEmpty) {
-      _filtriStato = [
-        {'label': l10n.all, 'value': null},
-        {'label': l10n.paymentStatusAwaitingPayment, 'value': 'awaiting_payment'},
-        {'label': l10n.paymentStatusCompleted, 'value': 'completed'},
-      ];
-    }
+    final List<Map<String, String?>> filtriStato = [
+      {'label': l10n.all, 'value': null},
+      {'label': l10n.paymentStatusAwaitingPayment, 'value': 'awaiting_payment'},
+      {'label': l10n.paymentStatusCompleted, 'value': 'completed'},
+    ];
     
     if (!_localeInitialized) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -2241,6 +2302,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.myRequests),
+        actions: [
+          IconButton(
+            tooltip: 'Aggiorna',
+            icon: const Icon(Icons.refresh),
+            onPressed: _isLoading ? null : _caricaRichieste,
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: _caricaRichieste,
@@ -2255,23 +2323,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 8),
-                      itemCount: _filtriStato.length,
+                      itemCount: filtriStato.length,
                       itemBuilder: (context, index) {
-                        final filtro = _filtriStato[index];
+                        final filtro = filtriStato[index];
+                        final label = filtro['label'] ?? '';
+                        final value = filtro['value'];
                         final isSelected = _filtroStato == filtro['value'];
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4),
                           child: FilterChip(
-                            label: Text(filtro['label']),
+                            label: Text(label),
                             selected: isSelected,
                             onSelected: (selected) {
                               setState(() {
-                                _filtroStato =
-                                    selected
-                                        ? filtro['value'] as String?
-                                        : null;
+                                _filtroStato = selected ? value : null;
                               });
-                              _caricaRichieste();
                             },
                             backgroundColor: Colors.grey.shade200,
                             selectedColor: Colors.amber.shade100,
@@ -2294,7 +2360,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       calendarFormat: _calendarFormat,
                       eventLoader: _getRichiesteDelGiorno,
                       startingDayOfWeek: StartingDayOfWeek.monday,
-                      locale: 'it_IT',
+                      locale: _calendarLocale,
                       calendarStyle: CalendarStyle(
                         todayDecoration: BoxDecoration(
                           color: Colors.amber.shade300,
@@ -2342,7 +2408,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final richieste =
         _selectedDay != null
             ? _getRichiesteDelGiorno(_selectedDay!)
-            : _tutteRichieste;
+            : _getRichiesteFiltrate();
 
     if (richieste.isEmpty) {
       return Center(
@@ -2377,7 +2443,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final statoLabel = _getStatoLabelTradotto(stato);
     final pagamento = richiesta['pagamento'] ?? {};
     final puoPagare = richiesta['puo_pagare'] == true;
-    final isAwaitingPayment = stato == 'awaiting_payment' || stato == 'pending_payment';
+    final isAwaitingPayment = _isAwaitingPaymentStatus(stato);
     final canDelete = stato == 'pending';
 
     final cardContent = Card(

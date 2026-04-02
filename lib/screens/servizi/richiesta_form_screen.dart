@@ -51,28 +51,28 @@ const Map<String, String> servizioStandardMap = {
   'CAF - Assistenza Fiscale': 'caf_tax_assistance',
   'CAF - Tax Assistance': 'caf_tax_assistance',
   'CAF - Asistencia Fiscal': 'caf_tax_assistance',
-  
+
   // Sportello Immigrazione
   'Sportello Immigrazione': 'immigration_desk',
   'Immigration Desk': 'immigration_desk',
   'Oficina de Inmigración': 'immigration_desk',
-  
+
   // Supporto contabile per P.IVA forfettaria
   'Supporto contabile per P.IVA forfettaria': 'accounting_support',
   'Accounting Support': 'accounting_support',
   'Soporte Contable': 'accounting_support',
-  
+
   // Mediazione Fiscale
   'Mediazione Fiscale': 'tax_mediation',
   'Tax Mediation': 'tax_mediation',
   'Mediación Fiscal': 'tax_mediation',
-  
+
   // Orientamento e chiarimenti fiscali
   'Orientamento e chiarimenti fiscali': 'tax_guidance_clarifications',
   'Tax Guidance and Clarifications': 'tax_guidance_clarifications',
   'Orientación y aclaraciones fiscales': 'tax_guidance_clarifications',
   'Orientación y Aclaraciones Fiscales': 'tax_guidance_clarifications',
-  
+
   // Ricongiungimento familiare
   'Ricongiungimento familiare': 'family_reunification',
   'Family Reunification': 'family_reunification',
@@ -85,117 +85,117 @@ const Map<String, String> categoriaStandardMap = {
   'Dichiarazione dei Redditi (730)': 'tax_return_730',
   'Tax Return (730)': 'tax_return_730',
   'Declaración de la Renta (730)': 'tax_return_730',
-  
+
   // CAF - Compilazione Modelli
   'Compilazione Modelli': 'form_compilation',
   'Form Compilation': 'form_compilation',
   'Compilación de Formularios': 'form_compilation',
-  
+
   // Sportello - Permesso di Soggiorno
   'Permesso di Soggiorno': 'residence_permit',
   'Residence Permit': 'residence_permit',
   'Permiso de Residencia': 'residence_permit',
-  
+
   // Permesso - Per studiare in Italia
   'Per Studiare in Italia': 'study_italy',
   'For Studying in Italy': 'study_italy',
   'Para Estudiar en Italia': 'study_italy',
-  
+
   // Permesso - Per attesa occupazione
   'Per attesa occupazione': 'waiting_employment',
   'Waiting Employment': 'waiting_employment',
   'Waiting for employment': 'waiting_employment',
   'En espera de empleo': 'waiting_employment',
-  
+
   // Permesso - Ricongiungimento
   'Ricongiungimento': 'family_reunification_permit',
   'Family Reunification Permit': 'family_reunification_permit',
   'Family reunification permit': 'family_reunification_permit',
   'Reagrupación familiar': 'family_reunification_permit',
-  
+
   // Permesso - Duplicato permesso di soggiorno
   'Duplicato permesso di soggiorno': 'duplicate_permit',
   'Duplicate Residence Permit': 'duplicate_permit',
   'Duplicate residence permit': 'duplicate_permit',
   'Duplicado permiso de residencia': 'duplicate_permit',
-  
+
   // Permesso - Aggiornamento permesso lungo periodo
   'Aggiornamento permesso lungo periodo': 'long_term_permit_update',
   'Long-term Permit Update': 'long_term_permit_update',
   'Long-term permit update': 'long_term_permit_update',
   'Actualización permiso largo período': 'long_term_permit_update',
   'Actualización permiso larga duración': 'long_term_permit_update',
-  
+
   // Sportello - Cittadinanza
   'Cittadinanza': 'citizenship',
   'Citizenship': 'citizenship',
   'Ciudadanía': 'citizenship',
-  
+
   // Sportello - Visto Turistico
   'Visto Turistico': 'tourist_visa',
   'Tourist Visa': 'tourist_visa',
   'Visa Turística': 'tourist_visa',
-  
+
   // Sportello - Richiesta Asilo
   'Richiesta Asilo': 'asylum_request',
   'Asylum Request': 'asylum_request',
   'Solicitud de Asilo': 'asylum_request',
-  
+
   // Contabilità - Dichiarazione Redditi
   'Dichiarazione Redditi': 'income_tax_return',
   'Income Tax Return': 'income_tax_return',
   'Declaración de Renta': 'income_tax_return',
-  
+
   // Contabilità - Apertura Partita IVA
   'Apertura Partita IVA': 'vat_number_opening',
   'Apertura Partita IVA – Regime forfettario': 'vat_number_opening',
   'VAT Number Opening': 'vat_number_opening',
   'Apertura de Partita IVA': 'vat_number_opening',
-  
+
   // Contabilità - Gestione Contabilità
   'Gestione Contabilità': 'accounting_management',
   'Gestione contabile – Partita IVA forfettaria': 'accounting_management',
   'Accounting Management': 'accounting_management',
   'Gestión de Contabilidad': 'accounting_management',
-  
+
   // Contabilità - Adempimenti Fiscali
   'Adempimenti Fiscali': 'tax_compliance',
   'Tax Compliance': 'tax_compliance',
   'Cumplimientos Fiscales': 'tax_compliance',
-  
+
   // Contabilità - Consulenza Fiscale
   'Consulenza Fiscale': 'tax_consultation',
   'Tax Consultation': 'tax_consultation',
   'Consultoría Fiscal': 'tax_consultation',
-  
+
   // Contabilità - Chiusura/Variazione Attività
   'Chiudere o cambiare attività': 'close_change_activity',
-  
+
   // Mediazione Fiscale - Gestione Debiti
   'Gestione Debiti Fiscali': 'tax_debt_management',
   'Tax Debt Management': 'tax_debt_management',
   'Gestión de Deudas Fiscales': 'tax_debt_management',
-  
+
   // Orientamento fiscale - Tasse e Contributi
   'Tasse e Contributi': 'taxes_and_contributions',
   'Taxes and Contributions': 'taxes_and_contributions',
   'Impuestos y Contribuciones': 'taxes_and_contributions',
-  
+
   // Orientamento fiscale - Chiarimenti e Consulenza
   'Chiarimenti e Consulenza': 'clarifications_consulting',
   'Clarifications and Consulting': 'clarifications_consulting',
   'Aclaraciones y Consultoría': 'clarifications_consulting',
-  
+
   // Ricongiungimento familiare - Categorie
   'Coniuge': 'spouse',
   'Spouse': 'spouse',
   'Cónyuge': 'spouse',
-  
+
   'Figli minori': 'minor_children',
   'Minor Children': 'minor_children',
   'Minor children': 'minor_children',
   'Hijos menores': 'minor_children',
-  
+
   'Genitori a carico': 'dependent_parents',
   'Dependent Parents': 'dependent_parents',
   'Dependent parents': 'dependent_parents',
@@ -219,7 +219,6 @@ class RichiestaFormScreen extends StatefulWidget {
   final List<Map<String, dynamic>> campi;
   final List<String>? documentiRichiesti;
   final List<String>? modalitaConsegna;
-  
 
   const RichiestaFormScreen({
     super.key,
@@ -243,8 +242,9 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   bool _isSubmitting = false;
   bool _isLoading = true;
   List<String> _documentiMancanti = [];
+  List<String> _documentiMancantiFamiliare = [];
   final Set<String> _modalitaConsegnaSelezionate = {};
-  
+
   // Controller per campi modalità di consegna
   final _consegnaIndirizzoController = TextEditingController();
   final _consegnaCittaController = TextEditingController();
@@ -261,14 +261,25 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
 
   // Controlla quali documenti mancano
   Future<void> _checkDocumenti() async {
-    if (widget.documentiRichiesti == null || widget.documentiRichiesti!.isEmpty) {
+    if (widget.documentiRichiesti == null ||
+        widget.documentiRichiesti!.isEmpty) {
       return;
     }
 
     await _documentoService.getDocumenti(); // Carica documenti
-    final mancanti = _documentoService.getDocumentiMancanti(widget.documentiRichiesti!);
+    final mancanti = _documentoService.getDocumentiMancanti(
+      widget.documentiRichiesti!,
+    );
+    final mancantiFamiliare =
+        _isMotiviFamiliariFlow()
+            ? _documentoService.getDocumentiMancanti(
+              widget.documentiRichiesti!,
+              soggetto: DocumentoSoggetto.familiare,
+            )
+            : <String>[];
     setState(() {
       _documentiMancanti = mancanti;
+      _documentiMancantiFamiliare = mancantiFamiliare;
     });
   }
 
@@ -311,6 +322,356 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         hasNombreCompleto;
   }
 
+  bool _matchesCurrentFlow(List<String> patterns) {
+    final normalizedCategoria = _normalizeFieldLabel(widget.categoria);
+    final normalizedServizio = _normalizeFieldLabel(widget.servizio);
+
+    for (final pattern in patterns) {
+      final normalizedPattern = _normalizeFieldLabel(pattern);
+      if (normalizedCategoria.contains(normalizedPattern) ||
+          normalizedServizio.contains(normalizedPattern)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  bool _isLavoroSubordinatoFlow() {
+    return _matchesCurrentFlow([
+      'lavoro subordinato',
+      'per lavoro subordinato',
+      'trabajo subordinado',
+      'por trabajo subordinado',
+    ]);
+  }
+
+  bool _isLavoroAutonomoFlow() {
+    return _matchesCurrentFlow([
+      'lavoro autonomo',
+      'per lavoro autonomo',
+      'trabajo autonomo',
+      'trabajo autónomo',
+      'por trabajo autonomo',
+      'por trabajo autónomo',
+    ]);
+  }
+
+  bool _isMotiviFamiliariFlow() {
+    return _matchesCurrentFlow([
+      'motivi familiari',
+      'per motivi familiari',
+      'family reasons',
+      'family reunification',
+      'motivos familiares',
+      'por motivos familiares',
+    ]);
+  }
+
+  bool _isCittadinanzaFlow() {
+    return _matchesCurrentFlow([
+      'cittadinanza',
+      'cittadinanza italiana',
+      'citizenship',
+      'ciudadania',
+      'ciudadanía',
+    ]);
+  }
+
+  bool _isVistoTuristicoFlow() {
+    return _matchesCurrentFlow([
+      'visto turistico',
+      'tourist visa',
+      'visa turistica',
+      'visa turística',
+    ]);
+  }
+
+  bool _isContractTypeFieldLabel(String label) {
+    final normalized = _normalizeFieldLabel(label);
+    return normalized.contains('tipo di contratto') ||
+        normalized.contains('tipo contratto') ||
+        normalized.contains('contract type') ||
+        normalized.contains('tipo de contrato');
+  }
+
+  bool _isContractDurationFieldLabel(String label) {
+    final normalized = _normalizeFieldLabel(label);
+    return normalized.contains('durata contratto') ||
+        normalized.contains('contract duration') ||
+        normalized.contains('duracion contrato') ||
+        normalized.contains('duración contrato');
+  }
+
+  bool _isDocumentExpiryFieldLabel(String label) {
+    final normalized = _normalizeFieldLabel(label);
+    final isExpiryField =
+        normalized.contains('scadenza') ||
+        normalized.contains('caducidad') ||
+        normalized.contains('expiry') ||
+        normalized.contains('expiration');
+    final isDocumentField =
+        normalized.contains('document') ||
+        normalized.contains('documento') ||
+        normalized.contains('passaporto') ||
+        normalized.contains('passport') ||
+        normalized.contains('permesso') ||
+        normalized.contains('carta identita') ||
+        normalized.contains('carta identidad');
+    return isExpiryField && isDocumentField;
+  }
+
+  bool _isFamilyDocumentFieldLabel(String label) {
+    final normalized = _normalizeFieldLabel(label);
+    return normalized.contains('documento identita familiare') ||
+        normalized.contains('documento identita del familiare') ||
+        normalized.contains('documento identidad familiar') ||
+        normalized.contains('family id document');
+  }
+
+  bool _isItalianLanguageCertificationFieldLabel(String label) {
+    final normalized = _normalizeFieldLabel(label);
+    return normalized.contains('certificazione lingua italiana') ||
+        normalized.contains('certificato lingua italiana') ||
+        normalized.contains('italian language certification') ||
+        normalized.contains('certificacion idioma italiano') ||
+        normalized.contains('certificación idioma italiano');
+  }
+
+  bool _isTouristVisaOptionalDateFieldLabel(String label) {
+    final normalized = _normalizeFieldLabel(label);
+    return normalized.contains('data arrivo') ||
+        normalized.contains('date of arrival') ||
+        normalized.contains('fecha llegada') ||
+        normalized.contains('partenza prevista') ||
+        normalized.contains('departure date') ||
+        normalized.contains('fecha salida');
+  }
+
+  bool _isPermanentContractSelected() {
+    for (final entry in _formData.entries) {
+      if (_isContractTypeFieldLabel(entry.key)) {
+        final normalizedValue = _normalizeFieldLabel('${entry.value ?? ''}');
+        if (normalizedValue.contains('tempo indeterminato') ||
+            normalizedValue.contains('indeterminato') ||
+            normalizedValue.contains('indefinido') ||
+            normalizedValue.contains('indefinite')) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  void _clearFieldData(bool Function(String label) matcher) {
+    _formData.removeWhere((key, value) => matcher(key));
+    for (final entry in _controllers.entries) {
+      if (matcher(entry.key)) {
+        entry.value.clear();
+      }
+    }
+  }
+
+  bool _shouldHideField(String label) {
+    if ((_isLavoroSubordinatoFlow() || _isLavoroAutonomoFlow()) &&
+        _isDocumentExpiryFieldLabel(label)) {
+      return true;
+    }
+
+    if (_isLavoroSubordinatoFlow() &&
+        _isContractDurationFieldLabel(label) &&
+        _isPermanentContractSelected()) {
+      return true;
+    }
+
+    return false;
+  }
+
+  bool _isFieldRequired(String label, bool required) {
+    if (!required) return false;
+    if (_shouldHideField(label)) return false;
+
+    if (_isVistoTuristicoFlow() &&
+        _isTouristVisaOptionalDateFieldLabel(label)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  String _getDisplayedFieldLabel(String label) {
+    if (_isMotiviFamiliariFlow() && _isFamilyDocumentFieldLabel(label)) {
+      return AppLocalizations.of(context)!.familyResidencePermitType;
+    }
+    return label;
+  }
+
+  String _getRequiredDocumentLabel(String tipo) {
+    return TipoDocumento.getDisplayName(tipo);
+  }
+
+  String _getInitialDocumentSoggetto() {
+    if (_isMotiviFamiliariFlow() && _documentiMancantiFamiliare.isNotEmpty) {
+      return DocumentoSoggetto.familiare;
+    }
+    return DocumentoSoggetto.richiedente;
+  }
+
+  Widget _buildDocumentStatusSummary({
+    required String title,
+    required List<String> documentiMancanti,
+  }) {
+    final isComplete = documentiMancanti.isEmpty;
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isComplete ? Colors.green.shade50 : Colors.orange.shade50,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isComplete ? Colors.green.shade300 : Colors.orange.shade300,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  isComplete ? Icons.check_circle : Icons.warning_amber_rounded,
+                  color: isComplete ? Colors.green : Colors.orange,
+                  size: 18,
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              isComplete
+                  ? AppLocalizations.of(context)!.documentsComplete
+                  : AppLocalizations.of(
+                    context,
+                  )!.missingDocumentsCount(documentiMancanti.length),
+              style: TextStyle(
+                fontSize: 13,
+                color:
+                    isComplete ? Colors.green.shade700 : Colors.orange.shade700,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDocumentiBlock({
+    required String title,
+    String? subtitle,
+    required List<String> documenti,
+    required List<String> documentiMancanti,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Container(
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
+          if (subtitle != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+            ),
+          ],
+          const SizedBox(height: 10),
+          ...documenti.map((tipo) {
+            final haDocumento = !documentiMancanti.contains(tipo);
+            final showAsUploaded = haDocumento;
+            final showAsMissing = !haDocumento;
+
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  Icon(
+                    showAsUploaded
+                        ? Icons.check_circle
+                        : showAsMissing
+                        ? Icons.radio_button_unchecked
+                        : Icons.folder_shared_outlined,
+                    color:
+                        showAsUploaded
+                            ? Colors.green
+                            : showAsMissing
+                            ? Colors.grey.shade400
+                            : Colors.blueGrey,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _getRequiredDocumentLabel(tipo),
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ),
+                  if (showAsUploaded)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade100,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.green.shade400),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.check,
+                            size: 12,
+                            color: Colors.green.shade700,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            l10n.alreadyUploaded,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.green.shade700,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
   String _joinNameParts(String? first, String? last) {
     return '${first ?? ''} ${last ?? ''}'.trim();
   }
@@ -332,12 +693,12 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
 
   Map<String, dynamic> _asStringDynamicMap(dynamic value) {
     if (value is! Map) return <String, dynamic>{};
-    return value.map(
-      (key, mapValue) => MapEntry(key.toString(), mapValue),
-    );
+    return value.map((key, mapValue) => MapEntry(key.toString(), mapValue));
   }
 
-  Map<String, String?> _extractNamePartsFromApiData(Map<String, dynamic> meData) {
+  Map<String, String?> _extractNamePartsFromApiData(
+    Map<String, dynamic> meData,
+  ) {
     final userData = _asStringDynamicMap(meData['user']);
     final wpUserData = _asStringDynamicMap(meData['wp_user']);
     final profileData = _asStringDynamicMap(meData['profilo']);
@@ -444,7 +805,9 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       }
 
       if (resolvedFullName.isEmpty) {
-        print('⚠️ [Prefill] Nome non trovato in storage, provo fallback API /soci/me...');
+        print(
+          '⚠️ [Prefill] Nome non trovato in storage, provo fallback API /soci/me...',
+        );
         final meData = await SocioService.getMe();
         if (meData != null) {
           final extractedNameParts = _extractNamePartsFromApiData(meData);
@@ -465,9 +828,13 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
           if (apiFullName.isNotEmpty) {
             resolvedFullName = apiFullName;
             await _storage.write(key: 'full_name', value: apiFullName);
-            print('✅ [Prefill] Nome recuperato da API /soci/me (alias-aware): $apiFullName');
+            print(
+              '✅ [Prefill] Nome recuperato da API /soci/me (alias-aware): $apiFullName',
+            );
           } else {
-            print('⚠️ [Prefill] API /soci/me non contiene campi nome utilizzabili');
+            print(
+              '⚠️ [Prefill] API /soci/me non contiene campi nome utilizzabili',
+            );
           }
         } else {
           print('⚠️ [Prefill] Fallback API /soci/me non disponibile');
@@ -549,12 +916,12 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         prefilledData['Postal Code'] = cap;
         prefilledData['Código Postal'] = cap;
       }
-      
+
       // Provincia
       if (provincia != null) {
         prefilledData['Provincia'] = provincia;
       }
-      
+
       // Precompila i campi per modalità di consegna
       if (indirizzo != null) _consegnaIndirizzoController.text = indirizzo;
       if (citta != null) _consegnaCittaController.text = citta;
@@ -606,7 +973,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       // Paese di origine/provenienza (priorità a paese_origine)
       // Converte codice ISO a nome completo (EC -> Ecuador, IT -> Italia, ecc.)
       final paese = paeseOrigine ?? nazionalita;
-      if (paese != null) {
+      if (paese != null && !_isLavoroSubordinatoFlow()) {
         final countryFullName = getCountryName(paese);
         prefilledData['Paese di provenienza'] = countryFullName;
         prefilledData['Paese di origine'] = countryFullName;
@@ -624,7 +991,9 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
 
       print('Dati precompilati: $prefilledData');
       print('Dati precompilati: $prefilledData');
-      print('Campi form ricevuti (${widget.campi.length}): ${widget.campi.map((c) => c['label']).toList()}');
+      print(
+        'Campi form ricevuti (${widget.campi.length}): ${widget.campi.map((c) => c['label']).toList()}',
+      );
 
       final normalizedPrefilledData = <String, String>{
         for (final entry in prefilledData.entries)
@@ -636,7 +1005,8 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         final label = campo['label'] as String;
         final normalizedLabel = _normalizeFieldLabel(label);
         final matchedExact = prefilledData[label] != null;
-        final matchedNormalized = normalizedPrefilledData[normalizedLabel] != null;
+        final matchedNormalized =
+            normalizedPrefilledData[normalizedLabel] != null;
         final looksLikeFullName = _isFullNameFieldLabel(label);
         final fullNameFallbackValue =
             looksLikeFullName && resolvedFullName.isNotEmpty
@@ -648,13 +1018,14 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
             normalizedPrefilledData[normalizedLabel] ??
             fullNameFallbackValue;
 
-        final source = matchedExact
-            ? 'exact-label'
-            : matchedNormalized
+        final source =
+            matchedExact
+                ? 'exact-label'
+                : matchedNormalized
                 ? 'normalized-label'
                 : fullNameFallbackValue != null
-                    ? 'fullname-fallback'
-                    : 'none';
+                ? 'fullname-fallback'
+                : 'none';
 
         final preview =
             (prefilledValue == null || prefilledValue.isEmpty)
@@ -669,9 +1040,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
           'matchedNormalized=$matchedNormalized source=$source value="$preview"',
         );
 
-        final controller = TextEditingController(
-          text: prefilledValue ?? '',
-        );
+        final controller = TextEditingController(text: prefilledValue ?? '');
         _controllers[label] = controller;
         if (prefilledValue != null) {
           _formData[label] = prefilledValue;
@@ -761,10 +1130,12 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                                 (campo) => _buildField(campo),
                               ),
                               // Sezione documenti richiesti
-                              if (widget.documentiRichiesti != null && widget.documentiRichiesti!.isNotEmpty)
+                              if (widget.documentiRichiesti != null &&
+                                  widget.documentiRichiesti!.isNotEmpty)
                                 _buildDocumentiRichiestiSection(),
                               // Sezione modalità di consegna
-                              if (widget.modalitaConsegna != null && widget.modalitaConsegna!.isNotEmpty)
+                              if (widget.modalitaConsegna != null &&
+                                  widget.modalitaConsegna!.isNotEmpty)
                                 _buildModalitaConsegnaSection(),
                             ],
                           ),
@@ -830,7 +1201,12 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     final l10n = AppLocalizations.of(context)!;
     final label = campo['label'] as String;
     final type = campo['type'] as String;
-    final required = campo['required'] as bool;
+    final required = _isFieldRequired(label, campo['required'] as bool);
+    final displayedLabel = _getDisplayedFieldLabel(label);
+
+    if (_shouldHideField(label)) {
+      return const SizedBox.shrink();
+    }
 
     Widget field;
 
@@ -838,9 +1214,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       case 'text':
         field = TextFormField(
           controller: _controllers[label],
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-          ),
+          decoration: const InputDecoration(border: OutlineInputBorder()),
           validator:
               required
                   ? (value) =>
@@ -852,9 +1226,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       case 'textarea':
         field = TextFormField(
           controller: _controllers[label],
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-          ),
+          decoration: const InputDecoration(border: OutlineInputBorder()),
           maxLines: 4,
           validator:
               required
@@ -867,9 +1239,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       case 'number':
         field = TextFormField(
           controller: _controllers[label],
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-          ),
+          decoration: const InputDecoration(border: OutlineInputBorder()),
           keyboardType: TextInputType.number,
           validator:
               required
@@ -908,11 +1278,23 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         );
         break;
       case 'select':
-        final options = campo['options'] as List<dynamic>;
+        final options =
+            (campo['options'] as List<dynamic>)
+                .map((option) => option.toString())
+                .toList();
+
+        if (_isCittadinanzaFlow() &&
+            _isItalianLanguageCertificationFieldLabel(label) &&
+            !options.any(
+              (option) => _normalizeFieldLabel(
+                option,
+              ).contains('permesso di soggiorno a lungo periodo'),
+            )) {
+          options.add('Ho permesso di soggiorno a lungo periodo');
+        }
+
         field = DropdownButtonFormField<String>(
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-          ),
+          decoration: const InputDecoration(border: OutlineInputBorder()),
           items:
               options.map((option) {
                 return DropdownMenuItem<String>(
@@ -924,7 +1306,15 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
               required
                   ? (value) => value == null ? l10n.fillAllFields : null
                   : null,
-          onChanged: (value) => _formData[label] = value,
+          onChanged: (value) {
+            setState(() {
+              _formData[label] = value;
+              if (_isContractTypeFieldLabel(label) &&
+                  _isPermanentContractSelected()) {
+                _clearFieldData(_isContractDurationFieldLabel);
+              }
+            });
+          },
         );
         break;
       default:
@@ -938,23 +1328,24 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         children: [
           RichText(
             text: TextSpan(
-              text: label,
+              text: displayedLabel,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 color: Colors.grey.shade800,
               ),
-              children: required
-                  ? [
-                      TextSpan(
-                        text: ' *',
-                        style: TextStyle(
-                          color: Colors.red.shade700,
-                          fontWeight: FontWeight.bold,
+              children:
+                  required
+                      ? [
+                        TextSpan(
+                          text: ' *',
+                          style: TextStyle(
+                            color: Colors.red.shade700,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ]
-                  : [],
+                      ]
+                      : [],
             ),
           ),
           const SizedBox(height: 8),
@@ -1068,9 +1459,11 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     }
 
     // Controlla se ci sono documenti mancanti
-    if (widget.documentiRichiesti != null && widget.documentiRichiesti!.isNotEmpty) {
+    if (widget.documentiRichiesti != null &&
+        widget.documentiRichiesti!.isNotEmpty) {
       await _checkDocumenti();
-      if (_documentiMancanti.isNotEmpty) {
+      if (_documentiMancanti.isNotEmpty ||
+          _documentiMancantiFamiliare.isNotEmpty) {
         _showDocumentiMancantiDialog();
         return;
       }
@@ -1085,10 +1478,11 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     }
 
     // Aggiungi modalità di consegna selezionate se presenti
-    if (widget.modalitaConsegna != null && widget.modalitaConsegna!.isNotEmpty) {
+    if (widget.modalitaConsegna != null &&
+        widget.modalitaConsegna!.isNotEmpty) {
       if (_modalitaConsegnaSelezionate.isNotEmpty) {
         _formData['modalita_consegna'] = _modalitaConsegnaSelezionate.toList();
-        
+
         // Aggiungi dati specifici per ogni modalità
         if (_modalitaConsegnaSelezionate.contains('courier')) {
           _formData['consegna_indirizzo'] = _consegnaIndirizzoController.text;
@@ -1100,7 +1494,8 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
           _formData['consegna_email'] = _consegnaEmailController.text;
         }
         if (_modalitaConsegnaSelezionate.contains('pickup')) {
-          _formData['consegna_indirizzo_ritiro'] = 'Via Populonia 8, 20159 Milano MI';
+          _formData['consegna_indirizzo_ritiro'] =
+              'Via Populonia 8, 20159 Milano MI';
         }
       }
     }
@@ -1134,7 +1529,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       // Standardizza servizio e categoria (da tradotti a chiavi inglesi)
       final servizioStandard = _getStandardServizio(widget.servizio);
       final categoriaStandard = _getStandardCategoria(widget.categoria);
-      
+
       print('=== STANDARDIZZAZIONE ===');
       print('Servizio originale: ${widget.servizio}');
       print('Servizio standard: $servizioStandard');
@@ -1148,7 +1543,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         categoria: categoriaStandard,
         dati: apiData,
       );
-      
+
       print('\n📨 RESULT RICEVUTO:');
       print('   success: ${result['success']}');
       print('   numero_pratica: ${result['numero_pratica']}');
@@ -1168,20 +1563,22 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         final requiresPayment = result['requires_payment'] == true;
         final importo = result['importo'];
         final paymentId = result['payment_id'];
-        
+
         print('\n💬 PREPARAZIONE DIALOG:');
         print('   numeroPratica: $numeroPratica');
         print('   requiresPayment: $requiresPayment');
         print('   importo: $importo');
         print('   paymentId: $paymentId');
-        
-        String message = numeroPratica != null
-            ? '${l10n.requestSent}\n\n${l10n.fileNumber}: $numeroPratica'
-            : result['message'] ?? l10n.requestSent;
-        
+
+        String message =
+            numeroPratica != null
+                ? '${l10n.requestSent}\n\n${l10n.fileNumber}: $numeroPratica'
+                : result['message'] ?? l10n.requestSent;
+
         // Aggiungi info pagamento se richiesto
         if (requiresPayment && importo != null) {
-          message += '\n\n💰 ${l10n.paymentRequiredAmount}: €${importo.toStringAsFixed(2)}';
+          message +=
+              '\n\n💰 ${l10n.paymentRequiredAmount}: €${importo.toStringAsFixed(2)}';
           message += '\n\n${l10n.canCompletePaymentFromRequests}';
         } else {
           message += '\n\n${l10n.willBeContactedByEmail}';
@@ -1190,51 +1587,56 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (context) => AlertDialog(
-            title: Row(
-              children: [
-                Icon(
-                  requiresPayment ? Icons.payment : Icons.check_circle,
-                  color: requiresPayment ? Colors.orange : Colors.green,
-                  size: 32,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    requiresPayment ? l10n.requestSentPaymentRequired : l10n.requestSent,
-                  ),
-                ),
-              ],
-            ),
-            content: Text(message),
-            actions: [
-              if (requiresPayment && paymentId != null)
-                TextButton.icon(
-                  icon: const Icon(Icons.credit_card),
-                  label: Text(l10n.payNow),
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Chiudi dialog
-                    Navigator.of(context).pop(); // Torna indietro
-                    // Naviga alla schermata pagamento
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PagamentoScreen(
-                          paymentId: paymentId,
-                        ),
+          builder:
+              (context) => AlertDialog(
+                title: Row(
+                  children: [
+                    Icon(
+                      requiresPayment ? Icons.payment : Icons.check_circle,
+                      color: requiresPayment ? Colors.orange : Colors.green,
+                      size: 32,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        requiresPayment
+                            ? l10n.requestSentPaymentRequired
+                            : l10n.requestSent,
                       ),
-                    );
-                  },
+                    ),
+                  ],
                 ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Chiudi dialog
-                  Navigator.of(context).pop(); // Torna indietro
-                },
-                child: Text(requiresPayment ? l10n.payLater : l10n.ok),
+                content: Text(message),
+                actions: [
+                  if (requiresPayment && paymentId != null)
+                    TextButton.icon(
+                      icon: const Icon(Icons.credit_card),
+                      label: Text(l10n.payNow),
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Chiudi dialog
+                        Navigator.of(context).pop(); // Torna indietro
+                        // Naviga alla schermata pagamento
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) =>
+                                    PagamentoScreen(paymentId: paymentId),
+                          ),
+                        );
+                      },
+                    ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Chiudi dialog
+                      Navigator.of(this.context).pushReplacementNamed(
+                        '/calendar',
+                      );
+                    },
+                    child: Text(requiresPayment ? l10n.payLater : l10n.ok),
+                  ),
+                ],
               ),
-            ],
-          ),
         );
       } else {
         final l10n = AppLocalizations.of(context)!;
@@ -1280,14 +1682,22 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
 
   // Costruisce la sezione documenti richiesti
   Widget _buildDocumentiRichiestiSection() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _documentiMancanti.isEmpty ? Colors.green.shade50 : Colors.orange.shade50,
+        color:
+            _documentiMancanti.isEmpty && _documentiMancantiFamiliare.isEmpty
+                ? Colors.green.shade50
+                : Colors.orange.shade50,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: _documentiMancanti.isEmpty ? Colors.green : Colors.orange,
+          color:
+              _documentiMancanti.isEmpty && _documentiMancantiFamiliare.isEmpty
+                  ? Colors.green
+                  : Colors.orange,
           width: 2,
         ),
       ),
@@ -1297,13 +1707,20 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
           Row(
             children: [
               Icon(
-                _documentiMancanti.isEmpty ? Icons.check_circle : Icons.upload_file,
-                color: _documentiMancanti.isEmpty ? Colors.green : Colors.orange,
+                _documentiMancanti.isEmpty &&
+                        _documentiMancantiFamiliare.isEmpty
+                    ? Icons.check_circle
+                    : Icons.upload_file,
+                color:
+                    _documentiMancanti.isEmpty &&
+                            _documentiMancantiFamiliare.isEmpty
+                        ? Colors.green
+                        : Colors.orange,
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  AppLocalizations.of(context)!.requiredDocuments.toUpperCase(),
+                  l10n.requiredDocuments.toUpperCase(),
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -1313,54 +1730,70 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          ...widget.documentiRichiesti!.map((tipo) {
-            final l10n = AppLocalizations.of(context)!;
-            final haDocumento = !_documentiMancanti.contains(tipo);
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                children: [
-                  Icon(
-                    haDocumento ? Icons.check_circle : Icons.radio_button_unchecked,
-                    color: haDocumento ? Colors.green : Colors.grey.shade400,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      TipoDocumento.getDisplayName(tipo),
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ),
-                  if (haDocumento)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade100,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.green.shade400),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.check, size: 12, color: Colors.green.shade700),
-                          const SizedBox(width: 4),
-                          Text(
-                            l10n.alreadyUploaded,
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.green.shade700,
-                              fontWeight: FontWeight.w600,
-                            ),
+          if (_isMotiviFamiliariFlow())
+            Text(
+              l10n.documentsManagedSeparately,
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+            ),
+          if (_isMotiviFamiliariFlow()) ...[
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                _buildDocumentStatusSummary(
+                  title: l10n.applicant,
+                  documentiMancanti: _documentiMancanti,
+                ),
+                const SizedBox(width: 12),
+                _buildDocumentStatusSummary(
+                  title: l10n.familyMember,
+                  documentiMancanti: _documentiMancantiFamiliare,
+                ),
+              ],
+            ),
+          ],
+          if (_isMotiviFamiliariFlow()) ...[
+            _buildDocumentiBlock(
+              title: l10n.documentsApplicantTitle,
+              subtitle: l10n.documentsApplicantSubtitle,
+              documenti: widget.documentiRichiesti!,
+              documentiMancanti: _documentiMancanti,
+            ),
+            _buildDocumentiBlock(
+              title: l10n.documentsFamilyTitle,
+              subtitle: l10n.documentsFamilySubtitle,
+              documenti: widget.documentiRichiesti!,
+              documentiMancanti: _documentiMancantiFamiliare,
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: TextButton.icon(
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => DocumentiScreen(
+                            showFamilyDocuments: true,
+                            initialSoggetto: DocumentoSoggetto.familiare,
                           ),
-                        ],
-                      ),
                     ),
-                ],
+                  );
+                  await _checkDocumenti();
+                },
+                icon: const Icon(Icons.edit_document),
+                label: Text(l10n.reloadFamilyDocuments),
+                style: TextButton.styleFrom(foregroundColor: Colors.blue),
               ),
-            );
-          }),
-          if (_documentiMancanti.isNotEmpty) ...[
+            ),
+          ] else
+            _buildDocumentiBlock(
+              title: l10n.requiredDocuments,
+              documenti: widget.documentiRichiesti!,
+              documentiMancanti: _documentiMancanti,
+            ),
+          if (_documentiMancanti.isNotEmpty ||
+              _documentiMancantiFamiliare.isNotEmpty) ...[
             const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
@@ -1369,13 +1802,19 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const DocumentiScreen(),
+                      builder:
+                          (context) => DocumentiScreen(
+                            showFamilyDocuments: _isMotiviFamiliariFlow(),
+                            initialSoggetto: _getInitialDocumentSoggetto(),
+                          ),
                     ),
                   );
                   await _checkDocumenti();
                 },
                 icon: const Icon(Icons.upload),
-                label: Text(AppLocalizations.of(context)!.uploadMissingDocuments),
+                label: Text(
+                  AppLocalizations.of(context)!.uploadMissingDocuments,
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange,
                   foregroundColor: Colors.white,
@@ -1392,81 +1831,150 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   void _showDocumentiMancantiDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('📄 Documenti mancanti'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Per procedere con questa richiesta devi caricare i seguenti documenti:',
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              '📄 ${AppLocalizations.of(context)!.missingDocumentsTitle}',
             ),
-            const SizedBox(height: 16),
-            ..._documentiMancanti.map(
-              (tipo) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  children: [
-                    const Icon(Icons.upload_file, color: Colors.orange),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        TipoDocumento.getDisplayName(tipo),
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(AppLocalizations.of(context)!.missingDocumentsIntro),
+                if (_isMotiviFamiliariFlow())
+                  Padding(
+                    padding: EdgeInsets.only(top: 8),
+                    child: Text(
+                      AppLocalizations.of(context)!.documentsSeparatedNotice,
+                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                const SizedBox(height: 16),
+                if (_isMotiviFamiliariFlow()) ...[
+                  Text(
+                    AppLocalizations.of(context)!.documentsApplicantTitle,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  ..._documentiMancanti.map(
+                    (tipo) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.upload_file, color: Colors.orange),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _getRequiredDocumentLabel(tipo),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    AppLocalizations.of(context)!.documentsFamilyTitle,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  ..._documentiMancantiFamiliare.map(
+                    (tipo) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.folder_shared_outlined,
+                            color: Colors.blueGrey,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _getRequiredDocumentLabel(tipo),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ] else
+                  ..._documentiMancanti.map(
+                    (tipo) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.upload_file, color: Colors.orange),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _getRequiredDocumentLabel(tipo),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 16),
+                Text(
+                  AppLocalizations.of(context)!.formDataPreserved,
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Annulla'),
+              ),
+              ElevatedButton.icon(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  // Naviga allo screen documenti
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => DocumentiScreen(
+                            showFamilyDocuments: _isMotiviFamiliariFlow(),
+                            initialSoggetto: _getInitialDocumentSoggetto(),
+                          ),
+                    ),
+                  );
+                  // Ricontrolla i documenti al ritorno
+                  await _checkDocumenti();
+                },
+                icon: const Icon(Icons.upload),
+                label: const Text('Carica documenti'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'I dati del form verranno conservati.',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Annulla'),
+            ],
           ),
-          ElevatedButton.icon(
-            onPressed: () async {
-              Navigator.pop(context);
-              // Naviga allo screen documenti
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const DocumentiScreen(),
-                ),
-              );
-              // Ricontrolla i documenti al ritorno
-              await _checkDocumenti();
-            },
-            icon: const Icon(Icons.upload),
-            label: const Text('Carica documenti'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              foregroundColor: Colors.white,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
   // Costruisce la sezione modalità di consegna
   Widget _buildModalitaConsegnaSection() {
     final l10n = AppLocalizations.of(context)!;
-    
+
     // Mappa delle modalità disponibili con le loro chiavi e etichette localizzate
     final modalitaDisponibili = {
       'courier': l10n.courierShipping,
       'pickup': l10n.pickupAtOffice,
       'email': l10n.emailDelivery,
     };
-    
+
     // Filtra solo le modalità disponibili per questo servizio
     final modalitaPerServizio = <String, String>{};
     for (var modalita in widget.modalitaConsegna!) {
@@ -1474,27 +1982,21 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         modalitaPerServizio[modalita] = modalitaDisponibili[modalita]!;
       }
     }
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.blue.shade50,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.blue.shade300,
-          width: 2,
-        ),
+        border: Border.all(color: Colors.blue.shade300, width: 2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
-                Icons.local_shipping,
-                color: Colors.blue.shade700,
-              ),
+              Icon(Icons.local_shipping, color: Colors.blue.shade700),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -1510,24 +2012,18 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
           const SizedBox(height: 8),
           Text(
             l10n.selectDeliveryMethods,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey.shade700,
-            ),
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
           ),
           const SizedBox(height: 12),
           ...modalitaPerServizio.entries.map((entry) {
             final key = entry.key;
             final label = entry.value;
             final isSelected = _modalitaConsegnaSelezionate.contains(key);
-            
+
             return CheckboxListTile(
               dense: true,
               contentPadding: EdgeInsets.zero,
-              title: Text(
-                label,
-                style: const TextStyle(fontSize: 14),
-              ),
+              title: Text(label, style: const TextStyle(fontSize: 14)),
               value: isSelected,
               onChanged: (bool? value) {
                 setState(() {
@@ -1541,7 +2037,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
               activeColor: Colors.blue,
             );
           }),
-          
+
           // Campi dinamici per Corriere
           if (_modalitaConsegnaSelezionate.contains('courier'))
             Column(
@@ -1566,7 +2062,9 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.location_on),
                   ),
-                  validator: (value) => value?.isEmpty ?? true ? 'Campo obbligatorio' : null,
+                  validator:
+                      (value) =>
+                          value?.isEmpty ?? true ? 'Campo obbligatorio' : null,
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -1579,7 +2077,9 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                           labelText: 'Città *',
                           border: OutlineInputBorder(),
                         ),
-                        validator: (value) => value?.isEmpty ?? true ? 'Obbligatorio' : null,
+                        validator:
+                            (value) =>
+                                value?.isEmpty ?? true ? 'Obbligatorio' : null,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -1591,7 +2091,9 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                           border: OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
-                        validator: (value) => value?.isEmpty ?? true ? 'Obbligatorio' : null,
+                        validator:
+                            (value) =>
+                                value?.isEmpty ?? true ? 'Obbligatorio' : null,
                       ),
                     ),
                   ],
@@ -1603,11 +2105,13 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                     labelText: 'Provincia *',
                     border: OutlineInputBorder(),
                   ),
-                  validator: (value) => value?.isEmpty ?? true ? 'Campo obbligatorio' : null,
+                  validator:
+                      (value) =>
+                          value?.isEmpty ?? true ? 'Campo obbligatorio' : null,
                 ),
               ],
             ),
-          
+
           // Campi dinamici per Email
           if (_modalitaConsegnaSelezionate.contains('email'))
             Column(
@@ -1641,7 +2145,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                 ),
               ],
             ),
-          
+
           // Informazioni per Ritiro in sede
           if (_modalitaConsegnaSelezionate.contains('pickup'))
             Column(

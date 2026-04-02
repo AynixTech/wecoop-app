@@ -45,41 +45,122 @@ class DocumentoService {
     _documenti = documenti;
   }
 
+  List<Documento> getDocumentiBySoggetto(String soggetto) {
+    if (_documenti == null) return [];
+    return _documenti!.where((doc) => doc.soggetto == soggetto).toList();
+  }
+
+  /// Fetcha documenti dal backend con filtro soggetto
+  /// Richiede connessione al backend WordPress aggiornato
+  /// Supportato da backend: GET /soci/me/documenti?soggetto=richiedente|familiare
+  Future<List<Documento>> getDocumentiFromBackendBySoggetto(
+    String soggetto,
+  ) async {
+    try {
+      if (soggetto != DocumentoSoggetto.richiedente &&
+          soggetto != DocumentoSoggetto.familiare) {
+        print('⚠️ Soggetto non valido: $soggetto');
+        return [];
+      }
+
+      final profilo = await SocioService.getProfiloCompleto();
+      if (profilo['success'] != true) {
+        print('⚠️ Errore fetch profilo: ${profilo['message']}');
+        return [];
+      }
+
+      final data = profilo['data'] as Map<String, dynamic>? ?? {};
+      final documentiRaw = data['documenti'] as List<dynamic>? ?? [];
+      return documentiRaw
+          .map((doc) {
+            try {
+              return Documento(
+                id: doc['id']?.toString() ?? '',
+                soggetto: doc['soggetto'] ?? DocumentoSoggetto.richiedente,
+                tipo: doc['tipo_documento'] ?? doc['tipo'] ?? '',
+                filePath: doc['url'] ?? '',
+                fileName: doc['filename'] ?? '',
+                dataCaricamento:
+                    doc['data_upload'] != null
+                        ? DateTime.parse(doc['data_upload'] as String)
+                        : DateTime.now(),
+                dataScadenza:
+                    doc['data_scadenza'] != null &&
+                            (doc['data_scadenza'] as String).isNotEmpty
+                        ? DateTime.parse(doc['data_scadenza'] as String)
+                        : null,
+              );
+            } catch (e) {
+              print('⚠️ Errore parsing documento: $e');
+              return null;
+            }
+          })
+          .whereType<Documento>()
+          .where((doc) => doc.soggetto == soggetto)
+          .toList();
+    } catch (e) {
+      print('❌ Errore fetching documenti per soggetto: $e');
+      return [];
+    }
+  }
+
   // Ottiene un documento per tipo
-  Documento? getDocumentoByTipo(String tipo) {
+  Documento? getDocumentoByTipo(
+    String tipo, {
+    String soggetto = DocumentoSoggetto.richiedente,
+  }) {
     if (_documenti == null) return null;
     try {
-      return _documenti!.firstWhere((doc) => doc.tipo == tipo);
+      return _documenti!.firstWhere(
+        (doc) => doc.tipo == tipo && doc.soggetto == soggetto,
+      );
     } catch (e) {
       return null;
     }
   }
 
   // Verifica se un documento esiste
-  bool hasDocumento(String tipo) {
-    return getDocumentoByTipo(tipo) != null;
+  bool hasDocumento(
+    String tipo, {
+    String soggetto = DocumentoSoggetto.richiedente,
+  }) {
+    return getDocumentoByTipo(tipo, soggetto: soggetto) != null;
   }
 
   // Ottiene i documenti mancanti da una lista richiesta
-  List<String> getDocumentiMancanti(List<String> tipiRichiesti) {
-    return tipiRichiesti.where((tipo) => !hasDocumento(tipo)).toList();
+  List<String> getDocumentiMancanti(
+    List<String> tipiRichiesti, {
+    String soggetto = DocumentoSoggetto.richiedente,
+  }) {
+    return tipiRichiesti
+        .where((tipo) => !hasDocumento(tipo, soggetto: soggetto))
+        .toList();
   }
 
   // Verifica se ci sono documenti in scadenza (entro 30 giorni)
-  Future<List<Documento>> getDocumentiInScadenza() async {
+  Future<List<Documento>> getDocumentiInScadenza({
+    String soggetto = DocumentoSoggetto.richiedente,
+  }) async {
     final documenti = await getDocumenti();
-    return documenti.where((doc) => doc.staPerScadere).toList();
+    return documenti
+        .where((doc) => doc.soggetto == soggetto && doc.staPerScadere)
+        .toList();
   }
 
   // Verifica se ci sono documenti scaduti
-  Future<List<Documento>> getDocumentiScaduti() async {
+  Future<List<Documento>> getDocumentiScaduti({
+    String soggetto = DocumentoSoggetto.richiedente,
+  }) async {
     final documenti = await getDocumenti();
-    return documenti.where((doc) => doc.isScaduto).toList();
+    return documenti
+        .where((doc) => doc.soggetto == soggetto && doc.isScaduto)
+        .toList();
   }
 
   // Carica un nuovo documento da file
   Future<Documento?> caricaDocumento({
     required String tipo,
+    String soggetto = DocumentoSoggetto.richiedente,
     DateTime? dataScadenza,
   }) async {
     // Seleziona il file
@@ -99,6 +180,7 @@ class DocumentoService {
       file: file,
       fileName: fileName,
       tipo: tipo,
+      soggetto: soggetto,
       dataScadenza: dataScadenza,
     );
   }
@@ -132,6 +214,7 @@ class DocumentoService {
     required String tipo,
     required File fileFrente,
     required File fileRetro,
+    String soggetto = DocumentoSoggetto.richiedente,
   }) async {
     print('🔍 DEBUG: caricaDocumentoDueLati() tipo=$tipo');
 
@@ -144,12 +227,16 @@ class DocumentoService {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
 
     final extFrente = _getFileExtension(fileFrente.path.split('/').last);
-    final newFileNameFrente = '${tipo}_fronte_$timestamp$extFrente';
-    final savedFrente = await fileFrente.copy('${documentiDir.path}/$newFileNameFrente');
+    final newFileNameFrente = '${soggetto}_${tipo}_fronte_$timestamp$extFrente';
+    final savedFrente = await fileFrente.copy(
+      '${documentiDir.path}/$newFileNameFrente',
+    );
 
     final extRetro = _getFileExtension(fileRetro.path.split('/').last);
-    final newFileNameRetro = '${tipo}_retro_$timestamp$extRetro';
-    final savedRetro = await fileRetro.copy('${documentiDir.path}/$newFileNameRetro');
+    final newFileNameRetro = '${soggetto}_${tipo}_retro_$timestamp$extRetro';
+    final savedRetro = await fileRetro.copy(
+      '${documentiDir.path}/$newFileNameRetro',
+    );
 
     try {
       // Upload fronte
@@ -157,6 +244,7 @@ class DocumentoService {
       final uploadFrente = await SocioService.uploadDocumento(
         file: savedFrente,
         tipoDocumento: '${tipo}_fronte',
+        soggetto: soggetto,
       );
       if (uploadFrente['success'] != true) {
         print('❌ Errore upload fronte: ${uploadFrente['message']}');
@@ -170,6 +258,7 @@ class DocumentoService {
       final uploadRetro = await SocioService.uploadDocumento(
         file: savedRetro,
         tipoDocumento: '${tipo}_retro',
+        soggetto: soggetto,
       );
       if (uploadRetro['success'] != true) {
         print('❌ Errore upload retro: ${uploadRetro['message']}');
@@ -183,6 +272,7 @@ class DocumentoService {
       final backendId = uploadFrente['data']?['id'];
       final documento = Documento(
         id: backendId?.toString() ?? timestamp.toString(),
+        soggetto: soggetto,
         tipo: tipo,
         filePath: savedFrente.path,
         fileName: newFileNameFrente,
@@ -191,7 +281,7 @@ class DocumentoService {
         dataCaricamento: DateTime.now(),
       );
 
-      await rimuoviDocumentoByTipo(tipo);
+      await rimuoviDocumentoByTipo(tipo, soggetto: soggetto);
       final documenti = await getDocumenti();
       documenti.add(documento);
       await _saveDocumenti(documenti);
@@ -208,15 +298,18 @@ class DocumentoService {
   // Carica un nuovo documento con la fotocamera (lato singolo, usato come fallback)
   Future<Documento?> caricaDocumentoDaFotocamera({
     required String tipo,
+    String soggetto = DocumentoSoggetto.richiedente,
     DateTime? dataScadenza,
   }) async {
     final file = await prendiImmagineDaFotocamera();
     if (file == null) return null;
-    final fileName = '${tipo}_foto_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final fileName =
+        '${tipo}_foto_${DateTime.now().millisecondsSinceEpoch}.jpg';
     return _salvaDocumento(
       file: file,
       fileName: fileName,
       tipo: tipo,
+      soggetto: soggetto,
       dataScadenza: dataScadenza,
     );
   }
@@ -224,6 +317,7 @@ class DocumentoService {
   // Carica un nuovo documento dalla galleria (lato singolo, usato come fallback)
   Future<Documento?> caricaDocumentoDaGalleria({
     required String tipo,
+    String soggetto = DocumentoSoggetto.richiedente,
     DateTime? dataScadenza,
   }) async {
     final file = await prendiImmagineDaGalleria();
@@ -233,6 +327,7 @@ class DocumentoService {
       file: file,
       fileName: fileName,
       tipo: tipo,
+      soggetto: soggetto,
       dataScadenza: dataScadenza,
     );
   }
@@ -242,12 +337,13 @@ class DocumentoService {
     required File file,
     required String fileName,
     required String tipo,
+    required String soggetto,
     DateTime? dataScadenza,
   }) async {
     print('🔍 DEBUG: Inizio _salvaDocumento()');
     print('   Tipo: $tipo');
     print('   FileName: $fileName');
-    
+
     // 1. Copia il file nella directory dell'app (per cache locale)
     final appDir = await getApplicationDocumentsDirectory();
     final documentiDir = Directory('${appDir.path}/documenti');
@@ -256,7 +352,8 @@ class DocumentoService {
     }
 
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final newFileName = '${tipo}_$timestamp${_getFileExtension(fileName)}';
+    final newFileName =
+        '${soggetto}_${tipo}_$timestamp${_getFileExtension(fileName)}';
     final newPath = '${documentiDir.path}/$newFileName';
     final savedFile = await file.copy(newPath);
 
@@ -266,6 +363,7 @@ class DocumentoService {
       final uploadResult = await SocioService.uploadDocumento(
         file: savedFile,
         tipoDocumento: tipo,
+        soggetto: soggetto,
       );
       print('📥 Upload result: $uploadResult');
 
@@ -277,11 +375,12 @@ class DocumentoService {
       }
 
       print('✅ Documento caricato sul backend!');
-      
+
       // 3. Crea documento locale con ID dal backend
       final backendId = uploadResult['data']?['id'];
       final documento = Documento(
         id: backendId?.toString() ?? timestamp.toString(),
+        soggetto: soggetto,
         tipo: tipo,
         filePath: savedFile.path,
         fileName: fileName,
@@ -290,7 +389,7 @@ class DocumentoService {
       );
 
       // 4. Rimuove il documento precedente dello stesso tipo se esiste
-      await rimuoviDocumentoByTipo(tipo);
+      await rimuoviDocumentoByTipo(tipo, soggetto: soggetto);
 
       // 5. Salva il nuovo documento
       final documenti = await getDocumenti();
@@ -309,19 +408,27 @@ class DocumentoService {
   // Aggiorna un documento esistente
   Future<bool> aggiornaDocumento({
     required String tipo,
+    String soggetto = DocumentoSoggetto.richiedente,
     DateTime? dataScadenza,
   }) async {
     final nuovoDoc = await caricaDocumento(
       tipo: tipo,
+      soggetto: soggetto,
       dataScadenza: dataScadenza,
     );
     return nuovoDoc != null;
   }
 
   // Rimuove un documento per tipo
-  Future<void> rimuoviDocumentoByTipo(String tipo) async {
+  Future<void> rimuoviDocumentoByTipo(
+    String tipo, {
+    String soggetto = DocumentoSoggetto.richiedente,
+  }) async {
     final documenti = await getDocumenti();
-    final docDaRimuovere = documenti.where((doc) => doc.tipo == tipo).toList();
+    final docDaRimuovere =
+        documenti
+            .where((doc) => doc.tipo == tipo && doc.soggetto == soggetto)
+            .toList();
 
     for (var doc in docDaRimuovere) {
       // Elimina il file fisico

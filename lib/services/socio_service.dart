@@ -1019,6 +1019,7 @@ class SocioService {
   static Future<Map<String, dynamic>> uploadDocumento({
     required File file,
     String tipoDocumento = 'carta_identita',
+    String soggetto = 'richiedente',
   }) async {
     try {
       final headers = await _getHeaders(includeAuth: true);
@@ -1040,8 +1041,12 @@ class SocioService {
       // Aggiungi tipo documento
       request.fields['tipo_documento'] = tipoDocumento;
 
+      // Aggiungi soggetto (nuovo, supportato dal backend)
+      request.fields['soggetto'] = soggetto;
+
       print('📤 Upload documento: ${file.path.split('/').last}');
       print('📝 Tipo: $tipoDocumento');
+      print('📝 Soggetto: $soggetto');
 
       final streamedResponse = await request.send().timeout(
         const Duration(seconds: 60),

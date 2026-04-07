@@ -85,6 +85,7 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
     String soggetto,
   ) async {
     final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
     // --- STEP 1: FRONTE ---
     if (!mounted) return;
     final procediFrente = await showDialog<bool>(
@@ -97,7 +98,7 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
             ),
             title: Row(
               children: [
-                const Icon(Icons.flip_to_front, color: Colors.blue, size: 28),
+                Icon(Icons.flip_to_front, color: scheme.primary, size: 28),
                 const SizedBox(width: 10),
                 Flexible(child: Text(l10n.documentFrontTitle)),
               ],
@@ -138,7 +139,7 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
             ),
             title: Row(
               children: [
-                const Icon(Icons.flip_to_back, color: Colors.green, size: 28),
+                Icon(Icons.flip_to_back, color: scheme.secondary, size: 28),
                 const SizedBox(width: 10),
                 Flexible(child: Text(l10n.documentBackTitle)),
               ],
@@ -154,7 +155,9 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
                 child: Text(l10n.cancel),
               ),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: scheme.secondary,
+                ),
                 onPressed: () => Navigator.pop(context, true),
                 child: Text(l10n.proceed),
               ),
@@ -188,7 +191,7 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
                 )
                 : '${l10n.error}. ${l10n.retry}.',
           ),
-          backgroundColor: documento != null ? Colors.green : Colors.red,
+          backgroundColor: documento != null ? scheme.secondary : scheme.error,
         ),
       );
       _loadDocumenti();
@@ -199,187 +202,190 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
     final l10n = AppLocalizations.of(context)!;
     return showDialog<String>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Row(
-              children: [
-                const Icon(Icons.upload_file, color: Colors.blue),
-                const SizedBox(width: 12),
-                Expanded(child: Text(l10n.uploadDocumentHow)),
-              ],
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  InkWell(
-                    onTap: () => Navigator.pop(context, 'camera'),
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.blue.shade200),
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.blue.shade50,
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              Icons.camera_alt,
-                              color: Colors.white,
-                              size: 28,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.takePhoto,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  l10n.takePhotoHint,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Icon(Icons.arrow_forward_ios, size: 16),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  InkWell(
-                    onTap: () => Navigator.pop(context, 'gallery'),
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.purple.shade200),
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.purple.shade50,
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.purple,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              Icons.photo_library,
-                              color: Colors.white,
-                              size: 28,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.chooseGallery,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  l10n.chooseGalleryHint,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Icon(Icons.arrow_forward_ios, size: 16),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  InkWell(
-                    onTap: () => Navigator.pop(context, 'file'),
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.green.shade200),
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.green.shade50,
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              Icons.insert_drive_file,
-                              color: Colors.white,
-                              size: 28,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.uploadFileLabel,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  l10n.uploadFileHint,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Icon(Icons.arrow_forward_ios, size: 16),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(l10n.cancel),
-              ),
+      builder: (dialogContext) {
+        final scheme = Theme.of(dialogContext).colorScheme;
+
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(Icons.upload_file, color: scheme.primary),
+              const SizedBox(width: 12),
+              Expanded(child: Text(l10n.uploadDocumentHow)),
             ],
           ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                InkWell(
+                  onTap: () => Navigator.pop(context, 'camera'),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: scheme.primary),
+                      borderRadius: BorderRadius.circular(12),
+                      color: scheme.primaryContainer,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: scheme.primary,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.camera_alt,
+                            color: scheme.onPrimary,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.takePhoto,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                l10n.takePhotoHint,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: scheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.arrow_forward_ios, size: 16),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                InkWell(
+                  onTap: () => Navigator.pop(context, 'gallery'),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: scheme.tertiary),
+                      borderRadius: BorderRadius.circular(12),
+                      color: scheme.tertiaryContainer,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: scheme.tertiary,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.photo_library,
+                            color: scheme.onTertiary,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.chooseGallery,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                l10n.chooseGalleryHint,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: scheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.arrow_forward_ios, size: 16),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                InkWell(
+                  onTap: () => Navigator.pop(context, 'file'),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: scheme.secondary),
+                      borderRadius: BorderRadius.circular(12),
+                      color: scheme.secondaryContainer,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: scheme.secondary,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.insert_drive_file,
+                            color: scheme.onSecondary,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.uploadFileLabel,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                l10n.uploadFileHint,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: scheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.arrow_forward_ios, size: 16),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(l10n.cancel),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -400,7 +406,7 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
                 onPressed: () => Navigator.pop(context, true),
                 child: Text(
                   l10n.deleteLabel,
-                  style: const TextStyle(color: Colors.red),
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ),
             ],
@@ -444,6 +450,8 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -460,17 +468,26 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
                 children: [
                   Text(
                     AppLocalizations.of(context)!.manageYourDocuments,
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: scheme.onSurfaceVariant,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     AppLocalizations.of(context)!.documentSourcesHint,
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: scheme.onSurfaceVariant,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     AppLocalizations.of(context)!.supportedFormats,
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: scheme.onSurfaceVariant,
+                    ),
                   ),
                   const SizedBox(height: 24),
                   if (widget.showFamilyDocuments) ...[
@@ -513,11 +530,8 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF25D366).withOpacity(0.1),
-                        border: Border.all(
-                          color: const Color(0xFF25D366),
-                          width: 1.5,
-                        ),
+                        color: scheme.secondaryContainer,
+                        border: Border.all(color: scheme.secondary, width: 1.5),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -525,12 +539,12 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF25D366),
+                              color: scheme.secondary,
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.chat,
-                              color: Colors.white,
+                              color: scheme.onSecondary,
                               size: 24,
                             ),
                           ),
@@ -540,17 +554,17 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
                               AppLocalizations.of(
                                 context,
                               )!.whatsappDocumentSupport,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
-                                color: Color(0xFF25D366),
+                                color: scheme.secondary,
                               ),
                             ),
                           ),
-                          const Icon(
+                          Icon(
                             Icons.arrow_forward_ios,
                             size: 16,
-                            color: Color(0xFF25D366),
+                            color: scheme.secondary,
                           ),
                         ],
                       ),
@@ -578,7 +592,10 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
           const SizedBox(height: 4),
           Text(
             subtitle,
-            style: const TextStyle(fontSize: 13, color: Colors.grey),
+            style: TextStyle(
+              fontSize: 13,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
         const SizedBox(height: 12),
@@ -659,22 +676,23 @@ class _DocumentoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final hasDocumento = documento != null;
     final isScaduto = documento?.isScaduto ?? false;
     final staPerScadere = documento?.staPerScadere ?? false;
 
-    Color borderColor = Colors.grey.shade300;
+    Color borderColor = scheme.outlineVariant;
     Color? backgroundColor;
 
     if (isScaduto) {
-      borderColor = Colors.red;
-      backgroundColor = Colors.red.shade50;
+      borderColor = scheme.error;
+      backgroundColor = scheme.errorContainer;
     } else if (staPerScadere) {
-      borderColor = Colors.orange;
-      backgroundColor = Colors.orange.shade50;
+      borderColor = scheme.tertiary;
+      backgroundColor = scheme.tertiaryContainer;
     } else if (hasDocumento) {
-      borderColor = Colors.green;
-      backgroundColor = Colors.green.shade50;
+      borderColor = scheme.secondary;
+      backgroundColor = scheme.secondaryContainer;
     }
 
     return Container(
@@ -695,12 +713,12 @@ class _DocumentoCard extends StatelessWidget {
                   hasDocumento ? Icons.check_circle : Icons.upload_file,
                   color:
                       isScaduto
-                          ? Colors.red
+                          ? scheme.error
                           : staPerScadere
-                          ? Colors.orange
+                          ? scheme.tertiary
                           : hasDocumento
-                          ? Colors.green
-                          : Colors.grey,
+                          ? scheme.secondary
+                          : scheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -723,24 +741,24 @@ class _DocumentoCard extends StatelessWidget {
                               vertical: 3,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.blue.shade50,
+                              color: scheme.primaryContainer,
                               borderRadius: BorderRadius.circular(6),
-                              border: Border.all(color: Colors.blue.shade200),
+                              border: Border.all(color: scheme.primary),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.flip,
                                   size: 13,
-                                  color: Colors.blue,
+                                  color: scheme.primary,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
                                   AppLocalizations.of(context)!.frontAndBack,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 11,
-                                    color: Colors.blue,
+                                    color: scheme.primary,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -750,9 +768,9 @@ class _DocumentoCard extends StatelessWidget {
                         else
                           Text(
                             documento!.fileName,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
-                              color: Colors.grey,
+                              color: scheme.onSurfaceVariant,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -769,10 +787,10 @@ class _DocumentoCard extends StatelessWidget {
                               fontSize: 12,
                               color:
                                   isScaduto
-                                      ? Colors.red
+                                      ? scheme.error
                                       : staPerScadere
-                                      ? Colors.orange
-                                      : Colors.grey,
+                                      ? scheme.tertiary
+                                      : scheme.onSurfaceVariant,
                               fontWeight:
                                   isScaduto || staPerScadere
                                       ? FontWeight.bold
@@ -793,7 +811,7 @@ class _DocumentoCard extends StatelessWidget {
                   '⚠️ ${AppLocalizations.of(context)!.documentExpiredUpdateNow}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.red.shade700,
+                    color: scheme.error,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -805,7 +823,7 @@ class _DocumentoCard extends StatelessWidget {
                   '⚠️ ${AppLocalizations.of(context)!.documentExpiringInDays(documento!.dataScadenza!.difference(DateTime.now()).inDays)}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.orange.shade700,
+                    color: scheme.tertiary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -824,8 +842,8 @@ class _DocumentoCard extends StatelessWidget {
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
-                          hasDocumento ? Colors.orange : Colors.blue,
-                      foregroundColor: Colors.white,
+                          hasDocumento ? scheme.tertiary : scheme.primary,
+                      foregroundColor: scheme.onPrimary,
                     ),
                   ),
                 ),
@@ -839,7 +857,7 @@ class _DocumentoCard extends StatelessWidget {
                   IconButton(
                     onPressed: onRimuovi,
                     icon: const Icon(Icons.delete),
-                    color: Colors.red,
+                    color: scheme.error,
                     tooltip: AppLocalizations.of(context)!.deleteLabel,
                   ),
                 ],

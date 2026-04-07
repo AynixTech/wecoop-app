@@ -272,6 +272,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -285,9 +286,9 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                 margin: const EdgeInsets.only(bottom: 16),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.orange.shade50,
+                  color: scheme.secondary.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.orange.shade200),
+                  border: Border.all(color: scheme.secondary.withOpacity(0.75)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,7 +297,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                       children: [
                         Icon(
                           Icons.warning_amber_rounded,
-                          color: Colors.orange.shade700,
+                          color: scheme.secondary,
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -305,7 +306,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.orange.shade900,
+                              color: scheme.onSurface,
                             ),
                           ),
                         ),
@@ -316,7 +317,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                       l10n.completeProfileMessage,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.orange.shade800,
+                        color: scheme.onSurface.withOpacity(0.8),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -337,8 +338,8 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange.shade700,
-                          foregroundColor: Colors.white,
+                          backgroundColor: scheme.secondary,
+                          foregroundColor: scheme.onSecondary,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -354,10 +355,10 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
             Center(
               child: CircleAvatar(
                 radius: 50,
-                backgroundColor: Colors.amber.shade700,
+                backgroundColor: scheme.primary,
                 child: Text(
                   userName.isNotEmpty ? userName[0] : '?',
-                  style: const TextStyle(fontSize: 40, color: Colors.white),
+                  style: TextStyle(fontSize: 40, color: scheme.onPrimary),
                 ),
               ),
             ),
@@ -375,7 +376,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
               child: Text(
                 userEmail,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey.shade600,
+                  color: scheme.onSurface.withOpacity(0.65),
                 ),
               ),
             ),
@@ -395,7 +396,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                       children: [
                         const Icon(
                           Icons.card_membership,
-                          color: Colors.amber,
+                          color: Color(0xFFE6B422),
                           size: 24,
                         ),
                         const SizedBox(width: 8),
@@ -411,9 +412,11 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: scheme.surface,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey.shade300),
+                        border: Border.all(
+                          color: scheme.outline.withOpacity(0.5),
+                        ),
                       ),
                       child: QrImageView(
                         data:
@@ -422,14 +425,14 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                         version: QrVersions.auto,
                         size: 180,
                         gapless: false,
-                        backgroundColor: Colors.white,
+                        backgroundColor: scheme.surface,
                       ),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       l10n.cardNumber,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: Colors.grey.shade600,
+                        color: scheme.onSurface.withOpacity(0.65),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -473,7 +476,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                         children: [
                           const Icon(
                             Icons.folder_outlined,
-                            color: Color(0xFF4CAF50),
+                            color: Color(0xFF59B575),
                             size: 24,
                           ),
                           const SizedBox(width: 8),
@@ -489,7 +492,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                       Text(
                         'Gestisci i tuoi documenti personali',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: Colors.grey.shade600,
+                          color: scheme.onSurface.withOpacity(0.65),
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -500,13 +503,13 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                           const Icon(
                             Icons.arrow_forward_ios,
                             size: 16,
-                            color: Color(0xFF4CAF50),
+                            color: Color(0xFF59B575),
                           ),
                           const SizedBox(width: 4),
                           Text(
                             'Vai alla sezione documenti',
                             style: TextStyle(
-                              color: const Color(0xFF4CAF50),
+                              color: const Color(0xFF59B575),
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -535,7 +538,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                       children: [
                         const Icon(
                           Icons.event,
-                          color: Color(0xFF2196F3),
+                          color: Color(0xFF1282A8),
                           size: 24,
                         ),
                         const SizedBox(width: 8),
@@ -561,7 +564,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                             Text(
                               l10n.notEnrolledInEvents,
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                color: Colors.grey.shade600,
+                                color: scheme.onSurface.withOpacity(0.65),
                               ),
                               textAlign: TextAlign.center,
                             ),
@@ -613,15 +616,14 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                                               width: 60,
                                               height: 60,
                                               decoration: BoxDecoration(
-                                                color: const Color(
-                                                  0xFF2196F3,
-                                                ).withOpacity(0.1),
+                                                color: scheme.primary
+                                                    .withOpacity(0.12),
                                                 borderRadius:
                                                     BorderRadius.circular(8),
                                               ),
-                                              child: const Icon(
+                                              child: Icon(
                                                 Icons.event,
-                                                color: Color(0xFF2196F3),
+                                                color: scheme.primary,
                                               ),
                                             ),
                                       ),
@@ -631,14 +633,12 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                                       width: 60,
                                       height: 60,
                                       decoration: BoxDecoration(
-                                        color: const Color(
-                                          0xFF2196F3,
-                                        ).withOpacity(0.1),
+                                        color: scheme.primary.withOpacity(0.12),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: const Icon(
+                                      child: Icon(
                                         Icons.event,
-                                        color: Color(0xFF2196F3),
+                                        color: scheme.primary,
                                       ),
                                     ),
                                   const SizedBox(width: 12),
@@ -662,14 +662,16 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                                             Icon(
                                               Icons.calendar_today,
                                               size: 14,
-                                              color: Colors.grey.shade600,
+                                              color: scheme.onSurface
+                                                  .withOpacity(0.65),
                                             ),
                                             const SizedBox(width: 4),
                                             Text(
                                               evento.dataInizio,
                                               style: theme.textTheme.bodySmall
                                                   ?.copyWith(
-                                                    color: Colors.grey.shade600,
+                                                    color: scheme.onSurface
+                                                        .withOpacity(0.65),
                                                   ),
                                             ),
                                             if (evento.luogo != null) ...[
@@ -677,7 +679,8 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                                               Icon(
                                                 Icons.location_on,
                                                 size: 14,
-                                                color: Colors.grey.shade600,
+                                                color: scheme.onSurface
+                                                    .withOpacity(0.65),
                                               ),
                                               const SizedBox(width: 4),
                                               Expanded(
@@ -687,10 +690,8 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                                                       .textTheme
                                                       .bodySmall
                                                       ?.copyWith(
-                                                        color:
-                                                            Colors
-                                                                .grey
-                                                                .shade600,
+                                                        color: scheme.onSurface
+                                                            .withOpacity(0.65),
                                                       ),
                                                   maxLines: 1,
                                                   overflow:

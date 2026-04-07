@@ -70,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.appTitle),
@@ -79,89 +80,133 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _GreetingSection(userName: userName),
-              const SizedBox(height: 24),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [scheme.surfaceContainerLowest, scheme.surface],
+            ),
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _GreetingSection(userName: userName, isLoggedIn: isLoggedIn),
+                const SizedBox(height: 24),
 
-              // Avviso documenti in scadenza
-              if (isLoggedIn) const _DocumentiScadenzaSection(),
-              if (isLoggedIn) const SizedBox(height: 24),
+                // Avviso documenti in scadenza
+                if (isLoggedIn) const _DocumentiScadenzaSection(),
+                if (isLoggedIn) const SizedBox(height: 24),
 
-              if (!isLoggedIn)
-                Card(
-                  elevation: 2,
-                  color: const Color(0xFF2196F3),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/login');
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.login,
-                            color: Colors.white,
-                            size: 32,
+                if (!isLoggedIn)
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: () {
+                        Navigator.pushNamed(context, '/login');
+                      },
+                      child: Ink(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              scheme.primary,
+                              Color.alphaBlend(
+                                scheme.secondary.withOpacity(0.28),
+                                scheme.primary,
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.alreadyRegistered,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  l10n.loginToAccess,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white70,
-                                  ),
-                                ),
-                              ],
+                          boxShadow: [
+                            BoxShadow(
+                              color: scheme.primary.withOpacity(0.28),
+                              blurRadius: 18,
+                              offset: const Offset(0, 10),
                             ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(18),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: scheme.onPrimary.withOpacity(0.15),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: scheme.onPrimary.withOpacity(0.35),
+                                  ),
+                                ),
+                                child: Icon(
+                                  Icons.login,
+                                  color: scheme.onPrimary,
+                                  size: 26,
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      l10n.alreadyRegistered,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                        color: scheme.onPrimary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      l10n.loginToAccess,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: scheme.onPrimary.withOpacity(
+                                          0.9,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                color: scheme.onPrimary,
+                                size: 18,
+                              ),
+                            ],
                           ),
-                          const Icon(
-                            Icons.arrow_forward_ios,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              if (!isLoggedIn) const SizedBox(height: 24),
+                if (!isLoggedIn) const SizedBox(height: 24),
 
-              const _ServicesSection(),
-              const SizedBox(height: 24),
+                const _ServicesSection(),
+                const SizedBox(height: 24),
 
-              const _UpcomingEventsSection(),
+                const _UpcomingEventsSection(),
 
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-              _ActiveProjectsSection(),
+                _ActiveProjectsSection(),
 
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-              const _LatestPostsSection(),
+                const _LatestPostsSection(),
 
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-              const _QuickAccessSection(),
-              const SizedBox(height: 32),
-            ],
+                const _QuickAccessSection(),
+                const SizedBox(height: 32),
+              ],
+            ),
           ),
         ),
       ),
@@ -173,13 +218,14 @@ class _ActiveProjectsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+    final scheme = Theme.of(context).colorScheme;
+
     final categories = [
       {
         'key': 'giovani',
         'name': l10n.youthCategory,
         'icon': Icons.school,
-        'color': Colors.blue,
+        'color': scheme.primary,
         'projects': [
           {
             'name': 'MAFALDA',
@@ -197,7 +243,7 @@ class _ActiveProjectsSection extends StatelessWidget {
         'key': 'donne',
         'name': l10n.womenCategory,
         'icon': Icons.people,
-        'color': Colors.purple,
+        'color': scheme.secondary,
         'projects': [
           {
             'name': 'WOMENTOR',
@@ -215,7 +261,10 @@ class _ActiveProjectsSection extends StatelessWidget {
         'key': 'sport',
         'name': l10n.sportsCategory,
         'icon': Icons.sports_soccer,
-        'color': Colors.green,
+        'color': Color.alphaBlend(
+          scheme.secondary.withOpacity(0.6),
+          scheme.primary,
+        ),
         'projects': [
           {
             'name': 'SPORTUNITY',
@@ -233,7 +282,10 @@ class _ActiveProjectsSection extends StatelessWidget {
         'key': 'migranti',
         'name': l10n.migrantsCategory,
         'icon': Icons.support_agent,
-        'color': Colors.orange,
+        'color': Color.alphaBlend(
+          scheme.error.withOpacity(0.35),
+          scheme.primary,
+        ),
         'projects': [
           {
             'name': 'PASSAPAROLA',
@@ -252,7 +304,7 @@ class _ActiveProjectsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(title: '🤝 ${l10n.activeProjects}'),
+        _SectionTitle(title: l10n.activeProjects),
         const SizedBox(height: 12),
         SizedBox(
           height: 110,
@@ -267,19 +319,22 @@ class _ActiveProjectsSection extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ProjectCategoryDetailScreen(
-                        categoryKey: category['key'] as String,
-                        categoryName: category['name'] as String,
-                        categoryIcon: category['icon'] as IconData,
-                        categoryColor: category['color'] as Color,
-                        projects: category['projects'] as List<Map<String, dynamic>>,
-                      ),
+                      builder:
+                          (context) => ProjectCategoryDetailScreen(
+                            categoryKey: category['key'] as String,
+                            categoryName: category['name'] as String,
+                            categoryIcon: category['icon'] as IconData,
+                            categoryColor: category['color'] as Color,
+                            projects:
+                                category['projects']
+                                    as List<Map<String, dynamic>>,
+                          ),
                     ),
                   );
                 },
                 borderRadius: BorderRadius.circular(16),
                 child: Container(
-                  width: 140,
+                  width: 148,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
@@ -290,22 +345,40 @@ class _ActiveProjectsSection extends StatelessWidget {
                       end: Alignment.bottomRight,
                     ),
                     borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: scheme.onPrimary.withOpacity(0.14),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: (category['color'] as Color).withOpacity(0.28),
+                        blurRadius: 14,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        category['icon'] as IconData,
-                        size: 40,
-                        color: Colors.white,
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: scheme.onPrimary.withOpacity(0.22),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          category['icon'] as IconData,
+                          size: 24,
+                          color: scheme.onPrimary,
+                        ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 10),
                       Text(
                         category['name'] as String,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: scheme.onPrimary,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -323,23 +396,94 @@ class _ActiveProjectsSection extends StatelessWidget {
 
 class _GreetingSection extends StatelessWidget {
   final String userName;
-  const _GreetingSection({required this.userName});
+  final bool isLoggedIn;
+
+  const _GreetingSection({required this.userName, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '${l10n.hello}, $userName 👋',
-          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+    final scheme = Theme.of(context).colorScheme;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color.alphaBlend(
+              scheme.secondary.withOpacity(0.24),
+              scheme.primary,
+            ),
+            scheme.primary,
+          ],
         ),
-        const SizedBox(height: 8),
-        Text(
-          l10n.welcome,
-        ),
-      ],
+        boxShadow: [
+          BoxShadow(
+            color: scheme.primary.withOpacity(0.24),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${l10n.hello}, $userName',
+                  style: TextStyle(
+                    fontSize: 23,
+                    fontWeight: FontWeight.w700,
+                    color: scheme.onPrimary,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  l10n.welcome,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: scheme.onPrimary.withOpacity(0.9),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: scheme.onPrimary.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: scheme.onPrimary.withOpacity(0.3)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  isLoggedIn ? Icons.verified_user : Icons.person_outline,
+                  color: scheme.onPrimary,
+                  size: 16,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  isLoggedIn ? 'Area soci' : 'Guest',
+                  style: TextStyle(
+                    color: scheme.onPrimary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -372,23 +516,28 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: onTap ?? (link != null ? _openLink : null),
       borderRadius: BorderRadius.circular(16),
       child: Container(
-        width: 200,
+        width: 208,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: scheme.surface,
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: scheme.outlineVariant.withOpacity(0.5),
+            width: 1,
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: scheme.onSurface.withOpacity(0.08),
               blurRadius: 12,
               offset: const Offset(0, 4),
               spreadRadius: 0,
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: scheme.onSurface.withOpacity(0.04),
               blurRadius: 6,
               offset: const Offset(0, 2),
               spreadRadius: 0,
@@ -419,7 +568,7 @@ class _InfoCard extends StatelessWidget {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            Colors.black.withOpacity(0.1),
+                            scheme.onSurface.withOpacity(0.1),
                           ],
                         ),
                       ),
@@ -435,10 +584,10 @@ class _InfoCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
-                        color: Color(0xFF1A1A1A),
+                        color: scheme.onSurface,
                         height: 1.2,
                       ),
                       maxLines: 2,
@@ -449,7 +598,7 @@ class _InfoCard extends StatelessWidget {
                       subtitle,
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey.shade600,
+                        color: scheme.onSurface.withOpacity(0.7),
                         height: 1.2,
                       ),
                       maxLines: 1,
@@ -474,7 +623,7 @@ class _QuickAccessSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(title: '⚡ ${l10n.quickAccess}'),
+        _SectionTitle(title: l10n.quickAccess),
         const SizedBox(height: 12),
         Wrap(
           spacing: 20,
@@ -521,7 +670,7 @@ class _ServicesSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(title: '🛠️ ${l10n.ourServices}'),
+        _SectionTitle(title: l10n.ourServices),
         const SizedBox(height: 12),
         _ServiceButton(
           title: l10n.welcomeOrientation,
@@ -530,14 +679,16 @@ class _ServicesSection extends StatelessWidget {
             final storage = SecureStorageService();
             final token = await storage.read(key: 'jwt_token');
             final isLoggedIn = token != null && token.isNotEmpty;
-            
+
             if (!context.mounted) return;
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => isLoggedIn 
-                  ? const AccoglienzaScreen()
-                  : const FirstAccessScreen(),
+                builder:
+                    (context) =>
+                        isLoggedIn
+                            ? const AccoglienzaScreen()
+                            : const FirstAccessScreen(),
               ),
             );
           },
@@ -550,14 +701,16 @@ class _ServicesSection extends StatelessWidget {
             final storage = SecureStorageService();
             final token = await storage.read(key: 'jwt_token');
             final isLoggedIn = token != null && token.isNotEmpty;
-            
+
             if (!context.mounted) return;
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => isLoggedIn 
-                  ? const MediazioneFiscaleScreen()
-                  : const FirstAccessScreen(),
+                builder:
+                    (context) =>
+                        isLoggedIn
+                            ? const MediazioneFiscaleScreen()
+                            : const FirstAccessScreen(),
               ),
             );
           },
@@ -570,14 +723,16 @@ class _ServicesSection extends StatelessWidget {
             final storage = SecureStorageService();
             final token = await storage.read(key: 'jwt_token');
             final isLoggedIn = token != null && token.isNotEmpty;
-            
+
             if (!context.mounted) return;
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => isLoggedIn 
-                  ? const SupportoContabileScreen()
-                  : const FirstAccessScreen(),
+                builder:
+                    (context) =>
+                        isLoggedIn
+                            ? const SupportoContabileScreen()
+                            : const FirstAccessScreen(),
               ),
             );
           },
@@ -590,14 +745,16 @@ class _ServicesSection extends StatelessWidget {
             final storage = SecureStorageService();
             final token = await storage.read(key: 'jwt_token');
             final isLoggedIn = token != null && token.isNotEmpty;
-            
+
             if (!context.mounted) return;
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => isLoggedIn 
-                  ? const OrientamentoFiscaleScreen()
-                  : const FirstAccessScreen(),
+                builder:
+                    (context) =>
+                        isLoggedIn
+                            ? const OrientamentoFiscaleScreen()
+                            : const FirstAccessScreen(),
               ),
             );
           },
@@ -615,8 +772,11 @@ class _ServicesSection extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    isLoggedIn ? const CvAiScreen() : const FirstAccessScreen(),
+                builder:
+                    (context) =>
+                        isLoggedIn
+                            ? const CvAiScreen()
+                            : const FirstAccessScreen(),
               ),
             );
           },
@@ -639,18 +799,19 @@ class _ServiceButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(18),
       child: Container(
-        height: 100,
+        height: 112,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+              color: scheme.onSurface.withOpacity(0.14),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
@@ -658,7 +819,7 @@ class _ServiceButton extends StatelessWidget {
           children: [
             // Immagine di sfondo
             ClipRRect(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(18),
               child: Image.asset(
                 imagePath,
                 width: double.infinity,
@@ -668,9 +829,15 @@ class _ServiceButton extends StatelessWidget {
                   // Fallback con colore gradiente se l'immagine non esiste
                   return Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(18),
                       gradient: LinearGradient(
-                        colors: [const Color(0xFF64B5F6), const Color(0xFF2196F3)],
+                        colors: [
+                          Color.alphaBlend(
+                            scheme.secondary.withOpacity(0.28),
+                            scheme.primary,
+                          ),
+                          scheme.primary,
+                        ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -682,11 +849,11 @@ class _ServiceButton extends StatelessWidget {
             // Overlay scuro per migliorare la leggibilità del testo
             Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(18),
                 gradient: LinearGradient(
                   colors: [
-                    Colors.black.withOpacity(0.5),
-                    Colors.black.withOpacity(0.3),
+                    scheme.onSurface.withOpacity(0.62),
+                    scheme.primary.withOpacity(0.35),
                   ],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
@@ -700,13 +867,13 @@ class _ServiceButton extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                  style: TextStyle(
+                    color: scheme.onPrimary,
+                    fontSize: 19,
+                    fontWeight: FontWeight.w700,
                     shadows: [
                       Shadow(
-                        color: Colors.black45,
+                        color: scheme.shadow.withOpacity(0.45),
                         blurRadius: 4,
                         offset: Offset(1, 1),
                       ),
@@ -717,14 +884,19 @@ class _ServiceButton extends StatelessWidget {
             ),
             // Icona freccia a destra
             Positioned(
-              right: 16,
-              top: 0,
-              bottom: 0,
-              child: Center(
+              right: 14,
+              top: 14,
+              child: Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: scheme.onPrimary.withOpacity(0.18),
+                ),
                 child: Icon(
-                  Icons.arrow_forward_ios,
-                  color: Colors.white.withOpacity(0.9),
-                  size: 24,
+                  Icons.arrow_forward,
+                  color: scheme.onPrimary,
+                  size: 16,
                 ),
               ),
             ),
@@ -747,23 +919,55 @@ class _QuickAccessButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return InkWell(
-      borderRadius: BorderRadius.circular(48),
+      borderRadius: BorderRadius.circular(20),
       onTap: onTap,
-      child: SizedBox(
-        width: 72,
+      child: Container(
+        width: 94,
+        padding: const EdgeInsets.fromLTRB(8, 10, 8, 10),
+        decoration: BoxDecoration(
+          color: scheme.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: scheme.outlineVariant.withOpacity(0.45)),
+          boxShadow: [
+            BoxShadow(
+              color: scheme.onSurface.withOpacity(0.04),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: const Color(0xFF2196F3),
-              child: Icon(icon, color: Colors.white, size: 28),
+            Container(
+              width: 54,
+              height: 54,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    scheme.primary,
+                    Color.alphaBlend(
+                      scheme.secondary.withOpacity(0.22),
+                      scheme.primary,
+                    ),
+                  ],
+                ),
+              ),
+              child: Icon(icon, color: scheme.onPrimary, size: 24),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
               label,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: scheme.onSurface,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -778,11 +982,27 @@ class _SectionTitle extends StatelessWidget {
   const _SectionTitle({required this.title});
   @override
   Widget build(BuildContext context) {
-    return Text(
-      title,
-      style: Theme.of(
-        context,
-      ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+    final scheme = Theme.of(context).colorScheme;
+
+    return Row(
+      children: [
+        Container(
+          width: 4,
+          height: 20,
+          decoration: BoxDecoration(
+            color: scheme.primary,
+            borderRadius: BorderRadius.circular(6),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: scheme.onSurface,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -810,7 +1030,7 @@ class _LatestPostsSectionState extends State<_LatestPostsSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(title: '📰 ${l10n.latestArticles}'),
+        _SectionTitle(title: l10n.latestArticles),
         const SizedBox(height: 12),
         FutureBuilder<List<Post>>(
           future: postsFuture,
@@ -868,10 +1088,7 @@ class _UpcomingEventsSectionState extends State<_UpcomingEventsSection> {
 
   Future<List<Evento>> _loadEventi() async {
     try {
-      final result = await EventiService.getEventi(
-        stato: 'futuro',
-        perPage: 5,
-      );
+      final result = await EventiService.getEventi(stato: 'futuro', perPage: 5);
       if (result['success'] == true && result['eventi'] != null) {
         return result['eventi'] as List<Evento>;
       }
@@ -885,7 +1102,20 @@ class _UpcomingEventsSectionState extends State<_UpcomingEventsSection> {
   String _formatData(String dataStr) {
     try {
       final data = DateTime.parse(dataStr);
-      final mesi = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
+      final mesi = [
+        'Gen',
+        'Feb',
+        'Mar',
+        'Apr',
+        'Mag',
+        'Giu',
+        'Lug',
+        'Ago',
+        'Set',
+        'Ott',
+        'Nov',
+        'Dic',
+      ];
       return '${data.day} ${mesi[data.month - 1]}';
     } catch (e) {
       return dataStr;
@@ -895,37 +1125,27 @@ class _UpcomingEventsSectionState extends State<_UpcomingEventsSection> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _SectionTitle(title: '📅 ${l10n.upcomingEvents}'),
-        const SizedBox(height: 12),
-        FutureBuilder<List<Evento>>(
-          future: eventiFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const SizedBox(
-                height: 200,
-                child: Center(child: CircularProgressIndicator()),
-              );
-            } else if (snapshot.hasError) {
-              return SizedBox(
-                height: 200,
-                child: Center(
-                  child: Text('${l10n.errorLoading}: ${snapshot.error}'),
-                ),
-              );
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return SizedBox(
-                height: 200,
-                child: Center(
-                  child: Text(l10n.noArticlesAvailable),
-                ),
-              );
-            }
+    return FutureBuilder<List<Evento>>(
+      future: eventiFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(
+            height: 200,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-            final eventi = snapshot.data!;
-            return SizedBox(
+        if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        final eventi = snapshot.data!;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _SectionTitle(title: l10n.upcomingEvents),
+            const SizedBox(height: 12),
+            SizedBox(
               height: 200,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
@@ -941,20 +1161,21 @@ class _UpcomingEventsSectionState extends State<_UpcomingEventsSection> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => EventoDetailScreen(
-                            eventoId: evento.id,
-                            evento: evento,
-                          ),
+                          builder:
+                              (context) => EventoDetailScreen(
+                                eventoId: evento.id,
+                                evento: evento,
+                              ),
                         ),
                       );
                     },
                   );
                 },
               ),
-            );
-          },
-        ),
-      ],
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -964,7 +1185,8 @@ class _DocumentiScadenzaSection extends StatefulWidget {
   const _DocumentiScadenzaSection();
 
   @override
-  State<_DocumentiScadenzaSection> createState() => _DocumentiScadenzaSectionState();
+  State<_DocumentiScadenzaSection> createState() =>
+      _DocumentiScadenzaSectionState();
 }
 
 class _DocumentiScadenzaSectionState extends State<_DocumentiScadenzaSection> {
@@ -982,7 +1204,7 @@ class _DocumentiScadenzaSectionState extends State<_DocumentiScadenzaSection> {
   Future<void> _checkDocumenti() async {
     final inScadenza = await _documentoService.getDocumentiInScadenza();
     final scaduti = await _documentoService.getDocumentiScaduti();
-    
+
     if (mounted) {
       setState(() {
         _documentiInScadenza = inScadenza;
@@ -994,6 +1216,7 @@ class _DocumentiScadenzaSectionState extends State<_DocumentiScadenzaSection> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     if (_isLoading) {
       return const SizedBox.shrink();
     }
@@ -1009,16 +1232,16 @@ class _DocumentiScadenzaSectionState extends State<_DocumentiScadenzaSection> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.red.shade50,
+              color: scheme.error.withOpacity(0.08),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.red, width: 2),
+              border: Border.all(color: scheme.error, width: 2),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.error, color: Colors.red.shade700),
+                    Icon(Icons.error, color: scheme.error),
                     const SizedBox(width: 12),
                     const Expanded(
                       child: Text(
@@ -1037,16 +1260,18 @@ class _DocumentiScadenzaSectionState extends State<_DocumentiScadenzaSection> {
                   style: const TextStyle(fontSize: 14),
                 ),
                 const SizedBox(height: 8),
-                ..._documentiScaduti.map((doc) => Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Text(
-                    '• ${TipoDocumento.getDisplayName(doc.tipo)}',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
+                ..._documentiScaduti.map(
+                  (doc) => Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      '• ${TipoDocumento.getDisplayName(doc.tipo)}',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                )),
+                ),
                 const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
@@ -1062,31 +1287,31 @@ class _DocumentiScadenzaSectionState extends State<_DocumentiScadenzaSection> {
                     icon: const Icon(Icons.upload),
                     label: const Text('Aggiorna documenti'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
+                      backgroundColor: scheme.error,
+                      foregroundColor: scheme.onError,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-        
+
         // Documenti in scadenza
         if (_documentiInScadenza.isNotEmpty) ...[
           if (_documentiScaduti.isNotEmpty) const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.orange.shade50,
+              color: scheme.secondary.withOpacity(0.12),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.orange, width: 2),
+              border: Border.all(color: scheme.secondary, width: 2),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.warning, color: Colors.orange.shade700),
+                    Icon(Icons.warning, color: scheme.secondary),
                     const SizedBox(width: 12),
                     const Expanded(
                       child: Text(
@@ -1106,7 +1331,8 @@ class _DocumentiScadenzaSectionState extends State<_DocumentiScadenzaSection> {
                 ),
                 const SizedBox(height: 8),
                 ..._documentiInScadenza.map((doc) {
-                  final giorniRimanenti = doc.dataScadenza!.difference(DateTime.now()).inDays;
+                  final giorniRimanenti =
+                      doc.dataScadenza!.difference(DateTime.now()).inDays;
                   return Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
@@ -1130,8 +1356,8 @@ class _DocumentiScadenzaSectionState extends State<_DocumentiScadenzaSection> {
                     icon: const Icon(Icons.visibility),
                     label: const Text('Gestisci documenti'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.orange.shade700,
-                      side: BorderSide(color: Colors.orange.shade700),
+                      foregroundColor: scheme.secondary,
+                      side: BorderSide(color: scheme.secondary),
                     ),
                   ),
                 ),

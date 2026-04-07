@@ -202,7 +202,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(result['message'] ?? 'Profilo aggiornato'),
-            backgroundColor: Colors.green,
+            backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
         );
 
@@ -215,14 +215,17 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(result['message'] ?? 'Errore'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Errore: $e'), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text('Errore: $e'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
       );
     } finally {
       if (mounted) {
@@ -243,7 +246,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context)!.invalidEmail),
-              backgroundColor: Colors.orange,
+              backgroundColor: Theme.of(context).colorScheme.tertiary,
             ),
           );
         }
@@ -254,7 +257,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
               content: Text(
                 AppLocalizations.of(context)!.fiscalCodeMustBe16Chars,
               ),
-              backgroundColor: Colors.orange,
+              backgroundColor: Theme.of(context).colorScheme.tertiary,
             ),
           );
         }
@@ -277,14 +280,15 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: scheme.surface,
       appBar: AppBar(
         title: Text(l10n.completeProfile),
         elevation: 0,
-        backgroundColor: const Color(0xFF2196F3),
-        foregroundColor: Colors.white,
+        backgroundColor: scheme.primary,
+        foregroundColor: scheme.onPrimary,
       ),
       body:
           _isLoading
@@ -302,7 +306,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                 children: [
                   // Progress Indicator
                   Container(
-                    color: Colors.white,
+                    color: scheme.surface,
                     padding: const EdgeInsets.symmetric(
                       vertical: 24,
                       horizontal: 16,
@@ -323,9 +327,9 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                         const SizedBox(height: 8),
                         LinearProgressIndicator(
                           value: (_currentStep + 1) / 2,
-                          backgroundColor: Colors.grey[200],
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                            Color(0xFF2196F3),
+                          backgroundColor: scheme.surfaceContainerHighest,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            scheme.primary,
                           ),
                         ),
                       ],
@@ -349,10 +353,10 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                   // Navigation Buttons
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: scheme.surface,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: scheme.shadow.withOpacity(0.05),
                           blurRadius: 10,
                           offset: const Offset(0, -5),
                         ),
@@ -372,10 +376,8 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 16,
                                   ),
-                                  side: const BorderSide(
-                                    color: Color(0xFF2196F3),
-                                  ),
-                                  foregroundColor: const Color(0xFF2196F3),
+                                  side: BorderSide(color: scheme.primary),
+                                  foregroundColor: scheme.primary,
                                 ),
                               ),
                             ),
@@ -386,12 +388,12 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                               onPressed: _isSubmitting ? null : _nextStep,
                               icon:
                                   _isSubmitting
-                                      ? const SizedBox(
+                                      ? SizedBox(
                                         width: 20,
                                         height: 20,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2,
-                                          color: Colors.white,
+                                          color: scheme.onPrimary,
                                         ),
                                       )
                                       : Icon(
@@ -403,8 +405,8 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                                 _currentStep == 1 ? l10n.complete : l10n.next,
                               ),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF2196F3),
-                                foregroundColor: Colors.white,
+                                backgroundColor: scheme.primary,
+                                foregroundColor: scheme.onPrimary,
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 16,
                                 ),
@@ -422,6 +424,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
   }
 
   Widget _buildStepIndicator(int step, String label, IconData icon) {
+    final scheme = Theme.of(context).colorScheme;
     final isActive = _currentStep == step;
     final isCompleted = _currentStep > step;
 
@@ -434,15 +437,18 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
             decoration: BoxDecoration(
               color:
                   isCompleted
-                      ? Colors.green
+                      ? scheme.secondary
                       : isActive
-                      ? const Color(0xFF2196F3)
-                      : Colors.grey[300],
+                      ? scheme.primary
+                      : scheme.surfaceContainerHighest,
               shape: BoxShape.circle,
             ),
             child: Icon(
               isCompleted ? Icons.check : icon,
-              color: isCompleted || isActive ? Colors.white : Colors.grey[600],
+              color:
+                  isCompleted || isActive
+                      ? scheme.onPrimary
+                      : scheme.onSurfaceVariant,
               size: 24,
             ),
           ),
@@ -452,7 +458,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
             style: TextStyle(
               fontSize: 12,
               fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-              color: isActive ? const Color(0xFF2196F3) : Colors.grey[600],
+              color: isActive ? scheme.primary : scheme.onSurfaceVariant,
             ),
             textAlign: TextAlign.center,
             maxLines: 2,
@@ -464,13 +470,14 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
   }
 
   Widget _buildStepConnector(int step) {
+    final scheme = Theme.of(context).colorScheme;
     final isCompleted = _currentStep > step;
 
     return Expanded(
       child: Container(
         height: 2,
         margin: const EdgeInsets.only(bottom: 40),
-        color: isCompleted ? Colors.green : Colors.grey[300],
+        color: isCompleted ? scheme.secondary : scheme.surfaceContainerHighest,
       ),
     );
   }
@@ -487,12 +494,14 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
   }
 
   Widget _buildPersonalDataStep(AppLocalizations l10n) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Card(
       key: const ValueKey(0),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey[200]!),
+        side: BorderSide(color: scheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -504,10 +513,10 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF2196F3).withOpacity(0.1),
+                    color: scheme.primaryContainer,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.person, color: Color(0xFF2196F3)),
+                  child: Icon(Icons.person, color: scheme.primary),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -529,7 +538,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                 ),
                 prefixIcon: const Icon(Icons.email),
                 filled: true,
-                fillColor: Colors.grey[50],
+                fillColor: scheme.surfaceContainerLowest,
               ),
               keyboardType: TextInputType.emailAddress,
             ),
@@ -543,7 +552,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                 ),
                 prefixIcon: const Icon(Icons.badge),
                 filled: true,
-                fillColor: Colors.grey[50],
+                fillColor: scheme.surfaceContainerLowest,
               ),
               maxLength: 16,
               textCapitalization: TextCapitalization.characters,
@@ -560,7 +569,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                 hintText: 'DD/MM/YYYY',
                 helperText: 'Es: 13/07/1994',
                 filled: true,
-                fillColor: Colors.grey[50],
+                fillColor: scheme.surfaceContainerLowest,
               ),
               keyboardType: TextInputType.number,
               inputFormatters: [
@@ -579,7 +588,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                 ),
                 prefixIcon: const Icon(Icons.location_city),
                 filled: true,
-                fillColor: Colors.grey[50],
+                fillColor: scheme.surfaceContainerLowest,
               ),
             ),
           ],
@@ -589,12 +598,14 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
   }
 
   Widget _buildAddressStep(AppLocalizations l10n) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Card(
       key: const ValueKey(1),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey[200]!),
+        side: BorderSide(color: scheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -606,10 +617,10 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF2196F3).withOpacity(0.1),
+                    color: scheme.primaryContainer,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.home, color: Color(0xFF2196F3)),
+                  child: Icon(Icons.home, color: scheme.primary),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -631,7 +642,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                 ),
                 prefixIcon: const Icon(Icons.location_on),
                 filled: true,
-                fillColor: Colors.grey[50],
+                fillColor: scheme.surfaceContainerLowest,
               ),
             ),
             const SizedBox(height: 16),
@@ -647,7 +658,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       filled: true,
-                      fillColor: Colors.grey[50],
+                      fillColor: scheme.surfaceContainerLowest,
                     ),
                   ),
                 ),
@@ -661,7 +672,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       filled: true,
-                      fillColor: Colors.grey[50],
+                      fillColor: scheme.surfaceContainerLowest,
                     ),
                     keyboardType: TextInputType.number,
                     maxLength: 5,
@@ -681,7 +692,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       filled: true,
-                      fillColor: Colors.grey[50],
+                      fillColor: scheme.surfaceContainerLowest,
                     ),
                     maxLength: 2,
                     textCapitalization: TextCapitalization.characters,
@@ -698,7 +709,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       filled: true,
-                      fillColor: Colors.grey[50],
+                      fillColor: scheme.surfaceContainerLowest,
                     ),
                   ),
                 ),
@@ -710,13 +721,16 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
     );
   }
 
+  // ignore: unused_element
   Widget _buildDocumentsStep(AppLocalizations l10n) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Card(
       key: const ValueKey(2),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey[200]!),
+        side: BorderSide(color: scheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -728,13 +742,10 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF2196F3).withOpacity(0.1),
+                    color: scheme.primaryContainer,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(
-                    Icons.description,
-                    color: Color(0xFF2196F3),
-                  ),
+                  child: Icon(Icons.description, color: scheme.primary),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -749,7 +760,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
             const SizedBox(height: 12),
             Text(
               l10n.uploadDocumentsOptional,
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 14, color: scheme.onSurfaceVariant),
             ),
             const SizedBox(height: 24),
             _buildDocumentPicker(
@@ -774,6 +785,8 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
     required File? file,
     required VoidCallback onTap,
   }) {
+    final scheme = Theme.of(context).colorScheme;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
@@ -781,12 +794,14 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           border: Border.all(
-            color: file != null ? Colors.green : Colors.grey[300]!,
+            color: file != null ? scheme.secondary : scheme.outlineVariant,
             width: file != null ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(8),
           color:
-              file != null ? Colors.green.withOpacity(0.05) : Colors.grey[50],
+              file != null
+                  ? scheme.secondaryContainer.withOpacity(0.5)
+                  : scheme.surfaceContainerLowest,
         ),
         child: Row(
           children: [
@@ -795,13 +810,14 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
               decoration: BoxDecoration(
                 color:
                     file != null
-                        ? Colors.green.withOpacity(0.1)
-                        : Colors.grey[200],
+                        ? scheme.secondaryContainer
+                        : scheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
                 file != null ? Icons.check_circle : Icons.upload_file,
-                color: file != null ? Colors.green : Colors.grey[600],
+                color:
+                    file != null ? scheme.secondary : scheme.onSurfaceVariant,
                 size: 28,
               ),
             ),
@@ -821,9 +837,9 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                   if (file != null)
                     Text(
                       file.path.split('/').last,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
-                        color: Colors.green,
+                        color: scheme.secondary,
                         fontWeight: FontWeight.w500,
                       ),
                       maxLines: 1,
@@ -832,12 +848,19 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                   else
                     Text(
                       'PDF, JPG, PNG (max 5MB)',
-                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: scheme.onSurfaceVariant,
+                      ),
                     ),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 18, color: Colors.grey[400]),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 18,
+              color: scheme.onSurfaceVariant,
+            ),
           ],
         ),
       ),

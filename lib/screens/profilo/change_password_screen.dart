@@ -14,7 +14,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _oldPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
+
   bool _isLoading = false;
   bool _showOldPassword = false;
   bool _showNewPassword = false;
@@ -49,8 +49,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         // Successo
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(result['message'] ?? 'Password cambiata con successo!'),
-            backgroundColor: Colors.green,
+            content: Text(
+              result['message'] ?? 'Password cambiata con successo!',
+            ),
+            backgroundColor: Theme.of(context).colorScheme.secondary,
             duration: const Duration(seconds: 3),
           ),
         );
@@ -64,19 +66,21 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         // Errore
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(result['message'] ?? 'Errore durante il cambio password'),
-            backgroundColor: Colors.red,
+            content: Text(
+              result['message'] ?? 'Errore durante il cambio password',
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
             duration: const Duration(seconds: 4),
           ),
         );
       }
     } catch (e) {
       if (!mounted) return;
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Errore di connessione: $e'),
-          backgroundColor: Colors.red,
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
     } finally {
@@ -91,11 +95,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.translate('changePassword')),
-      ),
+      appBar: AppBar(title: Text(l10n.translate('changePassword'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -104,36 +107,32 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 24),
-              
+
               // Icona
-              const Icon(
-                Icons.security,
-                size: 80,
-                color: Colors.blue,
-              ),
-              
+              Icon(Icons.security, size: 80, color: scheme.primary),
+
               const SizedBox(height: 24),
-              
+
               // Titolo
               Text(
                 l10n.translate('changePasswordTitle'),
                 style: Theme.of(context).textTheme.headlineSmall,
                 textAlign: TextAlign.center,
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               // Descrizione
               Text(
                 l10n.translate('changePasswordDescription'),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
+                  color: scheme.onSurfaceVariant,
                 ),
                 textAlign: TextAlign.center,
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               // Password Attuale
               TextFormField(
                 controller: _oldPasswordController,
@@ -144,7 +143,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _showOldPassword ? Icons.visibility_off : Icons.visibility,
+                      _showOldPassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                     ),
                     onPressed: () {
                       setState(() {
@@ -161,9 +162,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   return null;
                 },
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Nuova Password
               TextFormField(
                 controller: _newPasswordController,
@@ -172,11 +173,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   labelText: l10n.translate('newPassword'),
                   hintText: l10n.translate('enterNewPassword'),
                   helperText: l10n.translate('passwordMinLength'),
-                  helperStyle: const TextStyle(fontSize: 11, color: Colors.grey),
+                  helperStyle: TextStyle(
+                    fontSize: 11,
+                    color: scheme.onSurfaceVariant,
+                  ),
                   prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _showNewPassword ? Icons.visibility_off : Icons.visibility,
+                      _showNewPassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                     ),
                     onPressed: () {
                       setState(() {
@@ -199,9 +205,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   return null;
                 },
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Conferma Password
               TextFormField(
                 controller: _confirmPasswordController,
@@ -212,7 +218,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _showConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                      _showConfirmPassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                     ),
                     onPressed: () {
                       setState(() {
@@ -232,52 +240,55 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   return null;
                 },
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               // Pulsante Cambia Password
               ElevatedButton(
                 onPressed: _isLoading ? null : _changePassword,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                child:
+                    _isLoading
+                        ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              scheme.onPrimary,
+                            ),
+                          ),
+                        )
+                        : Text(
+                          l10n.translate('changePassword'),
+                          style: const TextStyle(fontSize: 16),
                         ),
-                      )
-                    : Text(
-                        l10n.translate('changePassword'),
-                        style: const TextStyle(fontSize: 16),
-                      ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Consigli sicurezza
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.green.shade50,
+                  color: scheme.secondaryContainer,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.green.shade200),
+                  border: Border.all(color: scheme.secondary),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.lightbulb_outline, color: Colors.green.shade700),
+                        Icon(Icons.lightbulb_outline, color: scheme.secondary),
                         const SizedBox(width: 8),
                         Text(
                           l10n.translate('passwordTips'),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.green.shade700,
+                            color: scheme.secondary,
                           ),
                         ),
                       ],
@@ -298,20 +309,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   Widget _buildTip(String text) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.check_circle, size: 16, color: Colors.green),
+          Icon(Icons.check_circle, size: 16, color: scheme.secondary),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.grey[700],
-              ),
+              style: TextStyle(fontSize: 13, color: scheme.onSurfaceVariant),
             ),
           ),
         ],

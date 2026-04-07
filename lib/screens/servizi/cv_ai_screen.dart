@@ -1894,6 +1894,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
   }
 
   Widget _buildIntroStep(AppLocalizations l10n) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1913,9 +1914,9 @@ class _CvAiScreenState extends State<CvAiScreen> {
           ],
         ),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           'Apri, modifica o scarica i CV gia creati.',
-          style: TextStyle(color: Colors.grey),
+          style: TextStyle(color: scheme.onSurface.withOpacity(0.65)),
         ),
         const SizedBox(height: 8),
         if (_isLoadingExistingCvs)
@@ -1928,15 +1929,15 @@ class _CvAiScreenState extends State<CvAiScreen> {
             padding: const EdgeInsets.only(top: 6),
             child: Text(
               _existingCvsError!,
-              style: TextStyle(color: Colors.red.shade700),
+              style: TextStyle(color: scheme.error),
             ),
           ),
         if (!_isLoadingExistingCvs && _existingCvs.isEmpty)
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(top: 8),
             child: Text(
               'Nessun curriculum trovato.',
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: scheme.onSurface.withOpacity(0.65)),
             ),
           ),
         ..._existingCvs.map((entry) {
@@ -1974,12 +1975,16 @@ class _CvAiScreenState extends State<CvAiScreen> {
                   if (createdAt.isNotEmpty)
                     Text(
                       'Creato: $createdAt',
-                      style: const TextStyle(color: Colors.grey),
+                      style: TextStyle(
+                        color: scheme.onSurface.withOpacity(0.65),
+                      ),
                     ),
                   if (updatedAt.isNotEmpty)
                     Text(
                       'Aggiornato: $updatedAt',
-                      style: const TextStyle(color: Colors.grey),
+                      style: TextStyle(
+                        color: scheme.onSurface.withOpacity(0.65),
+                      ),
                     ),
                   const SizedBox(height: 8),
                   Wrap(
@@ -2019,6 +2024,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
   }
 
   Widget _buildPersonalStep(AppLocalizations l10n) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -2070,9 +2076,9 @@ class _CvAiScreenState extends State<CvAiScreen> {
           label: const Text('Carica o scatta foto CV'),
         ),
         const SizedBox(height: 6),
-        const Text(
+        Text(
           'Consiglio: usa una foto frontale, ben illuminata e con sfondo neutro.',
-          style: TextStyle(color: Colors.grey),
+          style: TextStyle(color: scheme.onSurface.withOpacity(0.65)),
         ),
         if (_photoPath != null) ...[
           const SizedBox(height: 8),
@@ -2088,7 +2094,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) {
                   return Container(
-                    color: Colors.grey.shade200,
+                    color: scheme.surface,
                     alignment: Alignment.center,
                     child: const Icon(Icons.broken_image_outlined),
                   );
@@ -2295,6 +2301,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
   }
 
   Widget _buildTemplateStep(AppLocalizations l10n) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -2310,7 +2317,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
         if (_isLoadingTemplates)
           const Center(child: CircularProgressIndicator())
         else if (_templatesError != null) ...[
-          Text(_templatesError!, style: const TextStyle(color: Colors.red)),
+          Text(_templatesError!, style: TextStyle(color: scheme.error)),
           const SizedBox(height: 8),
           OutlinedButton.icon(
             onPressed: _loadCvTemplates,
@@ -2357,7 +2364,9 @@ class _CvAiScreenState extends State<CvAiScreen> {
                                 ),
                                 Text(
                                   'ID: $id',
-                                  style: const TextStyle(color: Colors.grey),
+                                  style: TextStyle(
+                                    color: scheme.onSurface.withOpacity(0.65),
+                                  ),
                                 ),
                               ],
                             ),
@@ -2369,9 +2378,9 @@ class _CvAiScreenState extends State<CvAiScreen> {
                 }).toList(),
           ),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           'Prosegui al prossimo step per scegliere la lingua del CV.',
-          style: TextStyle(color: Colors.grey),
+          style: TextStyle(color: scheme.onSurface.withOpacity(0.65)),
         ),
       ],
     );
@@ -2434,6 +2443,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
   }
 
   Widget _buildPreviewAndSaveStep(AppLocalizations l10n) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -2453,10 +2463,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
         if (_isLoadingTemplatePreview)
           const Center(child: CircularProgressIndicator())
         else if (_templatePreviewError != null)
-          Text(
-            _templatePreviewError!,
-            style: const TextStyle(color: Colors.red),
-          )
+          Text(_templatePreviewError!, style: TextStyle(color: scheme.error))
         else if (_templatePreviewHtml != null)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -2464,7 +2471,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
               Container(
                 height: 220,
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
+                  border: Border.all(color: scheme.outline.withOpacity(0.6)),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 clipBehavior: Clip.antiAlias,
@@ -2486,9 +2493,9 @@ class _CvAiScreenState extends State<CvAiScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.green.shade50,
+              color: scheme.secondary.withOpacity(0.12),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.green.shade300),
+              border: Border.all(color: scheme.secondary.withOpacity(0.75)),
             ),
             child: Text(l10n.translate('cvAiGenerated')),
           ),

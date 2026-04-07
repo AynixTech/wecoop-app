@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:wecoop_app/screens/auth_gate.dart';
 import 'package:wecoop_app/screens/caf/compilazione_730_screen.dart';
@@ -40,7 +41,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
 
   Future<void> _initializePushNotifications() async {
     await _pushService.initialize();
-    
+
     // Configura callback per navigazione
     _pushService.onMessageTap = (RemoteMessage message) {
       _handleNotificationNavigation(message.data);
@@ -85,7 +86,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
           // _navigatorKey.currentState?.pushNamed('/event/$id');
         }
         break;
-      
+
       case 'ServiceDetail':
         if (id != null) {
           // TODO: Implementare navigazione a ServiceDetailScreen
@@ -93,17 +94,17 @@ class _WECOOPAppState extends State<WECOOPApp> {
           // _navigatorKey.currentState?.pushNamed('/service/$id');
         }
         break;
-      
+
       case 'Profile':
         print('🔄 Navigazione a Profile');
         _navigatorKey.currentState?.pushNamed('/home');
         break;
-      
+
       case 'Notifications':
         print('🔄 Navigazione a Notifications');
         _navigatorKey.currentState?.pushNamed('/home');
         break;
-      
+
       default:
         print('🔄 Schermata sconosciuta: $screen');
     }
@@ -127,39 +128,87 @@ class _WECOOPAppState extends State<WECOOPApp> {
           supportedLocales: const [Locale('it'), Locale('en'), Locale('es')],
           theme: ThemeData(
             useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFF2196F3), // Azzurro moderno
-              primary: const Color(0xFF2196F3),
-              secondary: const Color(0xFF1976D2),
-              surface: Colors.white,
-              background: const Color(0xFFF5F9FF),
+            colorScheme: const ColorScheme(
+              brightness: Brightness.light,
+              primary: Color(0xFF1282A8),
+              onPrimary: Colors.white,
+              secondary: Color(0xFF59B575),
+              onSecondary: Colors.white,
+              error: Color(0xFFE6266B),
+              onError: Colors.white,
+              surface: Color(0xFFFFFFFF),
+              onSurface: Color(0xFF1F2933),
             ),
-            scaffoldBackgroundColor: const Color(0xFFF5F9FF),
-            appBarTheme: const AppBarTheme(
+            textTheme: GoogleFonts.poppinsTextTheme().apply(
+              bodyColor: const Color(0xFF1F2933),
+              displayColor: const Color(0xFF1F2933),
+            ),
+            scaffoldBackgroundColor: const Color(0xFFF8FBFD),
+            appBarTheme: AppBarTheme(
               elevation: 0,
               centerTitle: false,
-              backgroundColor: Color(0xFF2196F3),
+              backgroundColor: const Color(0xFF1282A8),
               foregroundColor: Colors.white,
-              iconTheme: IconThemeData(color: Colors.white),
+              titleTextStyle: GoogleFonts.poppins(
+                fontSize: 30,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+              iconTheme: const IconThemeData(color: Colors.white),
             ),
             cardTheme: CardThemeData(
-              elevation: 2,
+              elevation: 0,
+              color: Colors.white,
+              shadowColor: const Color(0xFF0F2430).withOpacity(0.08),
               shape: RoundedRectangleBorder(
+                side: const BorderSide(color: Color(0x14000000)),
                 borderRadius: BorderRadius.circular(16),
               ),
-              color: Colors.white,
+              margin: const EdgeInsets.symmetric(vertical: 6),
             ),
             elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2196F3),
+                backgroundColor: const Color(0xFF1282A8),
                 foregroundColor: Colors.white,
-                elevation: 2,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                elevation: 0,
+                shadowColor: Colors.transparent,
+                minimumSize: const Size(132, 52),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 14,
                 ),
-                textStyle: const TextStyle(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                textStyle: GoogleFonts.poppins(
                   fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            outlinedButtonTheme: OutlinedButtonThemeData(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF0E6786),
+                minimumSize: const Size(120, 50),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                side: const BorderSide(color: Color(0xFF1282A8), width: 1.2),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                textStyle: GoogleFonts.poppins(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF1282A8),
+                textStyle: GoogleFonts.poppins(
+                  fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -167,30 +216,68 @@ class _WECOOPAppState extends State<WECOOPApp> {
             inputDecorationTheme: InputDecorationTheme(
               filled: true,
               fillColor: Colors.white,
+              hintStyle: GoogleFonts.poppins(color: const Color(0xFF6F7782)),
+              labelStyle: GoogleFonts.poppins(color: const Color(0xFF4D4C4C)),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+                borderSide: const BorderSide(color: Color(0x22000000)),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+                borderSide: const BorderSide(color: Color(0x22000000)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Color(0xFF2196F3), width: 2),
+                borderSide: const BorderSide(
+                  color: Color(0xFF1282A8),
+                  width: 1.5,
+                ),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
+            ),
+            chipTheme: ChipThemeData(
+              backgroundColor: const Color(0xFFEFF7FA),
+              selectedColor: const Color(0xFF1282A8),
+              side: BorderSide.none,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              labelStyle: GoogleFonts.poppins(
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF1F2933),
+              ),
             ),
             floatingActionButtonTheme: const FloatingActionButtonThemeData(
-              backgroundColor: Color(0xFF2196F3),
+              backgroundColor: Color(0xFF1282A8),
               foregroundColor: Colors.white,
             ),
-            bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+            bottomNavigationBarTheme: BottomNavigationBarThemeData(
               backgroundColor: Colors.white,
-              selectedItemColor: Color(0xFF2196F3),
-              unselectedItemColor: Color(0xFF9E9E9E),
-              elevation: 8,
+              selectedItemColor: const Color(0xFF1282A8),
+              unselectedItemColor: const Color(0xFF6F7782),
+              selectedLabelStyle: GoogleFonts.poppins(
+                fontWeight: FontWeight.w600,
+              ),
+              unselectedLabelStyle: GoogleFonts.poppins(
+                fontWeight: FontWeight.w500,
+              ),
+              elevation: 10,
               type: BottomNavigationBarType.fixed,
+            ),
+            switchTheme: SwitchThemeData(
+              thumbColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) return Colors.white;
+                return const Color(0xFFCBCED4);
+              }),
+              trackColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return const Color(0xFF59B575);
+                }
+                return const Color(0xFFCBCED4);
+              }),
             ),
             visualDensity: VisualDensity.adaptivePlatformDensity,
           ),

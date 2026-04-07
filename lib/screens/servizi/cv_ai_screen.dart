@@ -85,6 +85,8 @@ class _CvAiScreenState extends State<CvAiScreen> {
   bool _isLoadingTemplatePreview = false;
   String? _templatePreviewError;
   String? _templatePreviewHtml;
+  bool _isLoadingExistingCvs = false;
+  String? _existingCvsError;
 
   final List<Map<String, String>> _educations = [];
   final List<Map<String, String>> _experiences = [];
@@ -92,6 +94,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
   final List<String> _skills = [];
   final List<Map<String, String>> _documents = [];
   final List<Map<String, dynamic>> _cvTemplates = [];
+  final List<Map<String, dynamic>> _existingCvs = [];
   late final WebViewController _templatePreviewController;
 
   @override
@@ -102,6 +105,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
           ..setJavaScriptMode(JavaScriptMode.unrestricted)
           ..setBackgroundColor(Colors.white);
     _loadDraft();
+    _loadExistingCvs();
     _loadCvTemplates();
   }
 
@@ -373,6 +377,222 @@ class _CvAiScreenState extends State<CvAiScreen> {
         _isLoadingTemplates = false;
       });
     }
+  }
+
+  List<Map<String, dynamic>> _toDynamicMapList(dynamic value) {
+    if (value is List) {
+      return value
+          .whereType<Map>()
+          .map(
+            (entry) => entry.map((key, val) => MapEntry(key.toString(), val)),
+          )
+          .toList();
+    }
+    return const [];
+  }
+
+  Future<void> _loadExistingCvs() async {
+    setState(() {
+      _isLoadingExistingCvs = true;
+      _existingCvsError = null;
+    });
+
+    try {
+      final headers = await _buildAuthHeaders();
+      final response = await HttpClientService.get(
+        Uri.parse(_cvApiBase),
+        headers: headers,
+      );
+      final body = HttpClientService.decodeJsonResponse(response);
+
+      if (response.statusCode != 200) {
+        throw Exception('status: ${response.statusCode}');
+      }
+
+      final entries =
+          body is Map<String, dynamic>
+              ? _toDynamicMapList(body['cvs'] ?? body['items'] ?? body['data'])
+              : _toDynamicMapList(body);
+
+      setState(() {
+        _existingCvs
+          ..clear()
+          ..addAll(entries);
+        _isLoadingExistingCvs = false;
+      });
+    } catch (_) {
+      setState(() {
+        _isLoadingExistingCvs = false;
+        _existingCvsError = 'Impossibile caricare bozze e CV generati';
+      });
+    }
+  }
+
+  String _entryCvId(Map<String, dynamic> entry) {
+    return (entry['cvId'] ?? entry['id'] ?? '').toString();
+  }
+
+  String _entryStatus(Map<String, dynamic> entry) {
+    return (entry['status'] ?? 'unknown').toString();
+  }
+
+  String _entryUpdatedAt(Map<String, dynamic> entry) {
+    return (entry['updatedAt'] ?? entry['createdAt'] ?? '').toString();
+  }
+
+  Map<String, dynamic>? _entryFiles(Map<String, dynamic> entry) {
+    final files = entry['files'];
+    if (files is Map<String, dynamic>) return files;
+    if (files is Map) {
+      return files.map((key, value) => MapEntry(key.toString(), value));
+    }
+    return null;
+  }
+
+  Future<Map<String, dynamic>?> _fetchCvDetails(String cvId) async {
+    try {
+      final headers = await _buildAuthHeaders();
+      final response = await HttpClientService.get(
+        Uri.parse('$_cvApiBase/$cvId'),
+        headers: headers,
+      );
+      final body = HttpClientService.decodeJsonResponse(response);
+      if (response.statusCode == 200 && body is Map<String, dynamic>) {
+        return body;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  Map<String, dynamic>? _extractInputPayload(Map<String, dynamic> source) {
+    final candidates = [source['inputData'], source['payload'], source['data']];
+
+    for (final candidate in candidates) {
+      if (candidate is Map<String, dynamic>) return candidate;
+      if (candidate is Map) {
+        return candidate.map((key, value) => MapEntry(key.toString(), value));
+      }
+    }
+    return null;
+  }
+
+  void _applyPayloadToForm(Map<String, dynamic> payload) {
+    final personalInfo = payload['personalInfo'] as Map<String, dynamic>? ?? {};
+    final jobGoal = payload['jobGoal'] as Map<String, dynamic>? ?? {};
+    final config = payload['config'] as Map<String, dynamic>? ?? {};
+
+    _nomeController.text = personalInfo['firstName']?.toString() ?? '';
+    _cognomeController.text = personalInfo['lastName']?.toString() ?? '';
+    _nazionalitaController.text = personalInfo['nationality']?.toString() ?? '';
+    _telefonoController.text = personalInfo['phone']?.toString() ?? '';
+    _emailController.text = personalInfo['email']?.toString() ?? '';
+    _indirizzoController.text = personalInfo['address']?.toString() ?? '';
+
+    final birthDate = personalInfo['birthDate']?.toString();
+    if (birthDate != null && birthDate.contains('-')) {
+      final parts = birthDate.split('-');
+      if (parts.length == 3) {
+        _dataNascitaController.text = '${parts[2]}/${parts[1]}/${parts[0]}';
+      }
+    }
+
+    _educations
+      ..clear()
+      ..addAll(
+        _toDynamicMapList(payload['education']).map(
+          (e) => {
+            'titolo': e['title']?.toString() ?? '',
+            'istituto': e['institution']?.toString() ?? '',
+            'paese': e['country']?.toString() ?? '',
+            'inizio': _displayDateFromIso(e['startDate']?.toString()),
+            'fine': _displayDateFromIso(e['endDate']?.toString()),
+            'descrizione': e['description']?.toString() ?? '',
+          },
+        ),
+      );
+
+    _experiences
+      ..clear()
+      ..addAll(
+        _toDynamicMapList(payload['experience']).map(
+          (e) => {
+            'ruolo': e['role']?.toString() ?? '',
+            'azienda': e['company']?.toString() ?? '',
+            'paese': e['country']?.toString() ?? '',
+            'inizio': _displayDateFromIso(e['startDate']?.toString()),
+            'fine': _displayDateFromIso(e['endDate']?.toString()),
+            'descrizione': e['description']?.toString() ?? '',
+          },
+        ),
+      );
+
+    _languages
+      ..clear()
+      ..addAll(
+        _toDynamicMapList(payload['languages']).map(
+          (e) => {
+            'lingua': e['language']?.toString() ?? '',
+            'livello': _normalizedLanguageLevel(e['level']?.toString() ?? ''),
+          },
+        ),
+      );
+
+    _skills
+      ..clear()
+      ..addAll((payload['skills'] as List<dynamic>? ?? []).map((e) => '$e'));
+
+    _obiettivoController.text = jobGoal['position']?.toString() ?? '';
+    _paeseLavoroController.text = jobGoal['country']?.toString() ?? '';
+    _disponibilitaController.text = jobGoal['availability']?.toString() ?? '';
+    _settoreController.text = jobGoal['industry']?.toString() ?? '';
+
+    _cvModel = _normalizedTemplateId(
+      (config['templateId'] ?? config['template'] ?? _cvModel).toString(),
+    );
+    _cvLanguage = _normalizedCvLanguage(
+      (config['cvLanguage'] ?? _cvLanguage).toString(),
+    );
+    _includePhoto = config['includePhoto'] != false;
+  }
+
+  String _displayDateFromIso(String? value) {
+    if (value == null || value.isEmpty) return '';
+    if (!value.contains('-')) return value;
+    final parts = value.split('-');
+    if (parts.length != 3) return value;
+    return '${parts[2]}/${parts[1]}/${parts[0]}';
+  }
+
+  Future<void> _editExistingCv(Map<String, dynamic> entry) async {
+    final cvId = _entryCvId(entry);
+    Map<String, dynamic>? payload = _extractInputPayload(entry);
+
+    if (payload == null && cvId.isNotEmpty) {
+      final details = await _fetchCvDetails(cvId);
+      if (details != null) {
+        payload = _extractInputPayload(details);
+      }
+    }
+
+    if (payload == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Dati bozza non disponibili per modifica'),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _applyPayloadToForm(payload!);
+      _currentStep = 1;
+    });
+    await _saveDraft();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Bozza caricata. Puoi modificarla.')),
+    );
   }
 
   Future<void> _loadTemplatePreview() async {
@@ -744,10 +964,11 @@ class _CvAiScreenState extends State<CvAiScreen> {
       }
 
       final photoBase64 = base64Encode(bestBytes);
+      final photoDataUrl = 'data:$mimeType;base64,$photoBase64';
       return {
         'photoBase64': photoBase64,
-        // Backward compatibility: some renderers expect `photo` instead.
-        'photo': photoBase64,
+        // HTML templates often bind `photo` directly in <img src="...">.
+        'photo': photoDataUrl,
         'photoMimeType': mimeType,
         'photoFileName': path.split('/').last,
       };
@@ -851,6 +1072,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
     final education = payload['education'] as List<dynamic>? ?? [];
     final photoBase64 = personalInfo['photoBase64']?.toString() ?? '';
     final photoAlias = personalInfo['photo']?.toString() ?? '';
+    final hasPhotoDataUrl = photoAlias.startsWith('data:image/');
 
     final missingRequired = <String>[
       if (firstName.isEmpty) 'personalInfo.firstName',
@@ -870,6 +1092,8 @@ class _CvAiScreenState extends State<CvAiScreen> {
       'hasPhotoBase64': photoBase64.isNotEmpty,
       'photoBase64Chars': photoBase64.length,
       'hasPhotoAlias': photoAlias.isNotEmpty,
+      'hasPhotoDataUrl': hasPhotoDataUrl,
+      'photoAliasChars': photoAlias.length,
     };
   }
 
@@ -1484,6 +1708,118 @@ class _CvAiScreenState extends State<CvAiScreen> {
               l10n.translate('cvAiEuropassDisclaimer'),
               style: TextStyle(color: Colors.orange.shade800),
             ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Expanded(
+                  child: Text(
+                    'Le tue bozze / CV generati',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Aggiorna lista',
+                  onPressed: _isLoadingExistingCvs ? null : _loadExistingCvs,
+                  icon: const Icon(Icons.refresh),
+                ),
+              ],
+            ),
+            if (_isLoadingExistingCvs)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: LinearProgressIndicator(minHeight: 2),
+              ),
+            if (_existingCvsError != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Text(
+                  _existingCvsError!,
+                  style: TextStyle(color: Colors.red.shade700),
+                ),
+              ),
+            if (!_isLoadingExistingCvs && _existingCvs.isEmpty)
+              const Padding(
+                padding: EdgeInsets.only(top: 6),
+                child: Text(
+                  'Nessuna bozza remota disponibile al momento.',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+            ..._existingCvs.take(8).map((entry) {
+              final cvId = _entryCvId(entry);
+              final status = _entryStatus(entry);
+              final updatedAt = _entryUpdatedAt(entry);
+              final files = _entryFiles(entry);
+              final pdfUrl = files?['pdfUrl']?.toString();
+              final docxUrl = files?['docxUrl']?.toString();
+              return Card(
+                elevation: 0,
+                margin: const EdgeInsets.only(top: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(color: Colors.grey.shade300),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              cvId.isEmpty ? 'CV senza ID' : 'CV $cvId',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          Chip(
+                            label: Text(status),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        ],
+                      ),
+                      if (updatedAt.isNotEmpty)
+                        Text(
+                          'Ultimo aggiornamento: $updatedAt',
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          OutlinedButton.icon(
+                            onPressed: () => _editExistingCv(entry),
+                            icon: const Icon(Icons.edit_outlined),
+                            label: const Text('Modifica'),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed:
+                                (pdfUrl == null || pdfUrl.isEmpty)
+                                    ? null
+                                    : () =>
+                                        _openFileUrl(pdfUrl, 'Download PDF'),
+                            icon: const Icon(Icons.picture_as_pdf_outlined),
+                            label: const Text('PDF'),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed:
+                                (docxUrl == null || docxUrl.isEmpty)
+                                    ? null
+                                    : () =>
+                                        _openFileUrl(docxUrl, 'Download Word'),
+                            icon: const Icon(Icons.description_outlined),
+                            label: const Text('Word'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
           ],
         ),
       ),
@@ -1549,6 +1885,25 @@ class _CvAiScreenState extends State<CvAiScreen> {
         if (_photoPath != null) ...[
           const SizedBox(height: 8),
           Text('Foto selezionata: ${_photoPath!.split('/').last}'),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox(
+              width: 120,
+              height: 150,
+              child: Image.file(
+                File(_photoPath!),
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) {
+                  return Container(
+                    color: Colors.grey.shade200,
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.broken_image_outlined),
+                  );
+                },
+              ),
+            ),
+          ),
         ],
       ],
     );

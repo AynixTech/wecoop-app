@@ -19,7 +19,7 @@ class CvAiScreen extends StatefulWidget {
 }
 
 class _CvAiScreenState extends State<CvAiScreen> {
-  static const int _totalSteps = 7;
+  static const int _totalSteps = 9;
   static const String _draftKey = 'cv_ai_draft_v1';
   static const String _cvApiBase =
       'https://www.wecoop.org/wp-json/wecoop/v1/cv';
@@ -193,13 +193,6 @@ class _CvAiScreenState extends State<CvAiScreen> {
 
       if (!mounted) return;
       setState(() {});
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context)!.translate('cvAiDraftLoaded'),
-          ),
-        ),
-      );
     } catch (_) {}
   }
 
@@ -440,6 +433,10 @@ class _CvAiScreenState extends State<CvAiScreen> {
     return (entry['updatedAt'] ?? entry['createdAt'] ?? '').toString();
   }
 
+  String _entryCreatedAt(Map<String, dynamic> entry) {
+    return (entry['createdAt'] ?? '').toString();
+  }
+
   Map<String, dynamic>? _entryFiles(Map<String, dynamic> entry) {
     final files = entry['files'];
     if (files is Map<String, dynamic>) return files;
@@ -552,7 +549,10 @@ class _CvAiScreenState extends State<CvAiScreen> {
     _cvLanguage = _normalizedCvLanguage(
       (config['cvLanguage'] ?? _cvLanguage).toString(),
     );
-    _includePhoto = config['includePhoto'] != false;
+    final hasPayloadPhoto =
+        (personalInfo['photo']?.toString().trim().isNotEmpty ?? false) ||
+        (personalInfo['photoBase64']?.toString().trim().isNotEmpty ?? false);
+    _includePhoto = hasPayloadPhoto ? true : config['includePhoto'] != false;
   }
 
   String _displayDateFromIso(String? value) {
@@ -589,15 +589,77 @@ class _CvAiScreenState extends State<CvAiScreen> {
       _currentStep = 1;
     });
     await _saveDraft();
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Bozza caricata. Puoi modificarla.')),
+  }
+
+  String _photoDataUrlFromPayload(Map<String, dynamic> payload) {
+    final personalInfo = payload['personalInfo'] as Map<String, dynamic>? ?? {};
+    final photo = personalInfo['photo']?.toString() ?? '';
+    if (photo.startsWith('data:image/')) return photo;
+
+    final photoBase64 = personalInfo['photoBase64']?.toString() ?? '';
+    if (photoBase64.isNotEmpty) {
+      final mimeType =
+          personalInfo['photoMimeType']?.toString().trim().isNotEmpty == true
+              ? personalInfo['photoMimeType'].toString()
+              : 'image/jpeg';
+      return 'data:$mimeType;base64,$photoBase64';
+    }
+
+    return '';
+  }
+
+  String _injectPhotoIntoPreviewHtml(
+    String html,
+    Map<String, dynamic> payload,
+  ) {
+    final photoDataUrl = _photoDataUrlFromPayload(payload);
+    if (photoDataUrl.isEmpty) return html;
+
+    var result = html;
+
+    // Replace common unresolved placeholders used by template engines.
+    final placeholders = <String>[
+      '{{photo}}',
+      '{{ photo }}',
+      '{{personalInfo.photo}}',
+      '{{ personalInfo.photo }}',
+      '{{photoBase64}}',
+      '{{ photoBase64 }}',
+      '{{personalInfo.photoBase64}}',
+      '{{ personalInfo.photoBase64 }}',
+    ];
+    for (final placeholder in placeholders) {
+      if (result.contains(placeholder)) {
+        result = result.replaceAll(placeholder, photoDataUrl);
+      }
+    }
+
+    // Fallback: set the first image src when it's empty or a placeholder.
+    final emptySrcPattern = RegExp(
+      r'''<img([^>]*?)src=["']\s*(?:|#|about:blank|\{\{[^}]+\}\})\s*["']([^>]*?)>''',
+      caseSensitive: false,
     );
+    if (emptySrcPattern.hasMatch(result)) {
+      result = result.replaceFirstMapped(emptySrcPattern, (match) {
+        final before = match.group(1) ?? '';
+        final after = match.group(2) ?? '';
+        return '<img${before}src="$photoDataUrl"$after>';
+      });
+    }
+
+    return result;
   }
 
   Future<void> _loadTemplatePreview() async {
     final templateId = _normalizedTemplateId(_cvModel);
     if (templateId.isEmpty) return;
+
+    if (_photoPath != null && _photoPath!.isNotEmpty && !_includePhoto) {
+      _logCvGeneration(
+        'cv_preview_photo_disabled_warning',
+        data: {'photoPath': _photoPath, 'includePhoto': _includePhoto},
+      );
+    }
 
     setState(() {
       _isLoadingTemplatePreview = true;
@@ -606,7 +668,9 @@ class _CvAiScreenState extends State<CvAiScreen> {
 
     try {
       final headers = await _buildAuthHeaders();
-      final payloadJson = jsonEncode(await _buildCvGeneratePayload());
+      final payload = await _buildCvGeneratePayload();
+      final payloadJson = jsonEncode(payload);
+      final payloadDebug = _payloadDebugInsights(payload);
       final uri = Uri.parse(
         '$_cvPreviewEndpoint?template=${Uri.encodeQueryComponent(templateId)}',
       );
@@ -617,6 +681,8 @@ class _CvAiScreenState extends State<CvAiScreen> {
           'endpoint': uri.toString(),
           'template': templateId,
           'payloadBytes': utf8.encode(payloadJson).length,
+          ...payloadDebug,
+          'payloadConsole': _payloadConsoleSnapshot(payload),
         },
       );
 
@@ -640,10 +706,26 @@ class _CvAiScreenState extends State<CvAiScreen> {
         final ok = body['ok'] == true;
         final html = body['html']?.toString();
         if (ok && html != null && html.trim().isNotEmpty) {
-          await _templatePreviewController.loadHtmlString(html);
+          final htmlWithPhoto = _injectPhotoIntoPreviewHtml(html, payload);
+          _logCvGeneration(
+            'cv_preview_html_debug',
+            data: {
+              'htmlLengthBefore': html.length,
+              'htmlLengthAfter': htmlWithPhoto.length,
+              'hasImgBefore': html.toLowerCase().contains('<img'),
+              'hasImgAfter': htmlWithPhoto.toLowerCase().contains('<img'),
+              'hasDataImageBefore': html.toLowerCase().contains('data:image/'),
+              'hasDataImageAfter': htmlWithPhoto.toLowerCase().contains(
+                'data:image/',
+              ),
+              'headBefore': _bodySnippet(html, maxChars: 220),
+              'headAfter': _bodySnippet(htmlWithPhoto, maxChars: 220),
+            },
+          );
+          await _templatePreviewController.loadHtmlString(htmlWithPhoto);
           if (!mounted) return;
           setState(() {
-            _templatePreviewHtml = html;
+            _templatePreviewHtml = htmlWithPhoto;
             _isLoadingTemplatePreview = false;
           });
           return;
@@ -843,6 +925,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
 
     setState(() {
       _photoPath = file.path;
+      _includePhoto = true;
     });
     await _saveDraft();
   }
@@ -1124,6 +1207,39 @@ class _CvAiScreenState extends State<CvAiScreen> {
     return '${text.substring(0, maxChars)}...';
   }
 
+  Map<String, dynamic> _payloadConsoleSnapshot(Map<String, dynamic> payload) {
+    final personalInfo = payload['personalInfo'] as Map<String, dynamic>? ?? {};
+    final photoBase64 = personalInfo['photoBase64']?.toString() ?? '';
+    final photoAlias = personalInfo['photo']?.toString() ?? '';
+
+    return {
+      'personalInfo': {
+        'firstName': personalInfo['firstName'],
+        'lastName': personalInfo['lastName'],
+        'email': personalInfo['email'],
+        'photoMimeType': personalInfo['photoMimeType'],
+        'photoFileName': personalInfo['photoFileName'],
+        'photoBase64Chars': photoBase64.length,
+        'photoBase64Head':
+            photoBase64.length > 40
+                ? '${photoBase64.substring(0, 40)}...'
+                : photoBase64,
+        'photoAliasChars': photoAlias.length,
+        'photoAliasIsDataUrl': photoAlias.startsWith('data:image/'),
+        'photoAliasHead':
+            photoAlias.length > 80
+                ? '${photoAlias.substring(0, 80)}...'
+                : photoAlias,
+      },
+      'counts': {
+        'education': (payload['education'] as List<dynamic>? ?? []).length,
+        'experience': (payload['experience'] as List<dynamic>? ?? []).length,
+        'languages': (payload['languages'] as List<dynamic>? ?? []).length,
+      },
+      'config': payload['config'],
+    };
+  }
+
   String _isoDateFromString(String date) {
     final parsed = _tryParseDate(date);
     if (parsed == null) return date;
@@ -1246,6 +1362,13 @@ class _CvAiScreenState extends State<CvAiScreen> {
     final startedAt = DateTime.now();
     _logCvGeneration('cv_generate_started', data: _cvGenerationSummary());
 
+    if (_photoPath != null && _photoPath!.isNotEmpty && !_includePhoto) {
+      _logCvGeneration(
+        'cv_generate_photo_disabled_warning',
+        data: {'photoPath': _photoPath, 'includePhoto': _includePhoto},
+      );
+    }
+
     await _saveDraft();
 
     setState(() {
@@ -1273,6 +1396,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
           'payloadBytes': utf8.encode(payloadJson).length,
           ...payloadDebug,
           'payloadSummary': _cvGenerationSummary(),
+          'payloadConsole': _payloadConsoleSnapshot(payload),
         },
       );
 
@@ -1463,6 +1587,84 @@ class _CvAiScreenState extends State<CvAiScreen> {
     );
   }
 
+  Future<void> _saveCvAndShowDownloads() async {
+    if (_isGenerating) return;
+
+    if (_normalizedTemplateId(_cvModel).isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Seleziona un template prima di salvare')),
+      );
+      return;
+    }
+
+    _logCvGeneration('cv_save_clicked', data: _cvGenerationSummary());
+    await _generateCv();
+
+    if (!mounted) return;
+    if (_generatedPdfUrl != null || _generatedDocxUrl != null) {
+      await _showDownloadOptionsModal();
+    }
+  }
+
+  Future<void> _showDownloadOptionsModal() async {
+    if (!mounted) return;
+
+    await showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'CV salvato',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 6),
+                const Text('Scegli il formato da scaricare'),
+                const SizedBox(height: 14),
+                if (_generatedPdfUrl != null)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.picture_as_pdf_outlined),
+                    title: const Text('Scarica PDF'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      _openFileUrl(_generatedPdfUrl, 'Download PDF');
+                    },
+                  ),
+                if (_generatedDocxUrl != null)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.description_outlined),
+                    title: const Text('Scarica Word'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      _openFileUrl(_generatedDocxUrl, 'Download Word');
+                    },
+                  ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Chiudi'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void _nextStep() async {
     await _saveDraft();
 
@@ -1471,7 +1673,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
       setState(() {
         _currentStep = nextStep;
       });
-      if (nextStep == 6) {
+      if (nextStep == 8) {
         _loadTemplatePreview();
       }
       return;
@@ -1615,11 +1817,16 @@ class _CvAiScreenState extends State<CvAiScreen> {
                     ),
                   const Spacer(),
                   ElevatedButton(
-                    onPressed: _nextStep,
+                    onPressed:
+                        _currentStep == _totalSteps - 1
+                            ? _saveCvAndShowDownloads
+                            : _nextStep,
                     child: Text(
-                      _currentStep == _totalSteps - 1
-                          ? l10n.complete
-                          : l10n.next,
+                      _currentStep == 0
+                          ? 'Crea curriculum'
+                          : (_currentStep == _totalSteps - 1
+                              ? 'Salva CV'
+                              : l10n.next),
                     ),
                   ),
                 ],
@@ -1646,7 +1853,11 @@ class _CvAiScreenState extends State<CvAiScreen> {
       case 5:
         return _buildObjectiveAndGenerationStep(l10n);
       case 6:
+        return _buildCvLanguageStep(l10n);
+      case 7:
         return _buildTemplateStep(l10n);
+      case 8:
+        return _buildPreviewAndSaveStep(l10n);
       default:
         return const SizedBox.shrink();
     }
@@ -1683,146 +1894,127 @@ class _CvAiScreenState extends State<CvAiScreen> {
   }
 
   Widget _buildIntroStep(AppLocalizations l10n) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
           children: [
-            Text(
-              l10n.translate('cvAiServiceName'),
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(l10n.translate('cvAiServiceSubtitle')),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                const Icon(Icons.timer_outlined),
-                const SizedBox(width: 8),
-                Text(l10n.translate('cvAiEstimatedTime')),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              l10n.translate('cvAiEuropassDisclaimer'),
-              style: TextStyle(color: Colors.orange.shade800),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                const Expanded(
-                  child: Text(
-                    'Le tue bozze / CV generati',
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Aggiorna lista',
-                  onPressed: _isLoadingExistingCvs ? null : _loadExistingCvs,
-                  icon: const Icon(Icons.refresh),
-                ),
-              ],
-            ),
-            if (_isLoadingExistingCvs)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: LinearProgressIndicator(minHeight: 2),
+            const Expanded(
+              child: Text(
+                'I tuoi curriculum',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
-            if (_existingCvsError != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Text(
-                  _existingCvsError!,
-                  style: TextStyle(color: Colors.red.shade700),
-                ),
-              ),
-            if (!_isLoadingExistingCvs && _existingCvs.isEmpty)
-              const Padding(
-                padding: EdgeInsets.only(top: 6),
-                child: Text(
-                  'Nessuna bozza remota disponibile al momento.',
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ),
-            ..._existingCvs.take(8).map((entry) {
-              final cvId = _entryCvId(entry);
-              final status = _entryStatus(entry);
-              final updatedAt = _entryUpdatedAt(entry);
-              final files = _entryFiles(entry);
-              final pdfUrl = files?['pdfUrl']?.toString();
-              final docxUrl = files?['docxUrl']?.toString();
-              return Card(
-                elevation: 0,
-                margin: const EdgeInsets.only(top: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  side: BorderSide(color: Colors.grey.shade300),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+            IconButton(
+              tooltip: 'Aggiorna lista',
+              onPressed: _isLoadingExistingCvs ? null : _loadExistingCvs,
+              icon: const Icon(Icons.refresh),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'Apri, modifica o scarica i CV gia creati.',
+          style: TextStyle(color: Colors.grey),
+        ),
+        const SizedBox(height: 8),
+        if (_isLoadingExistingCvs)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: LinearProgressIndicator(minHeight: 2),
+          ),
+        if (_existingCvsError != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Text(
+              _existingCvsError!,
+              style: TextStyle(color: Colors.red.shade700),
+            ),
+          ),
+        if (!_isLoadingExistingCvs && _existingCvs.isEmpty)
+          const Padding(
+            padding: EdgeInsets.only(top: 8),
+            child: Text(
+              'Nessun curriculum trovato.',
+              style: TextStyle(color: Colors.grey),
+            ),
+          ),
+        ..._existingCvs.map((entry) {
+          final cvId = _entryCvId(entry);
+          final status = _entryStatus(entry);
+          final createdAt = _entryCreatedAt(entry);
+          final updatedAt = _entryUpdatedAt(entry);
+          final files = _entryFiles(entry);
+          final pdfUrl = files?['pdfUrl']?.toString();
+          final docxUrl = files?['docxUrl']?.toString();
+          return Card(
+            margin: const EdgeInsets.only(top: 10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              cvId.isEmpty ? 'CV senza ID' : 'CV $cvId',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          Chip(
-                            label: Text(status),
-                            visualDensity: VisualDensity.compact,
-                          ),
-                        ],
-                      ),
-                      if (updatedAt.isNotEmpty)
-                        Text(
-                          'Ultimo aggiornamento: $updatedAt',
-                          style: const TextStyle(color: Colors.grey),
+                      Expanded(
+                        child: Text(
+                          cvId.isEmpty ? 'CV senza ID' : 'CV $cvId',
+                          style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
-                      const SizedBox(height: 6),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          OutlinedButton.icon(
-                            onPressed: () => _editExistingCv(entry),
-                            icon: const Icon(Icons.edit_outlined),
-                            label: const Text('Modifica'),
-                          ),
-                          OutlinedButton.icon(
-                            onPressed:
-                                (pdfUrl == null || pdfUrl.isEmpty)
-                                    ? null
-                                    : () =>
-                                        _openFileUrl(pdfUrl, 'Download PDF'),
-                            icon: const Icon(Icons.picture_as_pdf_outlined),
-                            label: const Text('PDF'),
-                          ),
-                          OutlinedButton.icon(
-                            onPressed:
-                                (docxUrl == null || docxUrl.isEmpty)
-                                    ? null
-                                    : () =>
-                                        _openFileUrl(docxUrl, 'Download Word'),
-                            icon: const Icon(Icons.description_outlined),
-                            label: const Text('Word'),
-                          ),
-                        ],
+                      ),
+                      Chip(
+                        label: Text(status),
+                        visualDensity: VisualDensity.compact,
                       ),
                     ],
                   ),
-                ),
-              );
-            }),
-          ],
-        ),
-      ),
+                  if (createdAt.isNotEmpty)
+                    Text(
+                      'Creato: $createdAt',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  if (updatedAt.isNotEmpty)
+                    Text(
+                      'Aggiornato: $updatedAt',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: () => _editExistingCv(entry),
+                        icon: const Icon(Icons.edit_outlined),
+                        label: const Text('Modifica'),
+                      ),
+                      OutlinedButton.icon(
+                        onPressed:
+                            (pdfUrl == null || pdfUrl.isEmpty)
+                                ? null
+                                : () => _openFileUrl(pdfUrl, 'Download PDF'),
+                        icon: const Icon(Icons.picture_as_pdf_outlined),
+                        label: const Text('Scarica PDF'),
+                      ),
+                      OutlinedButton.icon(
+                        onPressed:
+                            (docxUrl == null || docxUrl.isEmpty)
+                                ? null
+                                : () => _openFileUrl(docxUrl, 'Download Word'),
+                        icon: const Icon(Icons.description_outlined),
+                        label: const Text('Scarica Word'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
+      ],
     );
   }
 
@@ -2170,49 +2362,31 @@ class _CvAiScreenState extends State<CvAiScreen> {
                               ],
                             ),
                           ),
-                          TextButton.icon(
-                            onPressed:
-                                _isLoadingTemplatePreview
-                                    ? null
-                                    : _loadTemplatePreview,
-                            icon: const Icon(Icons.preview_outlined),
-                            label: const Text('Aggiorna anteprima'),
-                          ),
                         ],
                       ),
                     ),
                   );
                 }).toList(),
           ),
-        const SizedBox(height: 10),
-        if (_isLoadingTemplatePreview)
-          const Center(child: CircularProgressIndicator())
-        else if (_templatePreviewError != null)
-          Text(
-            _templatePreviewError!,
-            style: const TextStyle(color: Colors.red),
-          )
-        else if (_templatePreviewHtml != null)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 220,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: WebViewWidget(controller: _templatePreviewController),
-              ),
-              const SizedBox(height: 8),
-              OutlinedButton.icon(
-                onPressed: _openTemplatePreviewModal,
-                icon: const Icon(Icons.open_in_full),
-                label: const Text('Apri anteprima grande'),
-              ),
-            ],
-          ),
+        const SizedBox(height: 8),
+        const Text(
+          'Prosegui al prossimo step per scegliere la lingua del CV.',
+          style: TextStyle(color: Colors.grey),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCvLanguageStep(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Scegli lingua CV',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        const Text('Seleziona la lingua finale del curriculum.'),
         const SizedBox(height: 12),
         DropdownButtonFormField<String>(
           value: _normalizedCvLanguage(_cvLanguage),
@@ -2255,37 +2429,59 @@ class _CvAiScreenState extends State<CvAiScreen> {
             _saveDraft();
           },
         ),
-        const SizedBox(height: 10),
-        ElevatedButton.icon(
-          onPressed:
-              _isGenerating
-                  ? null
-                  : () {
-                    if (_normalizedTemplateId(_cvModel).isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Seleziona un template prima di generare',
-                          ),
-                        ),
-                      );
-                      return;
-                    }
-                    _logCvGeneration(
-                      'cv_generate_clicked',
-                      data: _cvGenerationSummary(),
-                    );
-                    _generateCv();
-                  },
-          icon: const Icon(Icons.auto_awesome),
-          label: Text(
-            _isGenerating
-                ? l10n.translate('cvAiGenerating')
-                : l10n.translate('cvAiGenerate'),
-          ),
+      ],
+    );
+  }
+
+  Widget _buildPreviewAndSaveStep(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Anteprima CV',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
+        const SizedBox(height: 8),
+        const Text('Controlla l’anteprima e salva il curriculum.'),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          onPressed: _isLoadingTemplatePreview ? null : _loadTemplatePreview,
+          icon: const Icon(Icons.preview_outlined),
+          label: const Text('Aggiorna anteprima'),
+        ),
+        const SizedBox(height: 10),
+        if (_isLoadingTemplatePreview)
+          const Center(child: CircularProgressIndicator())
+        else if (_templatePreviewError != null)
+          Text(
+            _templatePreviewError!,
+            style: const TextStyle(color: Colors.red),
+          )
+        else if (_templatePreviewHtml != null)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: 220,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: WebViewWidget(controller: _templatePreviewController),
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: _openTemplatePreviewModal,
+                icon: const Icon(Icons.open_in_full),
+                label: const Text('Apri anteprima grande'),
+              ),
+            ],
+          )
+        else
+          const Text('Nessuna anteprima disponibile.'),
         if (_isGenerated) ...[
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(12),
@@ -2295,35 +2491,6 @@ class _CvAiScreenState extends State<CvAiScreen> {
               border: Border.all(color: Colors.green.shade300),
             ),
             child: Text(l10n.translate('cvAiGenerated')),
-          ),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              OutlinedButton.icon(
-                onPressed:
-                    _generatedPdfUrl == null
-                        ? null
-                        : () => _openFileUrl(
-                          _generatedPdfUrl,
-                          l10n.translate('cvAiDownloadPdf'),
-                        ),
-                icon: const Icon(Icons.picture_as_pdf),
-                label: Text(l10n.translate('cvAiDownloadPdf')),
-              ),
-              OutlinedButton.icon(
-                onPressed:
-                    _generatedDocxUrl == null
-                        ? null
-                        : () => _openFileUrl(
-                          _generatedDocxUrl,
-                          l10n.translate('cvAiDownloadWord'),
-                        ),
-                icon: const Icon(Icons.description_outlined),
-                label: Text(l10n.translate('cvAiDownloadWord')),
-              ),
-            ],
           ),
         ],
       ],

@@ -11,16 +11,16 @@ class HttpClientService {
   static bool _isRefreshing = false;
 
   /// Decodifica JSON dalla risposta HTTP mantenendo l'encoding UTF-8 corretto
-  /// 
+  ///
   /// Usa utf8.decode(response.bodyBytes) invece di response.body per garantire
   /// che i caratteri accentati (é, à, ù, etc.) non vengano corrotti.
-  /// 
+  ///
   /// Verifica anche l'header Content-Type per debug.
   static dynamic decodeJsonResponse(http.Response response) {
     // Verifica se il server invia charset corretto
     final contentType = response.headers['content-type'] ?? '';
-    final hasCharset = contentType.contains('charset=utf-8');
-    
+    final hasCharset = contentType.toLowerCase().contains('charset=utf-8');
+
     if (!hasCharset) {
       print('⚠️ Header Warning: Content-Type non contiene charset=utf-8');
       print('   Content-Type riportato: $contentType');

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../services/app_localizations.dart';
-import '../../models/documento.dart';
 import 'richiesta_form_screen.dart';
 
 class OrientamentoFiscaleScreen extends StatelessWidget {
@@ -9,9 +8,11 @@ class OrientamentoFiscaleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.translate('taxGuidanceAndClarifications'))),
+      appBar: AppBar(
+        title: Text(l10n.translate('taxGuidanceAndClarifications')),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -20,7 +21,10 @@ class OrientamentoFiscaleScreen extends StatelessWidget {
             children: [
               Text(
                 l10n.translate('selectServiceCategory'),
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 24),
               _ServiceCard(
@@ -31,48 +35,71 @@ class OrientamentoFiscaleScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => RichiestaFormScreen(
-                        servizio: l10n.translate('taxGuidanceAndClarifications'),
-                        categoria: l10n.translate('taxesAndContributions'),
+                      builder:
+                          (context) => RichiestaFormScreen(
+                            servizio: l10n.translate(
+                              'taxGuidanceAndClarifications',
+                            ),
+                            categoria: l10n.translate('taxesAndContributions'),
 
-                        campi: [
-                          {'label': l10n.fullName, 'type': 'text', 'required': true},
-                          {'label': l10n.fiscalCode, 'type': 'text', 'required': true},
-                          {'label': l10n.dateOfBirth, 'type': 'date', 'required': true},
-                          {'label': l10n.residenceAddress, 'type': 'text', 'required': true},
-                          {
-                            'label': l10n.clarifyTopic,
-                            'type': 'select',
-                            'options': [
-                              l10n.taxCalculation,
-                              l10n.depositsBalances,
-                              l10n.inpsContributionsTax,
-                              l10n.f24Payments,
+                            campi: [
+                              {
+                                'label': l10n.fullName,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.fiscalCode,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.dateOfBirth,
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.residenceAddress,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.clarifyTopic,
+                                'type': 'select',
+                                'options': [
+                                  l10n.taxCalculation,
+                                  l10n.depositsBalances,
+                                  l10n.inpsContributionsTax,
+                                  l10n.f24Payments,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.workSituation,
+                                'type': 'select',
+                                'options': [
+                                  l10n.employeeWorker,
+                                  l10n.vatForfettario,
+                                  l10n.otherActivity,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.urgencyLevel,
+                                'type': 'select',
+                                'options': [
+                                  l10n.informative,
+                                  l10n.imminentDeadline,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.notesAndAdditionalInfo,
+                                'type': 'textarea',
+                                'required': false,
+                              },
                             ],
-                            'required': true,
-                          },
-                          {
-                            'label': l10n.workSituation,
-                            'type': 'select',
-                            'options': [
-                              l10n.employeeWorker,
-                              l10n.vatForfettario,
-                              l10n.otherActivity,
-                            ],
-                            'required': true,
-                          },
-                          {
-                            'label': l10n.urgencyLevel,
-                            'type': 'select',
-                            'options': [
-                              l10n.informative,
-                              l10n.imminentDeadline,
-                            ],
-                            'required': true,
-                          },
-                          {'label': l10n.notesAndAdditionalInfo, 'type': 'textarea', 'required': false},
-                        ],
-                      ),
+                          ),
                     ),
                   );
                 },
@@ -86,47 +113,72 @@ class OrientamentoFiscaleScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => RichiestaFormScreen(
-                        servizio: l10n.translate('taxGuidanceAndClarifications'),
-                        categoria: l10n.translate('clarificationsAndConsulting'),
-                        campi: [
-                          {'label': l10n.fullName, 'type': 'text', 'required': true},
-                          {'label': l10n.fiscalCode, 'type': 'text', 'required': true},
-                          {'label': l10n.dateOfBirth, 'type': 'date', 'required': true},
-                          {'label': l10n.residenceAddress, 'type': 'text', 'required': true},
-                          {
-                            'label': l10n.howCanWeHelp,
-                            'type': 'select',
-                            'options': [
-                              l10n.personalizedExplanations,
-                              l10n.taxPositionVerification,
-                              l10n.taxRegimeChange,
-                              l10n.questionsNotSureWhereToStart,
+                      builder:
+                          (context) => RichiestaFormScreen(
+                            servizio: l10n.translate(
+                              'taxGuidanceAndClarifications',
+                            ),
+                            categoria: l10n.translate(
+                              'clarificationsAndConsulting',
+                            ),
+                            campi: [
+                              {
+                                'label': l10n.fullName,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.fiscalCode,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.dateOfBirth,
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.residenceAddress,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.howCanWeHelp,
+                                'type': 'select',
+                                'options': [
+                                  l10n.personalizedExplanations,
+                                  l10n.taxPositionVerification,
+                                  l10n.taxRegimeChange,
+                                  l10n.questionsNotSureWhereToStart,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.workSituationQuestion,
+                                'type': 'select',
+                                'options': [
+                                  l10n.employeeWorker,
+                                  l10n.vatForfettario,
+                                  l10n.notWorkingOther,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.urgencyQuestion,
+                                'type': 'select',
+                                'options': [
+                                  l10n.informative,
+                                  l10n.closeDeadline,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.notesAndAdditionalInfo,
+                                'type': 'textarea',
+                                'required': false,
+                              },
                             ],
-                            'required': true,
-                          },
-                          {
-                            'label': l10n.workSituationQuestion,
-                            'type': 'select',
-                            'options': [
-                              l10n.employeeWorker,
-                              l10n.vatForfettario,
-                              l10n.notWorkingOther,
-                            ],
-                            'required': true,
-                          },
-                          {
-                            'label': l10n.urgencyQuestion,
-                            'type': 'select',
-                            'options': [
-                              l10n.informative,
-                              l10n.closeDeadline,
-                            ],
-                            'required': true,
-                          },
-                          {'label': l10n.notesAndAdditionalInfo, 'type': 'textarea', 'required': false},
-                        ],
-                      ),
+                          ),
                     ),
                   );
                 },
@@ -154,24 +206,34 @@ class _ServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
+          color: scheme.surface,
+          border: Border.all(color: scheme.outlineVariant),
           borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: scheme.onSurface.withOpacity(0.04),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.amber.shade50,
+                color: scheme.primaryContainer,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: Colors.amber.shade700, size: 32),
+              child: Icon(icon, color: scheme.onPrimaryContainer, size: 32),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -190,13 +252,17 @@ class _ServiceCard extends StatelessWidget {
                     description,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey.shade600,
+                      color: scheme.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, color: Colors.grey.shade400, size: 20),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: scheme.onSurfaceVariant,
+              size: 20,
+            ),
           ],
         ),
       ),

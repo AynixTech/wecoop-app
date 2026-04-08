@@ -19,7 +19,10 @@ class PermessoSoggiornoScreen extends StatelessWidget {
             children: [
               Text(
                 l10n.selectType,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 24),
               _OptionCard(
@@ -52,7 +55,10 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                               {
                                 'label': l10n.contractType,
                                 'type': 'select',
-                                'options': [l10n.fixedTerm, l10n.permanentContract],
+                                'options': [
+                                  l10n.fixedTerm,
+                                  l10n.permanentContract,
+                                ],
                                 'required': true,
                               },
                               {
@@ -77,7 +83,11 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                               TipoDocumento.codiceFiscale,
                               TipoDocumento.cartaIdentita,
                             ],
-                            modalitaConsegna: const ['courier', 'pickup', 'email'],
+                            modalitaConsegna: const [
+                              'courier',
+                              'pickup',
+                              'email',
+                            ],
                           ),
                     ),
                   );
@@ -134,7 +144,11 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                               TipoDocumento.codiceFiscale,
                               TipoDocumento.cartaIdentita,
                             ],
-                            modalitaConsegna: const ['courier', 'pickup', 'email'],
+                            modalitaConsegna: const [
+                              'courier',
+                              'pickup',
+                              'email',
+                            ],
                           ),
                     ),
                   );
@@ -196,7 +210,11 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                               TipoDocumento.codiceFiscale,
                               TipoDocumento.cartaIdentita,
                             ],
-                            modalitaConsegna: const ['courier', 'pickup', 'email'],
+                            modalitaConsegna: const [
+                              'courier',
+                              'pickup',
+                              'email',
+                            ],
                           ),
                     ),
                   );
@@ -259,7 +277,11 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                               TipoDocumento.codiceFiscale,
                               TipoDocumento.cartaIdentita,
                             ],
-                            modalitaConsegna: const ['courier', 'pickup', 'email'],
+                            modalitaConsegna: const [
+                              'courier',
+                              'pickup',
+                              'email',
+                            ],
                           ),
                     ),
                   );
@@ -325,7 +347,11 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                               TipoDocumento.codiceFiscale,
                               TipoDocumento.cartaIdentita,
                             ],
-                            modalitaConsegna: const ['courier', 'pickup', 'email'],
+                            modalitaConsegna: const [
+                              'courier',
+                              'pickup',
+                              'email',
+                            ],
                           ),
                     ),
                   );
@@ -342,7 +368,9 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                       builder:
                           (context) => RichiestaFormScreen(
                             servizio: l10n.residencePermit,
-                            categoria: l10n.translate('familyReunificationPermit'),
+                            categoria: l10n.translate(
+                              'familyReunificationPermit',
+                            ),
                             campi: [
                               {
                                 'label': l10n.fullName,
@@ -372,7 +400,12 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                               {
                                 'label': l10n.relationshipWithFamily,
                                 'type': 'select',
-                                'options': [l10n.spouse, l10n.son, l10n.parent, l10n.other],
+                                'options': [
+                                  l10n.spouse,
+                                  l10n.son,
+                                  l10n.parent,
+                                  l10n.other,
+                                ],
                                 'required': true,
                               },
                               {
@@ -392,7 +425,11 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                               TipoDocumento.codiceFiscale,
                               TipoDocumento.cartaIdentita,
                             ],
-                            modalitaConsegna: const ['courier', 'pickup', 'email'],
+                            modalitaConsegna: const [
+                              'courier',
+                              'pickup',
+                              'email',
+                            ],
                           ),
                     ),
                   );
@@ -463,7 +500,11 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                               TipoDocumento.codiceFiscale,
                               TipoDocumento.cartaIdentita,
                             ],
-                            modalitaConsegna: const ['courier', 'pickup', 'email'],
+                            modalitaConsegna: const [
+                              'courier',
+                              'pickup',
+                              'email',
+                            ],
                           ),
                     ),
                   );
@@ -534,7 +575,11 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                               TipoDocumento.codiceFiscale,
                               TipoDocumento.cartaIdentita,
                             ],
-                            modalitaConsegna: const ['courier', 'pickup', 'email'],
+                            modalitaConsegna: const [
+                              'courier',
+                              'pickup',
+                              'email',
+                            ],
                           ),
                     ),
                   );
@@ -561,15 +606,17 @@ class _OptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.amber.shade50,
+          color: scheme.primaryContainer,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.amber.shade200),
+          border: Border.all(color: scheme.primary.withOpacity(0.3)),
         ),
         child: Row(
           children: [
@@ -579,24 +626,24 @@ class _OptionCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: scheme.onPrimaryContainer,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     description,
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: scheme.onPrimaryContainer.withOpacity(0.88),
+                    ),
                   ),
                 ],
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.amber.shade700,
-              size: 20,
-            ),
+            Icon(Icons.arrow_forward_ios, color: scheme.primary, size: 20),
           ],
         ),
       ),

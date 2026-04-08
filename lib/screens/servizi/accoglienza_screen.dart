@@ -12,6 +12,7 @@ class AccoglienzaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.welcomeOrientation)),
       body: SafeArea(
@@ -22,12 +23,15 @@ class AccoglienzaScreen extends StatelessWidget {
             children: [
               Text(
                 l10n.selectServiceYouNeed,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 l10n.guideStepByStep,
-                style: const TextStyle(fontSize: 14, color: Colors.grey),
+                style: TextStyle(fontSize: 14, color: scheme.onSurfaceVariant),
               ),
               const SizedBox(height: 24),
               _ServiceOptionCard(
@@ -66,7 +70,8 @@ class AccoglienzaScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const RicongiungimentoFamiliareScreen(),
+                      builder:
+                          (context) => const RicongiungimentoFamiliareScreen(),
                     ),
                   );
                 },
@@ -122,18 +127,20 @@ class _ServiceOptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: scheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade300),
+          border: Border.all(color: scheme.outlineVariant),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: scheme.onSurface.withOpacity(0.05),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -145,10 +152,10 @@ class _ServiceOptionCard extends StatelessWidget {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: Colors.amber.shade100,
+                color: scheme.primaryContainer,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: Colors.amber.shade700, size: 28),
+              child: Icon(icon, color: scheme.onPrimaryContainer, size: 28),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -165,14 +172,17 @@ class _ServiceOptionCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     description,
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: scheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
             ),
             Icon(
               Icons.arrow_forward_ios,
-              color: Colors.grey.shade400,
+              color: scheme.onSurfaceVariant,
               size: 20,
             ),
           ],

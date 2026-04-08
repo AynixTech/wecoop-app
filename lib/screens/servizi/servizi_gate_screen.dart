@@ -105,6 +105,7 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
 
   Widget _buildLoginPromptScreen() {
     final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(title: Text(widget.serviceName)),
       body: Center(
@@ -116,19 +117,22 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
               Icon(
                 Icons.check_circle_outline,
                 size: 80,
-                color: Colors.green.shade400,
+                color: scheme.secondary,
               ),
               const SizedBox(height: 24),
               Text(
                 '${l10n.requestSent}',
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
               Text(
                 '${l10n.requestReceived}\n\n'
                 '${l10n.loginToAccessServices}',
-                style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+                style: TextStyle(fontSize: 16, color: scheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
@@ -144,8 +148,8 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
                 icon: const Icon(Icons.login),
                 label: Text(l10n.goToLogin),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
+                  backgroundColor: scheme.secondary,
+                  foregroundColor: scheme.onSecondary,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 32,
                     vertical: 16,
@@ -177,6 +181,7 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
 
   Widget _buildRichiestaInAttesaScreen() {
     final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(title: Text(widget.serviceName)),
       body: Center(
@@ -185,15 +190,14 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.pending_actions,
-                size: 80,
-                color: Colors.orange.shade400,
-              ),
+              Icon(Icons.pending_actions, size: 80, color: scheme.tertiary),
               const SizedBox(height: 24),
               Text(
                 '${l10n.pending}',
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
@@ -201,7 +205,7 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
                 '${l10n.membershipPendingApproval}\n\n'
                 '${l10n.confirmationWithin24to48Hours}\n\n'
                 '${l10n.onceApprovedAccessAllServices}',
-                style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+                style: TextStyle(fontSize: 16, color: scheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
@@ -225,6 +229,7 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
 
   Widget _buildAdesioneRequiredScreen() {
     final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(title: Text(widget.serviceName)),
       body: Center(
@@ -233,15 +238,14 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.card_membership,
-                size: 80,
-                color: Colors.amber.shade700,
-              ),
+              Icon(Icons.card_membership, size: 80, color: scheme.primary),
               const SizedBox(height: 24),
               Text(
                 l10n.needLogin,
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
@@ -252,7 +256,7 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
                 '• Consulenze gratuite\n'
                 '• Eventi e networking\n'
                 '• Supporto personalizzato',
-                style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+                style: TextStyle(fontSize: 16, color: scheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
@@ -271,8 +275,8 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
                 icon: const Icon(Icons.how_to_reg),
                 label: Text(l10n.becomeMember),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                  foregroundColor: Colors.black,
+                  backgroundColor: scheme.primary,
+                  foregroundColor: scheme.onPrimary,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 32,
                     vertical: 16,
@@ -295,9 +299,7 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
                 },
                 icon: const Icon(Icons.login),
                 label: Text(l10n.translate('alreadyRegisteredLogin')),
-                style: TextButton.styleFrom(
-                  foregroundColor: const Color(0xFF2196F3),
-                ),
+                style: TextButton.styleFrom(foregroundColor: scheme.primary),
               ),
               const SizedBox(height: 16),
               OutlinedButton.icon(

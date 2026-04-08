@@ -423,18 +423,18 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   bool _isContractTypeFieldLabel(String label) {
     final normalized = _normalizeFieldLabel(label);
     final hasTypeWord =
-      normalized.contains('tipo') ||
-      normalized.contains('type') ||
-      normalized.contains('tipologia') ||
-      normalized.contains('clase');
+        normalized.contains('tipo') ||
+        normalized.contains('type') ||
+        normalized.contains('tipologia') ||
+        normalized.contains('clase');
     final hasContractWord =
-      normalized.contains('contratto') ||
-      normalized.contains('contrato') ||
-      normalized.contains('contract') ||
-      normalized.contains('employment') ||
-      normalized.contains('trabajo') ||
-      normalized.contains('empleo') ||
-      normalized.contains('impiego');
+        normalized.contains('contratto') ||
+        normalized.contains('contrato') ||
+        normalized.contains('contract') ||
+        normalized.contains('employment') ||
+        normalized.contains('trabajo') ||
+        normalized.contains('empleo') ||
+        normalized.contains('impiego');
     return hasTypeWord && hasContractWord;
   }
 
@@ -510,7 +510,8 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   bool _isContractTypeCampo(Map<String, dynamic> campo) {
     final id = _extractStableFieldIdentifier(campo);
     final label = (campo['label'] ?? '').toString();
-    return _isContractTypeFieldIdentifier(id) || _isContractTypeFieldLabel(label);
+    return _isContractTypeFieldIdentifier(id) ||
+        _isContractTypeFieldLabel(label);
   }
 
   bool _isContractDurationCampo(Map<String, dynamic> campo) {
@@ -551,21 +552,21 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   bool _isContractDurationFieldLabel(String label) {
     final normalized = _normalizeFieldLabel(label);
     final hasDurationWord =
-      normalized.contains('durata') ||
-      normalized.contains('duration') ||
-      normalized.contains('duracion') ||
-      normalized.contains('term') ||
-      normalized.contains('length') ||
-      normalized.contains('plazo') ||
-      normalized.contains('termino');
+        normalized.contains('durata') ||
+        normalized.contains('duration') ||
+        normalized.contains('duracion') ||
+        normalized.contains('term') ||
+        normalized.contains('length') ||
+        normalized.contains('plazo') ||
+        normalized.contains('termino');
     final hasContractWord =
-      normalized.contains('contratto') ||
-      normalized.contains('contrato') ||
-      normalized.contains('contract') ||
-      normalized.contains('employment') ||
-      normalized.contains('trabajo') ||
-      normalized.contains('empleo') ||
-      normalized.contains('impiego');
+        normalized.contains('contratto') ||
+        normalized.contains('contrato') ||
+        normalized.contains('contract') ||
+        normalized.contains('employment') ||
+        normalized.contains('trabajo') ||
+        normalized.contains('empleo') ||
+        normalized.contains('impiego');
     return hasDurationWord && hasContractWord;
   }
 
@@ -664,8 +665,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     if (!required) return false;
     if (_shouldHideField(campo)) return false;
 
-    if (_isVistoTuristicoFlow() &&
-        _isTouristVisaOptionalDateCampo(campo)) {
+    if (_isVistoTuristicoFlow() && _isTouristVisaOptionalDateCampo(campo)) {
       return false;
     }
 
@@ -695,15 +695,17 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     required String title,
     required List<String> documentiMancanti,
   }) {
+    final scheme = Theme.of(context).colorScheme;
     final isComplete = documentiMancanti.isEmpty;
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isComplete ? Colors.green.shade50 : Colors.orange.shade50,
+          color:
+              isComplete ? scheme.secondaryContainer : scheme.tertiaryContainer,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isComplete ? Colors.green.shade300 : Colors.orange.shade300,
+            color: isComplete ? scheme.secondary : scheme.tertiary,
           ),
         ),
         child: Column(
@@ -713,7 +715,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
               children: [
                 Icon(
                   isComplete ? Icons.check_circle : Icons.warning_amber_rounded,
-                  color: isComplete ? Colors.green : Colors.orange,
+                  color: isComplete ? scheme.secondary : scheme.tertiary,
                   size: 18,
                 ),
                 const SizedBox(width: 6),
@@ -734,8 +736,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   )!.missingDocumentsCount(documentiMancanti.length),
               style: TextStyle(
                 fontSize: 13,
-                color:
-                    isComplete ? Colors.green.shade700 : Colors.orange.shade700,
+                color: isComplete ? scheme.secondary : scheme.tertiary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -752,14 +753,15 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     required List<String> documentiMancanti,
   }) {
     final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
 
     return Container(
       margin: const EdgeInsets.only(top: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: scheme.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -772,7 +774,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
             const SizedBox(height: 4),
             Text(
               subtitle,
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+              style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
             ),
           ],
           const SizedBox(height: 10),
@@ -793,10 +795,10 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                         : Icons.folder_shared_outlined,
                     color:
                         showAsUploaded
-                            ? Colors.green
+                            ? scheme.secondary
                             : showAsMissing
-                            ? Colors.grey.shade400
-                            : Colors.blueGrey,
+                            ? scheme.onSurfaceVariant
+                            : scheme.primary,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
@@ -813,24 +815,20 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                         vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.green.shade100,
+                        color: scheme.secondaryContainer,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.green.shade400),
+                        border: Border.all(color: scheme.secondary),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            Icons.check,
-                            size: 12,
-                            color: Colors.green.shade700,
-                          ),
+                          Icon(Icons.check, size: 12, color: scheme.secondary),
                           const SizedBox(width: 4),
                           Text(
                             l10n.alreadyUploaded,
                             style: TextStyle(
                               fontSize: 11,
-                              color: Colors.green.shade700,
+                              color: scheme.secondary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -1239,6 +1237,8 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(title: Text(widget.categoria)),
       body: Stack(
@@ -1259,10 +1259,10 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                               Container(
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: Colors.amber.shade50,
+                                  color: scheme.primaryContainer,
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
-                                    color: Colors.amber.shade200,
+                                    color: scheme.primary.withOpacity(0.3),
                                   ),
                                 ),
                                 child: Column(
@@ -1270,9 +1270,10 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                                   children: [
                                     Text(
                                       widget.servizio,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
+                                        color: scheme.onPrimaryContainer,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
@@ -1280,7 +1281,8 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                                       widget.categoria,
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: Colors.grey.shade700,
+                                        color: scheme.onPrimaryContainer
+                                            .withOpacity(0.9),
                                       ),
                                     ),
                                   ],
@@ -1318,10 +1320,10 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: scheme.surface,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: scheme.shadow.withOpacity(0.1),
                               blurRadius: 8,
                               offset: const Offset(0, -2),
                             ),
@@ -1330,20 +1332,20 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                         child: ElevatedButton(
                           onPressed: _isSubmitting ? null : _submitForm,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.amber,
-                            foregroundColor: Colors.black,
+                            backgroundColor: scheme.primary,
+                            foregroundColor: scheme.onPrimary,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             minimumSize: const Size(double.infinity, 0),
                           ),
                           child:
                               _isSubmitting
-                                  ? const SizedBox(
+                                  ? SizedBox(
                                     height: 20,
                                     width: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
                                       valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.black,
+                                        scheme.onPrimary,
                                       ),
                                     ),
                                   )
@@ -1483,7 +1485,8 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
           onChanged: (value) {
             setState(() {
               _formData[label] = value;
-              if (_isContractTypeCampo(campo) && _isPermanentContractSelected()) {
+              if (_isContractTypeCampo(campo) &&
+                  _isPermanentContractSelected()) {
                 _clearContractDurationData();
               }
             });
@@ -1505,7 +1508,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: Colors.grey.shade800,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               children:
                   required
@@ -1513,7 +1516,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                         TextSpan(
                           text: ' *',
                           style: TextStyle(
-                            color: Colors.red.shade700,
+                            color: Theme.of(context).colorScheme.error,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -1766,7 +1769,10 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   children: [
                     Icon(
                       requiresPayment ? Icons.payment : Icons.check_circle,
-                      color: requiresPayment ? Colors.orange : Colors.green,
+                      color:
+                          requiresPayment
+                              ? Theme.of(context).colorScheme.tertiary
+                              : Theme.of(context).colorScheme.secondary,
                       size: 32,
                     ),
                     const SizedBox(width: 12),
@@ -1802,9 +1808,9 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop(); // Chiudi dialog
-                      Navigator.of(this.context).pushReplacementNamed(
-                        '/calendar',
-                      );
+                      Navigator.of(
+                        this.context,
+                      ).pushReplacementNamed('/calendar');
                     },
                     child: Text(requiresPayment ? l10n.payLater : l10n.ok),
                   ),
@@ -1856,6 +1862,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   // Costruisce la sezione documenti richiesti
   Widget _buildDocumentiRichiestiSection() {
     final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
@@ -1863,14 +1870,14 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       decoration: BoxDecoration(
         color:
             _documentiMancanti.isEmpty && _documentiMancantiFamiliare.isEmpty
-                ? Colors.green.shade50
-                : Colors.orange.shade50,
+                ? scheme.secondaryContainer
+                : scheme.tertiaryContainer,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color:
               _documentiMancanti.isEmpty && _documentiMancantiFamiliare.isEmpty
-                  ? Colors.green
-                  : Colors.orange,
+                  ? scheme.secondary
+                  : scheme.tertiary,
           width: 2,
         ),
       ),
@@ -1887,8 +1894,8 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                 color:
                     _documentiMancanti.isEmpty &&
                             _documentiMancantiFamiliare.isEmpty
-                        ? Colors.green
-                        : Colors.orange,
+                        ? scheme.secondary
+                        : scheme.tertiary,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -1956,7 +1963,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                 },
                 icon: const Icon(Icons.edit_document),
                 label: Text(l10n.reloadFamilyDocuments),
-                style: TextButton.styleFrom(foregroundColor: Colors.blue),
+                style: TextButton.styleFrom(foregroundColor: scheme.primary),
               ),
             ),
           ] else
@@ -1989,8 +1996,8 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   AppLocalizations.of(context)!.uploadMissingDocuments,
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  foregroundColor: Colors.white,
+                  backgroundColor: scheme.tertiary,
+                  foregroundColor: scheme.onTertiary,
                 ),
               ),
             ),
@@ -2034,7 +2041,10 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Row(
                         children: [
-                          const Icon(Icons.upload_file, color: Colors.orange),
+                          Icon(
+                            Icons.upload_file,
+                            color: Theme.of(context).colorScheme.tertiary,
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -2059,9 +2069,9 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.folder_shared_outlined,
-                            color: Colors.blueGrey,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                           const SizedBox(width: 8),
                           Expanded(
@@ -2082,7 +2092,10 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Row(
                         children: [
-                          const Icon(Icons.upload_file, color: Colors.orange),
+                          Icon(
+                            Icons.upload_file,
+                            color: Theme.of(context).colorScheme.tertiary,
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -2099,7 +2112,10 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                 const SizedBox(height: 16),
                 Text(
                   AppLocalizations.of(context)!.formDataPreserved,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -2128,8 +2144,8 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                 icon: const Icon(Icons.upload),
                 label: const Text('Carica documenti'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
             ],
@@ -2140,6 +2156,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   // Costruisce la sezione modalità di consegna
   Widget _buildModalitaConsegnaSection() {
     final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
 
     // Mappa delle modalità disponibili con le loro chiavi e etichette localizzate
     final modalitaDisponibili = {
@@ -2160,23 +2177,24 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       margin: const EdgeInsets.only(bottom: 24),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blue.shade50,
+        color: scheme.primaryContainer,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.blue.shade300, width: 2),
+        border: Border.all(color: scheme.primary.withOpacity(0.4), width: 2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.local_shipping, color: Colors.blue.shade700),
+              Icon(Icons.local_shipping, color: scheme.onPrimaryContainer),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   l10n.deliveryMethodsTitle.toUpperCase(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
+                    color: scheme.onPrimaryContainer,
                   ),
                 ),
               ),
@@ -2185,7 +2203,10 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
           const SizedBox(height: 8),
           Text(
             l10n.selectDeliveryMethods,
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+            style: TextStyle(
+              fontSize: 12,
+              color: scheme.onPrimaryContainer.withOpacity(0.9),
+            ),
           ),
           const SizedBox(height: 12),
           ...modalitaPerServizio.entries.map((entry) {
@@ -2207,7 +2228,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   }
                 });
               },
-              activeColor: Colors.blue,
+              activeColor: scheme.primary,
             );
           }),
 
@@ -2224,7 +2245,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade800,
+                    color: scheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -2298,7 +2319,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade800,
+                    color: scheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -2332,20 +2353,20 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade800,
+                    color: scheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.green.shade50,
+                    color: scheme.secondaryContainer,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.green.shade200),
+                    border: Border.all(color: scheme.secondary),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.location_on, color: Colors.green.shade700),
+                      Icon(Icons.location_on, color: scheme.secondary),
                       const SizedBox(width: 12),
                       const Expanded(
                         child: Text(

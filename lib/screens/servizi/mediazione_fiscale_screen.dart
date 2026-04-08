@@ -9,7 +9,7 @@ class MediazioneFiscaleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       appBar: AppBar(title: Text(l10n.taxMediation)),
       body: SafeArea(
@@ -20,7 +20,10 @@ class MediazioneFiscaleScreen extends StatelessWidget {
             children: [
               Text(
                 l10n.selectFiscalService,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 24),
               _ServiceCard(
@@ -31,59 +34,84 @@ class MediazioneFiscaleScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => RichiestaFormScreen(
-                        servizio: l10n.taxMediation,
-                        categoria: '730',
-                        documentiRichiesti: const [
-                          TipoDocumento.permessoSoggiorno,
-                          TipoDocumento.passaporto,
-                          TipoDocumento.codiceFiscale,
-                          TipoDocumento.cartaIdentita,
-                        ],
-                        campi: [
-                          {'label': l10n.fullName, 'type': 'text', 'required': true},
-                          {'label': l10n.fiscalCode, 'type': 'text', 'required': true},
-                          {'label': l10n.dateOfBirth, 'type': 'date', 'required': true},
-                          {'label': l10n.address, 'type': 'text', 'required': true},
-                          {
-                            'label': l10n.workType,
-                            'type': 'select',
-                            'options': [
-                              l10n.employee,
-                              l10n.housekeeper,
-                              l10n.caregiver,
-                              l10n.babysitter,
+                      builder:
+                          (context) => RichiestaFormScreen(
+                            servizio: l10n.taxMediation,
+                            categoria: '730',
+                            documentiRichiesti: const [
+                              TipoDocumento.permessoSoggiorno,
+                              TipoDocumento.passaporto,
+                              TipoDocumento.codiceFiscale,
+                              TipoDocumento.cartaIdentita,
                             ],
-                            'required': true,
-                          },
-                          {
-                            'label': l10n.multipleContracts,
-                            'type': 'select',
-                            'options': [l10n.yes, l10n.no],
-                            'required': true,
-                          },
-                          {
-                            'label': l10n.homeMortgage,
-                            'type': 'select',
-                            'options': [l10n.yes, l10n.no],
-                            'required': true,
-                          },
-                          {
-                            'label': l10n.pensionIncome,
-                            'type': 'select',
-                            'options': [l10n.yes, l10n.no],
-                            'required': true,
-                          },
-                          {
-                            'label': l10n.fiscalYear,
-                            'type': 'select',
-                            'options': ['2024', '2023', '2022'],
-                            'required': true,
-                          },
-                          {'label': l10n.notesAndAdditionalInfo, 'type': 'textarea', 'required': false},
-                        ],
-                        modalitaConsegna: const ['courier', 'pickup', 'email'],
-                      ),
+                            campi: [
+                              {
+                                'label': l10n.fullName,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.fiscalCode,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.dateOfBirth,
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.address,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.workType,
+                                'type': 'select',
+                                'options': [
+                                  l10n.employee,
+                                  l10n.housekeeper,
+                                  l10n.caregiver,
+                                  l10n.babysitter,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.multipleContracts,
+                                'type': 'select',
+                                'options': [l10n.yes, l10n.no],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.homeMortgage,
+                                'type': 'select',
+                                'options': [l10n.yes, l10n.no],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.pensionIncome,
+                                'type': 'select',
+                                'options': [l10n.yes, l10n.no],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.fiscalYear,
+                                'type': 'select',
+                                'options': ['2024', '2023', '2022'],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.notesAndAdditionalInfo,
+                                'type': 'textarea',
+                                'required': false,
+                              },
+                            ],
+                            modalitaConsegna: const [
+                              'courier',
+                              'pickup',
+                              'email',
+                            ],
+                          ),
                     ),
                   );
                 },
@@ -97,59 +125,84 @@ class MediazioneFiscaleScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => RichiestaFormScreen(
-                        servizio: l10n.taxMediation,
-                        categoria: l10n.individualPerson,
-                        documentiRichiesti: const [
-                          TipoDocumento.permessoSoggiorno,
-                          TipoDocumento.passaporto,
-                          TipoDocumento.codiceFiscale,
-                          TipoDocumento.cartaIdentita,
-                        ],
-                        campi: [
-                          {'label': l10n.fullName, 'type': 'text', 'required': true},
-                          {'label': l10n.fiscalCode, 'type': 'text', 'required': true},
-                          {'label': l10n.dateOfBirth, 'type': 'date', 'required': true},
-                          {'label': l10n.address, 'type': 'text', 'required': true},
-                          {
-                            'label': l10n.workType,
-                            'type': 'select',
-                            'options': [
-                              l10n.selfEmployedForfettario,
-                              l10n.housekeeper,
-                              l10n.caregiver,
-                              l10n.babysitter,
+                      builder:
+                          (context) => RichiestaFormScreen(
+                            servizio: l10n.taxMediation,
+                            categoria: l10n.individualPerson,
+                            documentiRichiesti: const [
+                              TipoDocumento.permessoSoggiorno,
+                              TipoDocumento.passaporto,
+                              TipoDocumento.codiceFiscale,
+                              TipoDocumento.cartaIdentita,
                             ],
-                            'required': true,
-                          },
-                          {
-                            'label': l10n.missedTax730Deadline,
-                            'type': 'select',
-                            'options': [l10n.yes, l10n.no],
-                            'required': true,
-                          },
-                          {
-                            'label': l10n.multipleContracts,
-                            'type': 'select',
-                            'options': [l10n.yes, l10n.no],
-                            'required': true,
-                          },
-                          {
-                            'label': l10n.homeMortgage,
-                            'type': 'select',
-                            'options': [l10n.yes, l10n.no],
-                            'required': true,
-                          },
-                          {
-                            'label': l10n.fiscalYear,
-                            'type': 'select',
-                            'options': ['2024', '2023', '2022'],
-                            'required': true,
-                          },
-                          {'label': l10n.notesAndAdditionalInfo, 'type': 'textarea', 'required': false},
-                        ],
-                        modalitaConsegna: const ['courier', 'pickup', 'email'],
-                      ),
+                            campi: [
+                              {
+                                'label': l10n.fullName,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.fiscalCode,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.dateOfBirth,
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.address,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.workType,
+                                'type': 'select',
+                                'options': [
+                                  l10n.selfEmployedForfettario,
+                                  l10n.housekeeper,
+                                  l10n.caregiver,
+                                  l10n.babysitter,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.missedTax730Deadline,
+                                'type': 'select',
+                                'options': [l10n.yes, l10n.no],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.multipleContracts,
+                                'type': 'select',
+                                'options': [l10n.yes, l10n.no],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.homeMortgage,
+                                'type': 'select',
+                                'options': [l10n.yes, l10n.no],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.fiscalYear,
+                                'type': 'select',
+                                'options': ['2024', '2023', '2022'],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.notesAndAdditionalInfo,
+                                'type': 'textarea',
+                                'required': false,
+                              },
+                            ],
+                            modalitaConsegna: const [
+                              'courier',
+                              'pickup',
+                              'email',
+                            ],
+                          ),
                     ),
                   );
                 },
@@ -177,18 +230,20 @@ class _ServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: scheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade300),
+          border: Border.all(color: scheme.outlineVariant),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: scheme.onSurface.withOpacity(0.05),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -200,10 +255,10 @@ class _ServiceCard extends StatelessWidget {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: Colors.amber.shade100,
+                color: scheme.primaryContainer,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: Colors.amber.shade700, size: 28),
+              child: Icon(icon, color: scheme.onPrimaryContainer, size: 28),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -220,14 +275,17 @@ class _ServiceCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     description,
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: scheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
             ),
             Icon(
               Icons.arrow_forward_ios,
-              color: Colors.grey.shade400,
+              color: scheme.onSurfaceVariant,
               size: 20,
             ),
           ],

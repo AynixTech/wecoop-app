@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../services/app_localizations.dart';
-import '../../models/documento.dart';
 import 'richiesta_form_screen.dart';
 
 class SupportoContabileScreen extends StatelessWidget {
@@ -9,7 +8,7 @@ class SupportoContabileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       appBar: AppBar(title: Text(l10n.accountingSupport)),
       body: SafeArea(
@@ -20,7 +19,10 @@ class SupportoContabileScreen extends StatelessWidget {
             children: [
               Text(
                 l10n.vatManagementAccounting,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 24),
               _OptionCard(
@@ -35,7 +37,7 @@ class SupportoContabileScreen extends StatelessWidget {
                           (context) => RichiestaFormScreen(
                             servizio: l10n.accountingSupport,
                             categoria: l10n.openVatNumber,
-              
+
                             campi: [
                               {
                                 'label': l10n.fullName,
@@ -145,10 +147,7 @@ class SupportoContabileScreen extends StatelessWidget {
                               {
                                 'label': l10n.hasActiveVatForfettario,
                                 'type': 'select',
-                                'options': [
-                                  l10n.yes,
-                                  l10n.no,
-                                ],
+                                'options': [l10n.yes, l10n.no],
                                 'required': true,
                               },
                               {
@@ -280,18 +279,20 @@ class _OptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: scheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade300),
+          border: Border.all(color: scheme.outlineVariant),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: scheme.onSurface.withOpacity(0.05),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -303,10 +304,10 @@ class _OptionCard extends StatelessWidget {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: Colors.amber.shade100,
+                color: scheme.primaryContainer,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: Colors.amber.shade700, size: 28),
+              child: Icon(icon, color: scheme.onPrimaryContainer, size: 28),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -323,14 +324,17 @@ class _OptionCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     description,
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: scheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
             ),
             Icon(
               Icons.arrow_forward_ios,
-              color: Colors.grey.shade400,
+              color: scheme.onSurfaceVariant,
               size: 20,
             ),
           ],

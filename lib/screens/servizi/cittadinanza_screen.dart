@@ -15,6 +15,7 @@ class _CittadinanzaScreenState extends State<CittadinanzaScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.citizenshipService)),
       body: SafeArea(
@@ -25,12 +26,15 @@ class _CittadinanzaScreenState extends State<CittadinanzaScreen> {
             children: [
               Text(
                 l10n.checkRequirements,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 l10n.citizenshipDescription,
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: TextStyle(fontSize: 14, color: scheme.onSurfaceVariant),
               ),
               const SizedBox(height: 24),
               if (!_showSecondQuestion)
@@ -156,15 +160,17 @@ class _QuestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: scheme.outlineVariant),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: scheme.onSurface.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -184,8 +190,8 @@ class _QuestionCard extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: onYes,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
+                    backgroundColor: scheme.secondary,
+                    foregroundColor: scheme.onSecondary,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                   child: Text(AppLocalizations.of(context)!.yes),
@@ -196,8 +202,8 @@ class _QuestionCard extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: onNo,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
+                    backgroundColor: scheme.error,
+                    foregroundColor: scheme.onError,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                   child: Text(AppLocalizations.of(context)!.no),

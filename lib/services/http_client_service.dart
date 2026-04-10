@@ -208,7 +208,13 @@ class HttpClientService {
 
       return response;
     } catch (e) {
-      print('❌ Errore durante la richiesta: $e');
+      final errorText = e.toString();
+      final isDnsLookupError =
+          errorText.contains('Failed host lookup') ||
+          errorText.contains('No address associated with hostname');
+      if (!isDnsLookupError) {
+        print('❌ Errore durante la richiesta: $e');
+      }
       rethrow;
     }
   }

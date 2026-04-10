@@ -11,8 +11,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../servizi/accoglienza_screen.dart';
 import '../servizi/mediazione_fiscale_screen.dart';
 import '../servizi/supporto_contabile_screen.dart';
-import '../servizi/orientamento_fiscale_screen.dart';
-import '../servizi/cv_ai_screen.dart';
+import '../servizi/educazione_finanziaria_credito_screen.dart';
+import '../servizi/lavoro_orientamento_screen.dart';
 import '../onboarding/first_access_screen.dart';
 import '../progetti/project_category_detail_screen.dart';
 import '../eventi/evento_detail_screen.dart';
@@ -695,7 +695,7 @@ class _ServicesSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _ServiceButton(
-          title: l10n.taxMediation,
+          title: l10n.translate('fiscalServices'),
           imagePath: 'assets/images/home/mediazione.jpg',
           onTap: () async {
             final storage = SecureStorageService();
@@ -739,29 +739,7 @@ class _ServicesSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _ServiceButton(
-          title: l10n.translate('taxGuidanceAndClarifications'),
-          imagePath: 'assets/images/home/orientamento.jpg',
-          onTap: () async {
-            final storage = SecureStorageService();
-            final token = await storage.read(key: 'jwt_token');
-            final isLoggedIn = token != null && token.isNotEmpty;
-
-            if (!context.mounted) return;
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder:
-                    (context) =>
-                        isLoggedIn
-                            ? const OrientamentoFiscaleScreen()
-                            : const FirstAccessScreen(),
-              ),
-            );
-          },
-        ),
-        const SizedBox(height: 12),
-        _ServiceButton(
-          title: l10n.translate('cvAiServiceName'),
+          title: l10n.translate('workAndOrientation'),
           imagePath: 'assets/images/home/cv_ai.jpg',
           onTap: () async {
             final storage = SecureStorageService();
@@ -775,7 +753,29 @@ class _ServicesSection extends StatelessWidget {
                 builder:
                     (context) =>
                         isLoggedIn
-                            ? const CvAiScreen()
+                            ? const LavoroOrientamentoScreen()
+                            : const FirstAccessScreen(),
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 12),
+        _ServiceButton(
+          title: l10n.translate('financialEducationCredit'),
+          imagePath: 'assets/images/home/orientamento.jpg',
+          onTap: () async {
+            final storage = SecureStorageService();
+            final token = await storage.read(key: 'jwt_token');
+            final isLoggedIn = token != null && token.isNotEmpty;
+
+            if (!context.mounted) return;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) =>
+                        isLoggedIn
+                            ? const EducazioneFinanziariaCreditoScreen()
                             : const FirstAccessScreen(),
               ),
             );

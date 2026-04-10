@@ -21,6 +21,7 @@ class CvAiScreen extends StatefulWidget {
 class _CvAiScreenState extends State<CvAiScreen> {
   static const int _totalSteps = 9;
   static const String _draftKey = 'cv_ai_draft_v1';
+  static const String _localCvsKey = 'cv_ai_local_cvs_v1';
   static const String _cvApiBase =
       'https://www.wecoop.org/wp-json/wecoop/v1/cv';
   static const String _cvTemplatesEndpoint =
@@ -86,7 +87,6 @@ class _CvAiScreenState extends State<CvAiScreen> {
   String? _templatePreviewError;
   String? _templatePreviewHtml;
   bool _isLoadingExistingCvs = false;
-  String? _existingCvsError;
 
   final List<Map<String, String>> _educations = [];
   final List<Map<String, String>> _experiences = [];
@@ -384,11 +384,103 @@ class _CvAiScreenState extends State<CvAiScreen> {
     return const [];
   }
 
+  Future<List<Map<String, dynamic>>> _loadLocalCachedCvs() async {
+    try {
+      final raw = await _storage.read(key: _localCvsKey);
+      if (raw == null || raw.trim().isEmpty) return [];
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return [];
+      return decoded
+          .whereType<Map>()
+          .map((e) => e.map((key, value) => MapEntry(key.toString(), value)))
+          .toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<void> _saveLocalCachedCvs(List<Map<String, dynamic>> entries) async {
+    await _storage.write(key: _localCvsKey, value: jsonEncode(entries));
+  }
+
+  DateTime _parseEntryDate(Map<String, dynamic> entry) {
+    final updated =
+        (entry['updatedAt'] ?? entry['updated_at'] ?? '').toString().trim();
+    final created =
+        (entry['createdAt'] ?? entry['created_at'] ?? '').toString().trim();
+    return DateTime.tryParse(updated) ??
+        DateTime.tryParse(created) ??
+        DateTime.fromMillisecondsSinceEpoch(0);
+  }
+
+  List<Map<String, dynamic>> _mergeCvEntries(
+    List<Map<String, dynamic>> primary,
+    List<Map<String, dynamic>> secondary,
+  ) {
+    final byId = <String, Map<String, dynamic>>{};
+
+    void mergeFrom(List<Map<String, dynamic>> list) {
+      for (final entry in list) {
+        final id = _entryCvId(entry);
+        final key = id.isEmpty ? 'noid_${byId.length}' : id;
+        final previous = byId[key];
+        if (previous == null) {
+          byId[key] = entry;
+        } else {
+          byId[key] = {...previous, ...entry};
+        }
+      }
+    }
+
+    mergeFrom(secondary);
+    mergeFrom(primary);
+
+    final merged = byId.values.toList();
+    merged.sort((a, b) => _parseEntryDate(b).compareTo(_parseEntryDate(a)));
+    return merged;
+  }
+
+  Future<void> _cacheGeneratedCv({
+    required Map<String, dynamic> inputPayload,
+    required String cvId,
+    required String status,
+    Map<String, dynamic>? files,
+  }) async {
+    if (cvId.trim().isEmpty) return;
+
+    final cached = await _loadLocalCachedCvs();
+    final now = DateTime.now().toIso8601String();
+    final entry = <String, dynamic>{
+      'cvId': cvId,
+      'status': status,
+      'inputData': inputPayload,
+      'files': files ?? const <String, dynamic>{},
+      'updatedAt': now,
+      'createdAt': now,
+    };
+
+    final index = cached.indexWhere((e) => _entryCvId(e) == cvId);
+    if (index >= 0) {
+      final previous = cached[index];
+      cached[index] = {
+        ...previous,
+        ...entry,
+        'createdAt': previous['createdAt'] ?? now,
+      };
+    } else {
+      cached.add(entry);
+    }
+
+    cached.sort((a, b) => _parseEntryDate(b).compareTo(_parseEntryDate(a)));
+    await _saveLocalCachedCvs(cached);
+  }
+
   Future<void> _loadExistingCvs() async {
     setState(() {
       _isLoadingExistingCvs = true;
-      _existingCvsError = null;
     });
+
+    final localCached = await _loadLocalCachedCvs();
 
     try {
       final headers = await _buildAuthHeaders();
@@ -407,34 +499,115 @@ class _CvAiScreenState extends State<CvAiScreen> {
               ? _toDynamicMapList(body['cvs'] ?? body['items'] ?? body['data'])
               : _toDynamicMapList(body);
 
+      final merged = _mergeCvEntries(entries, localCached);
+
       setState(() {
         _existingCvs
           ..clear()
-          ..addAll(entries);
+          ..addAll(merged);
         _isLoadingExistingCvs = false;
       });
+
+      await _saveLocalCachedCvs(merged);
     } catch (_) {
       setState(() {
+        _existingCvs
+          ..clear()
+          ..addAll(localCached);
         _isLoadingExistingCvs = false;
-        _existingCvsError = 'Impossibile caricare bozze e CV generati';
       });
     }
   }
 
   String _entryCvId(Map<String, dynamic> entry) {
-    return (entry['cvId'] ?? entry['id'] ?? '').toString();
+    return (entry['cvId'] ?? entry['cv_id'] ?? entry['id'] ?? '').toString();
   }
 
   String _entryStatus(Map<String, dynamic> entry) {
-    return (entry['status'] ?? 'unknown').toString();
+    return (entry['status'] ?? entry['state'] ?? 'unknown').toString();
   }
 
   String _entryUpdatedAt(Map<String, dynamic> entry) {
-    return (entry['updatedAt'] ?? entry['createdAt'] ?? '').toString();
+    return (entry['updatedAt'] ??
+            entry['updated_at'] ??
+            entry['createdAt'] ??
+            entry['created_at'] ??
+            '')
+        .toString();
   }
 
   String _entryCreatedAt(Map<String, dynamic> entry) {
-    return (entry['createdAt'] ?? '').toString();
+    return (entry['createdAt'] ?? entry['created_at'] ?? '').toString();
+  }
+
+  String _formatEntryDateTime(String raw) {
+    final value = raw.trim();
+    if (value.isEmpty) return value;
+    final parsed = DateTime.tryParse(value);
+    if (parsed == null) return raw;
+    final local = parsed.toLocal();
+    final day = local.day.toString().padLeft(2, '0');
+    final month = local.month.toString().padLeft(2, '0');
+    final year = local.year.toString().padLeft(4, '0');
+    final hour = local.hour.toString().padLeft(2, '0');
+    final minute = local.minute.toString().padLeft(2, '0');
+    return '$day/$month/$year $hour:$minute';
+  }
+
+  String _slugPart(String value, {String fallback = 'sconosciuto'}) {
+    final cleaned =
+        value
+            .trim()
+            .toLowerCase()
+            .replaceAll(RegExp(r'[^a-z0-9]+'), '_')
+            .replaceAll(RegExp(r'_+'), '_')
+            .replaceAll(RegExp(r'^_|_$'), '');
+    return cleaned.isEmpty ? fallback : cleaned;
+  }
+
+  String _formatTimestampForName(DateTime dateTime) {
+    final y = dateTime.year.toString().padLeft(4, '0');
+    final m = dateTime.month.toString().padLeft(2, '0');
+    final d = dateTime.day.toString().padLeft(2, '0');
+    final hh = dateTime.hour.toString().padLeft(2, '0');
+    final mm = dateTime.minute.toString().padLeft(2, '0');
+    final ss = dateTime.second.toString().padLeft(2, '0');
+    return '${y}${m}${d}_${hh}${mm}${ss}';
+  }
+
+  String _entryDisplayName(Map<String, dynamic> entry) {
+    final payload = _extractInputPayload(entry);
+    final personalInfo = payload?['personalInfo'] as Map<String, dynamic>?;
+    final config = payload?['config'] as Map<String, dynamic>?;
+
+    final cognome = _slugPart(
+      personalInfo?['lastName']?.toString() ?? entry['lastName']?.toString() ?? '',
+      fallback: 'sconosciuto',
+    );
+    final nome = _slugPart(
+      personalInfo?['firstName']?.toString() ??
+          entry['firstName']?.toString() ??
+          entry['name']?.toString() ??
+          '',
+      fallback: 'sconosciuto',
+    );
+    final lingua = _slugPart(
+      config?['cvLanguage']?.toString() ??
+          entry['cvLanguage']?.toString() ??
+          entry['language']?.toString() ??
+          'it',
+      fallback: 'it',
+    );
+
+    final created = _entryCreatedAt(entry).trim();
+    final updated = _entryUpdatedAt(entry).trim();
+    final parsedDate = DateTime.tryParse(created.isNotEmpty ? created : updated);
+    final timestamp =
+        parsedDate != null
+            ? _formatTimestampForName(parsedDate)
+            : DateTime.now().toUtc().toIso8601String().replaceAll(RegExp(r'[^0-9]'), '').substring(0, 15);
+
+    return 'CV_${cognome}_${nome}__${lingua}_$timestamp';
   }
 
   Map<String, dynamic>? _entryFiles(Map<String, dynamic> entry) {
@@ -458,6 +631,12 @@ class _CvAiScreenState extends State<CvAiScreen> {
         return body;
       }
     } catch (_) {}
+
+    final localCached = await _loadLocalCachedCvs();
+    for (final entry in localCached) {
+      if (_entryCvId(entry) == cvId) return entry;
+    }
+
     return null;
   }
 
@@ -1446,15 +1625,36 @@ class _CvAiScreenState extends State<CvAiScreen> {
           body['ok'] == true) {
         final cvId = body['cvId']?.toString();
         final status = body['status']?.toString();
+        final responseFiles = body['files'] as Map<String, dynamic>?;
 
         setState(() {
           _generatedCvId = cvId;
-          _setGeneratedFiles(body['files'] as Map<String, dynamic>?);
+          _setGeneratedFiles(responseFiles);
           _isGenerated = status == 'generated';
         });
 
+        if (cvId != null && status != null) {
+          await _cacheGeneratedCv(
+            inputPayload: payload,
+            cvId: cvId,
+            status: status,
+            files: responseFiles,
+          );
+        }
+
         if (cvId != null && status == 'processing') {
           final ready = await _pollCvStatusUntilReady(cvId);
+          if (ready) {
+            await _cacheGeneratedCv(
+              inputPayload: payload,
+              cvId: _generatedCvId ?? cvId,
+              status: 'generated',
+              files: {
+                if (_generatedPdfUrl != null) 'pdfUrl': _generatedPdfUrl,
+                if (_generatedDocxUrl != null) 'docxUrl': _generatedDocxUrl,
+              },
+            );
+          }
           if (!ready && mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -1471,6 +1671,8 @@ class _CvAiScreenState extends State<CvAiScreen> {
             const SnackBar(content: Text('CV generato con successo.')),
           );
         }
+
+        await _loadExistingCvs();
       } else if (response.statusCode == 422 && body is Map<String, dynamic>) {
         final error = body['error'] as Map<String, dynamic>?;
         final message = error?['message']?.toString() ?? 'Dati non validi';
@@ -1924,14 +2126,6 @@ class _CvAiScreenState extends State<CvAiScreen> {
             padding: EdgeInsets.symmetric(vertical: 8),
             child: LinearProgressIndicator(minHeight: 2),
           ),
-        if (_existingCvsError != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 6),
-            child: Text(
-              _existingCvsError!,
-              style: TextStyle(color: scheme.error),
-            ),
-          ),
         if (!_isLoadingExistingCvs && _existingCvs.isEmpty)
           Padding(
             padding: EdgeInsets.only(top: 8),
@@ -1941,10 +2135,11 @@ class _CvAiScreenState extends State<CvAiScreen> {
             ),
           ),
         ..._existingCvs.map((entry) {
-          final cvId = _entryCvId(entry);
           final status = _entryStatus(entry);
           final createdAt = _entryCreatedAt(entry);
           final updatedAt = _entryUpdatedAt(entry);
+          final createdAtLabel = _formatEntryDateTime(createdAt);
+          final updatedAtLabel = _formatEntryDateTime(updatedAt);
           final files = _entryFiles(entry);
           final pdfUrl = files?['pdfUrl']?.toString();
           final docxUrl = files?['docxUrl']?.toString();
@@ -1962,7 +2157,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
                     children: [
                       Expanded(
                         child: Text(
-                          cvId.isEmpty ? 'CV senza ID' : 'CV $cvId',
+                          _entryDisplayName(entry),
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                       ),
@@ -1974,14 +2169,14 @@ class _CvAiScreenState extends State<CvAiScreen> {
                   ),
                   if (createdAt.isNotEmpty)
                     Text(
-                      'Creato: $createdAt',
+                      'Creato: $createdAtLabel',
                       style: TextStyle(
                         color: scheme.onSurface.withOpacity(0.65),
                       ),
                     ),
                   if (updatedAt.isNotEmpty)
                     Text(
-                      'Aggiornato: $updatedAt',
+                      'Aggiornato: $updatedAtLabel',
                       style: TextStyle(
                         color: scheme.onSurface.withOpacity(0.65),
                       ),

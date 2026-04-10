@@ -394,9 +394,9 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.card_membership,
-                          color: Color(0xFFE6B422),
+                          color: scheme.tertiary,
                           size: 24,
                         ),
                         const SizedBox(width: 8),
@@ -474,9 +474,9 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.folder_outlined,
-                            color: Color(0xFF59B575),
+                            color: scheme.secondary,
                             size: 24,
                           ),
                           const SizedBox(width: 8),
@@ -500,16 +500,16 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.arrow_forward_ios,
                             size: 16,
-                            color: Color(0xFF59B575),
+                            color: scheme.secondary,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             'Vai alla sezione documenti',
                             style: TextStyle(
-                              color: const Color(0xFF59B575),
+                              color: scheme.secondary,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -536,11 +536,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
-                          Icons.event,
-                          color: Color(0xFF1282A8),
-                          size: 24,
-                        ),
+                        Icon(Icons.event, color: scheme.primary, size: 24),
                         const SizedBox(width: 8),
                         Text(
                           l10n.myEvents,
@@ -704,10 +700,10 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                                       ],
                                     ),
                                   ),
-                                  const Icon(
+                                  Icon(
                                     Icons.arrow_forward_ios,
                                     size: 16,
-                                    color: Colors.grey,
+                                    color: scheme.onSurfaceVariant,
                                   ),
                                 ],
                               ),
@@ -764,7 +760,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
               elevation: 2,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: theme.primaryColor.withOpacity(0.3)),
+                side: BorderSide(color: scheme.primary.withOpacity(0.3)),
               ),
               child: InkWell(
                 onTap: () async {
@@ -786,12 +782,12 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: theme.primaryColor.withOpacity(0.1),
+                          color: scheme.secondaryContainer,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Icon(
                           Icons.person_outline,
-                          color: theme.primaryColor,
+                          color: scheme.onSecondaryContainer,
                           size: 28,
                         ),
                       ),
@@ -804,14 +800,14 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                               l10n.completeProfile,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: theme.primaryColor,
+                                color: scheme.primary,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               l10n.updateYourPersonalData,
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: Colors.grey.shade600,
+                                color: scheme.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -819,7 +815,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                       ),
                       Icon(
                         Icons.arrow_forward_ios,
-                        color: theme.primaryColor,
+                        color: scheme.primary,
                         size: 18,
                       ),
                     ],
@@ -835,7 +831,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
               elevation: 2,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.blue.withOpacity(0.3)),
+                side: BorderSide(color: scheme.primary.withOpacity(0.3)),
               ),
               child: InkWell(
                 onTap: () async {
@@ -847,7 +843,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(l10n.translate('passwordChangedSuccess')),
-                        backgroundColor: Colors.green,
+                        backgroundColor: scheme.secondary,
                       ),
                     );
                   }
@@ -860,12 +856,12 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.blue.withOpacity(0.1),
+                          color: scheme.secondaryContainer,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.security,
-                          color: Colors.blue,
+                          color: scheme.onSecondaryContainer,
                           size: 28,
                         ),
                       ),
@@ -878,22 +874,22 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                               l10n.translate('changePassword'),
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.blue,
+                                color: scheme.primary,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               l10n.translate('updateYourPassword'),
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: Colors.grey.shade600,
+                                color: scheme.onSurfaceVariant,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const Icon(
+                      Icon(
                         Icons.arrow_forward_ios,
-                        color: Colors.blue,
+                        color: scheme.primary,
                         size: 18,
                       ),
                     ],
@@ -911,7 +907,8 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                 icon: const Icon(Icons.logout),
                 label: Text(l10n.logout),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
+                  backgroundColor: scheme.error,
+                  foregroundColor: scheme.onError,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
                     vertical: 12,

@@ -62,7 +62,7 @@ class AppLocalizations {
       'maintenanceTitle': 'Manutenzione in corso',
       'maintenanceMessage':
           'Il sito al momento è in manutenzione. Riprova più tardi.',
-      'cvAiServiceName': 'CV con AI',
+    'cvAiServiceName': 'Curriculum CV',
       'cvAiServiceSubtitle':
           'Crea un CV professionale in pochi minuti con l\'aiuto dell\'AI.',
       'cvAiEstimatedTime': 'Tempo stimato: 10-15 minuti',
@@ -104,10 +104,28 @@ class AppLocalizations {
       'support': 'Supporto',
       'ourServices': 'I nostri servizi',
       'welcomeOrientation': 'Vivere in Italia',
+      'fiscalServices': 'Servizi fiscali',
       'cafTaxAssistance': 'CAF - Assistenza Fiscale',
       'immigrationDesk': 'Sportello Immigrazione',
       'taxMediation': 'Mediazione Fiscale',
-      'accountingSupport': 'Supporto contabile per P.IVA forfettaria',
+      'accountingSupport': 'Partita IVA e contabilità',
+      'workAndOrientation': 'Lavoro e orientamento',
+      'createCvService': 'Crea un CV',
+      'createCvServiceDesc':
+          'Compila i dati e genera il tuo CV professionale in pochi minuti',
+      'financialEducationCredit': 'Educazione finanziaria + credito',
+      'financialBasics': 'Educazione finanziaria di base',
+      'financialBasicsDesc':
+          'Budget personale, risparmio e gestione consapevole delle spese',
+      'creditSupport': 'Supporto credito',
+      'creditSupportDesc':
+          'Orientamento su accesso al credito, prestiti e microcredito',
+      'budgetPlanning': 'Pianificazione del budget',
+      'savingsManagement': 'Gestione del risparmio',
+      'debtManagement': 'Gestione dei debiti',
+      'creditScoreCheck': 'Verifica posizione creditizia',
+      'loanOrientation': 'Orientamento prestiti',
+      'microcreditInfo': 'Informazioni su microcredito',
       'taxGuidanceAndClarifications': 'Orientamento e chiarimenti fiscali',
       'familyReunification': 'Ricongiungimento familiare',
       'familyReunificationDesc':
@@ -1080,15 +1098,13 @@ class AppLocalizations {
       'socialServices': 'Social services',
       'rememberPassword': 'Remember password',
       'loginWithBiometrics': 'Login with biometrics',
-      'biometricAuthReason':
-          'Authenticate with fingerprint or face to sign in',
+      'biometricAuthReason': 'Authenticate with fingerprint or face to sign in',
       'biometricNotAvailable':
           'Biometric authentication is not available on this device',
       'biometricCredentialsMissing':
           'Please complete a manual login before using biometrics',
       'biometricAuthFailed': 'Biometric authentication failed',
-      'biometricDisabledInSettings':
-          'Biometric login is disabled in settings',
+      'biometricDisabledInSettings': 'Biometric login is disabled in settings',
       'usePasswordInstead': 'Use password instead',
       'useBiometricsInstead': 'Use biometrics instead',
       'useBiometricLoginSetting': 'Use biometrics to log in',
@@ -1098,7 +1114,7 @@ class AppLocalizations {
       'maintenanceTitle': 'Maintenance in progress',
       'maintenanceMessage':
           'The site is currently under maintenance. Please try again later.',
-      'cvAiServiceName': 'AI CV Builder',
+    'cvAiServiceName': 'Curriculum CV',
       'cvAiServiceSubtitle':
           'Create a professional CV in minutes with AI assistance.',
       'cvAiEstimatedTime': 'Estimated time: 10-15 minutes',
@@ -1140,10 +1156,27 @@ class AppLocalizations {
       'support': 'Support',
       'ourServices': 'Our services',
       'welcomeOrientation': 'Welcome and Orientation',
+      'fiscalServices': 'Fiscal Services',
       'cafTaxAssistance': 'CAF - Tax Assistance',
       'immigrationDesk': 'Immigration Desk',
       'taxMediation': 'Tax Mediation',
-      'accountingSupport': 'Accounting Support',
+      'accountingSupport': 'VAT and Accounting',
+      'workAndOrientation': 'Work and Orientation',
+      'createCvService': 'Create a CV',
+      'createCvServiceDesc':
+          'Complete your details and generate your professional CV in minutes',
+      'financialEducationCredit': 'Financial Education + Credit',
+      'financialBasics': 'Basic Financial Education',
+      'financialBasicsDesc':
+          'Personal budgeting, savings, and conscious expense management',
+      'creditSupport': 'Credit Support',
+      'creditSupportDesc': 'Guidance on credit access, loans, and microcredit',
+      'budgetPlanning': 'Budget planning',
+      'savingsManagement': 'Savings management',
+      'debtManagement': 'Debt management',
+      'creditScoreCheck': 'Credit position check',
+      'loanOrientation': 'Loan orientation',
+      'microcreditInfo': 'Microcredit information',
       'latestArticles': 'Latest articles',
       'errorLoading': 'Error',
       'noArticlesAvailable': 'No articles available.',
@@ -2002,15 +2035,13 @@ class AppLocalizations {
       'signatureLegallyValid': 'The signature is legally valid',
       'docViewLoadError': 'Loading error',
       'invalidDocumentUrl': 'Invalid document URL',
-      'cannotOpenDocumentExternally':
-          'Unable to open the document externally',
+      'cannotOpenDocumentExternally': 'Unable to open the document externally',
       'generatedOn': 'Generated on',
       'loadingDocument': 'Loading document...',
       'reloadPreview': 'Reload preview',
       'openInBrowser': 'Open in browser',
       'verifyIdentityTitle': 'Verify identity',
-      'otpSentToPhoneAndEmail':
-          'You will receive the same OTP code via SMS to',
+      'otpSentToPhoneAndEmail': 'You will receive the same OTP code via SMS to',
       'andByEmail': 'and by email',
       'unknownError': 'Unknown error',
       'sendOtpSmsEmail': 'Send OTP via SMS + Email',
@@ -2044,8 +2075,7 @@ class AppLocalizations {
           'Your document has been signed digitally successfully',
       'signatureDateLabel': 'Signature date',
       'signatureMethodLabel': 'Method',
-      'simpleElectronicSignatureFes':
-          'Simple Electronic Signature (FES)',
+      'simpleElectronicSignatureFes': 'Simple Electronic Signature (FES)',
       'hashVerifiedLabel': 'Hash verified',
       'yesSimple': 'Yes',
       'whatHappensNext': 'What happens next?',
@@ -2093,8 +2123,7 @@ class AppLocalizations {
       'biometricCredentialsMissing':
           'Haz al menos un inicio de sesión manual antes de usar biometría',
       'biometricAuthFailed': 'La autenticación biométrica falló',
-      'biometricDisabledInSettings':
-          'La biometría está desactivada en ajustes',
+      'biometricDisabledInSettings': 'La biometría está desactivada en ajustes',
       'usePasswordInstead': 'Usar contraseña en su lugar',
       'useBiometricsInstead': 'Usar biometría en su lugar',
       'useBiometricLoginSetting': 'Usar biometría para iniciar sesión',
@@ -2104,7 +2133,7 @@ class AppLocalizations {
       'maintenanceTitle': 'Mantenimiento en curso',
       'maintenanceMessage':
           'El sitio está actualmente en mantenimiento. Inténtalo de nuevo más tarde.',
-      'cvAiServiceName': 'CV con IA',
+    'cvAiServiceName': 'Curriculum CV',
       'cvAiServiceSubtitle':
           'Crea un CV profesional en pocos minutos con ayuda de la IA.',
       'cvAiEstimatedTime': 'Tiempo estimado: 10-15 minutos',
@@ -2146,10 +2175,28 @@ class AppLocalizations {
       'support': 'Soporte',
       'ourServices': 'Nuestros servicios',
       'welcomeOrientation': 'Acogida y Orientación',
+      'fiscalServices': 'Servicios fiscales',
       'cafTaxAssistance': 'CAF - Asistencia Fiscal',
       'immigrationDesk': 'Oficina de Inmigración',
       'taxMediation': 'Mediación Fiscal',
-      'accountingSupport': 'Soporte Contable',
+      'accountingSupport': 'Partida IVA y contabilidad',
+      'workAndOrientation': 'Trabajo y orientación',
+      'createCvService': 'Crea un CV',
+      'createCvServiceDesc':
+          'Completa tus datos y genera tu CV profesional en pocos minutos',
+      'financialEducationCredit': 'Educación financiera + crédito',
+      'financialBasics': 'Educación financiera básica',
+      'financialBasicsDesc':
+          'Presupuesto personal, ahorro y gestión consciente de gastos',
+      'creditSupport': 'Soporte de crédito',
+      'creditSupportDesc':
+          'Orientación sobre acceso al crédito, préstamos y microcrédito',
+      'budgetPlanning': 'Planificación del presupuesto',
+      'savingsManagement': 'Gestión del ahorro',
+      'debtManagement': 'Gestión de deudas',
+      'creditScoreCheck': 'Verificación de situación crediticia',
+      'loanOrientation': 'Orientación sobre préstamos',
+      'microcreditInfo': 'Información sobre microcrédito',
       'latestArticles': 'Últimos artículos',
       'errorLoading': 'Error',
       'noArticlesAvailable': 'No hay artículos disponibles.',

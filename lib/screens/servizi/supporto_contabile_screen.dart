@@ -256,6 +256,166 @@ class SupportoContabileScreen extends StatelessWidget {
                   );
                 },
               ),
+              const SizedBox(height: 24),
+              Text(
+                l10n.translate('taxGuidanceAndClarifications'),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              _OptionCard(
+                icon: Icons.account_balance,
+                title: l10n.translate('taxesAndContributions'),
+                description: l10n.translate('taxesAndContributionsDesc'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => RichiestaFormScreen(
+                            servizio: l10n.accountingSupport,
+                            categoria: l10n.translate('taxesAndContributions'),
+                            campi: [
+                              {
+                                'label': l10n.fullName,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.fiscalCode,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.dateOfBirth,
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.residenceAddress,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.clarifyTopic,
+                                'type': 'select',
+                                'options': [
+                                  l10n.taxCalculation,
+                                  l10n.depositsBalances,
+                                  l10n.inpsContributionsTax,
+                                  l10n.f24Payments,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.workSituation,
+                                'type': 'select',
+                                'options': [
+                                  l10n.employeeWorker,
+                                  l10n.vatForfettario,
+                                  l10n.otherActivity,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.urgencyLevel,
+                                'type': 'select',
+                                'options': [
+                                  l10n.informative,
+                                  l10n.imminentDeadline,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.notesAndAdditionalInfo,
+                                'type': 'textarea',
+                                'required': false,
+                              },
+                            ],
+                          ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              _OptionCard(
+                icon: Icons.question_answer,
+                title: l10n.translate('clarificationsAndConsulting'),
+                description: l10n.translate('clarificationsAndConsultingDesc'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => RichiestaFormScreen(
+                            servizio: l10n.accountingSupport,
+                            categoria: l10n.translate(
+                              'clarificationsAndConsulting',
+                            ),
+                            campi: [
+                              {
+                                'label': l10n.fullName,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.fiscalCode,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.dateOfBirth,
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.residenceAddress,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.howCanWeHelp,
+                                'type': 'select',
+                                'options': [
+                                  l10n.personalizedExplanations,
+                                  l10n.taxPositionVerification,
+                                  l10n.taxRegimeChange,
+                                  l10n.questionsNotSureWhereToStart,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.workSituationQuestion,
+                                'type': 'select',
+                                'options': [
+                                  l10n.employeeWorker,
+                                  l10n.vatForfettario,
+                                  l10n.notWorkingOther,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.urgencyQuestion,
+                                'type': 'select',
+                                'options': [
+                                  l10n.informative,
+                                  l10n.closeDeadline,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.notesAndAdditionalInfo,
+                                'type': 'textarea',
+                                'required': false,
+                              },
+                            ],
+                          ),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),

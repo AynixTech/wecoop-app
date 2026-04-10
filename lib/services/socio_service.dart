@@ -480,12 +480,9 @@ class SocioService {
       final uri = Uri.parse(
         '$baseUrl/mie-richieste',
       ).replace(queryParameters: queryParams);
-      print('🔄 Chiamata GET /mie-richieste...');
 
       final headers = await _getHeaders();
       final response = await HttpClientService.get(uri, headers: headers);
-
-      print('📥 GET /mie-richieste status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final rawData = jsonDecode(response.body);
@@ -506,7 +503,6 @@ class SocioService {
 
       return {'success': false, 'data': [], 'pagination': {}};
     } catch (e) {
-      print('❌ Errore durante GET /richieste-utente: $e');
       return {'success': false, 'data': [], 'pagination': {}};
     }
   }

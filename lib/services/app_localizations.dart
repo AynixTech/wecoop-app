@@ -62,7 +62,7 @@ class AppLocalizations {
       'maintenanceTitle': 'Manutenzione in corso',
       'maintenanceMessage':
           'Il sito al momento è in manutenzione. Riprova più tardi.',
-    'cvAiServiceName': 'Curriculum CV',
+      'cvAiServiceName': 'Curriculum CV',
       'cvAiServiceSubtitle':
           'Crea un CV professionale in pochi minuti con l\'aiuto dell\'AI.',
       'cvAiEstimatedTime': 'Tempo stimato: 10-15 minuti',
@@ -109,10 +109,55 @@ class AppLocalizations {
       'immigrationDesk': 'Sportello Immigrazione',
       'taxMediation': 'Mediazione Fiscale',
       'accountingSupport': 'Partita IVA e contabilità',
-      'workAndOrientation': 'Lavoro e orientamento',
+      'workAndOrientation': 'Lavoro e Formazione',
       'createCvService': 'Crea un CV',
       'createCvServiceDesc':
           'Compila i dati e genera il tuo CV professionale in pochi minuti',
+      'activateWorkService': 'Attiva servizio lavoro',
+      'activateWorkServiceDesc':
+          'Attiva il supporto WECOOP per ricerca lavoro e candidature',
+      'viewApplicationStatus': 'Vedi stato candidatura',
+      'viewApplicationStatusDesc':
+          'Controlla aggiornamenti e avanzamento della tua candidatura',
+      'viewTraining': 'Vedi formazione',
+      'viewTrainingDesc':
+          'Scopri percorsi formativi consigliati per il tuo profilo',
+      'workServiceQuestion':
+          'Vuoi che WECOOP ti aiuti a trovare opportunita lavorative?',
+      'activateServiceCta': 'Attiva servizio',
+      'consentGdpr': 'Accetto il trattamento dati (GDPR)',
+      'consentShareCv': 'Accetto l\'invio del CV a partner terzi',
+      'consentWhatsapp': 'Accetto il contatto via WhatsApp',
+      'consentTerms': 'Accetto le condizioni del servizio',
+      'consentRequired': 'Devi accettare tutti i consensi per continuare',
+      'workServiceActivated': 'Servizio lavoro attivato con successo',
+      'whatsAppActivationText':
+          'Ciao WECOOP, ho attivato il servizio lavoro dalla app e desidero supporto.',
+      'applicationStatusTitle': 'Stato candidatura',
+      'noStatusYet': 'Nessuno stato disponibile al momento',
+      'statusUpdatedAt': 'Ultimo aggiornamento',
+      'jobStatusProfileCreated': 'Profilo creato',
+      'jobStatusCvGenerated': 'CV generato',
+      'jobStatusServiceActivated': 'Servizio attivato',
+      'jobStatusConsentSigned': 'Consenso firmato',
+      'jobStatusInReview': 'In revisione',
+      'jobStatusReadyToSend': 'Pronto per invio',
+      'jobStatusSent': 'Inviato',
+      'jobStatusUnderEvaluation': 'In valutazione',
+      'jobStatusInterview': 'Intervista',
+      'jobStatusClosed': 'Chiuso',
+      'jobStatusNotSelected': 'Non selezionato',
+      'trainingIntro':
+          'Percorsi consigliati per migliorare CV, colloqui e competenze professionali',
+      'trainingCardCvTitle': 'Laboratorio CV e lettera di presentazione',
+      'trainingCardCvDesc':
+          'Supporto pratico per migliorare il curriculum e presentarti meglio',
+      'trainingCardInterviewTitle': 'Simulazione colloquio',
+      'trainingCardInterviewDesc':
+          'Preparazione guidata ai colloqui con feedback personalizzato',
+      'trainingCardDigitalTitle': 'Competenze digitali per il lavoro',
+      'trainingCardDigitalDesc':
+          'Strumenti digitali, email professionale e piattaforme candidature',
       'financialEducationCredit': 'Educazione finanziaria + credito',
       'financialBasics': 'Educazione finanziaria di base',
       'financialBasicsDesc':
@@ -1114,7 +1159,7 @@ class AppLocalizations {
       'maintenanceTitle': 'Maintenance in progress',
       'maintenanceMessage':
           'The site is currently under maintenance. Please try again later.',
-    'cvAiServiceName': 'Curriculum CV',
+      'cvAiServiceName': 'Curriculum CV',
       'cvAiServiceSubtitle':
           'Create a professional CV in minutes with AI assistance.',
       'cvAiEstimatedTime': 'Estimated time: 10-15 minutes',
@@ -1161,10 +1206,55 @@ class AppLocalizations {
       'immigrationDesk': 'Immigration Desk',
       'taxMediation': 'Tax Mediation',
       'accountingSupport': 'VAT and Accounting',
-      'workAndOrientation': 'Work and Orientation',
+      'workAndOrientation': 'Work and Training',
       'createCvService': 'Create a CV',
       'createCvServiceDesc':
           'Complete your details and generate your professional CV in minutes',
+      'activateWorkService': 'Activate job service',
+      'activateWorkServiceDesc':
+          'Activate WECOOP support for job search and applications',
+      'viewApplicationStatus': 'View application status',
+      'viewApplicationStatusDesc':
+          'Check updates and progress of your application',
+      'viewTraining': 'View training',
+      'viewTrainingDesc':
+          'Discover recommended training paths for your profile',
+      'workServiceQuestion':
+          'Do you want WECOOP to help you find job opportunities?',
+      'activateServiceCta': 'Activate service',
+      'consentGdpr': 'I accept personal data processing (GDPR)',
+      'consentShareCv': 'I accept sharing my CV with third-party partners',
+      'consentWhatsapp': 'I accept contact via WhatsApp',
+      'consentTerms': 'I accept service terms and conditions',
+      'consentRequired': 'You must accept all consents to continue',
+      'workServiceActivated': 'Job service activated successfully',
+      'whatsAppActivationText':
+          'Hi WECOOP, I activated the job service from the app and would like support.',
+      'applicationStatusTitle': 'Application status',
+      'noStatusYet': 'No status available yet',
+      'statusUpdatedAt': 'Last update',
+      'jobStatusProfileCreated': 'Profile created',
+      'jobStatusCvGenerated': 'CV generated',
+      'jobStatusServiceActivated': 'Service activated',
+      'jobStatusConsentSigned': 'Consent signed',
+      'jobStatusInReview': 'In review',
+      'jobStatusReadyToSend': 'Ready to send',
+      'jobStatusSent': 'Sent',
+      'jobStatusUnderEvaluation': 'Under evaluation',
+      'jobStatusInterview': 'Interview',
+      'jobStatusClosed': 'Closed',
+      'jobStatusNotSelected': 'Not selected',
+      'trainingIntro':
+          'Recommended paths to improve CV, interviews, and professional skills',
+      'trainingCardCvTitle': 'CV and cover letter workshop',
+      'trainingCardCvDesc':
+          'Practical support to improve your CV and present yourself better',
+      'trainingCardInterviewTitle': 'Interview simulation',
+      'trainingCardInterviewDesc':
+          'Guided interview preparation with personalized feedback',
+      'trainingCardDigitalTitle': 'Digital skills for work',
+      'trainingCardDigitalDesc':
+          'Digital tools, professional email, and application platforms',
       'financialEducationCredit': 'Financial Education + Credit',
       'financialBasics': 'Basic Financial Education',
       'financialBasicsDesc':
@@ -2133,7 +2223,7 @@ class AppLocalizations {
       'maintenanceTitle': 'Mantenimiento en curso',
       'maintenanceMessage':
           'El sitio está actualmente en mantenimiento. Inténtalo de nuevo más tarde.',
-    'cvAiServiceName': 'Curriculum CV',
+      'cvAiServiceName': 'Curriculum CV',
       'cvAiServiceSubtitle':
           'Crea un CV profesional en pocos minutos con ayuda de la IA.',
       'cvAiEstimatedTime': 'Tiempo estimado: 10-15 minutos',
@@ -2180,10 +2270,54 @@ class AppLocalizations {
       'immigrationDesk': 'Oficina de Inmigración',
       'taxMediation': 'Mediación Fiscal',
       'accountingSupport': 'Partida IVA y contabilidad',
-      'workAndOrientation': 'Trabajo y orientación',
+      'workAndOrientation': 'Trabajo y formación',
       'createCvService': 'Crea un CV',
       'createCvServiceDesc':
           'Completa tus datos y genera tu CV profesional en pocos minutos',
+      'activateWorkService': 'Activar servicio de trabajo',
+      'activateWorkServiceDesc':
+          'Activa el apoyo de WECOOP para busqueda laboral y candidaturas',
+      'viewApplicationStatus': 'Ver estado de candidatura',
+      'viewApplicationStatusDesc':
+          'Consulta actualizaciones y avance de tu candidatura',
+      'viewTraining': 'Ver formación',
+      'viewTrainingDesc': 'Descubre formaciones recomendadas para tu perfil',
+      'workServiceQuestion':
+          'Quieres que WECOOP te ayude a encontrar oportunidades laborales?',
+      'activateServiceCta': 'Activar servicio',
+      'consentGdpr': 'Acepto el tratamiento de datos (GDPR)',
+      'consentShareCv': 'Acepto el envio de mi CV a partners terceros',
+      'consentWhatsapp': 'Acepto el contacto por WhatsApp',
+      'consentTerms': 'Acepto las condiciones del servicio',
+      'consentRequired': 'Debes aceptar todos los consentimientos',
+      'workServiceActivated': 'Servicio de trabajo activado correctamente',
+      'whatsAppActivationText':
+          'Hola WECOOP, active el servicio de trabajo desde la app y deseo apoyo.',
+      'applicationStatusTitle': 'Estado de candidatura',
+      'noStatusYet': 'Aun no hay estado disponible',
+      'statusUpdatedAt': 'Ultima actualización',
+      'jobStatusProfileCreated': 'Perfil creado',
+      'jobStatusCvGenerated': 'CV generado',
+      'jobStatusServiceActivated': 'Servicio activado',
+      'jobStatusConsentSigned': 'Consentimiento firmado',
+      'jobStatusInReview': 'En revisión',
+      'jobStatusReadyToSend': 'Listo para envio',
+      'jobStatusSent': 'Enviado',
+      'jobStatusUnderEvaluation': 'En evaluación',
+      'jobStatusInterview': 'Entrevista',
+      'jobStatusClosed': 'Cerrado',
+      'jobStatusNotSelected': 'No seleccionado',
+      'trainingIntro':
+          'Rutas recomendadas para mejorar CV, entrevistas y habilidades profesionales',
+      'trainingCardCvTitle': 'Taller de CV y carta de presentación',
+      'trainingCardCvDesc':
+          'Apoyo practico para mejorar tu curriculum y presentarte mejor',
+      'trainingCardInterviewTitle': 'Simulacion de entrevista',
+      'trainingCardInterviewDesc':
+          'Preparacion guiada para entrevistas con feedback personalizado',
+      'trainingCardDigitalTitle': 'Competencias digitales para el trabajo',
+      'trainingCardDigitalDesc':
+          'Herramientas digitales, email profesional y plataformas de candidatura',
       'financialEducationCredit': 'Educación financiera + crédito',
       'financialBasics': 'Educación financiera básica',
       'financialBasicsDesc':

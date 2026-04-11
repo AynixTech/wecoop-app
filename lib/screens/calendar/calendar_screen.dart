@@ -188,17 +188,6 @@ class _CalendarScreenState extends State<CalendarScreen>
         if (mounted) {
           setState(() => _isLoading = false);
         }
-        // Non mostrare errore se l'utente non è loggato
-        if (result['message']?.contains('login') != true) {
-          if (mounted) {
-            final l10n = AppLocalizations.of(context)!;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(result['message'] ?? l10n.errorLoadingData),
-              ),
-            );
-          }
-        }
       }
     } catch (e) {
       if (mounted) {

@@ -28,6 +28,15 @@ class _CvAiScreenState extends State<CvAiScreen> {
       'https://www.wecoop.org/wp-json/wecoop/v1/cv/templates';
   static const String _cvPreviewEndpoint =
       'https://www.wecoop.org/wp-json/wecoop/v1/cv/preview';
+  static const List<Map<String, dynamic>> _fallbackCvTemplates = [
+    {
+      'id': 'formal',
+      'name': 'Template Classico',
+      'htmlUrl': '',
+      'cssUrl': '',
+      'isDefault': true,
+    },
+  ];
   static const Duration _pollInterval = Duration(seconds: 3);
   static const Duration _maxPollingDuration = Duration(seconds: 90);
   static const int _maxBackendPayloadBytes = 300 * 1024;
@@ -306,6 +315,15 @@ class _CvAiScreenState extends State<CvAiScreen> {
     }
   }
 
+  void _logCvTemplates(String event, {Map<String, dynamic>? data}) {
+    final payload = {
+      'event': event,
+      'timestamp': DateTime.now().toIso8601String(),
+      if (data != null) ...data,
+    };
+    debugPrint('[CV_TEMPLATES] ${jsonEncode(payload)}');
+  }
+
   Future<void> _loadCvTemplates() async {
     setState(() {
       _isLoadingTemplates = true;
@@ -318,34 +336,84 @@ class _CvAiScreenState extends State<CvAiScreen> {
         Uri.parse(_cvTemplatesEndpoint),
         headers: headers,
       );
-      final body = HttpClientService.decodeJsonResponse(response);
+      final rawResponseBody = utf8.decode(response.bodyBytes);
 
-      if (response.statusCode != 200 || body is! Map<String, dynamic>) {
-        setState(() {
-          _templatesError = 'Impossibile caricare i template CV';
-          _isLoadingTemplates = false;
-        });
+      _logCvTemplates(
+        'templates_response_meta',
+        data: {
+          'endpoint': _cvTemplatesEndpoint,
+          'statusCode': response.statusCode,
+          'headers': response.headers,
+        },
+      );
+      _logCvTemplates(
+        'templates_response_body',
+        data: {
+          'bodyPreview':
+              rawResponseBody.length > 1200
+                  ? '${rawResponseBody.substring(0, 1200)}...'
+                  : rawResponseBody,
+        },
+      );
+
+      final dynamic body;
+      try {
+        body = HttpClientService.decodeJsonResponse(response);
+      } catch (_) {
+        _logCvTemplates(
+          'templates_decode_failed',
+          data: {
+            'statusCode': response.statusCode,
+          },
+        );
+        _applyFallbackTemplates(
+          'Template server non disponibile: uso template locale.',
+        );
         return;
       }
 
-      final items = body['items'] as List<dynamic>? ?? [];
-      final parsedTemplates =
-          items
-              .whereType<Map>()
-              .map(
-                (e) => {
-                  'id': e['id']?.toString() ?? '',
-                  'name': e['name']?.toString() ?? '',
-                  'htmlUrl': e['htmlUrl']?.toString() ?? '',
-                  'cssUrl': e['cssUrl']?.toString() ?? '',
-                  'isDefault': e['isDefault'] == true,
-                },
-              )
-              .where((e) => (e['id'] as String).isNotEmpty)
-              .toList();
+      if (body is Map<String, dynamic>) {
+        _logCvTemplates(
+          'templates_response_json',
+          data: {
+            'restCode': body['code']?.toString(),
+            'restMessage': body['message']?.toString(),
+            'restStatus':
+                body['data'] is Map ? (body['data'] as Map)['status'] : null,
+          },
+        );
+      }
+
+      final parsedTemplates = _extractTemplateItems(body);
+      _logCvTemplates(
+        'templates_parsed',
+        data: {
+          'statusCode': response.statusCode,
+          'parsedCount': parsedTemplates.length,
+          'defaultTemplate': _extractDefaultTemplate(body),
+          'bodyType': body.runtimeType.toString(),
+        },
+      );
+
+      if (response.statusCode != 200 || parsedTemplates.isEmpty) {
+        _logCvTemplates(
+          'templates_fallback_triggered',
+          data: {
+            'reason':
+                response.statusCode != 200
+                    ? 'non_200_status'
+                    : 'empty_templates',
+            'statusCode': response.statusCode,
+          },
+        );
+        _applyFallbackTemplates(
+          'Template server non disponibile: uso template locale.',
+        );
+        return;
+      }
 
       final ids = parsedTemplates.map((e) => e['id'] as String).toSet();
-      final defaultTemplate = body['defaultTemplate']?.toString() ?? '';
+      final defaultTemplate = _extractDefaultTemplate(body);
       var selected = _normalizedTemplateId(_cvModel);
 
       if (!ids.contains(selected)) {
@@ -363,13 +431,115 @@ class _CvAiScreenState extends State<CvAiScreen> {
         _cvModel = selected;
         _isLoadingTemplates = false;
       });
+      _logCvTemplates(
+        'templates_loaded_successfully',
+        data: {
+          'selectedModel': _cvModel,
+          'availableIds': parsedTemplates
+              .map((e) => e['id']?.toString() ?? '')
+              .toList(),
+        },
+      );
       await _saveDraft();
-    } catch (_) {
-      setState(() {
-        _templatesError = 'Errore di rete durante il caricamento template';
-        _isLoadingTemplates = false;
-      });
+    } catch (e) {
+      _logCvTemplates(
+        'templates_request_failed',
+        data: {
+          'error': e.toString(),
+        },
+      );
+      _applyFallbackTemplates(
+        'Errore di rete: uso template locale.',
+      );
     }
+  }
+
+  List<Map<String, dynamic>> _extractTemplateItems(dynamic body) {
+    List<dynamic> items = const [];
+
+    if (body is List) {
+      items = body;
+    } else if (body is Map<String, dynamic>) {
+      final candidates = [
+        body['items'],
+        body['templates'],
+        body['data'],
+      ];
+      for (final candidate in candidates) {
+        if (candidate is List) {
+          items = candidate;
+          break;
+        }
+      }
+    }
+
+    final parsedTemplates =
+        items
+            .whereType<Map>()
+            .map(
+              (e) => {
+                'id': _normalizedTemplateId(
+                  e['id']?.toString() ??
+                      e['template']?.toString() ??
+                      e['slug']?.toString() ??
+                      '',
+                ),
+                'name':
+                    e['name']?.toString() ??
+                    e['label']?.toString() ??
+                    e['title']?.toString() ??
+                    '',
+                'htmlUrl':
+                    e['htmlUrl']?.toString() ??
+                    e['html_url']?.toString() ??
+                    '',
+                'cssUrl':
+                    e['cssUrl']?.toString() ??
+                    e['css_url']?.toString() ??
+                    '',
+                'isDefault':
+                    e['isDefault'] == true ||
+                    e['default'] == true ||
+                    e['is_default'] == true,
+              },
+            )
+            .where((e) => (e['id'] as String).isNotEmpty)
+            .toList();
+
+    if (parsedTemplates.isEmpty) return [];
+
+    final deduped = <String, Map<String, dynamic>>{};
+    for (final tpl in parsedTemplates) {
+      deduped[tpl['id'] as String] = tpl;
+    }
+    return deduped.values.toList();
+  }
+
+  String _extractDefaultTemplate(dynamic body) {
+    if (body is Map<String, dynamic>) {
+      final raw =
+          body['defaultTemplate'] ?? body['default_template'] ?? body['default'];
+      return _normalizedTemplateId(raw?.toString() ?? '');
+    }
+    return '';
+  }
+
+  void _applyFallbackTemplates(String message) {
+    final selected = _normalizedTemplateId(_cvModel);
+    final ids = _fallbackCvTemplates.map((e) => e['id'] as String).toSet();
+    final nextSelected = ids.contains(selected)
+        ? selected
+        : _fallbackCvTemplates.first['id'] as String;
+
+    setState(() {
+      _cvTemplates
+        ..clear()
+        ..addAll(_fallbackCvTemplates);
+      _cvModel = nextSelected;
+      _templatesError = message;
+      _isLoadingTemplates = false;
+    });
+    _saveDraft();
   }
 
   List<Map<String, dynamic>> _toDynamicMapList(dynamic value) {
@@ -401,6 +571,19 @@ class _CvAiScreenState extends State<CvAiScreen> {
 
   Future<void> _saveLocalCachedCvs(List<Map<String, dynamic>> entries) async {
     await _storage.write(key: _localCvsKey, value: jsonEncode(entries));
+  }
+
+  String _entryCacheKey(Map<String, dynamic> entry) {
+    final cvId = _entryCvId(entry).trim();
+    if (cvId.isNotEmpty) return 'id:$cvId';
+    return 'fallback:${_entryCreatedAt(entry)}|${_entryUpdatedAt(entry)}|${_entryDisplayName(entry)}';
+  }
+
+  Future<void> _removeLocalCachedCv(Map<String, dynamic> entry) async {
+    final targetKey = _entryCacheKey(entry);
+    final cached = await _loadLocalCachedCvs();
+    cached.removeWhere((item) => _entryCacheKey(item) == targetKey);
+    await _saveLocalCachedCvs(cached);
   }
 
   DateTime _parseEntryDate(Map<String, dynamic> entry) {
@@ -768,6 +951,69 @@ class _CvAiScreenState extends State<CvAiScreen> {
       _currentStep = 1;
     });
     await _saveDraft();
+  }
+
+  Future<void> _deleteExistingCv(Map<String, dynamic> entry) async {
+    final cvId = _entryCvId(entry).trim();
+    var serverDeleted = false;
+
+    if (cvId.isNotEmpty) {
+      try {
+        final headers = await _buildAuthHeaders();
+        final response = await HttpClientService.delete(
+          Uri.parse('$_cvApiBase/$cvId'),
+          headers: headers,
+        );
+        serverDeleted = response.statusCode == 200 ||
+            response.statusCode == 202 ||
+            response.statusCode == 204 ||
+            response.statusCode == 404;
+      } catch (_) {
+        serverDeleted = false;
+      }
+    }
+
+    await _removeLocalCachedCv(entry);
+    await _loadExistingCvs();
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          serverDeleted
+              ? 'Curriculum eliminato'
+              : 'Curriculum rimosso in locale',
+        ),
+      ),
+    );
+  }
+
+  Future<void> _confirmDeleteExistingCv(Map<String, dynamic> entry) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Elimina curriculum'),
+          content: Text(
+            'Vuoi eliminare ${_entryDisplayName(entry)}?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Annulla'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Elimina'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      await _deleteExistingCv(entry);
+    }
   }
 
   String _photoDataUrlFromPayload(Map<String, dynamic> payload) {
@@ -2207,6 +2453,11 @@ class _CvAiScreenState extends State<CvAiScreen> {
                         icon: const Icon(Icons.description_outlined),
                         label: const Text('Scarica Word'),
                       ),
+                      OutlinedButton.icon(
+                        onPressed: () => _confirmDeleteExistingCv(entry),
+                        icon: const Icon(Icons.delete_outline),
+                        label: const Text('Elimina'),
+                      ),
                     ],
                   ),
                 ],
@@ -2511,67 +2762,71 @@ class _CvAiScreenState extends State<CvAiScreen> {
         const SizedBox(height: 12),
         if (_isLoadingTemplates)
           const Center(child: CircularProgressIndicator())
-        else if (_templatesError != null) ...[
-          Text(_templatesError!, style: TextStyle(color: scheme.error)),
-          const SizedBox(height: 8),
-          OutlinedButton.icon(
-            onPressed: _loadCvTemplates,
-            icon: const Icon(Icons.refresh),
-            label: const Text('Riprova caricamento template'),
-          ),
-        ] else if (_cvTemplates.isEmpty)
+        else ...[
+          if (_templatesError != null) ...[
+            Text(_templatesError!, style: TextStyle(color: scheme.error)),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: _loadCvTemplates,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Riprova caricamento template'),
+            ),
+            const SizedBox(height: 8),
+          ],
+          if (_cvTemplates.isEmpty)
           const Text('Nessun template disponibile al momento.')
-        else
-          Column(
-            children:
-                _cvTemplates.map((template) {
-                  final id = template['id']?.toString() ?? '';
-                  final name = template['name']?.toString() ?? id;
+          else
+            Column(
+              children:
+                  _cvTemplates.map((template) {
+                    final id = template['id']?.toString() ?? '';
+                    final name = template['name']?.toString() ?? id;
 
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        children: [
-                          Radio<String>(
-                            value: id,
-                            groupValue: _normalizedTemplateId(_cvModel),
-                            onChanged: (value) {
-                              if (value == null) return;
-                              setState(() {
-                                _cvModel = value;
-                              });
-                              _saveDraft();
-                              _loadTemplatePreview();
-                            },
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  name,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                Text(
-                                  'ID: $id',
-                                  style: TextStyle(
-                                    color: scheme.onSurface.withOpacity(0.65),
-                                  ),
-                                ),
-                              ],
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          children: [
+                            Radio<String>(
+                              value: id,
+                              groupValue: _normalizedTemplateId(_cvModel),
+                              onChanged: (value) {
+                                if (value == null) return;
+                                setState(() {
+                                  _cvModel = value;
+                                });
+                                _saveDraft();
+                                _loadTemplatePreview();
+                              },
                             ),
-                          ),
-                        ],
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    name,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Text(
+                                    'ID: $id',
+                                    style: TextStyle(
+                                      color: scheme.onSurface.withOpacity(0.65),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                }).toList(),
-          ),
+                    );
+                  }).toList(),
+            ),
+        ],
         const SizedBox(height: 8),
         Text(
           'Prosegui al prossimo step per scegliere la lingua del CV.',

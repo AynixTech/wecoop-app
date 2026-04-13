@@ -422,7 +422,7 @@ class OfferteLavoroScreen extends StatefulWidget {
 
 class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
     with SingleTickerProviderStateMixin {
-  TabController? _tabController;
+  late final TabController _tabController;
   static const String _wecoopWhatsAppNumber = '393515112113';
 
   final TextEditingController _searchController = TextEditingController();
@@ -436,6 +436,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
 
   String? _selectedCategoriaSlug;
   String? _selectedMacroCategoria;
+  String? _selectedScope;
   String? _selectedJobDirection;
   int _currentPage = 1;
   int _totalPages = 1;
@@ -466,23 +467,13 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
   @override
   void initState() {
     super.initState();
-    _ensureTabController();
+    _tabController = TabController(length: 3, vsync: this);
     _loadInitialData();
-  }
-
-  void _ensureTabController() {
-    _tabController ??= TabController(length: 3, vsync: this);
-  }
-
-  @override
-  void reassemble() {
-    super.reassemble();
-    _ensureTabController();
   }
 
   @override
   void dispose() {
-    _tabController?.dispose();
+    _tabController.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -501,7 +492,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
       perPage: 12,
       search: _searchController.text,
       categoria: _selectedCategoriaSlug,
-      categoryScope: 'job',
+      categoryScope: _selectedScope,
       categoryDirection: _selectedJobDirection,
     );
 
@@ -545,7 +536,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
       perPage: 12,
       search: _searchController.text,
       categoria: _selectedCategoriaSlug,
-      categoryScope: 'job',
+      categoryScope: _selectedScope,
       categoryDirection: _selectedJobDirection,
     );
 
@@ -637,8 +628,6 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
 
   @override
   Widget build(BuildContext context) {
-    _ensureTabController();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Offerte e Annunci Lavoro'),
@@ -648,13 +637,14 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
             color: Colors.white,
             child: TabBar(
               controller: _tabController,
+              isScrollable: false,
               labelColor: Colors.black87,
               unselectedLabelColor: Colors.black54,
               indicatorColor: Colors.black87,
               tabs: const [
-                Tab(icon: Icon(Icons.work), text: 'Annunci lavoro'),
-                Tab(icon: Icon(Icons.search), text: 'Cerco servizio'),
-                Tab(icon: Icon(Icons.volunteer_activism), text: 'Offro servizio'),
+                Tab(icon: Icon(Icons.work), text: 'Annunci'),
+                Tab(icon: Icon(Icons.search), text: 'Cerco'),
+                Tab(icon: Icon(Icons.volunteer_activism), text: 'Offro'),
               ],
             ),
           ),
@@ -824,6 +814,25 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
           onSubmitted: (_) => _loadInitialData(),
         ),
         const SizedBox(height: 14),
+        DropdownButtonFormField<String>(
+          initialValue: _selectedScope,
+          decoration: const InputDecoration(labelText: 'Ambito'),
+          items: const [
+            DropdownMenuItem<String>(value: null, child: Text('Tutti')),
+            DropdownMenuItem<String>(value: 'job', child: Text('Lavoro')),
+            DropdownMenuItem<String>(value: 'service', child: Text('Servizio')),
+          ],
+          onChanged: (value) {
+            setState(() {
+              _selectedScope = value;
+              _selectedJobDirection = null;
+              _selectedMacroCategoria = null;
+              _selectedCategoriaSlug = null;
+            });
+            _loadInitialData();
+          },
+        ),
+        const SizedBox(height: 12),
         DropdownButtonFormField<String>(
           initialValue: _selectedJobDirection,
           decoration: const InputDecoration(labelText: 'Tipo annuncio lavoro'),

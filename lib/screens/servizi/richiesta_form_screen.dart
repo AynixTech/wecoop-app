@@ -697,12 +697,15 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   }) {
     final scheme = Theme.of(context).colorScheme;
     final isComplete = documentiMancanti.isEmpty;
+    final containerColor =
+        isComplete ? scheme.secondaryContainer : scheme.tertiaryContainer;
+    final contentColor =
+        isComplete ? scheme.onSecondaryContainer : scheme.onTertiaryContainer;
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color:
-              isComplete ? scheme.secondaryContainer : scheme.tertiaryContainer,
+          color: containerColor,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: isComplete ? scheme.secondary : scheme.tertiary,
@@ -715,14 +718,17 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
               children: [
                 Icon(
                   isComplete ? Icons.check_circle : Icons.warning_amber_rounded,
-                  color: isComplete ? scheme.secondary : scheme.tertiary,
+                  color: contentColor,
                   size: 18,
                 ),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
                     title,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: contentColor,
+                    ),
                   ),
                 ),
               ],
@@ -736,7 +742,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   )!.missingDocumentsCount(documentiMancanti.length),
               style: TextStyle(
                 fontSize: 13,
-                color: isComplete ? scheme.secondary : scheme.tertiary,
+                color: contentColor,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -828,7 +834,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                             l10n.alreadyUploaded,
                             style: TextStyle(
                               fontSize: 11,
-                              color: scheme.secondary,
+                              color: scheme.onSecondaryContainer,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -1863,21 +1869,20 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   Widget _buildDocumentiRichiestiSection() {
     final l10n = AppLocalizations.of(context)!;
     final scheme = Theme.of(context).colorScheme;
+    final allUploaded =
+        _documentiMancanti.isEmpty && _documentiMancantiFamiliare.isEmpty;
+    final sectionTextColor =
+        allUploaded ? scheme.onSecondaryContainer : scheme.onTertiaryContainer;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color:
-            _documentiMancanti.isEmpty && _documentiMancantiFamiliare.isEmpty
-                ? scheme.secondaryContainer
-                : scheme.tertiaryContainer,
+            allUploaded ? scheme.secondaryContainer : scheme.tertiaryContainer,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color:
-              _documentiMancanti.isEmpty && _documentiMancantiFamiliare.isEmpty
-                  ? scheme.secondary
-                  : scheme.tertiary,
+          color: allUploaded ? scheme.secondary : scheme.tertiary,
           width: 2,
         ),
       ),
@@ -1887,23 +1892,17 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
           Row(
             children: [
               Icon(
-                _documentiMancanti.isEmpty &&
-                        _documentiMancantiFamiliare.isEmpty
-                    ? Icons.check_circle
-                    : Icons.upload_file,
-                color:
-                    _documentiMancanti.isEmpty &&
-                            _documentiMancantiFamiliare.isEmpty
-                        ? scheme.secondary
-                        : scheme.tertiary,
+                allUploaded ? Icons.check_circle : Icons.upload_file,
+                color: sectionTextColor,
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   l10n.requiredDocuments.toUpperCase(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
+                    color: sectionTextColor,
                   ),
                 ),
               ),
@@ -1913,7 +1912,11 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
           if (_isMotiviFamiliariFlow())
             Text(
               l10n.documentsManagedSeparately,
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: sectionTextColor,
+              ),
             ),
           if (_isMotiviFamiliariFlow()) ...[
             const SizedBox(height: 12),
@@ -2217,7 +2220,13 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
             return CheckboxListTile(
               dense: true,
               contentPadding: EdgeInsets.zero,
-              title: Text(label, style: const TextStyle(fontSize: 14)),
+              title: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: scheme.onPrimaryContainer,
+                ),
+              ),
               value: isSelected,
               onChanged: (bool? value) {
                 setState(() {
@@ -2229,6 +2238,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                 });
               },
               activeColor: scheme.primary,
+              checkColor: scheme.onPrimary,
             );
           }),
 
@@ -2245,7 +2255,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: scheme.onSurface,
+                    color: scheme.onPrimaryContainer,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -2319,7 +2329,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: scheme.onSurface,
+                    color: scheme.onPrimaryContainer,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -2353,7 +2363,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: scheme.onSurface,
+                    color: scheme.onPrimaryContainer,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -2366,14 +2376,18 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.location_on, color: scheme.secondary),
+                      Icon(
+                        Icons.location_on,
+                        color: scheme.onSecondaryContainer,
+                      ),
                       const SizedBox(width: 12),
-                      const Expanded(
+                      Expanded(
                         child: Text(
                           'Via Populonia 8, 20159 Milano MI',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
+                            color: scheme.onSecondaryContainer,
                           ),
                         ),
                       ),

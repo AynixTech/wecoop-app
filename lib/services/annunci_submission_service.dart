@@ -31,6 +31,7 @@ class AnnunciSubmissionService {
   /// [contactEmail]: Email di contatto (opzionale)
   /// [description]: Descrizione dettagliata
   /// [consentPrivacy]: Consenso al trattamento dei dati
+  /// [imageBase64]: Immagine codificata in base64 (opzionale)
   static Future<Map<String, dynamic>> submitJobAnnouncement({
     required String submissionType,
     required String titleOffer,
@@ -43,6 +44,7 @@ class AnnunciSubmissionService {
     String? categoryDirection,
     String? categoryMacro,
     String? categorySlug,
+    String? imageBase64,
   }) async {
     try {
       // Validazione base lato client
@@ -76,6 +78,8 @@ class AnnunciSubmissionService {
         'category_direction': (categoryDirection ?? '').trim(),
         'category_macro': (categoryMacro ?? '').trim(),
         'category_slug': (categorySlug ?? '').trim(),
+        if (imageBase64 != null && imageBase64.isNotEmpty)
+          'image_base64': imageBase64,
       };
 
       final uri = Uri.parse('$baseUrl/annunci');

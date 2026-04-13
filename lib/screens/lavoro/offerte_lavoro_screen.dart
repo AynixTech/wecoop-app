@@ -1,4 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wecoop_app/models/offerta_lavoro_model.dart';
 import 'package:wecoop_app/screens/servizi/lavoro_orientamento_screen.dart';
@@ -988,6 +991,8 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
   String? _selectedMacroCategoria;
   String? _selectedCategoriaValueEn;
   bool _isSending = false;
+  File? _selectedImage;
+  final _imagePicker = ImagePicker();
 
   Map<String, List<OffertaCategoria>> get _categorieByMacro {
     return _CategoriaMenuHelper.groupByMacro(widget.categorie);
@@ -1000,6 +1005,33 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
     _contattoCtrl.dispose();
     _descrizioneCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    try {
+      final XFile? pickedFile = await _imagePicker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1920,
+        maxHeight: 1920,
+        imageQuality: 80,
+      );
+      if (pickedFile != null) {
+        setState(() {
+          _selectedImage = File(pickedFile.path);
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Errore nel caricamento immagine: $e')),
+      );
+    }
+  }
+
+  void _clearImage() {
+    setState(() {
+      _selectedImage = null;
+    });
   }
 
   bool _validate() {
@@ -1029,6 +1061,22 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
 
     setState(() => _isSending = true);
 
+    // Converti l'immagine in base64 se selezionata
+    String? imageBase64;
+    if (_selectedImage != null) {
+      try {
+        final imageBytes = await _selectedImage!.readAsBytes();
+        imageBase64 = base64Encode(imageBytes);
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Errore nella codifica immagine: $e')),
+        );
+        setState(() => _isSending = false);
+        return;
+      }
+    }
+
     final result = await AnnunciSubmissionService.submitJobAnnouncement(
       submissionType: widget.fixedType,
       titleOffer: _titoloCtrl.text.trim(),
@@ -1040,6 +1088,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
       categoryDirection: widget.categoryDirection,
       categoryMacro: _selectedMacroCategoria,
       categorySlug: _selectedCategoriaValueEn,
+      imageBase64: imageBase64,
     );
 
     if (!mounted) return;
@@ -1056,6 +1105,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
       _cittaCtrl.clear();
       _contattoCtrl.clear();
       _descrizioneCtrl.clear();
+      setState(() => _selectedImage = null);
       setState(() {
         _privacy = false;
         _selectedMacroCategoria = null;
@@ -1195,6 +1245,57 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                       (v == null || v.trim().length < 20)
                           ? 'Inserisci almeno 20 caratteri'
                           : null,
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.blue.shade300),
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.blue.shade50,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Immagine o foto (Opzionale)',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+                  if (_selectedImage != null) ...[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(
+                        _selectedImage!,
+                        height: 150,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: _pickImage,
+                          icon: const Icon(Icons.image),
+                          label: const Text('Cambia'),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: _clearImage,
+                          icon: const Icon(Icons.delete),
+                          label: const Text('Rimuovi'),
+                        ),
+                      ],
+                    ),
+                  ] else
+                    OutlinedButton.icon(
+                      onPressed: _pickImage,
+                      icon: const Icon(Icons.image),
+                      label: const Text('Seleziona immagine'),
+                    ),
+                ],
+              ),
             ),
             const SizedBox(height: 20),
             CheckboxListTile(

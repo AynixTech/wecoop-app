@@ -436,7 +436,6 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
 
   String? _selectedCategoriaSlug;
   String? _selectedMacroCategoria;
-  String? _selectedScope;
   String? _selectedJobDirection;
   int _currentPage = 1;
   int _totalPages = 1;
@@ -492,7 +491,6 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
       perPage: 12,
       search: _searchController.text,
       categoria: _selectedCategoriaSlug,
-      categoryScope: _selectedScope,
       categoryDirection: _selectedJobDirection,
     );
 
@@ -536,7 +534,6 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
       perPage: 12,
       search: _searchController.text,
       categoria: _selectedCategoriaSlug,
-      categoryScope: _selectedScope,
       categoryDirection: _selectedJobDirection,
     );
 
@@ -815,34 +812,19 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
         ),
         const SizedBox(height: 14),
         DropdownButtonFormField<String?>(
-          initialValue: _selectedScope,
-          decoration: const InputDecoration(labelText: 'Ambito'),
+          initialValue: _selectedJobDirection,
+          decoration: const InputDecoration(labelText: 'Ambiti'),
           items: const [
             DropdownMenuItem<String?>(value: null, child: Text('Tutti')),
-            DropdownMenuItem<String?>(value: 'job', child: Text('Lavoro')),
-            DropdownMenuItem<String?>(value: 'service', child: Text('Servizio')),
+            DropdownMenuItem<String?>(value: 'seek', child: Text('Cerco')),
+            DropdownMenuItem<String?>(value: 'offer', child: Text('Offro')),
           ],
           onChanged: (value) {
             setState(() {
-              _selectedScope = value;
-              _selectedJobDirection = null;
+              _selectedJobDirection = value;
               _selectedMacroCategoria = null;
               _selectedCategoriaSlug = null;
             });
-            _loadInitialData();
-          },
-        ),
-        const SizedBox(height: 12),
-        DropdownButtonFormField<String?>(
-          initialValue: _selectedJobDirection,
-          decoration: const InputDecoration(labelText: 'Tipo annuncio lavoro'),
-          items: const [
-            DropdownMenuItem<String?>(value: null, child: Text('Tutti')),
-            DropdownMenuItem<String?>(value: 'seek', child: Text('Cerco lavoro')),
-            DropdownMenuItem<String?>(value: 'offer', child: Text('Offro lavoro')),
-          ],
-          onChanged: (value) {
-            setState(() => _selectedJobDirection = value);
             _loadInitialData();
           },
         ),
@@ -924,6 +906,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                       spacing: 8,
                       runSpacing: 4,
                       children: [
+                        _DirectionBadge(direction: offerta.categoryDirection),
                         if (offerta.city.isNotEmpty)
                           _MetaChip(
                             icon: Icons.location_on,
@@ -1483,6 +1466,35 @@ class _MetaChip extends StatelessWidget {
           const SizedBox(width: 4),
           Text(text, style: const TextStyle(fontSize: 12)),
         ],
+      ),
+    );
+  }
+}
+
+class _DirectionBadge extends StatelessWidget {
+  final String direction;
+
+  const _DirectionBadge({required this.direction});
+
+  @override
+  Widget build(BuildContext context) {
+    final isSeek = direction == 'seek';
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: isSeek ? Colors.orange.shade50 : Colors.green.shade50,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: isSeek ? Colors.orange.shade300 : Colors.green.shade300,
+        ),
+      ),
+      child: Text(
+        isSeek ? 'Cerco' : 'Offro',
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          color: isSeek ? Colors.orange.shade800 : Colors.green.shade800,
+        ),
       ),
     );
   }

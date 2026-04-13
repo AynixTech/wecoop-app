@@ -623,6 +623,17 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
     );
   }
 
+  void _clearFilters() {
+    setState(() {
+      _searchController.clear();
+      _selectedJobDirection = null;
+      _selectedMacroCategoria = null;
+      _selectedCategoriaSlug = null;
+      _currentPage = 1;
+      _totalPages = 1;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -861,6 +872,12 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
             },
           ),
         ],
+        const SizedBox(height: 14),
+        OutlinedButton.icon(
+          onPressed: _clearFilters,
+          icon: const Icon(Icons.clear),
+          label: const Text('Pulisci filtri'),
+        ),
         const SizedBox(height: 16),
         if (displayedOfferte.isEmpty)
           Container(

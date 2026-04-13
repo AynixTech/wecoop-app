@@ -52,6 +52,34 @@ class _CategoriaMenuHelper {
       'trasport',
       'manutenz',
     ],
+    'industry-manufacturing': [
+      'operaio',
+      'produzion',
+      'fabbrica',
+      'confezion',
+      'assembl',
+      'imball',
+      'saldat',
+      'metal',
+    ],
+    'agriculture-green': [
+      'agricol',
+      'raccolta',
+      'campagn',
+      'bracciante',
+      'vivaio',
+      'giardin',
+      'verde',
+    ],
+    'retail-customer-service': [
+      'commess',
+      'cassier',
+      'negozio',
+      'vendit',
+      'call center',
+      'customer',
+      'scaffal',
+    ],
   };
 
   static const Map<String, Map<String, String>> macroLabels = {
@@ -80,6 +108,21 @@ class _CategoriaMenuHelper {
       'en': 'Construction and logistics',
       'es': 'Construccion y logistica',
     },
+    'industry-manufacturing': {
+      'it': 'Industria e produzione',
+      'en': 'Industry and manufacturing',
+      'es': 'Industria y produccion',
+    },
+    'agriculture-green': {
+      'it': 'Agricoltura e verde',
+      'en': 'Agriculture and green jobs',
+      'es': 'Agricultura y areas verdes',
+    },
+    'retail-customer-service': {
+      'it': 'Commercio e assistenza clienti',
+      'en': 'Retail and customer service',
+      'es': 'Comercio y atencion al cliente',
+    },
     'other': {
       'it': 'Altro',
       'en': 'Other',
@@ -101,6 +144,28 @@ class _CategoriaMenuHelper {
     'dj': 'dj-events',
     'animatori': 'entertainers',
     'pulizie-limpieza': 'cleaning',
+    'lavapiatti': 'dishwasher',
+    'aiuto-cucina': 'kitchen-assistant',
+    'cameriere': 'waiter',
+    'pizzaiolo': 'pizza-chef',
+    'magazziniere': 'warehouse-worker',
+    'rider-consegne': 'delivery-rider',
+    'autista': 'driver',
+    'operaio-generico': 'general-worker',
+    'confezionamento': 'packaging-worker',
+    'saldatore': 'welder',
+    'agricoltura-bracciante': 'farm-worker',
+    'raccolta-frutta': 'fruit-picker',
+    'giardiniere': 'gardener',
+    'elettricista': 'electrician',
+    'idraulico': 'plumber',
+    'imbianchino': 'painter',
+    'portiere-sicurezza': 'security-doorman',
+    'cucito-sartoria': 'tailor-seamstress',
+    'parrucchiera-estetista': 'beauty-hairdresser',
+    'call-center': 'call-center-operator',
+    'commesso-cassa': 'shop-assistant-cashier',
+    'scaffalista': 'shelf-stocker',
   };
 
   static const Map<String, Map<String, String>> categoryLabels = {
@@ -168,6 +233,116 @@ class _CategoriaMenuHelper {
       'it': 'Pulizie / Limpieza',
       'en': 'Cleaning',
       'es': 'Limpieza',
+    },
+    'dishwasher': {
+      'it': 'Lavapiatti',
+      'en': 'Dishwasher',
+      'es': 'Lavaplatos',
+    },
+    'kitchen-assistant': {
+      'it': 'Aiuto cucina',
+      'en': 'Kitchen assistant',
+      'es': 'Ayudante de cocina',
+    },
+    'waiter': {
+      'it': 'Cameriere/a',
+      'en': 'Waiter/Waitress',
+      'es': 'Camarero/a',
+    },
+    'pizza-chef': {
+      'it': 'Pizzaiolo/a',
+      'en': 'Pizza chef',
+      'es': 'Pizzero/a',
+    },
+    'warehouse-worker': {
+      'it': 'Magazziniere',
+      'en': 'Warehouse worker',
+      'es': 'Mozo de almacen',
+    },
+    'delivery-rider': {
+      'it': 'Rider / Consegne',
+      'en': 'Delivery rider',
+      'es': 'Repartidor/a',
+    },
+    'driver': {
+      'it': 'Autista',
+      'en': 'Driver',
+      'es': 'Conductor/a',
+    },
+    'general-worker': {
+      'it': 'Operaio generico',
+      'en': 'General worker',
+      'es': 'Operario general',
+    },
+    'packaging-worker': {
+      'it': 'Confezionamento',
+      'en': 'Packaging worker',
+      'es': 'Operario de envasado',
+    },
+    'welder': {
+      'it': 'Saldatore',
+      'en': 'Welder',
+      'es': 'Soldador/a',
+    },
+    'farm-worker': {
+      'it': 'Bracciante agricolo',
+      'en': 'Farm worker',
+      'es': 'Jornalero agricola',
+    },
+    'fruit-picker': {
+      'it': 'Raccolta frutta',
+      'en': 'Fruit picker',
+      'es': 'Recolector/a de fruta',
+    },
+    'gardener': {
+      'it': 'Giardiniere',
+      'en': 'Gardener',
+      'es': 'Jardinero/a',
+    },
+    'electrician': {
+      'it': 'Elettricista',
+      'en': 'Electrician',
+      'es': 'Electricista',
+    },
+    'plumber': {
+      'it': 'Idraulico',
+      'en': 'Plumber',
+      'es': 'Fontanero/a',
+    },
+    'painter': {
+      'it': 'Imbianchino',
+      'en': 'Painter',
+      'es': 'Pintor/a',
+    },
+    'security-doorman': {
+      'it': 'Portiere / Sicurezza',
+      'en': 'Doorman / Security',
+      'es': 'Portero / Seguridad',
+    },
+    'tailor-seamstress': {
+      'it': 'Cucito / Sartoria',
+      'en': 'Tailor / Seamstress',
+      'es': 'Costura / Sastreria',
+    },
+    'beauty-hairdresser': {
+      'it': 'Parrucchiera / Estetista',
+      'en': 'Hairdresser / Beautician',
+      'es': 'Peluqueria / Estetica',
+    },
+    'call-center-operator': {
+      'it': 'Operatore call center',
+      'en': 'Call center operator',
+      'es': 'Operador/a de call center',
+    },
+    'shop-assistant-cashier': {
+      'it': 'Commesso/a / Cassa',
+      'en': 'Shop assistant / Cashier',
+      'es': 'Dependiente/a / Caja',
+    },
+    'shelf-stocker': {
+      'it': 'Scaffalista',
+      'en': 'Shelf stocker',
+      'es': 'Repositor/a',
     },
   };
 
@@ -764,7 +939,6 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
   String _tipo = 'Lavoro';
   String? _selectedMacroCategoria;
   String? _selectedCategoriaValueEn;
-  String? _selectedCategoriaSlug;
   bool _isSending = false;
 
   Map<String, List<OffertaCategoria>> get _categorieByMacro {
@@ -837,7 +1011,6 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
         _tipo = 'Lavoro';
         _selectedMacroCategoria = null;
         _selectedCategoriaValueEn = null;
-        _selectedCategoriaSlug = null;
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -905,7 +1078,6 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                 setState(() {
                   _selectedMacroCategoria = value;
                   _selectedCategoriaValueEn = null;
-                  _selectedCategoriaSlug = null;
                 });
               },
               decoration: const InputDecoration(labelText: 'Macrocategoria'),
@@ -926,13 +1098,8 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                 ),
               ],
               onChanged: (value) {
-                final selected = _CategoriaMenuHelper.findCategoryByValue(
-                  subCategories,
-                  value,
-                );
                 setState(() {
                   _selectedCategoriaValueEn = value;
-                  _selectedCategoriaSlug = selected?.slug;
                 });
               },
               decoration: const InputDecoration(labelText: 'Sottocategoria'),

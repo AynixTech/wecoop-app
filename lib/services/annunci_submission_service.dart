@@ -39,6 +39,8 @@ class AnnunciSubmissionService {
     String? contactEmail,
     required String description,
     required bool consentPrivacy,
+    String? categoryMacro,
+    String? categorySlug,
   }) async {
     try {
       // Validazione base lato client
@@ -68,6 +70,8 @@ class AnnunciSubmissionService {
         'contact_email': (contactEmail ?? '').trim(),
         'description': description.trim(),
         'consent_privacy': consentPrivacy,
+        'category_macro': (categoryMacro ?? '').trim(),
+        'category_slug': (categorySlug ?? '').trim(),
       };
 
       final uri = Uri.parse('$baseUrl/annunci');

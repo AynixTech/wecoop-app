@@ -5,6 +5,92 @@ import 'package:wecoop_app/screens/servizi/lavoro_orientamento_screen.dart';
 import 'package:wecoop_app/services/offerte_lavoro_service.dart';
 import 'package:wecoop_app/services/annunci_submission_service.dart';
 
+class _CategoriaMenuHelper {
+  static const Map<String, List<String>> macroKeywordMap = {
+    'Cura persona': [
+      'badante',
+      'baby',
+      'bambin',
+      'colf',
+      'puliz',
+      'domestic',
+      'caregiver',
+      'assistenza',
+    ],
+    'Sanita e benessere': [
+      'oss',
+      'aso',
+      'sanit',
+      'infermier',
+      'fisioter',
+      'wellness',
+    ],
+    'Ristorazione e ospitalita': [
+      'bar',
+      'ristor',
+      'cucina',
+      'chef',
+      'camerier',
+      'hotel',
+      'hospitality',
+    ],
+    'Eventi e creativita': [
+      'dj',
+      'evento',
+      'music',
+      'foto',
+      'video',
+      'grafica',
+      'animaz',
+    ],
+    'Edilizia e logistica': [
+      'edil',
+      'murator',
+      'magazzin',
+      'autist',
+      'logistic',
+      'trasport',
+      'manutenz',
+    ],
+  };
+
+  static String _normalize(String value) => value.toLowerCase().trim();
+
+  static String resolveMacro(OffertaCategoria category) {
+    final haystack = '${_normalize(category.name)} ${_normalize(category.slug)}';
+
+    for (final entry in macroKeywordMap.entries) {
+      for (final keyword in entry.value) {
+        if (haystack.contains(keyword)) {
+          return entry.key;
+        }
+      }
+    }
+
+    return 'Altro';
+  }
+
+  static Map<String, List<OffertaCategoria>> groupByMacro(
+    List<OffertaCategoria> categories,
+  ) {
+    final map = <String, List<OffertaCategoria>>{};
+    for (final category in categories) {
+      final macro = resolveMacro(category);
+      map.putIfAbsent(macro, () => <OffertaCategoria>[]).add(category);
+    }
+
+    final sortedKeys = map.keys.toList()..sort();
+    final sortedMap = <String, List<OffertaCategoria>>{};
+    for (final key in sortedKeys) {
+      final items = map[key]!;
+      items.sort((a, b) => a.name.compareTo(b.name));
+      sortedMap[key] = items;
+    }
+
+    return sortedMap;
+  }
+}
+
 class OfferteLavoroScreen extends StatefulWidget {
   const OfferteLavoroScreen({super.key});
 
@@ -12,7 +98,9 @@ class OfferteLavoroScreen extends StatefulWidget {
   State<OfferteLavoroScreen> createState() => _OfferteLavoroScreenState();
 }
 
-class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
+class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
+    with SingleTickerProviderStateMixin {
+  TabController? _tabController;
   static const String _wecoopWhatsAppNumber = '393515112113';
 
   final TextEditingController _searchController = TextEditingController();
@@ -25,17 +113,53 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
   String? _errorMessage;
 
   String? _selectedCategoriaSlug;
+  String? _selectedMacroCategoria;
   int _currentPage = 1;
   int _totalPages = 1;
+
+  Map<String, List<OffertaCategoria>> get _categorieByMacro {
+    return _CategoriaMenuHelper.groupByMacro(_categorie);
+  }
+
+  List<OffertaLavoro> get _offerteFiltrate {
+    if (_selectedCategoriaSlug != null && _selectedCategoriaSlug!.isNotEmpty) {
+      return _offerte;
+    }
+
+    if (_selectedMacroCategoria == null || _selectedMacroCategoria!.isEmpty) {
+      return _offerte;
+    }
+
+    return _offerte.where((offerta) {
+      for (final category in offerta.categories) {
+        if (_CategoriaMenuHelper.resolveMacro(category) == _selectedMacroCategoria) {
+          return true;
+        }
+      }
+      return false;
+    }).toList();
+  }
 
   @override
   void initState() {
     super.initState();
+    _ensureTabController();
     _loadInitialData();
+  }
+
+  void _ensureTabController() {
+    _tabController ??= TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    _ensureTabController();
   }
 
   @override
   void dispose() {
+    _tabController?.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -184,31 +308,29 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
     );
   }
 
-  Future<void> _openPublishAdSheet() async {
-    final result = await showModalBottomSheet<Map<String, dynamic>>(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => const _PubblicaAnnuncioSheet(),
-    );
-
-    if (!mounted || result == null) return;
-
-    final success = result['success'] == true;
-    final message = (result['message'] ?? '').toString();
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message.isEmpty ? 'Richiesta inviata' : message),
-        backgroundColor: success ? Colors.green : Colors.red,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    _ensureTabController();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Offerte e Annunci Lavoro'),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(56),
+          child: Container(
+            color: Colors.white,
+            child: TabBar(
+              controller: _tabController,
+              labelColor: Colors.black87,
+              unselectedLabelColor: Colors.black54,
+              indicatorColor: Colors.black87,
+              tabs: const [
+                Tab(icon: Icon(Icons.search), text: 'Cerca'),
+                Tab(icon: Icon(Icons.campaign), text: 'Offro'),
+              ],
+            ),
+          ),
+        ),
         actions: [
           IconButton(
             tooltip: 'Servizio orientamento',
@@ -224,19 +346,91 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _loadInitialData,
-        child:
-            _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _buildBody(),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          // Tab 1: CERCA
+          RefreshIndicator(
+            onRefresh: _loadInitialData,
+            child:
+                _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _buildSearchTab(),
+          ),
+          // Tab 2: OFFRO
+          _PubblicaAnnuncioTab(categorie: _categorie),
+        ],
       ),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildSearchTab() {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Colors.amber.shade50,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.amber.shade200),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Vuoi cercare lavoro?',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Sfoglia le offerte disponibili o contatta WECOOP per supporto.',
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: _loadInitialData,
+                    icon: const Icon(Icons.search),
+                    label: const Text('Aggiorna'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const LavoroOrientamentoScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.support_agent),
+                    label: const Text('Supporto'),
+                  ),
+                  TextButton.icon(
+                    onPressed:
+                        () => _openSupportWhatsApp(
+                          message:
+                              'Ciao WECOOP, vorrei informazioni per cercare lavoro o attivare servizi dedicati.',
+                        ),
+                    icon: const Icon(Icons.chat),
+                    label: const Text('WhatsApp'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _buildSearchBody(),
+      ],
+    );
+  }
+
+  Widget _buildSearchBody() {
     if (_errorMessage != null) {
-      return ListView(
+      return Column(
         children: [
           const SizedBox(height: 80),
           const Icon(Icons.error_outline, size: 64, color: Colors.redAccent),
@@ -253,70 +447,17 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
       );
     }
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
+    final categoriesByMacro = _categorieByMacro;
+    final macroNames = categoriesByMacro.keys.toList();
+    final subCategories =
+        _selectedMacroCategoria == null
+            ? const <OffertaCategoria>[]
+            : (categoriesByMacro[_selectedMacroCategoria] ??
+                const <OffertaCategoria>[]);
+    final displayedOfferte = _offerteFiltrate;
+
+    return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: Colors.amber.shade50,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.amber.shade200),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Cosa vuoi fare?',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Puoi cercare offerte lavoro, attivare supporto servizi oppure pubblicare un annuncio.',
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: _loadInitialData,
-                    icon: const Icon(Icons.search),
-                    label: const Text('Cerca lavoro'),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const LavoroOrientamentoScreen(),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.support_agent),
-                    label: const Text('Cerca servizi'),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: _openPublishAdSheet,
-                    icon: const Icon(Icons.campaign),
-                    label: const Text('Inserisci annuncio'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              TextButton.icon(
-                onPressed:
-                    () => _openSupportWhatsApp(
-                      message:
-                          'Ciao WECOOP, vorrei informazioni per cercare lavoro o attivare servizi dedicati.',
-                    ),
-                icon: const Icon(Icons.chat),
-                label: const Text('Contatta WECOOP su WhatsApp'),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 12),
         TextField(
           controller: _searchController,
           textInputAction: TextInputAction.search,
@@ -331,41 +472,43 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
           ),
           onSubmitted: (_) => _loadInitialData(),
         ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 40,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: ChoiceChip(
-                  label: const Text('Tutte'),
-                  selected: _selectedCategoriaSlug == null,
-                  onSelected: (_) {
-                    setState(() => _selectedCategoriaSlug = null);
-                    _loadInitialData();
-                  },
-                ),
-              ),
-              ..._categorie.map(
-                (c) => Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: ChoiceChip(
-                    label: Text(c.name),
-                    selected: _selectedCategoriaSlug == c.slug,
-                    onSelected: (_) {
-                      setState(() => _selectedCategoriaSlug = c.slug);
-                      _loadInitialData();
-                    },
-                  ),
-                ),
+        const SizedBox(height: 14),
+        DropdownButtonFormField<String>(
+          initialValue: _selectedMacroCategoria,
+          decoration: const InputDecoration(labelText: 'Macrocategoria'),
+          items: [
+            const DropdownMenuItem<String>(value: null, child: Text('Tutte')),
+            ...macroNames.map(
+              (macro) => DropdownMenuItem<String>(value: macro, child: Text(macro)),
+            ),
+          ],
+          onChanged: (value) {
+            setState(() {
+              _selectedMacroCategoria = value;
+              _selectedCategoriaSlug = null;
+            });
+            _loadInitialData();
+          },
+        ),
+        if (_selectedMacroCategoria != null) ...[
+          const SizedBox(height: 12),
+          DropdownButtonFormField<String>(
+            initialValue: _selectedCategoriaSlug,
+            decoration: const InputDecoration(labelText: 'Sottocategoria'),
+            items: [
+              const DropdownMenuItem<String>(value: null, child: Text('Tutte')),
+              ...subCategories.map(
+                (c) => DropdownMenuItem<String>(value: c.slug, child: Text(c.name)),
               ),
             ],
+            onChanged: (value) {
+              setState(() => _selectedCategoriaSlug = value);
+              _loadInitialData();
+            },
           ),
-        ),
+        ],
         const SizedBox(height: 16),
-        if (_offerte.isEmpty)
+        if (displayedOfferte.isEmpty)
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -377,7 +520,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
             ),
           )
         else
-          ..._offerte.map(
+          ...displayedOfferte.map(
             (offerta) => Card(
               margin: const EdgeInsets.only(bottom: 12),
               child: ListTile(
@@ -436,6 +579,287 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
             ),
           ),
       ],
+    );
+  }
+}
+
+class _PubblicaAnnuncioTab extends StatefulWidget {
+  final List<OffertaCategoria> categorie;
+
+  const _PubblicaAnnuncioTab({required this.categorie});
+
+  @override
+  State<_PubblicaAnnuncioTab> createState() => _PubblicaAnnuncioTabState();
+}
+
+class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
+  final _formKey = GlobalKey<FormState>();
+  final _titoloCtrl = TextEditingController();
+  final _cittaCtrl = TextEditingController();
+  final _contattoCtrl = TextEditingController();
+  final _descrizioneCtrl = TextEditingController();
+  bool _privacy = false;
+  String _tipo = 'Lavoro';
+  String? _selectedMacroCategoria;
+  String? _selectedCategoriaSlug;
+  bool _isSending = false;
+
+  Map<String, List<OffertaCategoria>> get _categorieByMacro {
+    return _CategoriaMenuHelper.groupByMacro(widget.categorie);
+  }
+
+  @override
+  void dispose() {
+    _titoloCtrl.dispose();
+    _cittaCtrl.dispose();
+    _contattoCtrl.dispose();
+    _descrizioneCtrl.dispose();
+    super.dispose();
+  }
+
+  bool _validate() {
+    if (!_formKey.currentState!.validate()) return false;
+    if (_selectedMacroCategoria == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Seleziona una macrocategoria')),
+      );
+      return false;
+    }
+    if (_selectedCategoriaSlug == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Seleziona una sottocategoria')),
+      );
+      return false;
+    }
+    if (_privacy) return true;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Devi accettare il consenso privacy')),
+    );
+    return false;
+  }
+
+  Future<void> _submit() async {
+    if (!_validate()) return;
+
+    setState(() => _isSending = true);
+
+    final result = await AnnunciSubmissionService.submitJobAnnouncement(
+      submissionType: _tipo,
+      titleOffer: _titoloCtrl.text.trim(),
+      city: _cittaCtrl.text.trim(),
+      contactPhone: _contattoCtrl.text.trim(),
+      description: _descrizioneCtrl.text.trim(),
+      consentPrivacy: _privacy,
+      categoryMacro: _selectedMacroCategoria,
+      categorySlug: _selectedCategoriaSlug,
+    );
+
+    if (!mounted) return;
+    setState(() => _isSending = false);
+
+    if (result['success'] == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['message'] ?? 'Annuncio inviato con successo!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      _titoloCtrl.clear();
+      _cittaCtrl.clear();
+      _contattoCtrl.clear();
+      _descrizioneCtrl.clear();
+      setState(() {
+        _privacy = false;
+        _tipo = 'Lavoro';
+        _selectedMacroCategoria = null;
+        _selectedCategoriaSlug = null;
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['message'] ?? 'Errore nell\'invio'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final categoriesByMacro = _categorieByMacro;
+    final macroNames = categoriesByMacro.keys.toList();
+    final subCategories =
+        _selectedMacroCategoria == null
+            ? const <OffertaCategoria>[]
+            : (categoriesByMacro[_selectedMacroCategoria] ??
+                const <OffertaCategoria>[]);
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Pubblica un annuncio',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              'Compila i dati e invia la richiesta a WECOOP per la pubblicazione.',
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              initialValue: _tipo,
+              items: const [
+                DropdownMenuItem(value: 'Lavoro', child: Text('Lavoro')),
+                DropdownMenuItem(value: 'Servizio', child: Text('Servizio')),
+              ],
+              onChanged: (value) => setState(() => _tipo = value ?? 'Lavoro'),
+              decoration: const InputDecoration(labelText: 'Tipo annuncio'),
+            ),
+            const SizedBox(height: 18),
+            DropdownButtonFormField<String>(
+              initialValue: _selectedMacroCategoria,
+              items: [
+                const DropdownMenuItem<String>(
+                  value: null,
+                  child: Text('Seleziona macrocategoria'),
+                ),
+                ...macroNames.map(
+                  (macro) =>
+                      DropdownMenuItem<String>(value: macro, child: Text(macro)),
+                ),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _selectedMacroCategoria = value;
+                  _selectedCategoriaSlug = null;
+                });
+              },
+              decoration: const InputDecoration(labelText: 'Macrocategoria'),
+            ),
+            const SizedBox(height: 18),
+            DropdownButtonFormField<String>(
+              initialValue: _selectedCategoriaSlug,
+              items: [
+                const DropdownMenuItem<String>(
+                  value: null,
+                  child: Text('Seleziona sottocategoria'),
+                ),
+                ...subCategories.map(
+                  (c) => DropdownMenuItem<String>(value: c.slug, child: Text(c.name)),
+                ),
+              ],
+              onChanged: (value) => setState(() => _selectedCategoriaSlug = value),
+              decoration: const InputDecoration(labelText: 'Sottocategoria'),
+            ),
+            const SizedBox(height: 18),
+            TextFormField(
+              controller: _titoloCtrl,
+              decoration: const InputDecoration(labelText: 'Titolo annuncio'),
+              validator:
+                  (v) =>
+                      (v == null || v.trim().isEmpty)
+                          ? 'Campo obbligatorio'
+                          : null,
+            ),
+            const SizedBox(height: 18),
+            TextFormField(
+              controller: _cittaCtrl,
+              decoration: const InputDecoration(labelText: 'Citta'),
+              validator:
+                  (v) =>
+                      (v == null || v.trim().isEmpty)
+                          ? 'Campo obbligatorio'
+                          : null,
+            ),
+            const SizedBox(height: 18),
+            TextFormField(
+              controller: _contattoCtrl,
+              decoration: const InputDecoration(
+                labelText: 'Telefono o email di contatto',
+              ),
+              validator:
+                  (v) =>
+                      (v == null || v.trim().isEmpty)
+                          ? 'Campo obbligatorio'
+                          : null,
+            ),
+            const SizedBox(height: 18),
+            TextFormField(
+              controller: _descrizioneCtrl,
+              minLines: 3,
+              maxLines: 5,
+              decoration: const InputDecoration(
+                labelText: 'Descrizione',
+                hintText:
+                    'Descrivi mansione/servizio, orari e requisiti principali',
+              ),
+              validator:
+                  (v) =>
+                      (v == null || v.trim().length < 20)
+                          ? 'Inserisci almeno 20 caratteri'
+                          : null,
+            ),
+            const SizedBox(height: 20),
+            CheckboxListTile(
+              contentPadding: EdgeInsets.zero,
+              value: _privacy,
+              onChanged: (v) => setState(() => _privacy = v == true),
+              title: const Text('Accetto il trattamento dei dati personali'),
+              controlAffinity: ListTileControlAffinity.leading,
+            ),
+            const SizedBox(height: 24),
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.red, width: 2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton.icon(
+                  onPressed: _isSending ? null : _submit,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 0),
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: Colors.grey[400],
+                    disabledForegroundColor: Colors.grey[600],
+                    elevation: 8,
+                  ),
+                  icon:
+                      _isSending
+                          ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
+                            ),
+                          )
+                          : const Icon(Icons.send, size: 26),
+                  label: Text(
+                    _isSending ? 'Invio in corso...' : 'Invia annuncio',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
     );
   }
 }

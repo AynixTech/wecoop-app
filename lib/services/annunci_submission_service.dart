@@ -105,6 +105,19 @@ class AnnunciSubmissionService {
         };
       }
 
+      if (response.statusCode == 500) {
+        final data = body['data'];
+        final details =
+            data is Map<String, dynamic> ? (data['details'] ?? '').toString() : '';
+        return {
+          'success': false,
+          'message': details.isNotEmpty
+              ? 'Errore server: $details'
+              : (body['message'] ?? 'Servizio annunci temporaneamente non disponibile')
+                    .toString(),
+        };
+      }
+
       return {
         'success': false,
         'message': (body['message'] ?? 'Errore nell\'invio dell\'annuncio').toString(),

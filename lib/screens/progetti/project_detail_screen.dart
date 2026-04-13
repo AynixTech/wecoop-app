@@ -1,28 +1,63 @@
 import 'package:flutter/material.dart';
+
+import '../../models/project_opportunity_catalog.dart';
 import '../../services/app_localizations.dart';
+import '../servizi/accoglienza_screen.dart';
+import '../servizi/cv_ai_screen.dart';
+import '../servizi/educazione_finanziaria_credito_screen.dart';
+import '../servizi/lavoro_orientamento_screen.dart';
 
 class ProjectDetailScreen extends StatelessWidget {
-  final String projectName;
-  final String projectDescription;
-  final List<String> services;
-  final Color projectColor;
+  final String categoryTitle;
+  final ProjectOpportunityItem item;
+  final Color categoryColor;
 
   const ProjectDetailScreen({
     super.key,
-    required this.projectName,
-    required this.projectDescription,
-    required this.services,
-    required this.projectColor,
+    required this.categoryTitle,
+    required this.item,
+    required this.categoryColor,
   });
+
+  void _handleCta(BuildContext context) {
+    Widget destination;
+
+    switch (item.actionKey) {
+      case 'training':
+        destination = const LavoroOrientamentoScreen();
+        break;
+      case 'work':
+        destination = const LavoroOrientamentoScreen();
+        break;
+      case 'credit':
+        destination = const EducazioneFinanziariaCreditoScreen();
+        break;
+      case 'inclusion':
+        destination = const AccoglienzaScreen();
+        break;
+      case 'cv':
+        destination = const CvAiScreen();
+        break;
+      default:
+        destination = const AccoglienzaScreen();
+        break;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => destination),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(projectName),
-        backgroundColor: projectColor,
+        title: Text(item.title),
+        backgroundColor: categoryColor,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -34,10 +69,7 @@ class ProjectDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    projectColor,
-                    projectColor.withOpacity(0.7),
-                  ],
+                  colors: [categoryColor, categoryColor.withOpacity(0.72)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -46,17 +78,45 @@ class ProjectDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    l10n.projectDescription,
+                    categoryTitle,
                     style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
                       color: Colors.white70,
-                      letterSpacing: 1.2,
+                      letterSpacing: 0.6,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   Text(
-                    projectDescription,
+                    item.title,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.18),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      item.contentTypeLabel,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    item.description,
                     style: const TextStyle(
                       fontSize: 16,
                       color: Colors.white,
@@ -72,46 +132,61 @@ class ProjectDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    l10n.servicesOffered,
+                    l10n.translate('opportunityTagsTitle'),
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 16),
-                  ...services.map((service) {
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 2,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: projectColor,
-                                shape: BoxShape.circle,
-                              ),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      for (final tag in item.tags)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: scheme.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Text(
+                            tag,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: scheme.onSurface.withOpacity(0.74),
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                service,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    l10n.translate('opportunityActionHint'),
+                    style: TextStyle(
+                      fontSize: 14,
+                      height: 1.45,
+                      color: scheme.onSurface.withOpacity(0.72),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () => _handleCta(context),
+                      icon: const Icon(Icons.arrow_forward_rounded),
+                      label: Text(item.ctaLabel),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: categoryColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                    );
-                  }),
+                    ),
+                  ),
                 ],
               ),
             ),

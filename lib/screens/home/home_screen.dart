@@ -1,14 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import '../../models/post_model.dart';
 import '../../models/evento_model.dart';
 import '../../models/documento.dart';
+import '../../models/project_opportunity_catalog.dart';
 import '../../services/wordpress_service.dart';
 import '../../services/eventi_service.dart';
 import '../../services/documento_service.dart';
+import '../../services/socio_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../servizi/accoglienza_screen.dart';
+import '../servizi/cv_ai_screen.dart';
 import '../servizi/mediazione_fiscale_screen.dart';
 import '../servizi/supporto_contabile_screen.dart';
 import '../servizi/educazione_finanziaria_credito_screen.dart';
@@ -16,6 +21,7 @@ import '../servizi/lavoro_orientamento_screen.dart';
 import '../onboarding/first_access_screen.dart';
 import '../progetti/project_category_detail_screen.dart';
 import '../eventi/evento_detail_screen.dart';
+import '../profilo/completa_profilo_screen.dart';
 import '../profilo/documenti_screen.dart';
 import '../../widgets/language_selector.dart';
 
@@ -191,6 +197,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 const _ServicesSection(),
                 const SizedBox(height: 24),
 
+                if (isLoggedIn) const _UserActionsSection(),
+                if (isLoggedIn) const SizedBox(height: 24),
+
                 const _UpcomingEventsSection(),
 
                 const SizedBox(height: 24),
@@ -200,10 +209,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 24),
 
                 const _LatestPostsSection(),
-
-                const SizedBox(height: 24),
-
-                const _QuickAccessSection(),
                 const SizedBox(height: 32),
               ],
             ),
@@ -219,95 +224,24 @@ class _ActiveProjectsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final scheme = Theme.of(context).colorScheme;
-
-    final categories = [
-      {
-        'key': 'giovani',
-        'name': l10n.youthCategory,
-        'icon': Icons.school,
-        'color': scheme.primary,
-        'projects': [
-          {
-            'name': 'MAFALDA',
-            'description': l10n.mafaldaDescription,
-            'services': [
-              l10n.mafaldaService1,
-              l10n.mafaldaService2,
-              l10n.mafaldaService3,
-              l10n.mafaldaService4,
-            ],
-          },
-        ],
-      },
-      {
-        'key': 'donne',
-        'name': l10n.womenCategory,
-        'icon': Icons.people,
-        'color': scheme.secondary,
-        'projects': [
-          {
-            'name': 'WOMENTOR',
-            'description': l10n.womentorDescription,
-            'services': [
-              l10n.womentorService1,
-              l10n.womentorService2,
-              l10n.womentorService3,
-              l10n.womentorService4,
-            ],
-          },
-        ],
-      },
-      {
-        'key': 'sport',
-        'name': l10n.sportsCategory,
-        'icon': Icons.sports_soccer,
-        'color': Color.alphaBlend(
-          scheme.secondary.withOpacity(0.6),
-          scheme.primary,
-        ),
-        'projects': [
-          {
-            'name': 'SPORTUNITY',
-            'description': l10n.sportunityDescription,
-            'services': [
-              l10n.sportunityService1,
-              l10n.sportunityService2,
-              l10n.sportunityService3,
-              l10n.sportunityService4,
-            ],
-          },
-        ],
-      },
-      {
-        'key': 'migranti',
-        'name': l10n.migrantsCategory,
-        'icon': Icons.support_agent,
-        'color': Color.alphaBlend(
-          scheme.error.withOpacity(0.35),
-          scheme.primary,
-        ),
-        'projects': [
-          {
-            'name': 'PASSAPAROLA',
-            'description': l10n.passaparolaDescription,
-            'services': [
-              l10n.passaparolaService1,
-              l10n.passaparolaService2,
-              l10n.passaparolaService3,
-              l10n.passaparolaService4,
-            ],
-          },
-        ],
-      },
-    ];
+    final categories = buildProjectOpportunityCatalog(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(title: l10n.activeProjects),
+        _SectionTitle(title: l10n.translate('projectsOpportunitySectionTitle')),
+        const SizedBox(height: 8),
+        Text(
+          l10n.translate('projectsOpportunitySectionSubtitle'),
+          style: TextStyle(
+            fontSize: 13,
+            height: 1.45,
+            color: scheme.onSurface.withOpacity(0.72),
+          ),
+        ),
         const SizedBox(height: 12),
         SizedBox(
-          height: 110,
+          height: 168,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: categories.length,
@@ -320,26 +254,19 @@ class _ActiveProjectsSection extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder:
-                          (context) => ProjectCategoryDetailScreen(
-                            categoryKey: category['key'] as String,
-                            categoryName: category['name'] as String,
-                            categoryIcon: category['icon'] as IconData,
-                            categoryColor: category['color'] as Color,
-                            projects:
-                                category['projects']
-                                    as List<Map<String, dynamic>>,
-                          ),
+                          (context) =>
+                              ProjectCategoryDetailScreen(category: category),
                     ),
                   );
                 },
                 borderRadius: BorderRadius.circular(16),
                 child: Container(
-                  width: 148,
+                  width: 188,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        (category['color'] as Color).withOpacity(0.7),
-                        category['color'] as Color,
+                        category.color.withOpacity(0.72),
+                        category.color,
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -351,38 +278,64 @@ class _ActiveProjectsSection extends StatelessWidget {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: (category['color'] as Color).withOpacity(0.28),
+                        color: category.color.withOpacity(0.28),
                         blurRadius: 14,
                         offset: const Offset(0, 8),
                       ),
                     ],
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: scheme.onPrimary.withOpacity(0.22),
-                          shape: BoxShape.circle,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: scheme.onPrimary.withOpacity(0.22),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            category.icon,
+                            size: 24,
+                            color: scheme.onPrimary,
+                          ),
                         ),
-                        child: Icon(
-                          category['icon'] as IconData,
-                          size: 24,
-                          color: scheme.onPrimary,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              category.title,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: scheme.onPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              category.summary,
+                              style: TextStyle(
+                                fontSize: 12,
+                                height: 1.35,
+                                color: scheme.onPrimary.withOpacity(0.9),
+                              ),
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        category['name'] as String,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: scheme.onPrimary,
+                        Text(
+                          '${category.items.length} ${l10n.translate('availableOpportunitiesLabel')}',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: scheme.onPrimary.withOpacity(0.88),
+                          ),
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -493,6 +446,7 @@ class _InfoCard extends StatelessWidget {
   final String subtitle;
   final String? imageUrl;
   final String? link;
+  final String? ctaLabel;
   final VoidCallback? onTap;
 
   const _InfoCard({
@@ -500,6 +454,7 @@ class _InfoCard extends StatelessWidget {
     required this.subtitle,
     this.imageUrl,
     this.link,
+    this.ctaLabel,
     this.onTap,
   });
 
@@ -601,9 +556,31 @@ class _InfoCard extends StatelessWidget {
                         color: scheme.onSurface.withOpacity(0.7),
                         height: 1.2,
                       ),
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
+                    const Spacer(),
+                    if (ctaLabel != null && ctaLabel!.isNotEmpty)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: TextButton.icon(
+                          onPressed: onTap ?? (link != null ? _openLink : null),
+                          style: TextButton.styleFrom(
+                            foregroundColor: scheme.primary,
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(0, 0),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          icon: const Icon(
+                            Icons.arrow_forward_rounded,
+                            size: 16,
+                          ),
+                          label: Text(
+                            ctaLabel!,
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -615,47 +592,424 @@ class _InfoCard extends StatelessWidget {
   }
 }
 
-class _QuickAccessSection extends StatelessWidget {
-  const _QuickAccessSection();
+class _UserActionsSection extends StatefulWidget {
+  const _UserActionsSection();
+
+  @override
+  State<_UserActionsSection> createState() => _UserActionsSectionState();
+}
+
+class _UserActionsSectionState extends State<_UserActionsSection> {
+  static const String _cvDraftKey = 'cv_ai_draft_v1';
+  static const String _cvLocalCacheKey = 'cv_ai_local_cvs_v1';
+  static const String _jobTrackingKey = 'job_service_tracking_v1';
+  static const String _wecoopWhatsAppNumber = '393331234567';
+
+  final SecureStorageService _storage = SecureStorageService();
+  final DocumentoService _documentoService = DocumentoService();
+
+  bool _loading = true;
+  List<_UserActionCardData> _actions = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadActions();
+  }
+
+  Future<void> _loadActions() async {
+    final snapshot = await _buildSnapshot();
+    final nextActions = _buildActions(snapshot);
+    if (!mounted) return;
+
+    setState(() {
+      _actions = nextActions;
+      _loading = false;
+    });
+  }
+
+  Future<_UserJourneySnapshot> _buildSnapshot() async {
+    final profileValue = await _storage.read(key: 'profilo_completo');
+    var profileComplete = _parseBool(profileValue, fallback: true);
+
+    if (profileValue == null || profileValue.isEmpty) {
+      final profileResponse = await SocioService.getProfiloCompleto();
+      if (profileResponse['success'] == true) {
+        final data = profileResponse['data'] as Map<String, dynamic>? ?? {};
+        profileComplete = _parseDynamicBool(
+          data['profilo_completo'],
+          fallback: true,
+        );
+        await _storage.write(
+          key: 'profilo_completo',
+          value: profileComplete.toString(),
+        );
+      }
+    }
+
+    final rawCvCache = await _storage.read(key: _cvLocalCacheKey);
+    final rawCvDraft = await _storage.read(key: _cvDraftKey);
+    final rawTracking = await _storage.read(key: _jobTrackingKey);
+    final rawApplicationStatus = await _storage.read(
+      key: 'applications_status',
+    );
+    final rawCreditStatus = await _storage.read(key: 'credit_status');
+
+    var documentsMissing = _parseBool(
+      await _storage.read(key: 'documents_missing'),
+    );
+
+    if (!documentsMissing) {
+      try {
+        final scaduti = await _documentoService.getDocumentiScaduti();
+        final inScadenza = await _documentoService.getDocumentiInScadenza();
+        documentsMissing = scaduti.isNotEmpty || inScadenza.isNotEmpty;
+      } catch (_) {}
+    }
+
+    return _UserJourneySnapshot(
+      profileComplete: profileComplete,
+      hasCv: _hasGeneratedCv(rawCvCache),
+      hasCvDraft: rawCvDraft != null && rawCvDraft.trim().isNotEmpty,
+      creditStarted:
+          _parseBool(await _storage.read(key: 'credit_started')) ||
+          _statusMatches(rawCreditStatus, const {
+            'started',
+            'draft',
+            'in_progress',
+          }),
+      creditSubmitted:
+          _parseBool(await _storage.read(key: 'credit_submitted')) ||
+          _statusMatches(rawCreditStatus, const {
+            'submitted',
+            'sent',
+            'under_review',
+          }),
+      documentsMissing: documentsMissing,
+      applicationStatus: _extractApplicationStatus(
+        rawTracking,
+        rawApplicationStatus,
+        rawCvCache,
+      ),
+    );
+  }
+
+  List<_UserActionCardData> _buildActions(_UserJourneySnapshot snapshot) {
+    final l10n = AppLocalizations.of(context)!;
+    final actions = <_UserActionCardData>[];
+    final seen = <String>{};
+
+    void addAction(_UserActionCardData action) {
+      if (actions.length >= 4 || seen.contains(action.title)) return;
+      seen.add(action.title);
+      actions.add(action);
+    }
+
+    if (!snapshot.profileComplete) {
+      addAction(
+        _UserActionCardData(
+          icon: Icons.person_rounded,
+          title: l10n.completeProfile,
+          status: l10n.translate('actionStatusIncomplete'),
+          ctaLabel: l10n.continue_,
+          onTap: () => _openScreen(const CompletaProfiloScreen()),
+        ),
+      );
+    }
+
+    if (snapshot.documentsMissing) {
+      addAction(
+        _UserActionCardData(
+          icon: Icons.upload_file_rounded,
+          title: l10n.translate('actionUploadMissingDocuments'),
+          status: l10n.translate('actionStatusRequired'),
+          ctaLabel: l10n.translate('ctaUploadNow'),
+          onTap: () => _openScreen(const DocumentiScreen()),
+        ),
+      );
+    }
+
+    if (!snapshot.hasCv) {
+      addAction(
+        _UserActionCardData(
+          icon: Icons.description_rounded,
+          title:
+              snapshot.hasCvDraft
+                  ? l10n.translate('actionCompleteCv')
+                  : l10n.translate('actionCreateCv'),
+          status:
+              snapshot.hasCvDraft
+                  ? l10n.translate('actionStatusIncomplete')
+                  : l10n.translate('actionStatusToStart'),
+          ctaLabel:
+              snapshot.hasCvDraft
+                  ? l10n.continue_
+                  : l10n.translate('ctaStartNow'),
+          onTap: () => _openScreen(const CvAiScreen()),
+        ),
+      );
+    }
+
+    if (snapshot.creditSubmitted) {
+      addAction(
+        _UserActionCardData(
+          icon: Icons.query_stats_rounded,
+          title: l10n.translate('actionViewPracticeStatus'),
+          status: l10n.translate('actionStatusSubmitted'),
+          ctaLabel: l10n.translate('ctaViewStatus'),
+          onTap: () => _openScreen(const EducazioneFinanziariaCreditoScreen()),
+        ),
+      );
+    } else if (snapshot.creditStarted) {
+      addAction(
+        _UserActionCardData(
+          icon: Icons.account_balance_wallet_rounded,
+          title: l10n.translate('actionCompleteCreditRequest'),
+          status: l10n.translate('actionStatusInProgress'),
+          ctaLabel: l10n.continue_,
+          onTap: () => _openScreen(const EducazioneFinanziariaCreditoScreen()),
+        ),
+      );
+    }
+
+    if (snapshot.hasCv &&
+        _shouldShowApplicationStatus(snapshot.applicationStatus)) {
+      addAction(
+        _UserActionCardData(
+          icon: Icons.timeline_rounded,
+          title: l10n.translate('viewApplicationStatus'),
+          status: _applicationStatusLabel(l10n, snapshot.applicationStatus),
+          ctaLabel: l10n.translate('ctaViewStatus'),
+          onTap:
+              () => _openScreen(
+                const StatoCandidaturaScreen(
+                  trackingKey: _jobTrackingKey,
+                  cvCacheKey: _cvLocalCacheKey,
+                ),
+              ),
+        ),
+      );
+    } else if (snapshot.hasCv) {
+      addAction(
+        _UserActionCardData(
+          icon: Icons.work_rounded,
+          title: l10n.translate('activateWorkService'),
+          status: l10n.translate('actionStatusRecommended'),
+          ctaLabel: l10n.translate('activateServiceCta'),
+          onTap: () => _openScreen(const LavoroOrientamentoScreen()),
+        ),
+      );
+    }
+
+    if (!snapshot.creditStarted && !snapshot.creditSubmitted) {
+      addAction(
+        _UserActionCardData(
+          icon: Icons.credit_score_rounded,
+          title: l10n.translate('actionDiscoverCreditEligibility'),
+          status: l10n.translate('actionStatusRecommended'),
+          ctaLabel: l10n.translate('ctaCheckEligibility'),
+          onTap: () => _openScreen(const EducazioneFinanziariaCreditoScreen()),
+        ),
+      );
+    }
+
+    if (actions.length < 4 && snapshot.hasCv) {
+      addAction(
+        _UserActionCardData(
+          icon: Icons.edit_document,
+          title: l10n.translate('actionUpdateCv'),
+          status: l10n.translate('actionStatusActive'),
+          ctaLabel: l10n.continue_,
+          onTap: () => _openScreen(const CvAiScreen()),
+        ),
+      );
+    }
+
+    if (actions.length < 4) {
+      addAction(
+        _UserActionCardData(
+          icon: Icons.support_agent_rounded,
+          title: l10n.translate('actionReplyToWecoop'),
+          status: l10n.translate('actionStatusActive'),
+          ctaLabel: l10n.translate('ctaOpenSupport'),
+          onTap: _openContactWhatsApp,
+        ),
+      );
+    }
+
+    return actions.take(4).toList(growable: false);
+  }
+
+  Future<void> _openScreen(Widget screen) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => screen),
+    );
+    if (!mounted) return;
+    setState(() => _loading = true);
+    _loadActions();
+  }
+
+  Future<void> _openContactWhatsApp() async {
+    final l10n = AppLocalizations.of(context)!;
+    final uri = Uri.parse('https://wa.me/$_wecoopWhatsAppNumber');
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      return;
+    }
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.translate('cannotOpenWhatsApp'))),
+    );
+  }
+
+  bool _parseBool(String? value, {bool fallback = false}) {
+    if (value == null) return fallback;
+    switch (value.trim().toLowerCase()) {
+      case 'true':
+      case '1':
+      case 'yes':
+      case 'si':
+      case 'sì':
+        return true;
+      case 'false':
+      case '0':
+      case 'no':
+        return false;
+      default:
+        return fallback;
+    }
+  }
+
+  bool _parseDynamicBool(dynamic value, {bool fallback = false}) {
+    if (value is bool) return value;
+    if (value is num) return value != 0;
+    if (value is String) return _parseBool(value, fallback: fallback);
+    return fallback;
+  }
+
+  bool _statusMatches(String? rawStatus, Set<String> candidates) {
+    if (rawStatus == null || rawStatus.trim().isEmpty) return false;
+    return candidates.contains(rawStatus.trim().toLowerCase());
+  }
+
+  bool _hasGeneratedCv(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return false;
+
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return false;
+
+      for (final item in decoded) {
+        if (item is! Map) continue;
+        final status = (item['status'] ?? '').toString().toLowerCase();
+        if (status == 'generated') return true;
+
+        final files = item['files'];
+        if (files is Map) {
+          final pdfUrl = (files['pdfUrl'] ?? '').toString().trim();
+          final docxUrl = (files['docxUrl'] ?? '').toString().trim();
+          if (pdfUrl.isNotEmpty || docxUrl.isNotEmpty) return true;
+        }
+      }
+    } catch (_) {
+      return false;
+    }
+
+    return false;
+  }
+
+  String _extractApplicationStatus(
+    String? rawTracking,
+    String? rawApplicationStatus,
+    String? rawCvCache,
+  ) {
+    if (rawTracking != null && rawTracking.trim().isNotEmpty) {
+      try {
+        final decoded = jsonDecode(rawTracking);
+        if (decoded is Map<String, dynamic>) {
+          final status =
+              (decoded['currentStatus'] ?? decoded['status'] ?? '')
+                  .toString()
+                  .trim()
+                  .toLowerCase();
+          if (status.isNotEmpty) return status;
+        }
+      } catch (_) {}
+    }
+
+    if (rawApplicationStatus != null &&
+        rawApplicationStatus.trim().isNotEmpty) {
+      return rawApplicationStatus.trim().toLowerCase();
+    }
+
+    return _hasGeneratedCv(rawCvCache) ? 'cv_generated' : 'profile_created';
+  }
+
+  bool _shouldShowApplicationStatus(String status) {
+    return const {
+      'service_activated',
+      'consent_signed',
+      'in_review',
+      'ready_to_send',
+      'sent',
+      'under_evaluation',
+      'interview',
+      'closed',
+      'not_selected',
+    }.contains(status);
+  }
+
+  String _applicationStatusLabel(AppLocalizations l10n, String status) {
+    const keyByStatus = {
+      'profile_created': 'jobStatusProfileCreated',
+      'cv_generated': 'jobStatusCvGenerated',
+      'service_activated': 'jobStatusServiceActivated',
+      'consent_signed': 'jobStatusConsentSigned',
+      'in_review': 'jobStatusInReview',
+      'ready_to_send': 'jobStatusReadyToSend',
+      'sent': 'jobStatusSent',
+      'under_evaluation': 'jobStatusUnderEvaluation',
+      'interview': 'jobStatusInterview',
+      'closed': 'jobStatusClosed',
+      'not_selected': 'jobStatusNotSelected',
+    };
+
+    return l10n.translate(keyByStatus[status] ?? 'actionStatusInProgress');
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(title: l10n.quickAccess),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 20,
-          runSpacing: 20,
-          children: [
-            _QuickAccessButton(
-              icon: Icons.map,
-              label: l10n.communityMap,
-              onTap: () {},
-            ),
-            _QuickAccessButton(
-              icon: Icons.book,
-              label: l10n.resourcesGuides,
-              onTap: () {},
-            ),
-            _QuickAccessButton(
-              icon: Icons.group,
-              label: l10n.localGroups,
-              onTap: () {},
-            ),
-            _QuickAccessButton(
-              icon: Icons.message,
-              label: l10n.forumDiscussions,
-              onTap: () {},
-            ),
-            _QuickAccessButton(
-              icon: Icons.help_center,
-              label: l10n.support,
-              onTap: () {},
-            ),
-          ],
+        _SectionTitle(title: l10n.translate('userActionsSectionTitle')),
+        const SizedBox(height: 8),
+        Text(
+          l10n.translate('userActionsSectionSubtitle'),
+          style: TextStyle(
+            fontSize: 13,
+            height: 1.45,
+            color: scheme.onSurface.withOpacity(0.72),
+          ),
         ),
+        const SizedBox(height: 12),
+        if (_loading)
+          const Center(child: CircularProgressIndicator())
+        else
+          Column(
+            children: [
+              for (var index = 0; index < _actions.length; index++) ...[
+                _UserActionCard(action: _actions[index]),
+                if (index != _actions.length - 1) const SizedBox(height: 12),
+              ],
+            ],
+          ),
       ],
     );
   }
@@ -907,68 +1261,140 @@ class _ServiceButton extends StatelessWidget {
   }
 }
 
-class _QuickAccessButton extends StatelessWidget {
+class _UserJourneySnapshot {
+  final bool profileComplete;
+  final bool hasCv;
+  final bool hasCvDraft;
+  final bool creditStarted;
+  final bool creditSubmitted;
+  final bool documentsMissing;
+  final String applicationStatus;
+
+  const _UserJourneySnapshot({
+    required this.profileComplete,
+    required this.hasCv,
+    required this.hasCvDraft,
+    required this.creditStarted,
+    required this.creditSubmitted,
+    required this.documentsMissing,
+    required this.applicationStatus,
+  });
+}
+
+class _UserActionCardData {
   final IconData icon;
-  final String label;
+  final String title;
+  final String status;
+  final String ctaLabel;
   final VoidCallback onTap;
-  const _QuickAccessButton({
+
+  const _UserActionCardData({
     required this.icon,
-    required this.label,
+    required this.title,
+    required this.status,
+    required this.ctaLabel,
     required this.onTap,
   });
+}
+
+class _UserActionCard extends StatelessWidget {
+  final _UserActionCardData action;
+
+  const _UserActionCard({required this.action});
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+
     return InkWell(
-      borderRadius: BorderRadius.circular(20),
-      onTap: onTap,
+      onTap: action.onTap,
+      borderRadius: BorderRadius.circular(18),
       child: Container(
-        width: 94,
-        padding: const EdgeInsets.fromLTRB(8, 10, 8, 10),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: scheme.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: scheme.outlineVariant.withOpacity(0.45)),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: scheme.outlineVariant.withOpacity(0.55)),
           boxShadow: [
             BoxShadow(
-              color: scheme.onSurface.withOpacity(0.04),
+              color: scheme.shadow.withOpacity(0.05),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 54,
-              height: 54,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    scheme.primary,
-                    Color.alphaBlend(
-                      scheme.secondary.withOpacity(0.22),
-                      scheme.primary,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        scheme.primary,
+                        Color.alphaBlend(
+                          scheme.secondary.withOpacity(0.22),
+                          scheme.primary,
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
+                  child: Icon(action.icon, color: scheme.onPrimary, size: 22),
                 ),
-              ),
-              child: Icon(icon, color: scheme.onPrimary, size: 24),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        action.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: scheme.onSurface,
+                          height: 1.3,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: scheme.primary.withOpacity(0.10),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          action.status,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: scheme.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: scheme.onSurface,
+            const SizedBox(height: 10),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: action.onTap,
+                child: Text(action.ctaLabel),
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -1045,7 +1471,7 @@ class _LatestPostsSectionState extends State<_LatestPostsSection> {
 
             final posts = snapshot.data!;
             return SizedBox(
-              height: 200,
+              height: 224,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 shrinkWrap: true,
@@ -1059,6 +1485,7 @@ class _LatestPostsSectionState extends State<_LatestPostsSection> {
                     subtitle: post.excerpt,
                     imageUrl: post.imageUrl,
                     link: post.link,
+                    ctaLabel: l10n.translate('ctaOpenArticle'),
                   );
                 },
               ),

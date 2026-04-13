@@ -1,121 +1,211 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/models/project_opportunity_catalog.dart';
+
+import '../servizi/accoglienza_screen.dart';
+import '../servizi/cv_ai_screen.dart';
+import '../servizi/educazione_finanziaria_credito_screen.dart';
+import '../servizi/lavoro_orientamento_screen.dart';
 import 'project_detail_screen.dart';
 
 class ProjectCategoryDetailScreen extends StatelessWidget {
-  final String categoryKey;
-  final String categoryName;
-  final IconData categoryIcon;
-  final Color categoryColor;
-  final List<Map<String, dynamic>> projects;
+  final ProjectOpportunityCategory category;
 
-  const ProjectCategoryDetailScreen({
-    super.key,
-    required this.categoryKey,
-    required this.categoryName,
-    required this.categoryIcon,
-    required this.categoryColor,
-    required this.projects,
-  });
+  const ProjectCategoryDetailScreen({super.key, required this.category});
+
+  void _openDetail(BuildContext context, ProjectOpportunityItem item) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => ProjectDetailScreen(
+              categoryTitle: category.title,
+              item: item,
+              categoryColor: category.color,
+            ),
+      ),
+    );
+  }
+
+  void _handleCta(BuildContext context, ProjectOpportunityItem item) {
+    Widget destination;
+
+    switch (item.actionKey) {
+      case 'training':
+      case 'work':
+        destination = const LavoroOrientamentoScreen();
+        break;
+      case 'credit':
+        destination = const EducazioneFinanziariaCreditoScreen();
+        break;
+      case 'inclusion':
+        destination = const AccoglienzaScreen();
+        break;
+      case 'cv':
+        destination = const CvAiScreen();
+        break;
+      default:
+        destination = const AccoglienzaScreen();
+        break;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => destination),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(categoryName),
-        backgroundColor: categoryColor,
+        title: Text(category.title),
+        backgroundColor: category.color,
         foregroundColor: Colors.white,
       ),
-      body: ListView.builder(
+      body: ListView(
         padding: const EdgeInsets.all(16),
-        itemCount: projects.length,
-        itemBuilder: (context, index) {
-          final project = projects[index];
-          return Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: category.color.withOpacity(0.10),
+              borderRadius: BorderRadius.circular(18),
             ),
-            elevation: 3,
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ProjectDetailScreen(
-                      projectName: project['name'],
-                      projectDescription: project['description'],
-                      services: project['services'],
-                      projectColor: categoryColor,
-                    ),
-                  ),
-                );
-              },
-              borderRadius: BorderRadius.circular(12),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: categoryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(10),
+            child: Text(
+              category.summary,
+              style: TextStyle(
+                fontSize: 14,
+                height: 1.5,
+                color: scheme.onSurface.withOpacity(0.84),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          for (final item in category.items) ...[
+            Card(
+              margin: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 2,
+              child: InkWell(
+                onTap: () => _openDetail(context, item),
+                borderRadius: BorderRadius.circular(16),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: category.color.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              item.icon,
+                              color: category.color,
+                              size: 26,
+                            ),
                           ),
-                          child: Icon(
-                            categoryIcon,
-                            color: categoryColor,
-                            size: 28,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                project['name'],
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.title,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
+                                const SizedBox(height: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: category.color.withOpacity(0.10),
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                  child: Text(
+                                    item.contentTypeLabel,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                      color: category.color,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        item.description,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: scheme.onSurface.withOpacity(0.74),
+                          height: 1.45,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          for (final tag in item.tags)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${project['services'].length} ${project['services'].length == 1 ? 'servizio' : 'servizi'}',
+                              decoration: BoxDecoration(
+                                color: scheme.surfaceContainerHighest,
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                tag,
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w600,
+                                  color: scheme.onSurface.withOpacity(0.72),
                                 ),
                               ),
-                            ],
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: ElevatedButton.icon(
+                          onPressed: () => _handleCta(context, item),
+                          icon: const Icon(Icons.arrow_forward_rounded),
+                          label: Text(item.ctaLabel),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: category.color,
+                            foregroundColor: Colors.white,
                           ),
                         ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          color: Colors.grey[400],
-                          size: 16,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      project['description'],
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[700],
-                        height: 1.4,
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          );
-        },
+            const SizedBox(height: 16),
+          ],
+        ],
       ),
     );
   }

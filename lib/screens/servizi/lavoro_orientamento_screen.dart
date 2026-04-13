@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/app_localizations.dart';
 import '../../services/lavoro_service.dart';
@@ -83,8 +82,9 @@ class LavoroOrientamentoScreen extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder:
-            (context) =>
-                AttivazioneServizioLavoroScreen(trackingKey: _jobServiceTrackingKey),
+            (context) => AttivazioneServizioLavoroScreen(
+              trackingKey: _jobServiceTrackingKey,
+            ),
       ),
     );
   }
@@ -175,8 +175,11 @@ class AttivazioneServizioLavoroScreen extends StatefulWidget {
 
 class _AttivazioneServizioLavoroScreenState
     extends State<AttivazioneServizioLavoroScreen> {
-  static const String _whatsAppNumber = '393331234567';
   final _storage = SecureStorageService();
+
+  void _log(String event, Map<String, dynamic> data) {
+    print('[LAVORO_UI] $event ${jsonEncode(data)}');
+  }
 
   bool _gdprConsent = false;
   bool _shareCvConsent = false;
@@ -187,9 +190,26 @@ class _AttivazioneServizioLavoroScreenState
   bool get _allChecked =>
       _gdprConsent && _shareCvConsent && _whatsappConsent && _termsConsent;
 
+  Future<String> _buildDigitalSignature() async {
+    final fullName = (await _storage.read(key: 'full_name'))?.trim();
+    final displayName = (await _storage.read(key: 'user_display_name'))?.trim();
+    final email = (await _storage.read(key: 'user_email'))?.trim();
+    final signer = [fullName, displayName, email]
+        .whereType<String>()
+        .firstWhere((value) => value.isNotEmpty, orElse: () => 'utente_wecoop');
+    final signedAt = DateTime.now().toIso8601String();
+    return '$signer|$signedAt';
+  }
+
   Future<void> _activateService() async {
     final l10n = AppLocalizations.of(context)!;
     if (!_allChecked) {
+      _log('activate_blocked_missing_consents', {
+        'gdpr': _gdprConsent,
+        'shareCv': _shareCvConsent,
+        'whatsapp': _whatsappConsent,
+        'terms': _termsConsent,
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.translate('consentRequired'))),
       );
@@ -201,20 +221,48 @@ class _AttivazioneServizioLavoroScreenState
     });
 
     try {
+      _log('activate_started', {
+        'trackingKey': widget.trackingKey,
+        'gdpr': _gdprConsent,
+        'shareCv': _shareCvConsent,
+        'whatsapp': _whatsappConsent,
+        'terms': _termsConsent,
+      });
+
       final resolvedId = await LavoroService.resolveProfileId();
+      _log('resolved_profile_id', {'resolvedId': resolvedId});
+
       final profileResult = await LavoroService.createOrUpdateProfile(
         profileId: resolvedId,
       );
+      _log('profile_result', profileResult);
+
       final profileData = profileResult['data'];
       final profileId =
-          (profileData is Map<String, dynamic>
-                  ? (profileData['id'] ?? profileData['profileId'])
-                  : null)
+          (profileResult['profileId'] ??
+                  (profileData is Map<String, dynamic>
+                      ? (profileData['id'] ??
+                          profileData['profileId'] ??
+                          profileData['profile_id'])
+                      : null))
               ?.toString();
+
+      _log('effective_profile_id', {
+        'profileId': profileId,
+        'profileDataType': profileData.runtimeType.toString(),
+      });
 
       if (profileId == null || profileId.isEmpty) {
         throw Exception('profile_id_missing');
       }
+
+      final digitalSignature = await _buildDigitalSignature();
+      _log('consent_signature_ready', {
+        'signaturePreview':
+            digitalSignature.length > 18
+                ? '${digitalSignature.substring(0, 18)}...'
+                : digitalSignature,
+      });
 
       final consentResult = await LavoroService.submitConsent(
         profileId: profileId,
@@ -222,7 +270,9 @@ class _AttivazioneServizioLavoroScreenState
         shareCv: _shareCvConsent,
         whatsapp: _whatsappConsent,
         terms: _termsConsent,
+        digitalSignature: digitalSignature,
       );
+      _log('consent_result', consentResult);
       if (consentResult['success'] != true) {
         throw Exception(consentResult['message'] ?? 'consent_failed');
       }
@@ -230,14 +280,16 @@ class _AttivazioneServizioLavoroScreenState
       final activationResult = await LavoroService.activateJobService(
         profileId: profileId,
       );
+      _log('activation_result', activationResult);
       if (activationResult['success'] != true) {
         throw Exception(activationResult['message'] ?? 'activation_failed');
       }
 
-      await LavoroService.triggerWachatbot(
+      final wachatbotResult = await LavoroService.triggerWachatbot(
         profileId: profileId,
         message: l10n.translate('whatsAppActivationText'),
       );
+      _log('wachatbot_result', wachatbotResult);
 
       final now = DateTime.now().toIso8601String();
       final payload = {
@@ -257,14 +309,20 @@ class _AttivazioneServizioLavoroScreenState
           'terms': _termsConsent,
         },
       };
+      _log('tracking_payload', payload);
       await _storage.write(key: widget.trackingKey, value: jsonEncode(payload));
+      _log('tracking_saved', {'trackingKey': widget.trackingKey});
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.translate('workServiceActivated'))),
       );
-      await _openWhatsApp(l10n.translate('whatsAppActivationText'));
-    } catch (_) {
+      _log('activate_completed', {'openWhatsAppAutomatically': false});
+    } catch (error, stackTrace) {
+      _log('activate_failed', {
+        'error': error.toString(),
+        'stackTrace': stackTrace.toString(),
+      });
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
@@ -276,12 +334,6 @@ class _AttivazioneServizioLavoroScreenState
         });
       }
     }
-  }
-
-  Future<void> _openWhatsApp(String message) async {
-    final encoded = Uri.encodeComponent(message);
-    final uri = Uri.parse('https://wa.me/$_whatsAppNumber?text=$encoded');
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   @override

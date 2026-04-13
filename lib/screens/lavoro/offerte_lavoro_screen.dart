@@ -814,13 +814,13 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
           onSubmitted: (_) => _loadInitialData(),
         ),
         const SizedBox(height: 14),
-        DropdownButtonFormField<String>(
+        DropdownButtonFormField<String?>(
           initialValue: _selectedScope,
           decoration: const InputDecoration(labelText: 'Ambito'),
           items: const [
-            DropdownMenuItem<String>(value: null, child: Text('Tutti')),
-            DropdownMenuItem<String>(value: 'job', child: Text('Lavoro')),
-            DropdownMenuItem<String>(value: 'service', child: Text('Servizio')),
+            DropdownMenuItem<String?>(value: null, child: Text('Tutti')),
+            DropdownMenuItem<String?>(value: 'job', child: Text('Lavoro')),
+            DropdownMenuItem<String?>(value: 'service', child: Text('Servizio')),
           ],
           onChanged: (value) {
             setState(() {
@@ -833,13 +833,13 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
           },
         ),
         const SizedBox(height: 12),
-        DropdownButtonFormField<String>(
+        DropdownButtonFormField<String?>(
           initialValue: _selectedJobDirection,
           decoration: const InputDecoration(labelText: 'Tipo annuncio lavoro'),
           items: const [
-            DropdownMenuItem<String>(value: null, child: Text('Tutti')),
-            DropdownMenuItem<String>(value: 'seek', child: Text('Cerco lavoro')),
-            DropdownMenuItem<String>(value: 'offer', child: Text('Offro lavoro')),
+            DropdownMenuItem<String?>(value: null, child: Text('Tutti')),
+            DropdownMenuItem<String?>(value: 'seek', child: Text('Cerco lavoro')),
+            DropdownMenuItem<String?>(value: 'offer', child: Text('Offro lavoro')),
           ],
           onChanged: (value) {
             setState(() => _selectedJobDirection = value);
@@ -847,13 +847,13 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
           },
         ),
         const SizedBox(height: 12),
-        DropdownButtonFormField<String>(
+        DropdownButtonFormField<String?>(
           initialValue: _selectedMacroCategoria,
           decoration: const InputDecoration(labelText: 'Macrocategoria'),
           items: [
-            const DropdownMenuItem<String>(value: null, child: Text('Tutte')),
+            const DropdownMenuItem<String?>(value: null, child: Text('Tutte')),
             ...macroNames.map(
-              (macro) => DropdownMenuItem<String>(
+              (macro) => DropdownMenuItem<String?>(
                 value: macro,
                 child: Text(_CategoriaMenuHelper.macroLabel(macro, languageCode)),
               ),
@@ -869,13 +869,13 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
         ),
         if (_selectedMacroCategoria != null) ...[
           const SizedBox(height: 12),
-          DropdownButtonFormField<String>(
+          DropdownButtonFormField<String?>(
             initialValue: selectedSubCategoryValue,
             decoration: const InputDecoration(labelText: 'Sottocategoria'),
             items: [
-              const DropdownMenuItem<String>(value: null, child: Text('Tutte')),
+              const DropdownMenuItem<String?>(value: null, child: Text('Tutte')),
               ...subCategories.map(
-                (c) => DropdownMenuItem<String>(
+                (c) => DropdownMenuItem<String?>(
                   value: _CategoriaMenuHelper.categoryValueFromSlug(c.slug),
                   child: Text(_CategoriaMenuHelper.categoryLabel(c, languageCode)),
                 ),
@@ -1116,15 +1116,15 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
               child: Text(widget.fixedType),
             ),
             const SizedBox(height: 18),
-            DropdownButtonFormField<String>(
+            DropdownButtonFormField<String?>(
               initialValue: _selectedMacroCategoria,
               items: [
-                const DropdownMenuItem<String>(
+                const DropdownMenuItem<String?>(
                   value: null,
                   child: Text('Seleziona macrocategoria'),
                 ),
                 ...macroNames.map(
-                  (macro) => DropdownMenuItem<String>(
+                  (macro) => DropdownMenuItem<String?>(
                     value: macro,
                     child: Text(_CategoriaMenuHelper.macroLabel(macro, languageCode)),
                   ),
@@ -1139,15 +1139,15 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
               decoration: const InputDecoration(labelText: 'Macrocategoria'),
             ),
             const SizedBox(height: 18),
-            DropdownButtonFormField<String>(
+            DropdownButtonFormField<String?>(
               initialValue: _selectedCategoriaValueEn,
               items: [
-                const DropdownMenuItem<String>(
+                const DropdownMenuItem<String?>(
                   value: null,
                   child: Text('Seleziona sottocategoria'),
                 ),
                 ...subCategories.map(
-                  (c) => DropdownMenuItem<String>(
+                  (c) => DropdownMenuItem<String?>(
                     value: _CategoriaMenuHelper.categoryValueFromSlug(c.slug),
                     child: Text(_CategoriaMenuHelper.categoryLabel(c, languageCode)),
                   ),

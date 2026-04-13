@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'package:wecoop_app/services/supporto_ai_service.dart';
 import '../servizi/servizi_gate_screen.dart';
 import '../progetti/progetti_screen.dart';
 import '../servizi/permesso_soggiorno_screen.dart';
@@ -7,6 +8,9 @@ import '../servizi/cittadinanza_screen.dart';
 import '../servizi/asilo_politico_screen.dart';
 import '../servizi/mediazione_fiscale_screen.dart';
 import '../servizi/accoglienza_screen.dart';
+import '../servizi/lavoro_orientamento_screen.dart';
+import '../servizi/educazione_finanziaria_credito_screen.dart';
+import '../servizi/supporto_contabile_screen.dart';
 
 class ChatbotAssistenzaScreen extends StatefulWidget {
   const ChatbotAssistenzaScreen({super.key});
@@ -20,14 +24,13 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _showFAQ = true;
+  bool _isTyping = false;
 
   @override
   void initState() {
     super.initState();
-    // Il messaggio di benvenuto sarà tradotto in build
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final l10n = AppLocalizations.of(context)!;
-      _addBotMessage(l10n.translate('chatbotWelcome'));
+      _addBotMessage(_welcomeMessage());
     });
   }
 
@@ -61,9 +64,31 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
     _textController.clear();
     _scrollToBottom();
     
-    // Processa la risposta
-    Future.delayed(const Duration(milliseconds: 500), () {
+    _simulateThinkingThenReply(() {
       _processUserInput(text);
+    });
+  }
+
+  String _welcomeMessage() {
+    final l10n = AppLocalizations.of(context)!;
+    return '${l10n.translate('chatbotWelcome')}\n\n'
+        'Sono il tuo assistente WECOOP. Ti aiuto in modo pratico su:\n'
+        '• Accesso al lavoro\n'
+        '• Credito e finanziamento piccole aziende\n'
+        '• Partita IVA e contabilita\n'
+        '• Vivere in Italia e documenti\n'
+        '• Prenotazione appuntamenti';
+  }
+
+  void _simulateThinkingThenReply(VoidCallback onReply) {
+    if (!mounted) return;
+    setState(() => _isTyping = true);
+    _scrollToBottom();
+
+    Future.delayed(const Duration(milliseconds: 550), () {
+      if (!mounted) return;
+      setState(() => _isTyping = false);
+      onReply();
     });
   }
 
@@ -79,16 +104,160 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
     });
   }
 
-  void _processUserInput(String input) {
+  Future<void> _processUserInput(String input) async {
     final l10n = AppLocalizations.of(context)!;
     final inputLower = input.toLowerCase();
+
+    final backendReply = await SupportoAiService.askAssistant(
+      message: input,
+      language: Localizations.localeOf(context).languageCode,
+    );
+
+    if (backendReply['success'] == true &&
+        (backendReply['reply'] ?? '').toString().trim().isNotEmpty) {
+      final replyText = (backendReply['reply'] ?? '').toString();
+      final actionKey = (backendReply['action_key'] ?? '').toString();
+      final actionLabel = (backendReply['action_label'] ?? '').toString();
+
+      _addBotMessage(
+        replyText,
+        action: _buildBackendAction(actionKey, actionLabel),
+      );
+      return;
+    }
+
+    final asksWork =
+        inputLower.contains('lavoro') ||
+        inputLower.contains('stage') ||
+        inputLower.contains('tirocin') ||
+        inputLower.contains('agenzi') ||
+        inputLower.contains('job') ||
+        inputLower.contains('work');
+
+    final asksCreditoImpresa =
+        inputLower.contains('microcredito') ||
+        inputLower.contains('credito') ||
+        inputLower.contains('finanzi') ||
+        inputLower.contains('impresa') ||
+        inputLower.contains('azienda') ||
+        inputLower.contains('business');
+
+    final asksPiva =
+        inputLower.contains('partita iva') ||
+        inputLower.contains('contabil') ||
+        inputLower.contains('fattur') ||
+        inputLower.contains('iva') ||
+        inputLower.contains('accounting');
+
+    final asksWelcome =
+        inputLower.contains('vivere in italia') ||
+        inputLower.contains('integrazione') ||
+        inputLower.contains('permesso') ||
+        inputLower.contains('soggiorno') ||
+        inputLower.contains('migranti') ||
+        inputLower.contains('documenti');
+
+    final asksAppointment =
+        inputLower.contains('appuntamento') ||
+        inputLower.contains('prenot') ||
+        inputLower.contains('cita') ||
+        inputLower.contains('appointment');
+
+    if (asksWork) {
+      _addBotMessage(
+        'Ottimo, posso accompagnarti su accesso al lavoro: candidature, orientamento e attivazione supporto lavoro.',
+        action: _buildNavigationButton('Apri Accesso al lavoro', () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) => const ServiziGateScreen(
+                    destinationScreen: LavoroOrientamentoScreen(),
+                    serviceName: 'Accesso al lavoro',
+                  ),
+            ),
+          );
+        }),
+      );
+      return;
+    }
+
+    if (asksCreditoImpresa) {
+      _addBotMessage(
+        'Perfetto, per microcredito e finanziamento a piccole aziende ti porto nel percorso dedicato.',
+        action: _buildNavigationButton(
+          'Apri Educazione finanziaria + credito',
+          () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) => const ServiziGateScreen(
+                      destinationScreen: EducazioneFinanziariaCreditoScreen(),
+                      serviceName: 'Educazione finanziaria + credito',
+                    ),
+              ),
+            );
+          },
+        ),
+      );
+      return;
+    }
+
+    if (asksPiva) {
+      _addBotMessage(
+        'Per apertura attivita, gestione Partita IVA e contabilita ti guido nello sportello dedicato.',
+        action: _buildNavigationButton('Apri Partita IVA e contabilita', () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) => const ServiziGateScreen(
+                    destinationScreen: SupportoContabileScreen(),
+                    serviceName: 'Partita IVA e contabilita',
+                  ),
+            ),
+          );
+        }),
+      );
+      return;
+    }
+
+    if (asksWelcome) {
+      _addBotMessage(
+        'Ti aiuto volentieri. Per documenti e integrazione in Italia, apri direttamente Vivere in Italia.',
+        action: _buildNavigationButton('Apri Vivere in Italia', () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) => const ServiziGateScreen(
+                    destinationScreen: AccoglienzaScreen(),
+                    serviceName: 'Vivere in Italia',
+                  ),
+            ),
+          );
+        }),
+      );
+      return;
+    }
+
+    if (asksAppointment) {
+      _addBotMessage(
+        'Perfetto, prenotiamo subito un appuntamento con il team WECOOP.',
+        action: _buildNavigationButton('Prenota appuntamento', () {
+          Navigator.pushNamed(context, '/prenotaAppuntamento');
+        }),
+      );
+      return;
+    }
     
     // Servizi - multilingua
     if (inputLower.contains('serviz') || inputLower.contains('service') || inputLower.contains('aiuto') || 
         inputLower.contains('help') || inputLower.contains('ayuda')) {
       _addBotMessage(
-        l10n.translate('chatbotServicesResponse'),
-        action: _buildServiceButtons(),
+        'Ti aiuto subito. Dimmi pure se preferisci lavoro, credito, partita IVA o vivere in Italia. Se vuoi, usa una scorciatoia:',
+        action: _buildFeatureHubButtons(),
       );
     }
     // Progetti - multilingua
@@ -178,45 +347,77 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
     // Default - multilingua
     else {
       _addBotMessage(
-        l10n.translate('chatbotDefaultResponse'),
-        action: _buildQuickReplies(),
+        'Capito. Per darti una risposta precisa, scegli un percorso e ti accompagno passo passo:',
+        action: _buildFeatureHubButtons(),
       );
     }
   }
 
-  Widget _buildServiceButtons() {
-    final l10n = AppLocalizations.of(context)!;
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        _buildQuickReplyButton('🏠 ${l10n.translate('chatbotWelcomeBtn')}', () {
-          _addUserMessage(l10n.translate('chatbotWelcomeService'));
-          _addBotMessage(l10n.translate('chatbotWelcomeDetail'),
-            action: _buildNavigationButton(l10n.translate('chatbotGoToService'), () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const ServiziGateScreen(
-                destinationScreen: AccoglienzaScreen(),
-                serviceName: 'Vivere in Italia',
-              )));
-            }),
+  Widget? _buildBackendAction(String actionKey, String actionLabel) {
+    final label = actionLabel.trim().isEmpty ? 'Apri percorso' : actionLabel;
+
+    switch (actionKey) {
+      case 'open_work':
+        return _buildNavigationButton(label, () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) => const ServiziGateScreen(
+                    destinationScreen: LavoroOrientamentoScreen(),
+                    serviceName: 'Accesso al lavoro',
+                  ),
+            ),
           );
-        }),
-        _buildQuickReplyButton('💰 ${l10n.translate('chatbotFiscalBtn')}', () {
-          _addUserMessage(l10n.translate('chatbotFiscalService'));
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const ServiziGateScreen(
-            destinationScreen: MediazioneFiscaleScreen(),
-            serviceName: 'Mediazione Fiscale',
-          )));
-        }),
-        _buildQuickReplyButton('🌍 ${l10n.translate('chatbotMigrantsBtn')}', () {
-          _addUserMessage(l10n.translate('chatbotMigrantsService'));
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const ServiziGateScreen(
-            destinationScreen: PermessoSoggiornoScreen(),
-            serviceName: 'Servizi per Migranti',
-          )));
-        }),
-      ],
-    );
+        });
+      case 'open_credit':
+        return _buildNavigationButton(label, () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) => const ServiziGateScreen(
+                    destinationScreen: EducazioneFinanziariaCreditoScreen(),
+                    serviceName: 'Educazione finanziaria + credito',
+                  ),
+            ),
+          );
+        });
+      case 'open_accounting':
+        return _buildNavigationButton(label, () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) => const ServiziGateScreen(
+                    destinationScreen: SupportoContabileScreen(),
+                    serviceName: 'Partita IVA e contabilita',
+                  ),
+            ),
+          );
+        });
+      case 'open_welcome':
+        return _buildNavigationButton(label, () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) => const ServiziGateScreen(
+                    destinationScreen: AccoglienzaScreen(),
+                    serviceName: 'Vivere in Italia',
+                  ),
+            ),
+          );
+        });
+      case 'open_booking':
+        return _buildNavigationButton(label, () {
+          Navigator.pushNamed(context, '/prenotaAppuntamento');
+        });
+      case 'open_hub':
+        return _buildFeatureHubButtons();
+      default:
+        return null;
+    }
   }
 
   Widget _buildProjectButtons() {
@@ -245,17 +446,26 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
     );
   }
 
-  Widget _buildQuickReplies() {
-    final l10n = AppLocalizations.of(context)!;
+  Widget _buildFeatureHubButtons() {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
       children: [
-        _buildQuickReplyButton('📋 ${l10n.translate('chatbotServicesQuick')}', () => _addUserMessage(l10n.translate('chatbotServicesQuick'))),
-        _buildQuickReplyButton('🤝 ${l10n.translate('chatbotProjectsQuick')}', () => _addUserMessage(l10n.translate('chatbotProjectsQuick'))),
-        _buildQuickReplyButton('🆔 ${l10n.translate('chatbotPermitQuick')}', () => _addUserMessage(l10n.translate('chatbotPermitQuick'))),
-        _buildQuickReplyButton('🏛️ ${l10n.translate('chatbotCitizenshipQuick')}', () => _addUserMessage(l10n.translate('chatbotCitizenshipQuick'))),
-        _buildQuickReplyButton('📅 ${l10n.translate('chatbotAppointmentQuick')}', () => _addUserMessage(l10n.translate('chatbotAppointmentQuick'))),
+        _buildQuickReplyButton('💼 Accesso al lavoro', () {
+          _addUserMessage('Accesso al lavoro');
+        }),
+        _buildQuickReplyButton('💳 Credito e finanziamento', () {
+          _addUserMessage('Microcredito e finanziamento piccole aziende');
+        }),
+        _buildQuickReplyButton('📒 Partita IVA e contabilita', () {
+          _addUserMessage('Partita IVA e contabilita');
+        }),
+        _buildQuickReplyButton('🌍 Vivere in Italia', () {
+          _addUserMessage('Vivere in Italia e documenti');
+        }),
+        _buildQuickReplyButton('📅 Prenota appuntamento', () {
+          _addUserMessage('Prenota appuntamento');
+        }),
       ],
     );
   }
@@ -311,8 +521,11 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
             child: ListView.builder(
               controller: _scrollController,
               padding: const EdgeInsets.all(16),
-              itemCount: _messages.length,
+              itemCount: _messages.length + (_isTyping ? 1 : 0),
               itemBuilder: (context, index) {
+                if (_isTyping && index == _messages.length) {
+                  return _buildTypingBubble();
+                }
                 return _buildMessageBubble(_messages[index]);
               },
             ),
@@ -507,6 +720,44 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
                   _addUserMessage(_textController.text.trim());
                 }
               },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTypingBubble() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF2196F3),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Icon(Icons.support_agent, color: Colors.white, size: 20),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: const Text(
+              'Sto pensando alla soluzione migliore per te...',
+              style: TextStyle(fontSize: 14, color: Colors.black87),
             ),
           ),
         ],

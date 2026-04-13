@@ -1756,9 +1756,8 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
   Future<bool> _confirmAiCategoryBeforeSubmit({
     required String selectedCategorySlug,
   }) async {
-    final isOffertaServizio =
-        widget.categoryScope == 'service' && widget.categoryDirection == 'offer';
-    if (!isOffertaServizio) return true;
+    final isServizio = widget.categoryScope == 'service';
+    if (!isServizio) return true;
 
     final descriptionForCheck =
         _descrizioneAiCtrl.text.trim().isNotEmpty

@@ -39,6 +39,8 @@ class AnnunciSubmissionService {
     String? contactEmail,
     required String description,
     required bool consentPrivacy,
+    String? categoryScope,
+    String? categoryDirection,
     String? categoryMacro,
     String? categorySlug,
   }) async {
@@ -70,6 +72,8 @@ class AnnunciSubmissionService {
         'contact_email': (contactEmail ?? '').trim(),
         'description': description.trim(),
         'consent_privacy': consentPrivacy,
+        'category_scope': (categoryScope ?? '').trim(),
+        'category_direction': (categoryDirection ?? '').trim(),
         'category_macro': (categoryMacro ?? '').trim(),
         'category_slug': (categorySlug ?? '').trim(),
       };

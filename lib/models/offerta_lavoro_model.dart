@@ -20,6 +20,8 @@ class OffertaLavoro {
   final String expiresAt;
   final bool isFeatured;
   final bool isActive;
+  final String categoryScope;
+  final String categoryDirection;
   final String publishedAt;
   final List<OffertaCategoria> categories;
 
@@ -45,6 +47,8 @@ class OffertaLavoro {
     required this.expiresAt,
     required this.isFeatured,
     required this.isActive,
+    required this.categoryScope,
+    required this.categoryDirection,
     required this.publishedAt,
     required this.categories,
   });
@@ -83,6 +87,8 @@ class OffertaLavoro {
       expiresAt: (json['expires_at'] ?? '').toString(),
       isFeatured: json['is_featured'] == true,
       isActive: json['is_active'] != false,
+      categoryScope: (json['category_scope'] ?? 'job').toString(),
+      categoryDirection: (json['category_direction'] ?? 'offer').toString(),
       publishedAt: (json['published_at'] ?? '').toString(),
       categories: categories,
     );

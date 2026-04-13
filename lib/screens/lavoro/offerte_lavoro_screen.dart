@@ -436,6 +436,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
 
   String? _selectedCategoriaSlug;
   String? _selectedMacroCategoria;
+  String? _selectedJobDirection;
   int _currentPage = 1;
   int _totalPages = 1;
 
@@ -470,7 +471,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
   }
 
   void _ensureTabController() {
-    _tabController ??= TabController(length: 2, vsync: this);
+    _tabController ??= TabController(length: 3, vsync: this);
   }
 
   @override
@@ -500,6 +501,8 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
       perPage: 12,
       search: _searchController.text,
       categoria: _selectedCategoriaSlug,
+      categoryScope: 'job',
+      categoryDirection: _selectedJobDirection,
     );
 
     if (!mounted) return;
@@ -542,6 +545,8 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
       perPage: 12,
       search: _searchController.text,
       categoria: _selectedCategoriaSlug,
+      categoryScope: 'job',
+      categoryDirection: _selectedJobDirection,
     );
 
     if (!mounted) return;
@@ -647,8 +652,9 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
               unselectedLabelColor: Colors.black54,
               indicatorColor: Colors.black87,
               tabs: const [
-                Tab(icon: Icon(Icons.search), text: 'Cerca'),
-                Tab(icon: Icon(Icons.campaign), text: 'Offro'),
+                Tab(icon: Icon(Icons.work), text: 'Annunci lavoro'),
+                Tab(icon: Icon(Icons.search), text: 'Cerco servizio'),
+                Tab(icon: Icon(Icons.volunteer_activism), text: 'Offro servizio'),
               ],
             ),
           ),
@@ -671,7 +677,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          // Tab 1: CERCA
+          // Tab 1: ANNUNCI LAVORO
           RefreshIndicator(
             onRefresh: _loadInitialData,
             child:
@@ -679,8 +685,26 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                     ? const Center(child: CircularProgressIndicator())
                     : _buildSearchTab(),
           ),
-          // Tab 2: OFFRO
-          _PubblicaAnnuncioTab(categorie: _categorie),
+          // Tab 2: CERCO SERVIZIO
+          _PubblicaAnnuncioTab(
+            categorie: _categorie,
+            title: 'Cerco un servizio',
+            subtitle: 'Pubblica una richiesta: ad esempio cerco babysitter, colf o aiuto anziani.',
+            fixedType: 'Servizio',
+            categoryScope: 'service',
+            categoryDirection: 'seek',
+            submitButtonText: 'Invia richiesta servizio',
+          ),
+          // Tab 3: OFFRO SERVIZIO
+          _PubblicaAnnuncioTab(
+            categorie: _categorie,
+            title: 'Offro un servizio',
+            subtitle: 'Pubblica la tua disponibilita professionale: ad esempio offro servizio di babysitter.',
+            fixedType: 'Servizio',
+            categoryScope: 'service',
+            categoryDirection: 'offer',
+            submitButtonText: 'Invia offerta servizio',
+          ),
         ],
       ),
     );
@@ -800,6 +824,20 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
           onSubmitted: (_) => _loadInitialData(),
         ),
         const SizedBox(height: 14),
+        DropdownButtonFormField<String>(
+          initialValue: _selectedJobDirection,
+          decoration: const InputDecoration(labelText: 'Tipo annuncio lavoro'),
+          items: const [
+            DropdownMenuItem<String>(value: null, child: Text('Tutti')),
+            DropdownMenuItem<String>(value: 'seek', child: Text('Cerco lavoro')),
+            DropdownMenuItem<String>(value: 'offer', child: Text('Offro lavoro')),
+          ],
+          onChanged: (value) {
+            setState(() => _selectedJobDirection = value);
+            _loadInitialData();
+          },
+        ),
+        const SizedBox(height: 12),
         DropdownButtonFormField<String>(
           initialValue: _selectedMacroCategoria,
           decoration: const InputDecoration(labelText: 'Macrocategoria'),
@@ -922,8 +960,22 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
 
 class _PubblicaAnnuncioTab extends StatefulWidget {
   final List<OffertaCategoria> categorie;
+  final String title;
+  final String subtitle;
+  final String fixedType;
+  final String categoryScope;
+  final String categoryDirection;
+  final String submitButtonText;
 
-  const _PubblicaAnnuncioTab({required this.categorie});
+  const _PubblicaAnnuncioTab({
+    required this.categorie,
+    required this.title,
+    required this.subtitle,
+    required this.fixedType,
+    required this.categoryScope,
+    required this.categoryDirection,
+    required this.submitButtonText,
+  });
 
   @override
   State<_PubblicaAnnuncioTab> createState() => _PubblicaAnnuncioTabState();
@@ -936,7 +988,6 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
   final _contattoCtrl = TextEditingController();
   final _descrizioneCtrl = TextEditingController();
   bool _privacy = false;
-  String _tipo = 'Lavoro';
   String? _selectedMacroCategoria;
   String? _selectedCategoriaValueEn;
   bool _isSending = false;
@@ -982,12 +1033,14 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
     setState(() => _isSending = true);
 
     final result = await AnnunciSubmissionService.submitJobAnnouncement(
-      submissionType: _tipo,
+      submissionType: widget.fixedType,
       titleOffer: _titoloCtrl.text.trim(),
       city: _cittaCtrl.text.trim(),
       contactPhone: _contattoCtrl.text.trim(),
       description: _descrizioneCtrl.text.trim(),
       consentPrivacy: _privacy,
+      categoryScope: widget.categoryScope,
+      categoryDirection: widget.categoryDirection,
       categoryMacro: _selectedMacroCategoria,
       categorySlug: _selectedCategoriaValueEn,
     );
@@ -1008,7 +1061,6 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
       _descrizioneCtrl.clear();
       setState(() {
         _privacy = false;
-        _tipo = 'Lavoro';
         _selectedMacroCategoria = null;
         _selectedCategoriaValueEn = null;
       });
@@ -1042,22 +1094,17 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Pubblica un annuncio',
+              widget.title,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 6),
-            const Text(
-              'Compila i dati e invia la richiesta a WECOOP per la pubblicazione.',
+            Text(
+              widget.subtitle,
             ),
             const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              initialValue: _tipo,
-              items: const [
-                DropdownMenuItem(value: 'Lavoro', child: Text('Lavoro')),
-                DropdownMenuItem(value: 'Servizio', child: Text('Servizio')),
-              ],
-              onChanged: (value) => setState(() => _tipo = value ?? 'Lavoro'),
+            InputDecorator(
               decoration: const InputDecoration(labelText: 'Tipo annuncio'),
+              child: Text(widget.fixedType),
             ),
             const SizedBox(height: 18),
             DropdownButtonFormField<String>(
@@ -1163,7 +1210,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
             const SizedBox(height: 24),
             Container(
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.red, width: 2),
+                border: Border.all(color: Colors.green, width: 2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: SizedBox(
@@ -1173,7 +1220,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                   onPressed: _isSending ? null : _submit,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 0),
-                    backgroundColor: Colors.red,
+                    backgroundColor: Colors.green,
                     foregroundColor: Colors.white,
                     disabledBackgroundColor: Colors.grey[400],
                     disabledForegroundColor: Colors.grey[600],
@@ -1193,7 +1240,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                           )
                           : const Icon(Icons.send, size: 26),
                   label: Text(
-                    _isSending ? 'Invio in corso...' : 'Invia annuncio',
+                    _isSending ? 'Invio in corso...' : widget.submitButtonText,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -1357,7 +1404,7 @@ class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
               const SizedBox(height: 24),
               Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.red, width: 2),
+                  border: Border.all(color: Colors.green, width: 2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: SizedBox(
@@ -1367,7 +1414,7 @@ class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
                     onPressed: _isSending ? null : _submit,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 0),
-                      backgroundColor: Colors.red,
+                      backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
                       disabledBackgroundColor: Colors.grey[400],
                       disabledForegroundColor: Colors.grey[600],

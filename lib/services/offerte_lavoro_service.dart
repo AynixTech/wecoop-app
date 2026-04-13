@@ -29,6 +29,8 @@ class OfferteLavoroService {
     int perPage = 10,
     String? search,
     String? categoria,
+    String? categoryScope,
+    String? categoryDirection,
     String? city,
     String? region,
     String? contractType,
@@ -42,6 +44,10 @@ class OfferteLavoroService {
         if (search != null && search.trim().isNotEmpty) 'search': search.trim(),
         if (categoria != null && categoria.trim().isNotEmpty)
           'categoria': categoria.trim(),
+        if (categoryScope != null && categoryScope.trim().isNotEmpty)
+          'category_scope': categoryScope.trim(),
+        if (categoryDirection != null && categoryDirection.trim().isNotEmpty)
+          'category_direction': categoryDirection.trim(),
         if (city != null && city.trim().isNotEmpty) 'city': city.trim(),
         if (region != null && region.trim().isNotEmpty) 'region': region.trim(),
         if (contractType != null && contractType.trim().isNotEmpty)

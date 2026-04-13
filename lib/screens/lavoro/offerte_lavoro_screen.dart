@@ -815,18 +815,51 @@ class _CategoryExplorerSelector extends StatelessWidget {
                               spacing: 8,
                               runSpacing: 8,
                               children: [
-                                ChoiceChip(
-                                  selected: selectedCategoryValue == null,
-                                  label: Text(allSubCategoryText),
-                                  onSelected: (_) => onSubCategoryChanged(null),
+                                Builder(
+                                  builder: (context) {
+                                    final isAllSelected =
+                                        selectedCategoryValue == null;
+                                    return ChoiceChip(
+                                      selected: isAllSelected,
+                                      selectedColor: const Color(0xFF1C4E80),
+                                      checkmarkColor: Colors.white,
+                                      labelStyle: TextStyle(
+                                        color:
+                                            isAllSelected
+                                                ? Colors.white
+                                                : const Color(0xFF22313F),
+                                        fontWeight:
+                                            isAllSelected
+                                                ? FontWeight.w700
+                                                : FontWeight.w500,
+                                      ),
+                                      label: Text(allSubCategoryText),
+                                      onSelected:
+                                          (_) => onSubCategoryChanged(null),
+                                    );
+                                  },
                                 ),
                                 ...sortedSubCategories.map((category) {
                                   final value =
                                       _CategoriaMenuHelper.categoryValueFromSlug(
                                         category.slug,
                                       );
+                                  final isSelectedCategory =
+                                      selectedCategoryValue == value;
                                   return ChoiceChip(
-                                    selected: selectedCategoryValue == value,
+                                    selected: isSelectedCategory,
+                                    selectedColor: const Color(0xFF1C4E80),
+                                    checkmarkColor: Colors.white,
+                                    labelStyle: TextStyle(
+                                      color:
+                                          isSelectedCategory
+                                              ? Colors.white
+                                              : const Color(0xFF22313F),
+                                      fontWeight:
+                                          isSelectedCategory
+                                              ? FontWeight.w700
+                                              : FontWeight.w500,
+                                    ),
                                     label: Text(
                                       _CategoriaMenuHelper.categoryLabel(
                                         category,
@@ -1119,17 +1152,6 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
     );
   }
 
-  void _clearFilters() {
-    setState(() {
-      _searchController.clear();
-      _selectedJobDirection = null;
-      _selectedMacroCategoria = null;
-      _selectedCategoriaSlug = null;
-      _currentPage = 1;
-      _totalPages = 1;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1256,6 +1278,166 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
     );
   }
 
+  Future<void> _openFiltersModal() async {
+    final categoriesByMacro = _categorieByMacro;
+    final languageCode = Localizations.localeOf(context).languageCode;
+
+    final tempSearchCtrl = TextEditingController(text: _searchController.text);
+    String? tempJobDirection = _selectedJobDirection;
+    String? tempMacro = _selectedMacroCategoria;
+    String? tempCategorySlug = _selectedCategoriaSlug;
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final tempSelectedSubCategoryValue =
+                tempCategorySlug == null
+                    ? null
+                    : _CategoriaMenuHelper.categoryValueFromSlug(tempCategorySlug!);
+
+            return SafeArea(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  16,
+                  16,
+                  MediaQuery.of(context).viewInsets.bottom + 16,
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Filtri annunci',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: tempSearchCtrl,
+                        textInputAction: TextInputAction.search,
+                        decoration: InputDecoration(
+                          hintText: 'Cerca: baby sitter, badante, colf, OSS...',
+                          prefixIcon: const Icon(Icons.search),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      DropdownButtonFormField<String?>(
+                        initialValue: tempJobDirection,
+                        decoration: const InputDecoration(labelText: 'Ambiti'),
+                        items: const [
+                          DropdownMenuItem<String?>(
+                            value: null,
+                            child: Text('Tutti'),
+                          ),
+                          DropdownMenuItem<String?>(
+                            value: 'seek',
+                            child: Text('Cerco'),
+                          ),
+                          DropdownMenuItem<String?>(
+                            value: 'offer',
+                            child: Text('Offro'),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          setModalState(() {
+                            tempJobDirection = value;
+                            tempMacro = null;
+                            tempCategorySlug = null;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      _CategoryExplorerSelector(
+                        categoriesByMacro: categoriesByMacro,
+                        languageCode: languageCode,
+                        selectedMacro: tempMacro,
+                        selectedCategoryValue: tempSelectedSubCategoryValue,
+                        macroLabel: 'Macrocategorie',
+                        subCategoryLabel: 'Sottocategorie',
+                        allMacroText: 'Tutte',
+                        allSubCategoryText: 'Tutte',
+                        onMacroChanged: (value) {
+                          setModalState(() {
+                            tempMacro = value;
+                            tempCategorySlug = null;
+                          });
+                        },
+                        onSubCategoryChanged: (value) {
+                          final base =
+                              tempMacro == null
+                                  ? const <OffertaCategoria>[]
+                                  : (categoriesByMacro[tempMacro] ??
+                                      const <OffertaCategoria>[]);
+                          final ordered = _CategoriaMenuHelper.sortSubCategories(
+                            base,
+                            languageCode,
+                          );
+                          final selected = _CategoriaMenuHelper.findCategoryByValue(
+                            ordered,
+                            value,
+                          );
+                          setModalState(() => tempCategorySlug = selected?.slug);
+                        },
+                      ),
+                      const SizedBox(height: 14),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: () {
+                                setModalState(() {
+                                  tempSearchCtrl.clear();
+                                  tempJobDirection = null;
+                                  tempMacro = null;
+                                  tempCategorySlug = null;
+                                });
+                              },
+                              icon: const Icon(Icons.clear),
+                              label: const Text('Pulisci filtri'),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                setState(() {
+                                  _searchController.text = tempSearchCtrl.text;
+                                  _selectedJobDirection = tempJobDirection;
+                                  _selectedMacroCategoria = tempMacro;
+                                  _selectedCategoriaSlug = tempCategorySlug;
+                                });
+                                Navigator.of(sheetContext).pop();
+                                _loadInitialData();
+                              },
+                              icon: const Icon(Icons.check),
+                              label: const Text('Applica'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    tempSearchCtrl.dispose();
+  }
+
   Widget _buildSearchBody() {
     if (_errorMessage != null) {
       return Column(
@@ -1275,8 +1457,6 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
       );
     }
 
-    final categoriesByMacro = _categorieByMacro;
-    final languageCode = Localizations.localeOf(context).languageCode;
     final selectedSubCategoryValue =
       _selectedCategoriaSlug == null
         ? null
@@ -1285,77 +1465,20 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
 
     return Column(
       children: [
-        TextField(
-          controller: _searchController,
-          textInputAction: TextInputAction.search,
-          decoration: InputDecoration(
-            hintText: 'Cerca: baby sitter, badante, colf, OSS, ASO, DJ...',
-            prefixIcon: const Icon(Icons.search),
-            suffixIcon: IconButton(
-              onPressed: _loadInitialData,
-              icon: const Icon(Icons.arrow_forward),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: OutlinedButton.icon(
+            onPressed: _openFiltersModal,
+            icon: const Icon(Icons.tune),
+            label: Text(
+              (_searchController.text.isNotEmpty ||
+                      _selectedJobDirection != null ||
+                      _selectedMacroCategoria != null ||
+                      selectedSubCategoryValue != null)
+                  ? 'Filtri (attivi)'
+                  : 'Apri filtri',
             ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
-          onSubmitted: (_) => _loadInitialData(),
-        ),
-        const SizedBox(height: 14),
-        DropdownButtonFormField<String?>(
-          initialValue: _selectedJobDirection,
-          decoration: const InputDecoration(labelText: 'Ambiti'),
-          items: const [
-            DropdownMenuItem<String?>(value: null, child: Text('Tutti')),
-            DropdownMenuItem<String?>(value: 'seek', child: Text('Cerco')),
-            DropdownMenuItem<String?>(value: 'offer', child: Text('Offro')),
-          ],
-          onChanged: (value) {
-            setState(() {
-              _selectedJobDirection = value;
-              _selectedMacroCategoria = null;
-              _selectedCategoriaSlug = null;
-            });
-            _loadInitialData();
-          },
-        ),
-        const SizedBox(height: 12),
-        _CategoryExplorerSelector(
-          categoriesByMacro: categoriesByMacro,
-          languageCode: languageCode,
-          selectedMacro: _selectedMacroCategoria,
-          selectedCategoryValue: selectedSubCategoryValue,
-          macroLabel: 'Macrocategorie',
-          subCategoryLabel: 'Sottocategorie',
-          allMacroText: 'Tutte',
-          allSubCategoryText: 'Tutte',
-          onMacroChanged: (value) {
-            setState(() {
-              _selectedMacroCategoria = value;
-              _selectedCategoriaSlug = null;
-            });
-            _loadInitialData(showLoading: false);
-          },
-          onSubCategoryChanged: (value) {
-            final base =
-                _selectedMacroCategoria == null
-                    ? const <OffertaCategoria>[]
-                    : (categoriesByMacro[_selectedMacroCategoria] ??
-                        const <OffertaCategoria>[]);
-            final ordered = _CategoriaMenuHelper.sortSubCategories(
-              base,
-              languageCode,
-            );
-            final selected = _CategoriaMenuHelper.findCategoryByValue(
-              ordered,
-              value,
-            );
-            setState(() => _selectedCategoriaSlug = selected?.slug);
-          },
-        ),
-        const SizedBox(height: 14),
-        OutlinedButton.icon(
-          onPressed: _clearFilters,
-          icon: const Icon(Icons.clear),
-          label: const Text('Pulisci filtri'),
         ),
         const SizedBox(height: 16),
         if (displayedOfferte.isEmpty)
@@ -1539,6 +1662,29 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
   Future<void> _submit() async {
     if (!_validate()) return;
 
+    final initialCategorySlug = _resolveSelectedCategorySlug();
+    if (initialCategorySlug == null || initialCategorySlug.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Seleziona una sottocategoria valida')),
+      );
+      return;
+    }
+
+    final canProceed = await _confirmAiCategoryBeforeSubmit(
+      selectedCategorySlug: initialCategorySlug,
+    );
+    if (!mounted || !canProceed) return;
+
+    final selectedCategorySlug = _resolveSelectedCategorySlug();
+    if (selectedCategorySlug == null || selectedCategorySlug.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Sottocategoria non valida dopo il controllo AI'),
+        ),
+      );
+      return;
+    }
+
     setState(() => _isSending = true);
 
     // Converti l'immagine in base64 se selezionata
@@ -1557,7 +1703,6 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
       }
     }
 
-    final selectedCategorySlug = _resolveSelectedCategorySlug();
     final finalDescription =
         _descrizioneAiCtrl.text.trim().isNotEmpty
             ? _descrizioneAiCtrl.text.trim()
@@ -1606,6 +1751,142 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
         ),
       );
     }
+  }
+
+  Future<bool> _confirmAiCategoryBeforeSubmit({
+    required String selectedCategorySlug,
+  }) async {
+    final isOffertaServizio =
+        widget.categoryScope == 'service' && widget.categoryDirection == 'offer';
+    if (!isOffertaServizio) return true;
+
+    final descriptionForCheck =
+        _descrizioneAiCtrl.text.trim().isNotEmpty
+            ? _descrizioneAiCtrl.text.trim()
+            : _descrizioneCtrl.text.trim();
+    if (descriptionForCheck.length < 12) return true;
+
+    final result = await AnnunciSubmissionService.suggestCategoryFromDescription(
+      description: descriptionForCheck,
+      titleOffer: _titoloCtrl.text.trim(),
+      categoryScope: widget.categoryScope,
+      categoryDirection: widget.categoryDirection,
+    );
+
+    if (!mounted || result['success'] != true) {
+      return true;
+    }
+
+    final suggestedMacro = (result['category_macro'] ?? '').toString().trim();
+    final suggestedSlug = (result['category_slug'] ?? '').toString().trim();
+    if (suggestedMacro.isEmpty || suggestedSlug.isEmpty) {
+      return true;
+    }
+
+    final currentMacro = (_selectedMacroCategoria ?? '').trim();
+    final mismatchMacro =
+        suggestedMacro.toLowerCase() != currentMacro.toLowerCase();
+    final mismatchCategory =
+        suggestedSlug.toLowerCase() != selectedCategorySlug.toLowerCase();
+
+    if (!mismatchMacro && !mismatchCategory) {
+      return true;
+    }
+
+    final languageCode = Localizations.localeOf(context).languageCode;
+    OffertaCategoria? suggestedCategory;
+    OffertaCategoria? currentCategory;
+    for (final category in widget.categorie) {
+      if (category.slug == suggestedSlug) {
+        suggestedCategory = category;
+      }
+      if (category.slug == selectedCategorySlug) {
+        currentCategory = category;
+      }
+    }
+
+    final currentMacroLabel =
+        currentMacro.isNotEmpty
+            ? _CategoriaMenuHelper.macroLabel(currentMacro, languageCode)
+            : '-';
+    final currentCategoryLabel =
+        currentCategory != null
+            ? _CategoriaMenuHelper.categoryLabel(currentCategory, languageCode)
+            : selectedCategorySlug;
+
+    final suggestedMacroLabel =
+        _CategoriaMenuHelper.macroLabel(suggestedMacro, languageCode);
+    final suggestedCategoryLabel =
+        suggestedCategory != null
+            ? _CategoriaMenuHelper.categoryLabel(suggestedCategory, languageCode)
+            : suggestedSlug;
+
+    final reason = (result['reason'] ?? '').toString().trim();
+
+    final action = await showDialog<String>(
+      context: context,
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Controllo AI categoria'),
+            content: Text(
+              'La categoria selezionata sembra non coerente con la descrizione.\n\n'
+              'Selezione attuale:\n'
+              '• Macrocategoria: $currentMacroLabel\n'
+              '• Sottocategoria: $currentCategoryLabel\n\n'
+              'Suggerimento AI:\n'
+              '• Macrocategoria: $suggestedMacroLabel\n'
+              '• Sottocategoria: $suggestedCategoryLabel'
+              '${reason.isNotEmpty ? '\n\nMotivo: $reason' : ''}',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop('cancel'),
+                child: const Text('Annulla'),
+              ),
+              OutlinedButton(
+                onPressed: () => Navigator.of(ctx).pop('keep'),
+                child: const Text('Invia comunque'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(ctx).pop('apply'),
+                child: const Text('Applica suggerimento'),
+              ),
+            ],
+          ),
+    );
+
+    if (!mounted) return false;
+    if (action == 'cancel' || action == null) return false;
+    if (action == 'keep') return true;
+
+    final suggestedValue = _CategoriaMenuHelper.categoryValueFromSlug(
+      suggestedSlug,
+    );
+    final selectedInMacro = _CategoriaMenuHelper.findCategoryByValue(
+      _categorieByMacro[suggestedMacro] ?? const <OffertaCategoria>[],
+      suggestedValue,
+    );
+
+    if (selectedInMacro == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Suggerimento AI non applicabile alle categorie disponibili',
+          ),
+        ),
+      );
+      return false;
+    }
+
+    setState(() {
+      _selectedMacroCategoria = suggestedMacro;
+      _selectedCategoriaValueEn = suggestedValue;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Categoria AI applicata')),
+    );
+    return true;
   }
 
   Future<void> _improveDescriptionWithAi() async {
@@ -1658,6 +1939,185 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
               : 'Descrizione AI generata. Puoi modificarla prima di inviare.',
         ),
       ),
+    );
+  }
+
+  Future<void> _openMyAnnouncementsModal() async {
+    final initial = await AnnunciSubmissionService.getMyAnnouncements(
+      categoryDirection: widget.categoryDirection,
+    );
+
+    if (!mounted) return;
+
+    if (initial['success'] != true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            (initial['message'] ?? 'Impossibile caricare i tuoi annunci').toString(),
+          ),
+        ),
+      );
+      return;
+    }
+
+    final initialItems =
+        ((initial['items'] as List?) ?? const <dynamic>[])
+            .whereType<Map>()
+            .map((e) => Map<String, dynamic>.from(e))
+            .toList();
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (sheetContext) {
+        var items = List<Map<String, dynamic>>.from(initialItems);
+        bool isDeleting = false;
+
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.categoryDirection == 'seek'
+                          ? 'Le mie richieste (Cerco)'
+                          : 'Le mie offerte (Offro)',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 12),
+                    if (items.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 12),
+                        child: Text('Non hai ancora annunci da mostrare.'),
+                      )
+                    else
+                      Flexible(
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          itemCount: items.length,
+                          separatorBuilder: (_, __) => const Divider(height: 1),
+                          itemBuilder: (_, index) {
+                            final item = items[index];
+                            final id = (item['id'] as num?)?.toInt() ?? 0;
+                            final title = (item['title'] ?? '').toString();
+                            final city = (item['city'] ?? '').toString();
+                            return ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(
+                                title.isNotEmpty ? title : 'Annuncio #$id',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              subtitle:
+                                  city.isNotEmpty
+                                      ? Text(city)
+                                      : const Text('Senza citta'),
+                              trailing: IconButton(
+                                tooltip: 'Elimina annuncio',
+                                icon: const Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.redAccent,
+                                ),
+                                onPressed:
+                                    isDeleting
+                                        ? null
+                                        : () async {
+                                          final confirm =
+                                              await showDialog<bool>(
+                                                context: sheetContext,
+                                                builder:
+                                                    (ctx) => AlertDialog(
+                                                      title: const Text(
+                                                        'Eliminare annuncio?',
+                                                      ),
+                                                      content: const Text(
+                                                        'Questa azione spostera l\'annuncio nel cestino.',
+                                                      ),
+                                                      actions: [
+                                                        TextButton(
+                                                          onPressed:
+                                                              () => Navigator.of(
+                                                                ctx,
+                                                              ).pop(false),
+                                                          child: const Text(
+                                                            'Annulla',
+                                                          ),
+                                                        ),
+                                                        FilledButton(
+                                                          onPressed:
+                                                              () => Navigator.of(
+                                                                ctx,
+                                                              ).pop(true),
+                                                          child: const Text(
+                                                            'Elimina',
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                              ) ??
+                                              false;
+
+                                          if (!confirm) return;
+
+                                          setModalState(() => isDeleting = true);
+                                          final res =
+                                              await AnnunciSubmissionService.deleteMyAnnouncement(
+                                                id,
+                                              );
+                                          if (!mounted) return;
+                                          setModalState(() => isDeleting = false);
+
+                                          if (res['success'] == true) {
+                                            setModalState(
+                                              () => items.removeAt(index),
+                                            );
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      (res['message'] ??
+                                                              'Annuncio eliminato')
+                                                          .toString(),
+                                                    ),
+                                                  ),
+                                                );
+                                          } else {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      (res['message'] ??
+                                                              'Errore eliminazione')
+                                                          .toString(),
+                                                    ),
+                                                  ),
+                                                );
+                                          }
+                                        },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    if (isDeleting)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 8),
+                        child: LinearProgressIndicator(minHeight: 2),
+                      ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -1728,24 +2188,67 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
       return;
     }
 
-    final suggestedValue = _CategoriaMenuHelper.categoryValueFromSlug(suggestedSlug);
-    final selectedInMacro = _CategoriaMenuHelper.findCategoryByValue(
-      _categorieByMacro[macro] ?? const <OffertaCategoria>[],
-      suggestedValue,
-    );
+    OffertaCategoria? suggestedCategory;
+    for (final category in widget.categorie) {
+      if (category.slug == suggestedSlug) {
+        suggestedCategory = category;
+        break;
+      }
+    }
 
-    setState(() {
-      _selectedMacroCategoria = macro;
-      _selectedCategoriaValueEn =
-          selectedInMacro != null ? suggestedValue : null;
-    });
+    final suggestedValue =
+        suggestedCategory != null
+            ? _CategoriaMenuHelper.categoryValueFromSlug(suggestedCategory.slug)
+            : _CategoriaMenuHelper.categoryValueFromSlug(suggestedSlug);
+
+    final languageCode = Localizations.localeOf(context).languageCode;
+    final macroLabel = _CategoriaMenuHelper.macroLabel(macro, languageCode);
+    final categoryLabel =
+        suggestedCategory != null
+            ? _CategoriaMenuHelper.categoryLabel(suggestedCategory, languageCode)
+            : suggestedSlug;
+
+    final shouldApply =
+        await showDialog<bool>(
+          context: context,
+          builder:
+              (ctx) => AlertDialog(
+                title: const Text('Applicare suggerimento AI?'),
+                content: Text(
+                  'Vuoi impostare questa selezione?\n'
+                  'Macrocategoria: $macroLabel\n'
+                  'Sottocategoria: $categoryLabel',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(false),
+                    child: const Text('No'),
+                  ),
+                  FilledButton(
+                    onPressed: () => Navigator.of(ctx).pop(true),
+                    child: const Text('Si, applica'),
+                  ),
+                ],
+              ),
+        ) ??
+        false;
+
+    if (!mounted) return;
+    if (shouldApply) {
+      setState(() {
+        _selectedMacroCategoria = macro;
+        _selectedCategoriaValueEn = suggestedValue;
+      });
+    }
 
     final reason = (result['reason'] ?? '').toString();
     final source = (result['source'] ?? '').toString();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          reason.isNotEmpty
+          !shouldApply
+              ? 'Suggerimento non applicato'
+              : reason.isNotEmpty
               ? 'Suggerimento ${source.isNotEmpty ? '($source)' : ''}: $reason'
               : 'Categoria suggerita applicata',
         ),
@@ -1774,34 +2277,16 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
             Text(
               widget.subtitle,
             ),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: _openMyAnnouncementsModal,
+                icon: const Icon(Icons.list_alt),
+                label: const Text('I miei annunci'),
+              ),
+            ),
             const SizedBox(height: 16),
-            InputDecorator(
-              decoration: const InputDecoration(labelText: 'Tipo annuncio'),
-              child: Text(widget.fixedType),
-            ),
-            const SizedBox(height: 18),
-            _CategoryExplorerSelector(
-              categoriesByMacro: categoriesByMacro,
-              languageCode: languageCode,
-              selectedMacro: _selectedMacroCategoria,
-              selectedCategoryValue: _selectedCategoriaValueEn,
-              macroLabel: 'Macrocategoria',
-              subCategoryLabel: 'Sottocategorie',
-              allMacroText: 'Seleziona macrocategoria',
-              allSubCategoryText: 'Tutte',
-              onMacroChanged: (value) {
-                setState(() {
-                  _selectedMacroCategoria = value;
-                  _selectedCategoriaValueEn = null;
-                });
-              },
-              onSubCategoryChanged: (value) {
-                setState(() {
-                  _selectedCategoriaValueEn = value;
-                });
-              },
-            ),
-            const SizedBox(height: 18),
             TextFormField(
               controller: _titoloCtrl,
               decoration: const InputDecoration(labelText: 'Titolo annuncio'),
@@ -1953,6 +2438,28 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
               ),
             ),
             const SizedBox(height: 20),
+            _CategoryExplorerSelector(
+              categoriesByMacro: categoriesByMacro,
+              languageCode: languageCode,
+              selectedMacro: _selectedMacroCategoria,
+              selectedCategoryValue: _selectedCategoriaValueEn,
+              macroLabel: 'Macrocategoria',
+              subCategoryLabel: 'Sottocategorie',
+              allMacroText: 'Tutte',
+              allSubCategoryText: 'Tutte',
+              onMacroChanged: (value) {
+                setState(() {
+                  _selectedMacroCategoria = value;
+                  _selectedCategoriaValueEn = null;
+                });
+              },
+              onSubCategoryChanged: (value) {
+                setState(() {
+                  _selectedCategoriaValueEn = value;
+                });
+              },
+            ),
+            const SizedBox(height: 20),
             CheckboxListTile(
               contentPadding: EdgeInsets.zero,
               value: _privacy,
@@ -2083,16 +2590,6 @@ class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
                 'Compila i dati e invia la richiesta a WECOOP per la pubblicazione.',
               ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: _tipo,
-                items: const [
-                  DropdownMenuItem(value: 'Lavoro', child: Text('Lavoro')),
-                  DropdownMenuItem(value: 'Servizio', child: Text('Servizio')),
-                ],
-                onChanged: (value) => setState(() => _tipo = value ?? 'Lavoro'),
-                decoration: const InputDecoration(labelText: 'Tipo annuncio'),
-              ),
-              const SizedBox(height: 18),
               TextFormField(
                 controller: _titoloCtrl,
                 decoration: const InputDecoration(labelText: 'Titolo annuncio'),

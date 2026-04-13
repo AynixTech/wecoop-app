@@ -9,10 +9,15 @@ class AnnunciSubmissionService {
 
   static Future<Map<String, String>> _getHeaders() async {
     final languageCode = await _storage.read(key: 'language_code') ?? 'it';
-    return {
+    final token = await _storage.read(key: 'jwt_token');
+    final headers = {
       'Content-Type': 'application/json',
       'Accept-Language': languageCode,
     };
+    if (token != null && token.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+    return headers;
   }
 
   static Map<String, dynamic> _parseMapResponse(dynamic body) {
@@ -245,6 +250,80 @@ class AnnunciSubmissionService {
       return {
         'success': false,
         'message': (body['message'] ?? 'Descrizione AI non disponibile').toString(),
+      };
+    } catch (e) {
+      return {'success': false, 'message': 'Errore di connessione: $e'};
+    }
+  }
+
+  /// Recupera gli annunci inseriti dall'utente autenticato
+  static Future<Map<String, dynamic>> getMyAnnouncements({
+    String? categoryDirection,
+  }) async {
+    try {
+      final query = <String, String>{
+        if (categoryDirection != null && categoryDirection.trim().isNotEmpty)
+          'category_direction': categoryDirection.trim(),
+      };
+
+      final uri = Uri.parse('$baseUrl/annunci/miei').replace(queryParameters: query);
+      final response = await HttpClientService.get(
+        uri,
+        headers: await _getHeaders(),
+      );
+
+      final body = _parseMapResponse(HttpClientService.decodeJsonResponse(response));
+      if (response.statusCode == 200 && body['success'] == true) {
+        final data = body['data'];
+        return {
+          'success': true,
+          'items': data is List ? data : <dynamic>[],
+        };
+      }
+
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        return {
+          'success': false,
+          'message': 'Devi effettuare il login per vedere i tuoi annunci',
+        };
+      }
+
+      return {
+        'success': false,
+        'message': (body['message'] ?? 'Errore nel recupero annunci').toString(),
+      };
+    } catch (e) {
+      return {'success': false, 'message': 'Errore di connessione: $e'};
+    }
+  }
+
+  /// Elimina un annuncio inserito dall'utente autenticato
+  static Future<Map<String, dynamic>> deleteMyAnnouncement(int id) async {
+    try {
+      final uri = Uri.parse('$baseUrl/annunci/miei/$id');
+      final response = await HttpClientService.delete(
+        uri,
+        headers: await _getHeaders(),
+      );
+
+      final body = _parseMapResponse(HttpClientService.decodeJsonResponse(response));
+      if (response.statusCode == 200 && body['success'] == true) {
+        return {
+          'success': true,
+          'message': (body['message'] ?? 'Annuncio eliminato').toString(),
+        };
+      }
+
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        return {
+          'success': false,
+          'message': (body['message'] ?? 'Non autorizzato').toString(),
+        };
+      }
+
+      return {
+        'success': false,
+        'message': (body['message'] ?? 'Errore eliminazione annuncio').toString(),
       };
     } catch (e) {
       return {'success': false, 'message': 'Errore di connessione: $e'};

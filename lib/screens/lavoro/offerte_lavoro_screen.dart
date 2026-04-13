@@ -729,18 +729,6 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                     icon: const Icon(Icons.search),
                     label: const Text('Aggiorna'),
                   ),
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const LavoroOrientamentoScreen(),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.support_agent),
-                    label: const Text('Supporto'),
-                  ),
                   TextButton.icon(
                     onPressed:
                         () => _openSupportWhatsApp(

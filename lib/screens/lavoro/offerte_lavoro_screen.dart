@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:wecoop_app/models/offerta_lavoro_model.dart';
 import 'package:wecoop_app/screens/servizi/lavoro_orientamento_screen.dart';
 import 'package:wecoop_app/services/offerte_lavoro_service.dart';
+import 'package:wecoop_app/services/annunci_submission_service.dart';
 
 class OfferteLavoroScreen extends StatefulWidget {
   const OfferteLavoroScreen({super.key});
@@ -12,6 +13,8 @@ class OfferteLavoroScreen extends StatefulWidget {
 }
 
 class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
+  static const String _wecoopWhatsAppNumber = '393515112113';
+
   final TextEditingController _searchController = TextEditingController();
 
   List<OffertaLavoro> _offerte = [];
@@ -56,25 +59,29 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
     if (!mounted) return;
 
     if (offerteResult['success'] == true) {
-      final pagination = offerteResult['pagination'] as Map<String, dynamic>? ??
+      final pagination =
+          offerteResult['pagination'] as Map<String, dynamic>? ??
           const <String, dynamic>{};
       setState(() {
         _offerte = (offerteResult['offerte'] as List<OffertaLavoro>);
         _totalPages = (pagination['total_pages'] as num?)?.toInt() ?? 1;
         _isLoading = false;
-        _categorie = categorieResult['success'] == true
-            ? (categorieResult['categorie'] as List<OffertaCategoria>)
-            : <OffertaCategoria>[];
+        _categorie =
+            categorieResult['success'] == true
+                ? (categorieResult['categorie'] as List<OffertaCategoria>)
+                : <OffertaCategoria>[];
       });
       return;
     }
 
     setState(() {
       _isLoading = false;
-      _errorMessage = (offerteResult['message'] ?? 'Errore caricamento annunci').toString();
-      _categorie = categorieResult['success'] == true
-          ? (categorieResult['categorie'] as List<OffertaCategoria>)
-          : <OffertaCategoria>[];
+      _errorMessage =
+          (offerteResult['message'] ?? 'Errore caricamento annunci').toString();
+      _categorie =
+          categorieResult['success'] == true
+              ? (categorieResult['categorie'] as List<OffertaCategoria>)
+              : <OffertaCategoria>[];
     });
   }
 
@@ -94,12 +101,14 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
     if (!mounted) return;
 
     if (result['success'] == true) {
-      final pagination = result['pagination'] as Map<String, dynamic>? ??
+      final pagination =
+          result['pagination'] as Map<String, dynamic>? ??
           const <String, dynamic>{};
       setState(() {
         _offerte.addAll(result['offerte'] as List<OffertaLavoro>);
         _currentPage = nextPage;
-        _totalPages = (pagination['total_pages'] as num?)?.toInt() ?? _totalPages;
+        _totalPages =
+            (pagination['total_pages'] as num?)?.toInt() ?? _totalPages;
         _isLoadingMore = false;
       });
       return;
@@ -114,7 +123,11 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
 
     if (result['success'] != true) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text((result['message'] ?? 'Dettaglio non disponibile').toString())),
+        SnackBar(
+          content: Text(
+            (result['message'] ?? 'Dettaglio non disponibile').toString(),
+          ),
+        ),
       );
       return;
     }
@@ -124,10 +137,11 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => _OffertaLavoroDetailScreen(
-          offerta: detailed,
-          onApply: () => _openApplySheet(detailed),
-        ),
+        builder:
+            (_) => _OffertaLavoroDetailScreen(
+              offerta: detailed,
+              onApply: () => _openApplySheet(detailed),
+            ),
       ),
     );
   }
@@ -146,7 +160,45 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(msg.isEmpty ? (success ? 'Candidatura inviata' : 'Errore candidatura') : msg),
+        content: Text(
+          msg.isEmpty
+              ? (success ? 'Candidatura inviata' : 'Errore candidatura')
+              : msg,
+        ),
+        backgroundColor: success ? Colors.green : Colors.red,
+      ),
+    );
+  }
+
+  Future<void> _openSupportWhatsApp({required String message}) async {
+    final encoded = Uri.encodeComponent(message);
+    final uri = Uri.parse('https://wa.me/$_wecoopWhatsAppNumber?text=$encoded');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      return;
+    }
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Impossibile aprire WhatsApp')),
+    );
+  }
+
+  Future<void> _openPublishAdSheet() async {
+    final result = await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => const _PubblicaAnnuncioSheet(),
+    );
+
+    if (!mounted || result == null) return;
+
+    final success = result['success'] == true;
+    final message = (result['message'] ?? '').toString();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message.isEmpty ? 'Richiesta inviata' : message),
         backgroundColor: success ? Colors.green : Colors.red,
       ),
     );
@@ -163,7 +215,9 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const LavoroOrientamentoScreen()),
+                MaterialPageRoute(
+                  builder: (_) => const LavoroOrientamentoScreen(),
+                ),
               );
             },
             icon: const Icon(Icons.school),
@@ -172,9 +226,10 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: _loadInitialData,
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : _buildBody(),
+        child:
+            _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _buildBody(),
       ),
     );
   }
@@ -201,6 +256,67 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Colors.amber.shade50,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.amber.shade200),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Cosa vuoi fare?',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Puoi cercare offerte lavoro, attivare supporto servizi oppure pubblicare un annuncio.',
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: _loadInitialData,
+                    icon: const Icon(Icons.search),
+                    label: const Text('Cerca lavoro'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const LavoroOrientamentoScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.support_agent),
+                    label: const Text('Cerca servizi'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: _openPublishAdSheet,
+                    icon: const Icon(Icons.campaign),
+                    label: const Text('Inserisci annuncio'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              TextButton.icon(
+                onPressed:
+                    () => _openSupportWhatsApp(
+                      message:
+                          'Ciao WECOOP, vorrei informazioni per cercare lavoro o attivare servizi dedicati.',
+                    ),
+                icon: const Icon(Icons.chat),
+                label: const Text('Contatta WECOOP su WhatsApp'),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
         TextField(
           controller: _searchController,
           textInputAction: TextInputAction.search,
@@ -266,22 +382,36 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
               margin: const EdgeInsets.only(bottom: 12),
               child: ListTile(
                 onTap: () => _openDetail(offerta),
-                title: Text(offerta.title, maxLines: 2, overflow: TextOverflow.ellipsis),
+                title: Text(
+                  offerta.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (offerta.companyName.isNotEmpty) Text(offerta.companyName),
+                    if (offerta.companyName.isNotEmpty)
+                      Text(offerta.companyName),
                     const SizedBox(height: 4),
                     Wrap(
                       spacing: 8,
                       runSpacing: 4,
                       children: [
                         if (offerta.city.isNotEmpty)
-                          _MetaChip(icon: Icons.location_on, text: offerta.city),
+                          _MetaChip(
+                            icon: Icons.location_on,
+                            text: offerta.city,
+                          ),
                         if (offerta.contractType.isNotEmpty)
-                          _MetaChip(icon: Icons.badge, text: offerta.contractType),
+                          _MetaChip(
+                            icon: Icons.badge,
+                            text: offerta.contractType,
+                          ),
                         if (offerta.isFeatured)
-                          const _MetaChip(icon: Icons.star, text: 'In evidenza'),
+                          const _MetaChip(
+                            icon: Icons.star,
+                            text: 'In evidenza',
+                          ),
                       ],
                     ),
                   ],
@@ -295,16 +425,181 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen> {
             padding: const EdgeInsets.only(top: 8),
             child: ElevatedButton(
               onPressed: _isLoadingMore ? null : _loadMore,
-              child: _isLoadingMore
-                  ? const SizedBox(
-                      height: 18,
-                      width: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Carica altri annunci'),
+              child:
+                  _isLoadingMore
+                      ? const SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                      : const Text('Carica altri annunci'),
             ),
           ),
       ],
+    );
+  }
+}
+
+class _PubblicaAnnuncioSheet extends StatefulWidget {
+  const _PubblicaAnnuncioSheet();
+
+  @override
+  State<_PubblicaAnnuncioSheet> createState() => _PubblicaAnnuncioSheetState();
+}
+
+class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
+  final _formKey = GlobalKey<FormState>();
+  final _titoloCtrl = TextEditingController();
+  final _cittaCtrl = TextEditingController();
+  final _contattoCtrl = TextEditingController();
+  final _descrizioneCtrl = TextEditingController();
+  bool _privacy = false;
+  String _tipo = 'Lavoro';
+  bool _isSending = false;
+
+  @override
+  void dispose() {
+    _titoloCtrl.dispose();
+    _cittaCtrl.dispose();
+    _contattoCtrl.dispose();
+    _descrizioneCtrl.dispose();
+    super.dispose();
+  }
+
+  bool _validate() {
+    if (!_formKey.currentState!.validate()) return false;
+    if (_privacy) return true;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Devi accettare il consenso privacy')),
+    );
+    return false;
+  }
+
+  Future<void> _submit() async {
+    if (!_validate()) return;
+
+    setState(() => _isSending = true);
+
+    final result = await AnnunciSubmissionService.submitJobAnnouncement(
+      submissionType: _tipo,
+      titleOffer: _titoloCtrl.text.trim(),
+      city: _cittaCtrl.text.trim(),
+      contactPhone: _contattoCtrl.text.trim(),
+      description: _descrizioneCtrl.text.trim(),
+      consentPrivacy: _privacy,
+    );
+
+    if (!mounted) return;
+    setState(() => _isSending = false);
+
+    Navigator.pop(context, result);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(16, 16, 16, bottomInset + 16),
+      child: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Inserisci annuncio',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 6),
+              const Text(
+                'Compila i dati e invia la richiesta a WECOOP per la pubblicazione.',
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                initialValue: _tipo,
+                items: const [
+                  DropdownMenuItem(value: 'Lavoro', child: Text('Lavoro')),
+                  DropdownMenuItem(value: 'Servizio', child: Text('Servizio')),
+                ],
+                onChanged: (value) => setState(() => _tipo = value ?? 'Lavoro'),
+                decoration: const InputDecoration(labelText: 'Tipo annuncio'),
+              ),
+              TextFormField(
+                controller: _titoloCtrl,
+                decoration: const InputDecoration(labelText: 'Titolo annuncio'),
+                validator:
+                    (v) =>
+                        (v == null || v.trim().isEmpty)
+                            ? 'Campo obbligatorio'
+                            : null,
+              ),
+              TextFormField(
+                controller: _cittaCtrl,
+                decoration: const InputDecoration(labelText: 'Citta'),
+                validator:
+                    (v) =>
+                        (v == null || v.trim().isEmpty)
+                            ? 'Campo obbligatorio'
+                            : null,
+              ),
+              TextFormField(
+                controller: _contattoCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Telefono o email di contatto',
+                ),
+                validator:
+                    (v) =>
+                        (v == null || v.trim().isEmpty)
+                            ? 'Campo obbligatorio'
+                            : null,
+              ),
+              TextFormField(
+                controller: _descrizioneCtrl,
+                minLines: 3,
+                maxLines: 5,
+                decoration: const InputDecoration(
+                  labelText: 'Descrizione',
+                  hintText:
+                      'Descrivi mansione/servizio, orari e requisiti principali',
+                ),
+                validator:
+                    (v) =>
+                        (v == null || v.trim().length < 20)
+                            ? 'Inserisci almeno 20 caratteri'
+                            : null,
+              ),
+              CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                value: _privacy,
+                onChanged: (v) => setState(() => _privacy = v == true),
+                title: const Text('Accetto il trattamento dei dati personali'),
+                controlAffinity: ListTileControlAffinity.leading,
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: _isSending ? null : _submit,
+                  icon:
+                      _isSending
+                          ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : const Icon(Icons.send),
+                  label: Text(
+                    _isSending ? 'Invio in corso...' : 'Invia annuncio',
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -339,7 +634,10 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
   final OffertaLavoro offerta;
   final VoidCallback onApply;
 
-  const _OffertaLavoroDetailScreen({required this.offerta, required this.onApply});
+  const _OffertaLavoroDetailScreen({
+    required this.offerta,
+    required this.onApply,
+  });
 
   Future<void> _openUrl(String value) async {
     final uri = Uri.tryParse(value);
@@ -364,38 +662,57 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(offerta.title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+          Text(
+            offerta.title,
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           if (offerta.companyName.isNotEmpty)
-            Text(offerta.companyName, style: const TextStyle(fontSize: 16, color: Colors.black87)),
+            Text(
+              offerta.companyName,
+              style: const TextStyle(fontSize: 16, color: Colors.black87),
+            ),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: [
-              if (offerta.city.isNotEmpty) _MetaChip(icon: Icons.location_on, text: offerta.city),
+              if (offerta.city.isNotEmpty)
+                _MetaChip(icon: Icons.location_on, text: offerta.city),
               if (offerta.contractType.isNotEmpty)
                 _MetaChip(icon: Icons.badge, text: offerta.contractType),
               if (offerta.workMode.isNotEmpty)
                 _MetaChip(icon: Icons.workspaces, text: offerta.workMode),
               if (offerta.languageRequirement.isNotEmpty)
-                _MetaChip(icon: Icons.language, text: offerta.languageRequirement),
+                _MetaChip(
+                  icon: Icons.language,
+                  text: offerta.languageRequirement,
+                ),
             ],
           ),
           const SizedBox(height: 16),
           if (offerta.requirements.isNotEmpty) ...[
-            const Text('Requisiti', style: TextStyle(fontWeight: FontWeight.w700)),
+            const Text(
+              'Requisiti',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
             const SizedBox(height: 6),
             Text(offerta.requirements),
             const SizedBox(height: 12),
           ],
           if (offerta.content.isNotEmpty) ...[
-            const Text('Descrizione', style: TextStyle(fontWeight: FontWeight.w700)),
+            const Text(
+              'Descrizione',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
             const SizedBox(height: 6),
             Text(offerta.content),
             const SizedBox(height: 12),
           ] else if (offerta.excerpt.isNotEmpty) ...[
-            const Text('Descrizione', style: TextStyle(fontWeight: FontWeight.w700)),
+            const Text(
+              'Descrizione',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
             const SizedBox(height: 6),
             Text(offerta.excerpt),
             const SizedBox(height: 12),
@@ -407,26 +724,36 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
             const SizedBox(height: 12),
           ],
           if (offerta.salaryRange.isNotEmpty) ...[
-            const Text('Retribuzione', style: TextStyle(fontWeight: FontWeight.w700)),
+            const Text(
+              'Retribuzione',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
             const SizedBox(height: 6),
             Text(offerta.salaryRange),
             const SizedBox(height: 12),
           ],
           if (offerta.expiresAt.isNotEmpty) ...[
-            const Text('Scadenza', style: TextStyle(fontWeight: FontWeight.w700)),
+            const Text(
+              'Scadenza',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
             const SizedBox(height: 6),
             Text(offerta.expiresAt),
             const SizedBox(height: 12),
           ],
           if (offerta.categories.isNotEmpty) ...[
-            const Text('Categorie', style: TextStyle(fontWeight: FontWeight.w700)),
+            const Text(
+              'Categorie',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
             const SizedBox(height: 6),
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: offerta.categories
-                  .map((c) => Chip(label: Text(c.name)))
-                  .toList(),
+              children:
+                  offerta.categories
+                      .map((c) => Chip(label: Text(c.name)))
+                      .toList(),
             ),
             const SizedBox(height: 12),
           ],
@@ -534,27 +861,43 @@ class _CandidaturaSheetState extends State<_CandidaturaSheet> {
               TextFormField(
                 controller: _nameCtrl,
                 decoration: const InputDecoration(labelText: 'Nome e cognome'),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Campo obbligatorio' : null,
+                validator:
+                    (v) =>
+                        (v == null || v.trim().isEmpty)
+                            ? 'Campo obbligatorio'
+                            : null,
               ),
               TextFormField(
                 controller: _phoneCtrl,
                 keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(labelText: 'Telefono / WhatsApp'),
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Campo obbligatorio' : null,
+                decoration: const InputDecoration(
+                  labelText: 'Telefono / WhatsApp',
+                ),
+                validator:
+                    (v) =>
+                        (v == null || v.trim().isEmpty)
+                            ? 'Campo obbligatorio'
+                            : null,
               ),
               TextFormField(
                 controller: _emailCtrl,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: 'Email (opzionale)'),
+                decoration: const InputDecoration(
+                  labelText: 'Email (opzionale)',
+                ),
               ),
               TextFormField(
                 controller: _cityCtrl,
-                decoration: const InputDecoration(labelText: 'Citta (opzionale)'),
+                decoration: const InputDecoration(
+                  labelText: 'Citta (opzionale)',
+                ),
               ),
               TextFormField(
                 controller: _noteCtrl,
                 maxLines: 3,
-                decoration: const InputDecoration(labelText: 'Nota (opzionale)'),
+                decoration: const InputDecoration(
+                  labelText: 'Nota (opzionale)',
+                ),
               ),
               const SizedBox(height: 8),
               CheckboxListTile(
@@ -569,13 +912,14 @@ class _CandidaturaSheetState extends State<_CandidaturaSheet> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _sending ? null : _submit,
-                  child: _sending
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('Invia candidatura'),
+                  child:
+                      _sending
+                          ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : const Text('Invia candidatura'),
                 ),
               ),
             ],

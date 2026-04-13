@@ -11,6 +11,11 @@ import java.io.FileInputStream
 
 val keystorePropertiesFile = rootProject.file("key.properties")
 val keystoreProperties = Properties()
+val isReleaseBuildRequested = gradle.startParameter.taskNames.any {
+    it.contains("release", ignoreCase = true) ||
+        it.contains("bundle", ignoreCase = true)
+}
+var hasReleaseSigning = false
 
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
@@ -41,23 +46,22 @@ android {
 
    signingConfigs {
     create("release") {
-        if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-    println("✅ key.properties caricato correttamente")
-} else {
-    println("❌ key.properties NON trovato")
-}
-
         val storeFilePath = keystoreProperties.getProperty("storeFile")
         val resolvedFile = storeFilePath?.let { File(it) }
 
         if (resolvedFile != null && resolvedFile.exists()) {
+            hasReleaseSigning = true
             storeFile = resolvedFile
             storePassword = keystoreProperties.getProperty("storePassword") ?: ""
             keyAlias = keystoreProperties.getProperty("keyAlias") ?: ""
             keyPassword = keystoreProperties.getProperty("keyPassword") ?: ""
+            println("✅ Firma release configurata correttamente")
+        } else if (isReleaseBuildRequested) {
+            throw GradleException(
+                "❌ Errore: il file di firma '${storeFilePath}' non esiste o non è accessibile.",
+            )
         } else {
-            throw GradleException("❌ Errore: il file di firma '${storeFilePath}' non esiste o non è accessibile.")
+            println("⚠️ Keystore release non disponibile: uso firma debug per build locali.")
         }
     }
 }
@@ -67,7 +71,11 @@ android {
 
     buildTypes {
         getByName("release") {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = if (hasReleaseSigning) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
             isMinifyEnabled = false
             isShrinkResources = false
         }

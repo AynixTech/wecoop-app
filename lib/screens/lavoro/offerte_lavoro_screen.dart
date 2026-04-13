@@ -7,7 +7,7 @@ import 'package:wecoop_app/services/annunci_submission_service.dart';
 
 class _CategoriaMenuHelper {
   static const Map<String, List<String>> macroKeywordMap = {
-    'Cura persona': [
+    'personal-care': [
       'badante',
       'baby',
       'bambin',
@@ -17,7 +17,7 @@ class _CategoriaMenuHelper {
       'caregiver',
       'assistenza',
     ],
-    'Sanita e benessere': [
+    'health-wellbeing': [
       'oss',
       'aso',
       'sanit',
@@ -25,7 +25,7 @@ class _CategoriaMenuHelper {
       'fisioter',
       'wellness',
     ],
-    'Ristorazione e ospitalita': [
+    'food-hospitality': [
       'bar',
       'ristor',
       'cucina',
@@ -34,7 +34,7 @@ class _CategoriaMenuHelper {
       'hotel',
       'hospitality',
     ],
-    'Eventi e creativita': [
+    'events-creativity': [
       'dj',
       'evento',
       'music',
@@ -43,7 +43,7 @@ class _CategoriaMenuHelper {
       'grafica',
       'animaz',
     ],
-    'Edilizia e logistica': [
+    'construction-logistics': [
       'edil',
       'murator',
       'magazzin',
@@ -52,6 +52,123 @@ class _CategoriaMenuHelper {
       'trasport',
       'manutenz',
     ],
+  };
+
+  static const Map<String, Map<String, String>> macroLabels = {
+    'personal-care': {
+      'it': 'Cura persona',
+      'en': 'Personal care',
+      'es': 'Cuidado personal',
+    },
+    'health-wellbeing': {
+      'it': 'Sanita e benessere',
+      'en': 'Health and wellbeing',
+      'es': 'Salud y bienestar',
+    },
+    'food-hospitality': {
+      'it': 'Ristorazione e ospitalita',
+      'en': 'Food and hospitality',
+      'es': 'Hosteleria y restauracion',
+    },
+    'events-creativity': {
+      'it': 'Eventi e creativita',
+      'en': 'Events and creativity',
+      'es': 'Eventos y creatividad',
+    },
+    'construction-logistics': {
+      'it': 'Edilizia e logistica',
+      'en': 'Construction and logistics',
+      'es': 'Construccion y logistica',
+    },
+    'other': {
+      'it': 'Altro',
+      'en': 'Other',
+      'es': 'Otros',
+    },
+  };
+
+  static const Map<String, String> categoryValueBySlug = {
+    'baby-sitter': 'babysitter',
+    'badante': 'caregiver',
+    'colf': 'housekeeper',
+    'oss-osa': 'health-assistant',
+    'aso': 'dental-assistant',
+    'segreteria': 'office-assistant',
+    'manicure': 'manicure',
+    'dentista': 'dentistry',
+    'massaggi': 'massage-wellness',
+    'fotografo': 'photographer',
+    'dj': 'dj-events',
+    'animatori': 'entertainers',
+    'pulizie-limpieza': 'cleaning',
+  };
+
+  static const Map<String, Map<String, String>> categoryLabels = {
+    'babysitter': {
+      'it': 'Baby sitter',
+      'en': 'Babysitter',
+      'es': 'Ninera',
+    },
+    'caregiver': {
+      'it': 'Badante',
+      'en': 'Caregiver',
+      'es': 'Cuidador/a',
+    },
+    'housekeeper': {
+      'it': 'Colf',
+      'en': 'Housekeeper',
+      'es': 'Empleada domestica',
+    },
+    'health-assistant': {
+      'it': 'OSS / OSA',
+      'en': 'Health assistant',
+      'es': 'Asistente sociosanitario',
+    },
+    'dental-assistant': {
+      'it': 'ASO',
+      'en': 'Dental assistant',
+      'es': 'Asistente dental',
+    },
+    'office-assistant': {
+      'it': 'Segreteria',
+      'en': 'Office assistant',
+      'es': 'Asistente de oficina',
+    },
+    'manicure': {
+      'it': 'Manicure / Onicotecnica',
+      'en': 'Manicure / Nail technician',
+      'es': 'Manicura / Tecnica de unas',
+    },
+    'dentistry': {
+      'it': 'Dentista / Odontoiatria',
+      'en': 'Dentistry',
+      'es': 'Odontologia',
+    },
+    'massage-wellness': {
+      'it': 'Massaggi / Benessere',
+      'en': 'Massage / Wellness',
+      'es': 'Masajes / Bienestar',
+    },
+    'photographer': {
+      'it': 'Fotografo / Fotografa',
+      'en': 'Photographer',
+      'es': 'Fotografo/a',
+    },
+    'dj-events': {
+      'it': 'DJ / Musica Eventi',
+      'en': 'DJ / Event music',
+      'es': 'DJ / Musica para eventos',
+    },
+    'entertainers': {
+      'it': 'Animatori / Animatrici',
+      'en': 'Entertainers',
+      'es': 'Animadores/as',
+    },
+    'cleaning': {
+      'it': 'Pulizie / Limpieza',
+      'en': 'Cleaning',
+      'es': 'Limpieza',
+    },
   };
 
   static String _normalize(String value) => value.toLowerCase().trim();
@@ -67,7 +184,37 @@ class _CategoriaMenuHelper {
       }
     }
 
-    return 'Altro';
+    return 'other';
+  }
+
+  static String macroLabel(String macroValue, String languageCode) {
+    final labels = macroLabels[macroValue];
+    if (labels == null) return macroValue;
+    return labels[languageCode] ?? labels['it'] ?? macroValue;
+  }
+
+  static String categoryValueFromSlug(String slug) {
+    return categoryValueBySlug[slug] ?? slug.replaceAll('-', '_');
+  }
+
+  static String categoryLabel(OffertaCategoria category, String languageCode) {
+    final value = categoryValueFromSlug(category.slug);
+    final labels = categoryLabels[value];
+    if (labels == null) return category.name;
+    return labels[languageCode] ?? labels['it'] ?? category.name;
+  }
+
+  static OffertaCategoria? findCategoryByValue(
+    Iterable<OffertaCategoria> categories,
+    String? value,
+  ) {
+    if (value == null || value.isEmpty) return null;
+    for (final category in categories) {
+      if (categoryValueFromSlug(category.slug) == value) {
+        return category;
+      }
+    }
+    return null;
   }
 
   static Map<String, List<OffertaCategoria>> groupByMacro(
@@ -449,11 +596,16 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
 
     final categoriesByMacro = _categorieByMacro;
     final macroNames = categoriesByMacro.keys.toList();
+    final languageCode = Localizations.localeOf(context).languageCode;
     final subCategories =
         _selectedMacroCategoria == null
             ? const <OffertaCategoria>[]
             : (categoriesByMacro[_selectedMacroCategoria] ??
                 const <OffertaCategoria>[]);
+    final selectedSubCategoryValue =
+      _selectedCategoriaSlug == null
+        ? null
+        : _CategoriaMenuHelper.categoryValueFromSlug(_selectedCategoriaSlug!);
     final displayedOfferte = _offerteFiltrate;
 
     return Column(
@@ -479,7 +631,10 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
           items: [
             const DropdownMenuItem<String>(value: null, child: Text('Tutte')),
             ...macroNames.map(
-              (macro) => DropdownMenuItem<String>(value: macro, child: Text(macro)),
+              (macro) => DropdownMenuItem<String>(
+                value: macro,
+                child: Text(_CategoriaMenuHelper.macroLabel(macro, languageCode)),
+              ),
             ),
           ],
           onChanged: (value) {
@@ -493,16 +648,23 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
         if (_selectedMacroCategoria != null) ...[
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
-            initialValue: _selectedCategoriaSlug,
+            initialValue: selectedSubCategoryValue,
             decoration: const InputDecoration(labelText: 'Sottocategoria'),
             items: [
               const DropdownMenuItem<String>(value: null, child: Text('Tutte')),
               ...subCategories.map(
-                (c) => DropdownMenuItem<String>(value: c.slug, child: Text(c.name)),
+                (c) => DropdownMenuItem<String>(
+                  value: _CategoriaMenuHelper.categoryValueFromSlug(c.slug),
+                  child: Text(_CategoriaMenuHelper.categoryLabel(c, languageCode)),
+                ),
               ),
             ],
             onChanged: (value) {
-              setState(() => _selectedCategoriaSlug = value);
+              final selected = _CategoriaMenuHelper.findCategoryByValue(
+                subCategories,
+                value,
+              );
+              setState(() => _selectedCategoriaSlug = selected?.slug);
               _loadInitialData();
             },
           ),
@@ -601,6 +763,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
   bool _privacy = false;
   String _tipo = 'Lavoro';
   String? _selectedMacroCategoria;
+  String? _selectedCategoriaValueEn;
   String? _selectedCategoriaSlug;
   bool _isSending = false;
 
@@ -625,7 +788,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
       );
       return false;
     }
-    if (_selectedCategoriaSlug == null) {
+    if (_selectedCategoriaValueEn == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Seleziona una sottocategoria')),
       );
@@ -652,7 +815,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
       description: _descrizioneCtrl.text.trim(),
       consentPrivacy: _privacy,
       categoryMacro: _selectedMacroCategoria,
-      categorySlug: _selectedCategoriaSlug,
+      categorySlug: _selectedCategoriaValueEn,
     );
 
     if (!mounted) return;
@@ -673,6 +836,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
         _privacy = false;
         _tipo = 'Lavoro';
         _selectedMacroCategoria = null;
+        _selectedCategoriaValueEn = null;
         _selectedCategoriaSlug = null;
       });
     } else {
@@ -689,6 +853,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
   Widget build(BuildContext context) {
     final categoriesByMacro = _categorieByMacro;
     final macroNames = categoriesByMacro.keys.toList();
+    final languageCode = Localizations.localeOf(context).languageCode;
     final subCategories =
         _selectedMacroCategoria == null
             ? const <OffertaCategoria>[]
@@ -730,13 +895,16 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                   child: Text('Seleziona macrocategoria'),
                 ),
                 ...macroNames.map(
-                  (macro) =>
-                      DropdownMenuItem<String>(value: macro, child: Text(macro)),
+                  (macro) => DropdownMenuItem<String>(
+                    value: macro,
+                    child: Text(_CategoriaMenuHelper.macroLabel(macro, languageCode)),
+                  ),
                 ),
               ],
               onChanged: (value) {
                 setState(() {
                   _selectedMacroCategoria = value;
+                  _selectedCategoriaValueEn = null;
                   _selectedCategoriaSlug = null;
                 });
               },
@@ -744,17 +912,29 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
             ),
             const SizedBox(height: 18),
             DropdownButtonFormField<String>(
-              initialValue: _selectedCategoriaSlug,
+              initialValue: _selectedCategoriaValueEn,
               items: [
                 const DropdownMenuItem<String>(
                   value: null,
                   child: Text('Seleziona sottocategoria'),
                 ),
                 ...subCategories.map(
-                  (c) => DropdownMenuItem<String>(value: c.slug, child: Text(c.name)),
+                  (c) => DropdownMenuItem<String>(
+                    value: _CategoriaMenuHelper.categoryValueFromSlug(c.slug),
+                    child: Text(_CategoriaMenuHelper.categoryLabel(c, languageCode)),
+                  ),
                 ),
               ],
-              onChanged: (value) => setState(() => _selectedCategoriaSlug = value),
+              onChanged: (value) {
+                final selected = _CategoriaMenuHelper.findCategoryByValue(
+                  subCategories,
+                  value,
+                );
+                setState(() {
+                  _selectedCategoriaValueEn = value;
+                  _selectedCategoriaSlug = selected?.slug;
+                });
+              },
               decoration: const InputDecoration(labelText: 'Sottocategoria'),
             ),
             const SizedBox(height: 18),

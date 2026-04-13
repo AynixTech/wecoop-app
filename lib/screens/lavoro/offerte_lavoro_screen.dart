@@ -1463,11 +1463,13 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
   final _cittaCtrl = TextEditingController();
   final _contattoCtrl = TextEditingController();
   final _descrizioneCtrl = TextEditingController();
+  final _descrizioneAiCtrl = TextEditingController();
   bool _privacy = false;
   String? _selectedMacroCategoria;
   String? _selectedCategoriaValueEn;
   bool _isSending = false;
   bool _isSuggestingCategory = false;
+  bool _isImprovingDescription = false;
   File? _selectedImage;
   final _imagePicker = ImagePicker();
 
@@ -1481,6 +1483,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
     _cittaCtrl.dispose();
     _contattoCtrl.dispose();
     _descrizioneCtrl.dispose();
+    _descrizioneAiCtrl.dispose();
     super.dispose();
   }
 
@@ -1555,13 +1558,17 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
     }
 
     final selectedCategorySlug = _resolveSelectedCategorySlug();
+    final finalDescription =
+        _descrizioneAiCtrl.text.trim().isNotEmpty
+            ? _descrizioneAiCtrl.text.trim()
+            : _descrizioneCtrl.text.trim();
 
     final result = await AnnunciSubmissionService.submitJobAnnouncement(
       submissionType: widget.fixedType,
       titleOffer: _titoloCtrl.text.trim(),
       city: _cittaCtrl.text.trim(),
       contactPhone: _contattoCtrl.text.trim(),
-      description: _descrizioneCtrl.text.trim(),
+      description: finalDescription,
       consentPrivacy: _privacy,
       categoryScope: widget.categoryScope,
       categoryDirection: widget.categoryDirection,
@@ -1584,6 +1591,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
       _cittaCtrl.clear();
       _contattoCtrl.clear();
       _descrizioneCtrl.clear();
+      _descrizioneAiCtrl.clear();
       setState(() => _selectedImage = null);
       setState(() {
         _privacy = false;
@@ -1598,6 +1606,59 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
         ),
       );
     }
+  }
+
+  Future<void> _improveDescriptionWithAi() async {
+    final baseDescription = _descrizioneCtrl.text.trim();
+    if (baseDescription.length < 12) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Inserisci almeno 12 caratteri nella descrizione base'),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isImprovingDescription = true);
+
+    final result = await AnnunciSubmissionService.improveAnnouncementDescription(
+      titleOffer: _titoloCtrl.text.trim(),
+      city: _cittaCtrl.text.trim(),
+      contactPhone: _contattoCtrl.text.trim(),
+      description: baseDescription,
+      categoryScope: widget.categoryScope,
+      categoryDirection: widget.categoryDirection,
+    );
+
+    if (!mounted) return;
+    setState(() => _isImprovingDescription = false);
+
+    if (result['success'] != true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text((result['message'] ?? 'Impossibile migliorare la descrizione').toString())),
+      );
+      return;
+    }
+
+    final aiDescription = (result['ai_description'] ?? '').toString().trim();
+    if (aiDescription.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Nessuna descrizione AI disponibile')),
+      );
+      return;
+    }
+
+    _descrizioneAiCtrl.text = aiDescription;
+    final source = (result['source'] ?? '').toString();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          source.isNotEmpty
+              ? 'Descrizione AI generata ($source). Puoi modificarla prima di inviare.'
+              : 'Descrizione AI generata. Puoi modificarla prima di inviare.',
+        ),
+      ),
+    );
   }
 
   String? _resolveSelectedCategorySlug() {
@@ -1787,6 +1848,38 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                       (v == null || v.trim().length < 20)
                           ? 'Inserisci almeno 20 caratteri'
                           : null,
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed:
+                    _isImprovingDescription ? null : _improveDescriptionWithAi,
+                icon:
+                    _isImprovingDescription
+                        ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                        : const Icon(Icons.edit_note),
+                label: Text(
+                  _isImprovingDescription
+                      ? 'Miglioramento AI in corso...'
+                      : 'Migliora descrizione con AI',
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            TextFormField(
+              controller: _descrizioneAiCtrl,
+              minLines: 4,
+              maxLines: 8,
+              decoration: const InputDecoration(
+                labelText: 'Descrizione AI (modificabile)',
+                hintText:
+                    'La descrizione migliorata comparira qui. Puoi modificarla prima di inviare.',
+              ),
             ),
             const SizedBox(height: 10),
             SizedBox(

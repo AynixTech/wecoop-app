@@ -194,4 +194,60 @@ class AnnunciSubmissionService {
       return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
+
+  /// Migliora automaticamente il testo dell'annuncio usando AI lato server
+  static Future<Map<String, dynamic>> improveAnnouncementDescription({
+    required String titleOffer,
+    required String city,
+    required String contactPhone,
+    required String description,
+    String? categoryScope,
+    String? categoryDirection,
+  }) async {
+    try {
+      final cleanDescription = description.trim();
+      if (cleanDescription.length < 12) {
+        return {
+          'success': false,
+          'message': 'Inserisci una descrizione piu dettagliata',
+        };
+      }
+
+      final payload = {
+        'title_offer': titleOffer.trim(),
+        'city': city.trim(),
+        'contact_phone': contactPhone.trim(),
+        'description': cleanDescription,
+        'category_scope': (categoryScope ?? '').trim(),
+        'category_direction': (categoryDirection ?? '').trim(),
+      };
+
+      final uri = Uri.parse('$baseUrl/annunci/improve-description');
+      final response = await HttpClientService.post(
+        uri,
+        headers: await _getHeaders(),
+        body: jsonEncode(payload),
+      );
+
+      final body = _parseMapResponse(HttpClientService.decodeJsonResponse(response));
+      if (response.statusCode == 200 && body['success'] == true) {
+        final data = body['data'];
+        if (data is Map<String, dynamic>) {
+          return {
+            'success': true,
+            'ai_description': (data['ai_description'] ?? '').toString(),
+            'source': (data['source'] ?? '').toString(),
+            'note': (data['note'] ?? '').toString(),
+          };
+        }
+      }
+
+      return {
+        'success': false,
+        'message': (body['message'] ?? 'Descrizione AI non disponibile').toString(),
+      };
+    } catch (e) {
+      return {'success': false, 'message': 'Errore di connessione: $e'};
+    }
+  }
 }

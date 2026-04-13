@@ -28,6 +28,7 @@ class ProjectOpportunityItem {
   final List<String> tags;
   final IconData icon;
   final String actionKey;
+  final String? behaviorKey;
 
   const ProjectOpportunityItem({
     required this.title,
@@ -37,6 +38,7 @@ class ProjectOpportunityItem {
     required this.tags,
     required this.icon,
     required this.actionKey,
+    this.behaviorKey,
   });
 }
 
@@ -157,6 +159,7 @@ List<ProjectOpportunityCategory> buildProjectOpportunityCatalog(
           tags: [womenTag, migrantsTag, entrepreneursTag],
           icon: Icons.account_balance_wallet_rounded,
           actionKey: 'credit',
+          behaviorKey: 'open_credit_service',
         ),
         ProjectOpportunityItem(
           title: l10n.translate('opportunityBusinessStartTitle'),
@@ -166,6 +169,7 @@ List<ProjectOpportunityCategory> buildProjectOpportunityCatalog(
           tags: [entrepreneursTag, womenTag],
           icon: Icons.storefront_rounded,
           actionKey: 'credit',
+          behaviorKey: 'open_accounting_service',
         ),
         ProjectOpportunityItem(
           title: l10n.translate('opportunityMentorshipTitle'),
@@ -175,6 +179,7 @@ List<ProjectOpportunityCategory> buildProjectOpportunityCatalog(
           tags: [youngTag, womenTag, entrepreneursTag],
           icon: Icons.groups_rounded,
           actionKey: 'credit',
+          behaviorKey: 'interest_only',
         ),
       ],
     ),
@@ -193,6 +198,7 @@ List<ProjectOpportunityCategory> buildProjectOpportunityCatalog(
           tags: [womenTag],
           icon: Icons.favorite_rounded,
           actionKey: 'inclusion',
+          behaviorKey: 'interest_only',
         ),
         ProjectOpportunityItem(
           title: l10n.translate('opportunityMigrantIntegrationTitle'),
@@ -204,17 +210,7 @@ List<ProjectOpportunityCategory> buildProjectOpportunityCatalog(
           tags: [migrantsTag, familiesTag],
           icon: Icons.public_rounded,
           actionKey: 'inclusion',
-        ),
-        ProjectOpportunityItem(
-          title: l10n.translate('opportunityCommunityActivitiesTitle'),
-          description: l10n.translate(
-            'opportunityCommunityActivitiesDescription',
-          ),
-          ctaLabel: l10n.translate('ctaParticipate'),
-          contentTypeLabel: educationalLabel,
-          tags: [youngTag, womenTag, migrantsTag],
-          icon: Icons.celebration_rounded,
-          actionKey: 'inclusion',
+          behaviorKey: 'open_welcome_service',
         ),
       ],
     ),

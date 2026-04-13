@@ -4,9 +4,9 @@ import '../../models/project_opportunity_catalog.dart';
 import '../../services/app_localizations.dart';
 import '../../services/interessati_service.dart';
 import '../servizi/accoglienza_screen.dart';
-import '../servizi/cv_ai_screen.dart';
 import '../servizi/educazione_finanziaria_credito_screen.dart';
 import '../servizi/lavoro_orientamento_screen.dart';
+import '../servizi/supporto_contabile_screen.dart';
 
 class ProjectDetailScreen extends StatelessWidget {
   final String categoryKey;
@@ -51,34 +51,71 @@ class ProjectDetailScreen extends StatelessWidget {
   }
 
   void _handleCta(BuildContext context) {
-    _trackInterest();
-
-    Widget destination;
-
-    switch (item.actionKey) {
-      case 'training':
-        destination = const LavoroOrientamentoScreen();
-        break;
-      case 'work':
-        destination = const LavoroOrientamentoScreen();
-        break;
-      case 'credit':
-        destination = const EducazioneFinanziariaCreditoScreen();
-        break;
-      case 'inclusion':
-        destination = const AccoglienzaScreen();
-        break;
-      case 'cv':
-        destination = const CvAiScreen();
-        break;
+    switch (item.behaviorKey) {
+      case 'open_credit_service':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const EducazioneFinanziariaCreditoScreen(),
+          ),
+        );
+        return;
+      case 'open_accounting_service':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SupportoContabileScreen()),
+        );
+        return;
+      case 'interest_only':
+        _trackInterest();
+        showDialog<void>(
+          context: context,
+          builder: (context) => AlertDialog(
+            content: const Text(
+              'Grazie per il tuo interessamento, appena sara disponibile ti manderemo un messaggio.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+        return;
+      case 'open_welcome_service':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const AccoglienzaScreen()),
+        );
+        return;
       default:
-        destination = const AccoglienzaScreen();
         break;
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => destination),
+    if (item.actionKey == 'work') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LavoroOrientamentoScreen()),
+      );
+      return;
+    }
+
+    _trackInterest();
+
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: const Text(
+          'Grazie per il tuo interessamento, appena sara disponibile ti manderemo un messaggio.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
   }
 

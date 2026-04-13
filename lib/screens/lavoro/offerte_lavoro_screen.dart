@@ -517,7 +517,7 @@ class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
               const Text(
                 'Compila i dati e invia la richiesta a WECOOP per la pubblicazione.',
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 initialValue: _tipo,
                 items: const [
@@ -527,6 +527,7 @@ class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
                 onChanged: (value) => setState(() => _tipo = value ?? 'Lavoro'),
                 decoration: const InputDecoration(labelText: 'Tipo annuncio'),
               ),
+              const SizedBox(height: 18),
               TextFormField(
                 controller: _titoloCtrl,
                 decoration: const InputDecoration(labelText: 'Titolo annuncio'),
@@ -536,6 +537,7 @@ class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
                             ? 'Campo obbligatorio'
                             : null,
               ),
+              const SizedBox(height: 18),
               TextFormField(
                 controller: _cittaCtrl,
                 decoration: const InputDecoration(labelText: 'Citta'),
@@ -545,6 +547,7 @@ class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
                             ? 'Campo obbligatorio'
                             : null,
               ),
+              const SizedBox(height: 18),
               TextFormField(
                 controller: _contattoCtrl,
                 decoration: const InputDecoration(
@@ -556,6 +559,7 @@ class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
                             ? 'Campo obbligatorio'
                             : null,
               ),
+              const SizedBox(height: 18),
               TextFormField(
                 controller: _descrizioneCtrl,
                 minLines: 3,
@@ -571,6 +575,7 @@ class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
                             ? 'Inserisci almeno 20 caratteri'
                             : null,
               ),
+              const SizedBox(height: 20),
               CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
                 value: _privacy,

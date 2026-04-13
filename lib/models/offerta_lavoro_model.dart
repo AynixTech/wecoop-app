@@ -13,6 +13,7 @@ class OffertaLavoro {
   final String languageRequirement;
   final String phoneWhatsapp;
   final String emailContact;
+  final String imageUrl;
   final String sourceUrl;
   final String requirements;
   final String schedule;
@@ -42,6 +43,7 @@ class OffertaLavoro {
     required this.languageRequirement,
     required this.phoneWhatsapp,
     required this.emailContact,
+    required this.imageUrl,
     required this.sourceUrl,
     required this.requirements,
     required this.schedule,
@@ -84,6 +86,7 @@ class OffertaLavoro {
       languageRequirement: (json['language_requirement'] ?? '').toString(),
       phoneWhatsapp: (json['phone_whatsapp'] ?? '').toString(),
       emailContact: (json['email_contact'] ?? '').toString(),
+      imageUrl: (json['image_url'] ?? '').toString(),
       sourceUrl: (json['source_url'] ?? '').toString(),
       requirements: (json['requirements'] ?? '').toString(),
       schedule: (json['schedule'] ?? '').toString(),

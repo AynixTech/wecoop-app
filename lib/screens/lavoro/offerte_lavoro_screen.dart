@@ -1649,6 +1649,43 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 16, color: Colors.black87),
             ),
           const SizedBox(height: 12),
+          if (offerta.imageUrl.isNotEmpty) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Image.network(
+                    offerta.imageUrl,
+                    width: double.infinity,
+                    height: constraints.maxWidth > 600 ? 300 : 200,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: double.infinity,
+                        height: constraints.maxWidth > 600 ? 300 : 200,
+                        color: Colors.grey.shade200,
+                        child: const Center(
+                          child: Icon(Icons.image_not_supported, size: 48),
+                        ),
+                      );
+                    },
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        width: double.infinity,
+                        height: constraints.maxWidth > 600 ? 300 : 200,
+                        color: Colors.grey.shade200,
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -1745,12 +1782,6 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
               icon: const Icon(Icons.open_in_new),
               label: const Text('Apri annuncio originale'),
             ),
-          const SizedBox(height: 12),
-          ElevatedButton.icon(
-            onPressed: onApply,
-            icon: const Icon(Icons.send),
-            label: const Text('Candidati ora'),
-          ),
         ],
       ),
     );

@@ -578,40 +578,50 @@ class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
                 title: const Text('Accetto il trattamento dei dati personali'),
                 controlAffinity: ListTileControlAffinity.leading,
               ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: _isSending ? null : _submit,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: Theme.of(context).primaryColor,
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: Colors.grey[400],
-                    disabledForegroundColor: Colors.grey[600],
-                  ),
-                  icon:
-                      _isSending
-                          ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
+              const SizedBox(height: 24),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.red, width: 2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton.icon(
+                    onPressed: _isSending ? null : _submit,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 0),
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      disabledBackgroundColor: Colors.grey[400],
+                      disabledForegroundColor: Colors.grey[600],
+                      elevation: 8,
+                    ),
+                    icon:
+                        _isSending
+                            ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
                               ),
-                            ),
-                          )
-                          : const Icon(Icons.send, size: 22),
-                  label: Text(
-                    _isSending ? 'Invio in corso...' : 'Invia annuncio',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                            )
+                            : const Icon(Icons.send, size: 26),
+                    label: Text(
+                      _isSending ? 'Invio in corso...' : 'Invia annuncio',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ),
                 ),
               ),
+              const SizedBox(height: 8),
             ],
           ),
         ),

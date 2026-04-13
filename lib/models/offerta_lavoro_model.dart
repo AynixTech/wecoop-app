@@ -22,6 +22,8 @@ class OffertaLavoro {
   final bool isActive;
   final String categoryScope;
   final String categoryDirection;
+  final String categoryMacro;
+  final String categorySub;
   final String publishedAt;
   final List<OffertaCategoria> categories;
 
@@ -49,6 +51,8 @@ class OffertaLavoro {
     required this.isActive,
     required this.categoryScope,
     required this.categoryDirection,
+    required this.categoryMacro,
+    required this.categorySub,
     required this.publishedAt,
     required this.categories,
   });
@@ -89,6 +93,8 @@ class OffertaLavoro {
       isActive: json['is_active'] != false,
       categoryScope: (json['category_scope'] ?? 'job').toString(),
       categoryDirection: (json['category_direction'] ?? 'offer').toString(),
+      categoryMacro: (json['category_macro'] ?? '').toString(),
+      categorySub: (json['category_sub'] ?? '').toString(),
       publishedAt: (json['published_at'] ?? '').toString(),
       categories: categories,
     );

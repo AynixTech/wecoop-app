@@ -83,6 +83,46 @@ class _CategoriaMenuHelper {
       'customer',
       'scaffal',
     ],
+    'education-training': [
+      'educat',
+      'insegn',
+      'docent',
+      'ripetizion',
+      'tutor',
+      'formazion',
+      'scuola',
+    ],
+    'admin-finance': [
+      'amministr',
+      'contabil',
+      'segreter',
+      'back office',
+      'front office',
+      'finanz',
+      'paghe',
+    ],
+    'technology-digital': [
+      'informat',
+      'tecnolog',
+      'digital',
+      'software',
+      'program',
+      'svilupp',
+      'developer',
+      'web',
+      'social media',
+      'marketing digital',
+      'grafic',
+    ],
+    'home-support-services': [
+      'faccende',
+      'stiro',
+      'spesa',
+      'accompagno',
+      'custodia',
+      'aiuto casa',
+      'commission',
+    ],
   };
 
   static const Map<String, Map<String, String>> macroLabels = {
@@ -125,6 +165,26 @@ class _CategoriaMenuHelper {
       'it': 'Commercio e assistenza clienti',
       'en': 'Retail and customer service',
       'es': 'Comercio y atencion al cliente',
+    },
+    'education-training': {
+      'it': 'Educazione e formazione',
+      'en': 'Education and training',
+      'es': 'Educacion y formacion',
+    },
+    'admin-finance': {
+      'it': 'Amministrazione e finanza',
+      'en': 'Administration and finance',
+      'es': 'Administracion y finanzas',
+    },
+    'technology-digital': {
+      'it': 'Tecnologia e digitale',
+      'en': 'Technology and digital',
+      'es': 'Tecnologia y digital',
+    },
+    'home-support-services': {
+      'it': 'Servizi di supporto domestico',
+      'en': 'Home support services',
+      'es': 'Servicios de apoyo domestico',
     },
     'other': {
       'it': 'Altro',
@@ -169,6 +229,22 @@ class _CategoriaMenuHelper {
     'call-center': 'call-center-operator',
     'commesso-cassa': 'shop-assistant-cashier',
     'scaffalista': 'shelf-stocker',
+    'insegnante': 'teacher',
+    'educatore': 'educator',
+    'tutor-ripetizioni': 'tutor',
+    'formatore': 'trainer',
+    'impiegato-amministrativo': 'administrative-clerk',
+    'contabile': 'accountant',
+    'front-office-reception': 'receptionist',
+    'back-office': 'back-office-clerk',
+    'social-media-manager': 'social-media-manager',
+    'sviluppatore-web': 'web-developer',
+    'supporto-it': 'it-support-technician',
+    'data-entry': 'data-entry-clerk',
+    'stiro': 'ironing-service',
+    'spesa-domicilio': 'grocery-assistant',
+    'accompagnamento': 'accompaniment-service',
+    'custodia-casa': 'home-caretaker',
   };
 
   static const Map<String, Map<String, String>> categoryLabels = {
@@ -347,11 +423,123 @@ class _CategoriaMenuHelper {
       'en': 'Shelf stocker',
       'es': 'Repositor/a',
     },
+    'teacher': {
+      'it': 'Insegnante',
+      'en': 'Teacher',
+      'es': 'Profesor/a',
+    },
+    'educator': {
+      'it': 'Educatore / Educatrice',
+      'en': 'Educator',
+      'es': 'Educador/a',
+    },
+    'tutor': {
+      'it': 'Tutor / Ripetizioni',
+      'en': 'Tutor / Private lessons',
+      'es': 'Tutor / Clases particulares',
+    },
+    'trainer': {
+      'it': 'Formatore / Formatrice',
+      'en': 'Trainer',
+      'es': 'Formador/a',
+    },
+    'administrative-clerk': {
+      'it': 'Impiegato amministrativo',
+      'en': 'Administrative clerk',
+      'es': 'Administrativo/a',
+    },
+    'accountant': {
+      'it': 'Contabile',
+      'en': 'Accountant',
+      'es': 'Contable',
+    },
+    'receptionist': {
+      'it': 'Front office / Reception',
+      'en': 'Front office / Reception',
+      'es': 'Recepcion',
+    },
+    'back-office-clerk': {
+      'it': 'Back office',
+      'en': 'Back office clerk',
+      'es': 'Back office',
+    },
+    'social-media-manager': {
+      'it': 'Social media manager',
+      'en': 'Social media manager',
+      'es': 'Gestor/a de redes sociales',
+    },
+    'web-developer': {
+      'it': 'Sviluppatore web',
+      'en': 'Web developer',
+      'es': 'Desarrollador/a web',
+    },
+    'it-support-technician': {
+      'it': 'Tecnico supporto IT',
+      'en': 'IT support technician',
+      'es': 'Tecnico/a de soporte IT',
+    },
+    'data-entry-clerk': {
+      'it': 'Data entry',
+      'en': 'Data entry clerk',
+      'es': 'Auxiliar de entrada de datos',
+    },
+    'ironing-service': {
+      'it': 'Stiro',
+      'en': 'Ironing service',
+      'es': 'Servicio de planchado',
+    },
+    'grocery-assistant': {
+      'it': 'Aiuto spesa',
+      'en': 'Grocery assistant',
+      'es': 'Ayuda para compras',
+    },
+    'accompaniment-service': {
+      'it': 'Accompagnamento',
+      'en': 'Accompaniment service',
+      'es': 'Servicio de acompanamiento',
+    },
+    'home-caretaker': {
+      'it': 'Custodia casa',
+      'en': 'Home caretaker',
+      'es': 'Cuidador/a de hogar',
+    },
   };
 
-  static String _normalize(String value) => value.toLowerCase().trim();
+  static const Map<String, String> categoryMacroByValue = {
+    'teacher': 'education-training',
+    'educator': 'education-training',
+    'tutor': 'education-training',
+    'trainer': 'education-training',
+    'administrative-clerk': 'admin-finance',
+    'accountant': 'admin-finance',
+    'receptionist': 'admin-finance',
+    'back-office-clerk': 'admin-finance',
+    'office-assistant': 'admin-finance',
+    'social-media-manager': 'technology-digital',
+    'web-developer': 'technology-digital',
+    'it-support-technician': 'technology-digital',
+    'data-entry-clerk': 'technology-digital',
+    'ironing-service': 'home-support-services',
+    'grocery-assistant': 'home-support-services',
+    'accompaniment-service': 'home-support-services',
+    'home-caretaker': 'home-support-services',
+  };
+
+  static String _normalize(String value) {
+    return value
+        .toLowerCase()
+        .replaceAll(RegExp(r'[-_]+'), ' ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+  }
 
   static String resolveMacro(OffertaCategoria category) {
+    final categoryValue = categoryValueFromSlug(category.slug);
+    final mappedMacro = categoryMacroByValue[categoryValue];
+    if (mappedMacro != null) {
+      return mappedMacro;
+    }
+
     final haystack = '${_normalize(category.name)} ${_normalize(category.slug)}';
 
     for (final entry in macroKeywordMap.entries) {
@@ -372,7 +560,8 @@ class _CategoriaMenuHelper {
   }
 
   static String categoryValueFromSlug(String slug) {
-    return categoryValueBySlug[slug] ?? slug.replaceAll('-', '_');
+    final normalizedSlug = slug.toLowerCase().trim();
+    return categoryValueBySlug[normalizedSlug] ?? normalizedSlug;
   }
 
   static String categoryLabel(OffertaCategoria category, String languageCode) {
@@ -380,6 +569,60 @@ class _CategoriaMenuHelper {
     final labels = categoryLabels[value];
     if (labels == null) return category.name;
     return labels[languageCode] ?? labels['it'] ?? category.name;
+  }
+
+  static bool _isOtherMacro(String macroValue) {
+    return _normalize(macroValue) == 'other';
+  }
+
+  static bool _isOtherCategory(OffertaCategoria category) {
+    final normalizedSlug = _normalize(category.slug);
+    final normalizedValue = _normalize(categoryValueFromSlug(category.slug));
+    final normalizedName = _normalize(category.name);
+
+    return normalizedSlug == 'altro' ||
+        normalizedSlug == 'other' ||
+        normalizedSlug == 'otros' ||
+        normalizedValue == 'other' ||
+        normalizedName == 'altro' ||
+        normalizedName == 'other' ||
+        normalizedName == 'otros';
+  }
+
+  static List<String> sortMacroNames(
+    Iterable<String> macros,
+    String languageCode,
+  ) {
+    final list = macros.toList();
+    list.sort((a, b) {
+      final aIsOther = _isOtherMacro(a);
+      final bIsOther = _isOtherMacro(b);
+      if (aIsOther && !bIsOther) return 1;
+      if (!aIsOther && bIsOther) return -1;
+
+      final aLabel = _normalize(macroLabel(a, languageCode));
+      final bLabel = _normalize(macroLabel(b, languageCode));
+      return aLabel.compareTo(bLabel);
+    });
+    return list;
+  }
+
+  static List<OffertaCategoria> sortSubCategories(
+    Iterable<OffertaCategoria> categories,
+    String languageCode,
+  ) {
+    final list = categories.toList();
+    list.sort((a, b) {
+      final aIsOther = _isOtherCategory(a);
+      final bIsOther = _isOtherCategory(b);
+      if (aIsOther && !bIsOther) return 1;
+      if (!aIsOther && bIsOther) return -1;
+
+      final aLabel = _normalize(categoryLabel(a, languageCode));
+      final bLabel = _normalize(categoryLabel(b, languageCode));
+      return aLabel.compareTo(bLabel);
+    });
+    return list;
   }
 
   static OffertaCategoria? findCategoryByValue(
@@ -423,6 +666,201 @@ class OfferteLavoroScreen extends StatefulWidget {
   State<OfferteLavoroScreen> createState() => _OfferteLavoroScreenState();
 }
 
+class _CategoryExplorerSelector extends StatelessWidget {
+  final Map<String, List<OffertaCategoria>> categoriesByMacro;
+  final String languageCode;
+  final String? selectedMacro;
+  final String? selectedCategoryValue;
+  final String macroLabel;
+  final String subCategoryLabel;
+  final String allMacroText;
+  final String allSubCategoryText;
+  final ValueChanged<String?> onMacroChanged;
+  final ValueChanged<String?> onSubCategoryChanged;
+
+  const _CategoryExplorerSelector({
+    required this.categoriesByMacro,
+    required this.languageCode,
+    required this.selectedMacro,
+    required this.selectedCategoryValue,
+    required this.macroLabel,
+    required this.subCategoryLabel,
+    required this.allMacroText,
+    required this.allSubCategoryText,
+    required this.onMacroChanged,
+    required this.onSubCategoryChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final macroNames = _CategoriaMenuHelper.sortMacroNames(
+      categoriesByMacro.keys,
+      languageCode,
+    );
+
+    final subCategories =
+        selectedMacro == null
+            ? const <OffertaCategoria>[]
+            : (categoriesByMacro[selectedMacro] ?? const <OffertaCategoria>[]);
+
+    final sortedSubCategories = _CategoriaMenuHelper.sortSubCategories(
+      subCategories,
+      languageCode,
+    );
+
+    Widget buildMacroRow(String? macroValue, String label) {
+      final isSelected = selectedMacro == macroValue;
+      return InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: () => onMacroChanged(macroValue),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected ? const Color(0xFFEFF7FF) : Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color:
+                  isSelected
+                      ? const Color(0xFF5AA3E6)
+                      : Colors.blueGrey.shade100,
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    color:
+                        isSelected
+                            ? const Color(0xFF1C4E80)
+                            : const Color(0xFF22313F),
+                  ),
+                ),
+              ),
+              Icon(
+                isSelected ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                size: 18,
+                color: isSelected ? const Color(0xFF1C4E80) : Colors.blueGrey,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.blueGrey.shade100),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0D000000),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            macroLabel,
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 8),
+          buildMacroRow(null, allMacroText),
+          const SizedBox(height: 8),
+          ...macroNames.map((macro) {
+            final isSelected = selectedMacro == macro;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  buildMacroRow(
+                    macro,
+                    _CategoriaMenuHelper.macroLabel(macro, languageCode),
+                  ),
+                  if (isSelected) ...[
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF8FBFF),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: const Color(0xFFD6E9FA)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              subCategoryLabel,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: Colors.blueGrey.shade800,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                ChoiceChip(
+                                  selected: selectedCategoryValue == null,
+                                  label: Text(allSubCategoryText),
+                                  onSelected: (_) => onSubCategoryChanged(null),
+                                ),
+                                ...sortedSubCategories.map((category) {
+                                  final value =
+                                      _CategoriaMenuHelper.categoryValueFromSlug(
+                                        category.slug,
+                                      );
+                                  return ChoiceChip(
+                                    selected: selectedCategoryValue == value,
+                                    label: Text(
+                                      _CategoriaMenuHelper.categoryLabel(
+                                        category,
+                                        languageCode,
+                                      ),
+                                    ),
+                                    onSelected: (_) => onSubCategoryChanged(value),
+                                  );
+                                }),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            );
+          }),
+          if (selectedMacro == null)
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(
+                'Seleziona una macrocategoria per vedere le sottocategorie allineate.',
+                style: TextStyle(color: Colors.blueGrey.shade600, fontSize: 13),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
@@ -449,7 +887,9 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
 
   List<OffertaLavoro> get _offerteFiltrate {
     if (_selectedCategoriaSlug != null && _selectedCategoriaSlug!.isNotEmpty) {
-      return _offerte;
+      return _offerte
+          .where((offerta) => _matchesSelectedSubCategory(offerta))
+          .toList();
     }
 
     if (_selectedMacroCategoria == null || _selectedMacroCategoria!.isEmpty) {
@@ -457,13 +897,61 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
     }
 
     return _offerte.where((offerta) {
-      for (final category in offerta.categories) {
-        if (_CategoriaMenuHelper.resolveMacro(category) == _selectedMacroCategoria) {
-          return true;
-        }
-      }
-      return false;
+      return _matchesSelectedMacro(offerta);
     }).toList();
+  }
+
+  bool _matchesSelectedMacro(OffertaLavoro offerta) {
+    final selectedMacro = _selectedMacroCategoria;
+    if (selectedMacro == null || selectedMacro.isEmpty) return true;
+
+    final normalizedSelected = _CategoriaMenuHelper._normalize(selectedMacro);
+
+    if (offerta.categoryMacro.isNotEmpty &&
+        _CategoriaMenuHelper._normalize(offerta.categoryMacro) ==
+            normalizedSelected) {
+      return true;
+    }
+
+    for (final category in offerta.categories) {
+      if (_CategoriaMenuHelper.resolveMacro(category) == selectedMacro) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  bool _matchesSelectedSubCategory(OffertaLavoro offerta) {
+    final selectedSlug = _selectedCategoriaSlug;
+    if (selectedSlug == null || selectedSlug.isEmpty) return true;
+
+    final normalizedSlug = _CategoriaMenuHelper._normalize(selectedSlug);
+    final selectedValue = _CategoriaMenuHelper.categoryValueFromSlug(selectedSlug);
+    final normalizedValue = _CategoriaMenuHelper._normalize(selectedValue);
+
+    if (offerta.categorySub.isNotEmpty) {
+      final normalizedOffertaSub = _CategoriaMenuHelper._normalize(
+        offerta.categorySub,
+      );
+      if (normalizedOffertaSub == normalizedSlug ||
+          normalizedOffertaSub == normalizedValue) {
+        return true;
+      }
+    }
+
+    for (final category in offerta.categories) {
+      final normalizedCategorySlug = _CategoriaMenuHelper._normalize(category.slug);
+      final normalizedCategoryValue = _CategoriaMenuHelper._normalize(
+        _CategoriaMenuHelper.categoryValueFromSlug(category.slug),
+      );
+      if (normalizedCategorySlug == normalizedSlug ||
+          normalizedCategoryValue == normalizedValue) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   @override
@@ -480,20 +968,26 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
     super.dispose();
   }
 
-  Future<void> _loadInitialData() async {
+  Future<void> _loadInitialData({bool showLoading = true}) async {
     if (!mounted) return;
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-      _currentPage = 1;
-    });
+    if (showLoading) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+        _currentPage = 1;
+      });
+    } else {
+      setState(() {
+        _errorMessage = null;
+        _currentPage = 1;
+      });
+    }
 
     final categorieResult = await OfferteLavoroService.getCategorie();
     final offerteResult = await OfferteLavoroService.getOfferte(
       page: 1,
       perPage: 12,
       search: _searchController.text,
-      categoria: _selectedCategoriaSlug,
       categoryDirection: _selectedJobDirection,
     );
 
@@ -536,7 +1030,6 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
       page: nextPage,
       perPage: 12,
       search: _searchController.text,
-      categoria: _selectedCategoriaSlug,
       categoryDirection: _selectedJobDirection,
     );
 
@@ -783,13 +1276,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
     }
 
     final categoriesByMacro = _categorieByMacro;
-    final macroNames = categoriesByMacro.keys.toList();
     final languageCode = Localizations.localeOf(context).languageCode;
-    final subCategories =
-        _selectedMacroCategoria == null
-            ? const <OffertaCategoria>[]
-            : (categoriesByMacro[_selectedMacroCategoria] ??
-                const <OffertaCategoria>[]);
     final selectedSubCategoryValue =
       _selectedCategoriaSlug == null
         ? null
@@ -831,50 +1318,39 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
           },
         ),
         const SizedBox(height: 12),
-        DropdownButtonFormField<String?>(
-          initialValue: _selectedMacroCategoria,
-          decoration: const InputDecoration(labelText: 'Macrocategoria'),
-          items: [
-            const DropdownMenuItem<String?>(value: null, child: Text('Tutte')),
-            ...macroNames.map(
-              (macro) => DropdownMenuItem<String?>(
-                value: macro,
-                child: Text(_CategoriaMenuHelper.macroLabel(macro, languageCode)),
-              ),
-            ),
-          ],
-          onChanged: (value) {
+        _CategoryExplorerSelector(
+          categoriesByMacro: categoriesByMacro,
+          languageCode: languageCode,
+          selectedMacro: _selectedMacroCategoria,
+          selectedCategoryValue: selectedSubCategoryValue,
+          macroLabel: 'Macrocategorie',
+          subCategoryLabel: 'Sottocategorie',
+          allMacroText: 'Tutte',
+          allSubCategoryText: 'Tutte',
+          onMacroChanged: (value) {
             setState(() {
               _selectedMacroCategoria = value;
               _selectedCategoriaSlug = null;
             });
-            _loadInitialData();
+            _loadInitialData(showLoading: false);
+          },
+          onSubCategoryChanged: (value) {
+            final base =
+                _selectedMacroCategoria == null
+                    ? const <OffertaCategoria>[]
+                    : (categoriesByMacro[_selectedMacroCategoria] ??
+                        const <OffertaCategoria>[]);
+            final ordered = _CategoriaMenuHelper.sortSubCategories(
+              base,
+              languageCode,
+            );
+            final selected = _CategoriaMenuHelper.findCategoryByValue(
+              ordered,
+              value,
+            );
+            setState(() => _selectedCategoriaSlug = selected?.slug);
           },
         ),
-        if (_selectedMacroCategoria != null) ...[
-          const SizedBox(height: 12),
-          DropdownButtonFormField<String?>(
-            initialValue: selectedSubCategoryValue,
-            decoration: const InputDecoration(labelText: 'Sottocategoria'),
-            items: [
-              const DropdownMenuItem<String?>(value: null, child: Text('Tutte')),
-              ...subCategories.map(
-                (c) => DropdownMenuItem<String?>(
-                  value: _CategoriaMenuHelper.categoryValueFromSlug(c.slug),
-                  child: Text(_CategoriaMenuHelper.categoryLabel(c, languageCode)),
-                ),
-              ),
-            ],
-            onChanged: (value) {
-              final selected = _CategoriaMenuHelper.findCategoryByValue(
-                subCategories,
-                value,
-              );
-              setState(() => _selectedCategoriaSlug = selected?.slug);
-              _loadInitialData();
-            },
-          ),
-        ],
         const SizedBox(height: 14),
         OutlinedButton.icon(
           onPressed: _clearFilters,
@@ -991,6 +1467,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
   String? _selectedMacroCategoria;
   String? _selectedCategoriaValueEn;
   bool _isSending = false;
+  bool _isSuggestingCategory = false;
   File? _selectedImage;
   final _imagePicker = ImagePicker();
 
@@ -1077,6 +1554,8 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
       }
     }
 
+    final selectedCategorySlug = _resolveSelectedCategorySlug();
+
     final result = await AnnunciSubmissionService.submitJobAnnouncement(
       submissionType: widget.fixedType,
       titleOffer: _titoloCtrl.text.trim(),
@@ -1087,7 +1566,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
       categoryScope: widget.categoryScope,
       categoryDirection: widget.categoryDirection,
       categoryMacro: _selectedMacroCategoria,
-      categorySlug: _selectedCategoriaValueEn,
+      categorySlug: selectedCategorySlug,
       imageBase64: imageBase64,
     );
 
@@ -1121,16 +1600,102 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  String? _resolveSelectedCategorySlug() {
+    if (_selectedCategoriaValueEn == null || _selectedCategoriaValueEn!.isEmpty) {
+      return null;
+    }
+
     final categoriesByMacro = _categorieByMacro;
-    final macroNames = categoriesByMacro.keys.toList();
-    final languageCode = Localizations.localeOf(context).languageCode;
-    final subCategories =
+    final inMacro =
         _selectedMacroCategoria == null
             ? const <OffertaCategoria>[]
             : (categoriesByMacro[_selectedMacroCategoria] ??
                 const <OffertaCategoria>[]);
+
+    final selectedInMacro = _CategoriaMenuHelper.findCategoryByValue(
+      inMacro,
+      _selectedCategoriaValueEn,
+    );
+    if (selectedInMacro != null) {
+      return selectedInMacro.slug;
+    }
+
+    final selectedGlobal = _CategoriaMenuHelper.findCategoryByValue(
+      widget.categorie,
+      _selectedCategoriaValueEn,
+    );
+
+    return selectedGlobal?.slug ?? _selectedCategoriaValueEn;
+  }
+
+  Future<void> _suggestCategoryWithAi() async {
+    final description = _descrizioneCtrl.text.trim();
+    if (description.length < 12) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Inserisci almeno 12 caratteri nella descrizione'),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isSuggestingCategory = true);
+
+    final result = await AnnunciSubmissionService.suggestCategoryFromDescription(
+      description: description,
+      titleOffer: _titoloCtrl.text.trim(),
+      categoryScope: widget.categoryScope,
+      categoryDirection: widget.categoryDirection,
+    );
+
+    if (!mounted) return;
+    setState(() => _isSuggestingCategory = false);
+
+    if (result['success'] != true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text((result['message'] ?? 'Suggerimento non disponibile').toString())),
+      );
+      return;
+    }
+
+    final macro = (result['category_macro'] ?? '').toString();
+    final suggestedSlug = (result['category_slug'] ?? '').toString();
+    if (macro.isEmpty || suggestedSlug.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Nessun suggerimento utile trovato')),
+      );
+      return;
+    }
+
+    final suggestedValue = _CategoriaMenuHelper.categoryValueFromSlug(suggestedSlug);
+    final selectedInMacro = _CategoriaMenuHelper.findCategoryByValue(
+      _categorieByMacro[macro] ?? const <OffertaCategoria>[],
+      suggestedValue,
+    );
+
+    setState(() {
+      _selectedMacroCategoria = macro;
+      _selectedCategoriaValueEn =
+          selectedInMacro != null ? suggestedValue : null;
+    });
+
+    final reason = (result['reason'] ?? '').toString();
+    final source = (result['source'] ?? '').toString();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          reason.isNotEmpty
+              ? 'Suggerimento ${source.isNotEmpty ? '($source)' : ''}: $reason'
+              : 'Categoria suggerita applicata',
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final categoriesByMacro = _categorieByMacro;
+    final languageCode = Localizations.localeOf(context).languageCode;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -1154,49 +1719,26 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
               child: Text(widget.fixedType),
             ),
             const SizedBox(height: 18),
-            DropdownButtonFormField<String?>(
-              initialValue: _selectedMacroCategoria,
-              items: [
-                const DropdownMenuItem<String?>(
-                  value: null,
-                  child: Text('Seleziona macrocategoria'),
-                ),
-                ...macroNames.map(
-                  (macro) => DropdownMenuItem<String?>(
-                    value: macro,
-                    child: Text(_CategoriaMenuHelper.macroLabel(macro, languageCode)),
-                  ),
-                ),
-              ],
-              onChanged: (value) {
+            _CategoryExplorerSelector(
+              categoriesByMacro: categoriesByMacro,
+              languageCode: languageCode,
+              selectedMacro: _selectedMacroCategoria,
+              selectedCategoryValue: _selectedCategoriaValueEn,
+              macroLabel: 'Macrocategoria',
+              subCategoryLabel: 'Sottocategorie',
+              allMacroText: 'Seleziona macrocategoria',
+              allSubCategoryText: 'Tutte',
+              onMacroChanged: (value) {
                 setState(() {
                   _selectedMacroCategoria = value;
                   _selectedCategoriaValueEn = null;
                 });
               },
-              decoration: const InputDecoration(labelText: 'Macrocategoria'),
-            ),
-            const SizedBox(height: 18),
-            DropdownButtonFormField<String?>(
-              initialValue: _selectedCategoriaValueEn,
-              items: [
-                const DropdownMenuItem<String?>(
-                  value: null,
-                  child: Text('Seleziona sottocategoria'),
-                ),
-                ...subCategories.map(
-                  (c) => DropdownMenuItem<String?>(
-                    value: _CategoriaMenuHelper.categoryValueFromSlug(c.slug),
-                    child: Text(_CategoriaMenuHelper.categoryLabel(c, languageCode)),
-                  ),
-                ),
-              ],
-              onChanged: (value) {
+              onSubCategoryChanged: (value) {
                 setState(() {
                   _selectedCategoriaValueEn = value;
                 });
               },
-              decoration: const InputDecoration(labelText: 'Sottocategoria'),
             ),
             const SizedBox(height: 18),
             TextFormField(
@@ -1245,6 +1787,26 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                       (v == null || v.trim().length < 20)
                           ? 'Inserisci almeno 20 caratteri'
                           : null,
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _isSuggestingCategory ? null : _suggestCategoryWithAi,
+                icon:
+                    _isSuggestingCategory
+                        ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                        : const Icon(Icons.auto_awesome),
+                label: Text(
+                  _isSuggestingCategory
+                      ? 'Suggerimento AI in corso...'
+                      : 'Suggerisci categoria con AI',
+                ),
+              ),
             ),
             const SizedBox(height: 20),
             Container(
@@ -1306,44 +1868,38 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
               controlAffinity: ListTileControlAffinity.leading,
             ),
             const SizedBox(height: 24),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.green, width: 2),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton.icon(
-                  onPressed: _isSending ? null : _submit,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 0),
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: Colors.grey[400],
-                    disabledForegroundColor: Colors.grey[600],
-                    elevation: 8,
-                  ),
-                  icon:
-                      _isSending
-                          ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.5,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
-                              ),
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton.icon(
+                onPressed: _isSending ? null : _submit,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 0),
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  disabledBackgroundColor: Colors.grey[400],
+                  disabledForegroundColor: Colors.grey[600],
+                  elevation: 8,
+                ),
+                icon:
+                    _isSending
+                        ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
                             ),
-                          )
-                          : const Icon(Icons.send, size: 26),
-                  label: Text(
-                    _isSending ? 'Invio in corso...' : widget.submitButtonText,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ),
+                          ),
+                        )
+                        : const Icon(Icons.send, size: 26),
+                label: Text(
+                  _isSending ? 'Invio in corso...' : widget.submitButtonText,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
@@ -1500,44 +2056,38 @@ class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
                 controlAffinity: ListTileControlAffinity.leading,
               ),
               const SizedBox(height: 24),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.green, width: 2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton.icon(
-                    onPressed: _isSending ? null : _submit,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 0),
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      disabledBackgroundColor: Colors.grey[400],
-                      disabledForegroundColor: Colors.grey[600],
-                      elevation: 8,
-                    ),
-                    icon:
-                        _isSending
-                            ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
-                                ),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton.icon(
+                  onPressed: _isSending ? null : _submit,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 0),
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: Colors.grey[400],
+                    disabledForegroundColor: Colors.grey[600],
+                    elevation: 8,
+                  ),
+                  icon:
+                      _isSending
+                          ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
                               ),
-                            )
-                            : const Icon(Icons.send, size: 26),
-                    label: Text(
-                      _isSending ? 'Invio in corso...' : 'Invia annuncio',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
-                      ),
+                            ),
+                          )
+                          : const Icon(Icons.send, size: 26),
+                  label: Text(
+                    _isSending ? 'Invio in corso...' : 'Invia annuncio',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
                     ),
                   ),
                 ),
@@ -1631,13 +2181,39 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _openPhoneDialer(String value) async {
+    final digits = value.replaceAll(RegExp(r'[^0-9+]'), '');
+    if (digits.isEmpty) return;
+    final uri = Uri.parse('tel:$digits');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Dettaglio annuncio')),
+      backgroundColor: const Color(0xFFF6F8FB),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x14000000),
+                  blurRadius: 18,
+                  offset: Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
           Text(
             offerta.title,
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
@@ -1650,38 +2226,49 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
             ),
           const SizedBox(height: 12),
           if (offerta.imageUrl.isNotEmpty) ...[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return Image.network(
-                    offerta.imageUrl,
-                    width: double.infinity,
-                    height: constraints.maxWidth > 600 ? 300 : 200,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: double.infinity,
-                        height: constraints.maxWidth > 600 ? 300 : 200,
-                        color: Colors.grey.shade200,
-                        child: const Center(
-                          child: Icon(Icons.image_not_supported, size: 48),
-                        ),
-                      );
-                    },
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Container(
-                        width: double.infinity,
-                        height: constraints.maxWidth > 600 ? 300 : 200,
-                        color: Colors.grey.shade200,
-                        child: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    },
-                  );
-                },
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => _FullScreenImageViewer(imageUrl: offerta.imageUrl),
+                  ),
+                );
+              },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Image.network(
+                      offerta.imageUrl,
+                      width: double.infinity,
+                      height: constraints.maxWidth > 600 ? 300 : 200,
+                      fit: BoxFit.cover,
+                      filterQuality: FilterQuality.medium,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: double.infinity,
+                          height: constraints.maxWidth > 600 ? 300 : 200,
+                          color: Colors.grey.shade200,
+                          child: const Center(
+                            child: Icon(Icons.image_not_supported, size: 48),
+                          ),
+                        );
+                      },
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          width: double.infinity,
+                          height: constraints.maxWidth > 600 ? 300 : 200,
+                          color: Colors.grey.shade200,
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -1704,15 +2291,6 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          if (offerta.requirements.isNotEmpty) ...[
-            const Text(
-              'Requisiti',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 6),
-            Text(offerta.requirements),
-            const SizedBox(height: 12),
-          ],
           if (offerta.content.isNotEmpty) ...[
             const Text(
               'Descrizione',
@@ -1720,6 +2298,14 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(offerta.content),
+            const SizedBox(height: 12),
+          ] else if (offerta.requirements.isNotEmpty) ...[
+            const Text(
+              'Descrizione',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 6),
+            Text(offerta.requirements),
             const SizedBox(height: 12),
           ] else if (offerta.excerpt.isNotEmpty) ...[
             const Text(
@@ -1770,18 +2356,43 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
           ],
+          if (offerta.phoneWhatsapp.isNotEmpty) ...[
+            const Text(
+              'Telefono',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 6),
+            SelectableText(offerta.phoneWhatsapp),
+            const SizedBox(height: 12),
+          ],
+          if (offerta.phoneWhatsapp.isNotEmpty)
+            OutlinedButton.icon(
+              onPressed: () => _openPhoneDialer(offerta.phoneWhatsapp),
+              icon: const Icon(Icons.phone),
+              label: const Text('Chiama'),
+            ),
+          if (offerta.phoneWhatsapp.isNotEmpty) const SizedBox(height: 10),
           if (offerta.phoneWhatsapp.isNotEmpty)
             ElevatedButton.icon(
               onPressed: () => _openWhatsApp(offerta.phoneWhatsapp),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF25D366),
+                foregroundColor: Colors.white,
+              ),
               icon: const Icon(Icons.chat),
               label: const Text('Contatta su WhatsApp'),
             ),
+          if (offerta.phoneWhatsapp.isNotEmpty && offerta.sourceUrl.isNotEmpty)
+            const SizedBox(height: 10),
           if (offerta.sourceUrl.isNotEmpty)
             OutlinedButton.icon(
               onPressed: () => _openUrl(offerta.sourceUrl),
               icon: const Icon(Icons.open_in_new),
               label: const Text('Apri annuncio originale'),
             ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -1795,6 +2406,41 @@ class _CandidaturaSheet extends StatefulWidget {
 
   @override
   State<_CandidaturaSheet> createState() => _CandidaturaSheetState();
+}
+
+class _FullScreenImageViewer extends StatelessWidget {
+  final String imageUrl;
+
+  const _FullScreenImageViewer({required this.imageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: Center(
+        child: InteractiveViewer(
+          minScale: 0.6,
+          maxScale: 4,
+          child: Image.network(
+            imageUrl,
+            fit: BoxFit.contain,
+            filterQuality: FilterQuality.high,
+            errorBuilder: (context, error, stackTrace) {
+              return const Icon(
+                Icons.image_not_supported,
+                color: Colors.white70,
+                size: 72,
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _CandidaturaSheetState extends State<_CandidaturaSheet> {

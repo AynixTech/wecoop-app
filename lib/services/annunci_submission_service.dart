@@ -138,4 +138,60 @@ class AnnunciSubmissionService {
       return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
+
+  /// Suggerisce categoria e sottocategoria in base alla descrizione
+  static Future<Map<String, dynamic>> suggestCategoryFromDescription({
+    required String description,
+    String? titleOffer,
+    String? categoryScope,
+    String? categoryDirection,
+  }) async {
+    try {
+      final cleanDescription = description.trim();
+      if (cleanDescription.length < 12) {
+        return {
+          'success': false,
+          'message': 'Inserisci una descrizione piu dettagliata',
+        };
+      }
+
+      final payload = {
+        'description': cleanDescription,
+        'title_offer': (titleOffer ?? '').trim(),
+        'category_scope': (categoryScope ?? '').trim(),
+        'category_direction': (categoryDirection ?? '').trim(),
+      };
+
+      final uri = Uri.parse('$baseUrl/annunci/suggest-category');
+      final response = await HttpClientService.post(
+        uri,
+        headers: await _getHeaders(),
+        body: jsonEncode(payload),
+      );
+
+      final body = _parseMapResponse(HttpClientService.decodeJsonResponse(response));
+
+      if (response.statusCode == 200 && body['success'] == true) {
+        final data = body['data'];
+        if (data is Map<String, dynamic>) {
+          return {
+            'success': true,
+            'category_macro': (data['category_macro'] ?? '').toString(),
+            'category_slug': (data['category_slug'] ?? '').toString(),
+            'confidence': data['confidence'],
+            'reason': (data['reason'] ?? '').toString(),
+            'source': (data['source'] ?? '').toString(),
+            'note': (data['note'] ?? '').toString(),
+          };
+        }
+      }
+
+      return {
+        'success': false,
+        'message': (body['message'] ?? 'Suggerimento non disponibile').toString(),
+      };
+    } catch (e) {
+      return {'success': false, 'message': 'Errore di connessione: $e'};
+    }
+  }
 }

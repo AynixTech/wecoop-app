@@ -124,38 +124,6 @@ class LavoroOrientamentoScreen extends StatelessWidget {
                 _handleActivateWorkServiceTap(context);
               },
             ),
-            const SizedBox(height: 12),
-            _ServiceCard(
-              icon: Icons.timeline_outlined,
-              title: l10n.translate('viewApplicationStatus'),
-              description: l10n.translate('viewApplicationStatusDesc'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) => StatoCandidaturaScreen(
-                          trackingKey: _jobServiceTrackingKey,
-                          cvCacheKey: _cvLocalCacheKey,
-                        ),
-                  ),
-                );
-              },
-            ),
-            const SizedBox(height: 12),
-            _ServiceCard(
-              icon: Icons.school_outlined,
-              title: l10n.translate('viewTraining'),
-              description: l10n.translate('viewTrainingDesc'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const FormazioneLavoroScreen(),
-                  ),
-                );
-              },
-            ),
           ],
         ),
       ),
@@ -354,6 +322,24 @@ class _AttivazioneServizioLavoroScreenState
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: scheme.primaryContainer.withOpacity(0.35),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: scheme.outlineVariant),
+                ),
+                child: Text(
+                  l10n.translate('activateWorkServiceInfo'),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: scheme.onSurface,
+                    height: 1.35,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),

@@ -218,6 +218,7 @@ class _ActiveProjectsSection extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final scheme = Theme.of(context).colorScheme;
     final categories = buildProjectOpportunityCatalog(context);
+    final isCompact = MediaQuery.sizeOf(context).width < 390;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,7 +240,7 @@ class _ActiveProjectsSection extends StatelessWidget {
           crossAxisCount: 2,
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
-          childAspectRatio: 0.92,
+          childAspectRatio: isCompact ? 0.76 : 0.86,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           children: [
             for (var index = 0; index < categories.length; index++)
@@ -283,7 +284,6 @@ class _ActiveProjectsSection extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
                           padding: const EdgeInsets.all(8),
@@ -302,8 +302,10 @@ class _ActiveProjectsSection extends StatelessWidget {
                           children: [
                             Text(
                               categories[index].title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: isCompact ? 14 : 16,
                                 fontWeight: FontWeight.w700,
                                 color: scheme.onPrimary,
                               ),
@@ -312,15 +314,16 @@ class _ActiveProjectsSection extends StatelessWidget {
                             Text(
                               categories[index].summary,
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: isCompact ? 11 : 12,
                                 height: 1.35,
                                 color: scheme.onPrimary.withOpacity(0.9),
                               ),
-                              maxLines: 3,
+                              maxLines: isCompact ? 2 : 3,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
+                        const Spacer(),
                         Text(
                           '${categories[index].items.length} ${l10n.translate('availableOpportunitiesLabel')}',
                           style: TextStyle(

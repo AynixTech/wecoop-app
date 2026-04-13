@@ -209,9 +209,11 @@ class AppLocalizations {
       'createCvService': 'Crea un CV',
       'createCvServiceDesc':
           'Compila i dati e genera il tuo CV professionale in pochi minuti',
-      'activateWorkService': 'Attiva servizio lavoro',
+    'activateWorkService': 'Attiva supporto lavoro',
       'activateWorkServiceDesc':
           'Attiva il supporto WECOOP per ricerca lavoro e candidature',
+      'activateWorkServiceInfo':
+          'Con questa attivazione autorizzi WECOOP a utilizzare i dati personali del tuo CV per supportarti nella ricerca lavoro, nella candidatura alle opportunita e nelle comunicazioni tramite i canali autorizzati (es. WhatsApp, email e telefono).',
       'viewApplicationStatus': 'Vedi stato candidatura',
       'viewApplicationStatusDesc':
           'Controlla aggiornamenti e avanzamento della tua candidatura',
@@ -1402,9 +1404,11 @@ class AppLocalizations {
       'createCvService': 'Create a CV',
       'createCvServiceDesc':
           'Complete your details and generate your professional CV in minutes',
-      'activateWorkService': 'Activate job service',
+    'activateWorkService': 'Activate work support',
       'activateWorkServiceDesc':
           'Activate WECOOP support for job search and applications',
+      'activateWorkServiceInfo':
+          'By activating this service, you authorize WECOOP to use your CV personal data to support your job search, applications to opportunities, and communications through authorized channels (e.g. WhatsApp, email, and phone).',
       'viewApplicationStatus': 'View application status',
       'viewApplicationStatusDesc':
           'Check updates and progress of your application',
@@ -2563,9 +2567,11 @@ class AppLocalizations {
       'createCvService': 'Crea un CV',
       'createCvServiceDesc':
           'Completa tus datos y genera tu CV profesional en pocos minutos',
-      'activateWorkService': 'Activar servicio de trabajo',
+    'activateWorkService': 'Activar apoyo laboral',
       'activateWorkServiceDesc':
           'Activa el apoyo de WECOOP para busqueda laboral y candidaturas',
+      'activateWorkServiceInfo':
+          'Al activar este servicio, autorizas a WECOOP a utilizar los datos personales de tu CV para apoyarte en la busqueda de empleo, en las candidaturas a oportunidades y en las comunicaciones por canales autorizados (p. ej., WhatsApp, correo electronico y telefono).',
       'viewApplicationStatus': 'Ver estado de candidatura',
       'viewApplicationStatusDesc':
           'Consulta actualizaciones y avance de tu candidatura',

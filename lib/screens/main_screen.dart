@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'home/home_screen.dart';
 import 'calendar/calendar_screen.dart';
-import 'sportello/chatbot_assistenza_screen.dart';
+import 'lavoro/offerte_lavoro_screen.dart';
 import 'progetti/progetti_screen.dart';
 import 'profilo/profilo_screen.dart';
 import 'eventi/eventi_screen.dart';
@@ -21,7 +21,7 @@ class _MainScreenState extends State<MainScreen> {
     const HomeScreen(),
     const EventiScreen(),
     const CalendarScreen(),
-    const ChatbotAssistenzaScreen(),
+    const OfferteLavoroScreen(),
     const ProgettiScreen(),
     const ProfiloScreen(),
   ];
@@ -61,8 +61,8 @@ class _MainScreenState extends State<MainScreen> {
             label: l10n.calendar,
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.support_agent),
-            label: l10n.sportello,
+            icon: const Icon(Icons.work),
+            label: l10n.translate('projectsCategoryWorkTitle'),
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.volunteer_activism),

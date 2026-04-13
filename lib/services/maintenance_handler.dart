@@ -41,7 +41,7 @@ class MaintenanceHandler {
   }
 
   static Future<void> handleHttpStatusCode(int statusCode) async {
-    if (statusCode == 500) {
+    if (statusCode == 503) {
       await showMaintenanceModal();
     }
   }

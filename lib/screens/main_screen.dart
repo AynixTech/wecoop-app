@@ -3,7 +3,7 @@ import 'package:wecoop_app/services/app_localizations.dart';
 import 'home/home_screen.dart';
 import 'calendar/calendar_screen.dart';
 import 'lavoro/offerte_lavoro_screen.dart';
-import 'progetti/progetti_screen.dart';
+import 'sportello/sportello_screen.dart';
 import 'profilo/profilo_screen.dart';
 import 'eventi/eventi_screen.dart';
 
@@ -22,7 +22,7 @@ class _MainScreenState extends State<MainScreen> {
     const EventiScreen(),
     const CalendarScreen(),
     const OfferteLavoroScreen(),
-    const ProgettiScreen(),
+    const SportelloScreen(),
     const ProfiloScreen(),
   ];
 
@@ -66,7 +66,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.volunteer_activism),
-            label: l10n.projects,
+            label: l10n.translate('sportello'),
           ),
           BottomNavigationBarItem(icon: const Icon(Icons.person), label: l10n.profile),
         ],

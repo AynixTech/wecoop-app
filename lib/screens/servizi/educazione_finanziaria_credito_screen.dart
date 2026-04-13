@@ -138,6 +138,65 @@ class EducazioneFinanziariaCreditoScreen extends StatelessWidget {
                   );
                 },
               ),
+              const SizedBox(height: 12),
+              _ServiceCard(
+                icon: Icons.storefront,
+                title: l10n.translate('smallBusinessFinancing'),
+                description: l10n.translate('smallBusinessFinancingDesc'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => RichiestaFormScreen(
+                            servizio: l10n.translate(
+                              'financialEducationCredit',
+                            ),
+                            categoria: l10n.translate(
+                              'smallBusinessFinancing',
+                            ),
+                            campi: [
+                              {
+                                'label': l10n.fullName,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.fiscalCode,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.phone,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.email,
+                                'type': 'email',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.translate('howCanWeHelp'),
+                                'type': 'select',
+                                'options': [
+                                  l10n.translate('startupFinancing'),
+                                  l10n.translate('workingCapital'),
+                                  l10n.translate('equipmentInvestment'),
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.notesAndAdditionalInfo,
+                                'type': 'textarea',
+                                'required': false,
+                              },
+                            ],
+                          ),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),

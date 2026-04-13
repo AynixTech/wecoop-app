@@ -2,24 +2,57 @@ import 'package:flutter/material.dart';
 
 import '../../models/project_opportunity_catalog.dart';
 import '../../services/app_localizations.dart';
+import '../../services/interessati_service.dart';
 import '../servizi/accoglienza_screen.dart';
 import '../servizi/cv_ai_screen.dart';
 import '../servizi/educazione_finanziaria_credito_screen.dart';
 import '../servizi/lavoro_orientamento_screen.dart';
 
 class ProjectDetailScreen extends StatelessWidget {
+  final String categoryKey;
   final String categoryTitle;
   final ProjectOpportunityItem item;
   final Color categoryColor;
 
   const ProjectDetailScreen({
     super.key,
+    required this.categoryKey,
     required this.categoryTitle,
     required this.item,
     required this.categoryColor,
   });
 
+  String _slugify(String value) {
+    final lower = value.toLowerCase();
+    final safe = lower.replaceAll(RegExp(r'[^a-z0-9]+'), '-');
+    return safe.replaceAll(RegExp(r'^-+|-+$'), '');
+  }
+
+  String _resolveItemType() {
+    switch (item.actionKey) {
+      case 'training':
+        return 'corso';
+      case 'inclusion':
+        return 'evento';
+      default:
+        return 'opportunita';
+    }
+  }
+
+  Future<void> _trackInterest() async {
+    final itemKey = '$categoryKey-${item.actionKey}-${_slugify(item.title)}';
+
+    await InteressatiService.registerInterest(
+      itemKey: itemKey,
+      itemTitle: item.title,
+      itemType: _resolveItemType(),
+      source: 'app_project_detail_cta',
+    );
+  }
+
   void _handleCta(BuildContext context) {
+    _trackInterest();
+
     Widget destination;
 
     switch (item.actionKey) {

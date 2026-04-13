@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wecoop_app/models/project_opportunity_catalog.dart';
+import 'package:wecoop_app/services/interessati_service.dart';
 
 import '../servizi/accoglienza_screen.dart';
 import '../servizi/cv_ai_screen.dart';
@@ -8,6 +9,34 @@ import '../servizi/lavoro_orientamento_screen.dart';
 import 'project_detail_screen.dart';
 
 class ProjectCategoryDetailScreen extends StatelessWidget {
+    String _slugify(String value) {
+      final lower = value.toLowerCase();
+      final safe = lower.replaceAll(RegExp(r'[^a-z0-9]+'), '-');
+      return safe.replaceAll(RegExp(r'^-+|-+$'), '');
+    }
+
+    String _resolveItemType(ProjectOpportunityItem item) {
+      switch (item.actionKey) {
+        case 'training':
+          return 'corso';
+        case 'inclusion':
+          return 'evento';
+        default:
+          return 'opportunita';
+      }
+    }
+
+    Future<void> _trackInterest(ProjectOpportunityItem item) async {
+      final itemKey = '${category.key}-${item.actionKey}-${_slugify(item.title)}';
+
+      await InteressatiService.registerInterest(
+        itemKey: itemKey,
+        itemTitle: item.title,
+        itemType: _resolveItemType(item),
+        source: 'app_project_cta',
+      );
+    }
+
   final ProjectOpportunityCategory category;
 
   const ProjectCategoryDetailScreen({super.key, required this.category});
@@ -18,6 +47,7 @@ class ProjectCategoryDetailScreen extends StatelessWidget {
       MaterialPageRoute(
         builder:
             (context) => ProjectDetailScreen(
+              categoryKey: category.key,
               categoryTitle: category.title,
               item: item,
               categoryColor: category.color,
@@ -27,6 +57,8 @@ class ProjectCategoryDetailScreen extends StatelessWidget {
   }
 
   void _handleCta(BuildContext context, ProjectOpportunityItem item) {
+    _trackInterest(item);
+
     Widget destination;
 
     switch (item.actionKey) {

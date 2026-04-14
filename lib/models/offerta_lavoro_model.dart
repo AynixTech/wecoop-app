@@ -29,6 +29,7 @@ class OffertaLavoro {
   final int authorUserId;
   final String authorName;
   final String authorAvatarUrl;
+  final bool authorProfileComplete;
   final String attachedCvId;
   final String attachedCvLabel;
   final String attachedCvPdfUrl;
@@ -67,6 +68,7 @@ class OffertaLavoro {
     required this.authorUserId,
     required this.authorName,
     required this.authorAvatarUrl,
+    required this.authorProfileComplete,
     required this.attachedCvId,
     required this.attachedCvLabel,
     required this.attachedCvPdfUrl,
@@ -118,6 +120,7 @@ class OffertaLavoro {
       authorUserId: (json['author_user_id'] as num?)?.toInt() ?? 0,
       authorName: (json['author_name'] ?? '').toString(),
       authorAvatarUrl: (json['author_avatar_url'] ?? '').toString(),
+      authorProfileComplete: json['author_profile_complete'] == true,
       attachedCvId: (json['attached_cv_id'] ?? '').toString(),
       attachedCvLabel: (json['attached_cv_label'] ?? '').toString(),
       attachedCvPdfUrl: (json['attached_cv_pdf_url'] ?? '').toString(),

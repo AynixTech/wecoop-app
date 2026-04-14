@@ -1627,12 +1627,23 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                   children: [
                     if (offerta.authorName.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      Text(
-                        offerta.authorName,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              offerta.authorName,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (offerta.authorProfileComplete) ...[
+                            const SizedBox(width: 6),
+                            const _VerifiedBadge(compact: true),
+                          ],
+                        ],
                       ),
                     ],
                     if (offerta.companyName.isNotEmpty)
@@ -1772,6 +1783,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
   bool _isSuggestingCategory = false;
   bool _isImprovingDescription = false;
   bool _isLoadingGeneratedCvs = false;
+  bool _isProfileComplete = false;
   File? _selectedImage;
   List<Map<String, dynamic>> _generatedCvs = const [];
   String? _selectedCvId;
@@ -1787,9 +1799,18 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
   @override
   void initState() {
     super.initState();
+    _loadProfileCompleteFlag();
     if (widget.categoryDirection == 'seek') {
       _loadGeneratedCvs();
     }
+  }
+
+  Future<void> _loadProfileCompleteFlag() async {
+    final stored = await _storage.read(key: 'profilo_completo');
+    if (!mounted) return;
+    setState(() {
+      _isProfileComplete = (stored ?? '').toLowerCase() == 'true';
+    });
   }
 
   @override
@@ -2687,6 +2708,38 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
             Text(
               widget.subtitle,
             ),
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: _isProfileComplete ? Colors.green.shade50 : Colors.amber.shade50,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: _isProfileComplete ? Colors.green.shade200 : Colors.amber.shade200,
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    _isProfileComplete ? Icons.verified : Icons.info_outline,
+                    color: _isProfileComplete ? Colors.green.shade700 : Colors.amber.shade800,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      _isProfileComplete
+                          ? 'Il tuo profilo e completo: i tuoi annunci mostreranno la coccarda Profilo verificato.'
+                          : 'Completa il profilo se vuoi mostrare la coccarda Profilo verificato nei tuoi annunci.',
+                      style: TextStyle(
+                        color: _isProfileComplete ? Colors.green.shade900 : Colors.amber.shade900,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 8),
             Align(
               alignment: Alignment.centerLeft,
@@ -3250,6 +3303,46 @@ class _DirectionBadge extends StatelessWidget {
   }
 }
 
+class _VerifiedBadge extends StatelessWidget {
+  final bool compact;
+
+  const _VerifiedBadge({this.compact = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 6 : 10,
+        vertical: compact ? 3 : 5,
+      ),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6F6EC),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: const Color(0xFF9FD3AF)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.verified,
+            size: compact ? 14 : 16,
+            color: const Color(0xFF1F8A4D),
+          ),
+          SizedBox(width: compact ? 4 : 6),
+          Text(
+            'Profilo verificato',
+            style: TextStyle(
+              fontSize: compact ? 11 : 12,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF1F6B43),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _OffertaLavoroDetailScreen extends StatelessWidget {
   final OffertaLavoro offerta;
   final VoidCallback onApply;
@@ -3364,13 +3457,22 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (offerta.authorName.isNotEmpty)
-                      Text(
-                        offerta.authorName,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black87,
-                        ),
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          Text(
+                            offerta.authorName,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          if (offerta.authorProfileComplete)
+                            const _VerifiedBadge(),
+                        ],
                       ),
                     if (offerta.companyName.isNotEmpty)
                       Text(

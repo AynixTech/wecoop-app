@@ -97,9 +97,9 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
 
     if (mounted) {
       setState(() {
-        userName = name ?? displayName ?? 'Utente';
-        userEmail = email ?? 'email non disponibile';
-        tesseraNumero = tessera ?? 'Tessera non disponibile';
+        userName = name ?? displayName ?? '';
+        userEmail = email ?? '';
+        tesseraNumero = tessera ?? '';
         tesseraUrl = url;
         avatarUrl = storedAvatar;
         selectedLanguageCode = langCode ?? 'it';
@@ -125,14 +125,15 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
 
         if (mounted) {
           setState(() {
-            userName = fullName.isNotEmpty
-                ? fullName
-                : (data['display_name'] ?? userName).toString();
+            userName =
+                fullName.isNotEmpty
+                    ? fullName
+                    : (data['display_name'] ?? userName).toString();
             userEmail = freshEmail.isNotEmpty ? freshEmail : userEmail;
-            tesseraNumero = freshTessera.isNotEmpty
-                ? freshTessera
-                : tesseraNumero;
-            tesseraUrl = freshTesseraUrl.isNotEmpty ? freshTesseraUrl : tesseraUrl;
+            tesseraNumero =
+                freshTessera.isNotEmpty ? freshTessera : tesseraNumero;
+            tesseraUrl =
+                freshTesseraUrl.isNotEmpty ? freshTesseraUrl : tesseraUrl;
             avatarUrl = freshAvatar.isNotEmpty ? freshAvatar : avatarUrl;
           });
         }
@@ -149,6 +150,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   }
 
   Future<void> _pickAndUploadAvatar(ImageSource source) async {
+    final l10n = AppLocalizations.of(context)!;
     final picker = ImagePicker();
     final picked = await picker.pickImage(
       source: source,
@@ -192,20 +194,24 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Avatar aggiornato con successo')),
+        SnackBar(content: Text(l10n.translate('avatarUpdatedSuccess'))),
       );
       return;
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text((result['message'] ?? 'Errore aggiornamento avatar').toString()),
+        content: Text(
+          (result['message'] ?? l10n.translate('avatarUpdateError')).toString(),
+        ),
         backgroundColor: Colors.red,
       ),
     );
   }
 
   Future<_AvatarCropShape?> _selectCropShape() async {
+    final l10n = AppLocalizations.of(context)!;
+
     return showModalBottomSheet<_AvatarCropShape>(
       context: context,
       builder: (context) {
@@ -215,14 +221,14 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
             children: [
               ListTile(
                 leading: const Icon(Icons.crop_square_rounded),
-                title: const Text('Crop quadrato'),
-                subtitle: const Text('Ideale se vuoi tenere piu margine nell\'immagine'),
+                title: Text(l10n.translate('avatarCropSquareTitle')),
+                subtitle: Text(l10n.translate('avatarCropSquareSubtitle')),
                 onTap: () => Navigator.pop(context, _AvatarCropShape.square),
               ),
               ListTile(
                 leading: const Icon(Icons.circle_outlined),
-                title: const Text('Crop circolare'),
-                subtitle: const Text('Perfetto per un avatar tondo nell\'app'),
+                title: Text(l10n.translate('avatarCropCircleTitle')),
+                subtitle: Text(l10n.translate('avatarCropCircleSubtitle')),
                 onTap: () => Navigator.pop(context, _AvatarCropShape.circle),
               ),
             ],
@@ -244,10 +250,11 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     final croppedBytes = await Navigator.of(context).push<Uint8List>(
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (_) => _AvatarCropScreen(
-          imageBytes: sourceBytes,
-          cropShape: cropShape,
-        ),
+        builder:
+            (_) => _AvatarCropScreen(
+              imageBytes: sourceBytes,
+              cropShape: cropShape,
+            ),
       ),
     );
 
@@ -256,9 +263,10 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     }
 
     final decodedImage = img.decodeImage(croppedBytes);
-    final normalizedBytes = decodedImage == null
-        ? croppedBytes
-        : Uint8List.fromList(img.encodePng(decodedImage));
+    final normalizedBytes =
+        decodedImage == null
+            ? croppedBytes
+            : Uint8List.fromList(img.encodePng(decodedImage));
 
     final tempDir = await getTemporaryDirectory();
     final file = File(
@@ -271,6 +279,8 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   Future<void> _showAvatarOptions() async {
     if (!mounted) return;
 
+    final l10n = AppLocalizations.of(context)!;
+
     await showModalBottomSheet<void>(
       context: context,
       builder: (context) {
@@ -280,7 +290,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
             children: [
               ListTile(
                 leading: const Icon(Icons.photo_library_outlined),
-                title: const Text('Scegli dalla galleria'),
+                title: Text(l10n.translate('chooseFromGallery')),
                 onTap: () {
                   Navigator.pop(context);
                   _pickAndUploadAvatar(ImageSource.gallery);
@@ -288,7 +298,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.photo_camera_outlined),
-                title: const Text('Scatta una foto'),
+                title: Text(l10n.translate('takePhoto')),
                 onTap: () {
                   Navigator.pop(context);
                   _pickAndUploadAvatar(ImageSource.camera);
@@ -297,7 +307,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
               if ((avatarUrl ?? '').trim().isNotEmpty)
                 ListTile(
                   leading: const Icon(Icons.visibility_outlined),
-                  title: const Text('Visualizza avatar'),
+                  title: Text(l10n.translate('viewAvatar')),
                   onTap: () {
                     Navigator.pop(context);
                     _openImagePreview(avatarUrl!);
@@ -506,9 +516,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
 
   bool get _hasTesseraNumero {
     final normalized = tesseraNumero.trim().toLowerCase();
-    return normalized.isNotEmpty &&
-        normalized != '...' &&
-        normalized != 'tessera non disponibile';
+    return normalized.isNotEmpty && normalized != '...';
   }
 
   Widget _buildSectionCard({
@@ -527,10 +535,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
           ),
         ],
       ),
-      child: Padding(
-        padding: padding,
-        child: child,
-      ),
+      child: Padding(padding: padding, child: child),
     );
   }
 
@@ -581,11 +586,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                 ],
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: accentColor,
-              size: 18,
-            ),
+            Icon(Icons.arrow_forward_ios_rounded, color: accentColor, size: 18),
           ],
         ),
       ),
@@ -597,6 +598,16 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
+    final displayUserName =
+        userName.trim().isEmpty || userName.trim() == '...'
+            ? l10n.translate('genericUser')
+            : userName;
+    final displayUserEmail =
+        userEmail.trim().isEmpty || userEmail.trim() == '...'
+            ? l10n.translate('emailNotAvailable')
+            : userEmail;
+    final displayTesseraNumero =
+        _hasTesseraNumero ? tesseraNumero : l10n.translate('notAssigned');
 
     if (_isLoadingProfile) {
       return Scaffold(
@@ -642,7 +653,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                     ),
                     const SizedBox(height: 28),
                     Text(
-                      'Stiamo preparando il tuo profilo',
+                      l10n.translate('profileLoadingTitle'),
                       textAlign: TextAlign.center,
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
@@ -651,7 +662,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'Recuperiamo tessera, dati personali e preferenze aggiornate.',
+                      l10n.translate('profileLoadingSubtitle'),
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: scheme.onSurfaceVariant,
@@ -733,7 +744,8 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                           final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const CompletaProfiloScreen(),
+                              builder:
+                                  (context) => const CompletaProfiloScreen(),
                             ),
                           );
                           if (result == true) {
@@ -790,18 +802,21 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                             backgroundColor: Colors.white.withOpacity(0.18),
                             backgroundImage:
                                 (avatarUrl ?? '').trim().isNotEmpty
-                                ? NetworkImage(avatarUrl!.trim())
-                                : null,
-                            child: (avatarUrl ?? '').trim().isEmpty
-                                ? Text(
-                                    userName.isNotEmpty ? userName[0] : '?',
-                                    style: const TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : null,
+                                    ? NetworkImage(avatarUrl!.trim())
+                                    : null,
+                            child:
+                                (avatarUrl ?? '').trim().isEmpty
+                                    ? Text(
+                                      displayUserName.isNotEmpty
+                                          ? displayUserName[0]
+                                          : '?',
+                                      style: const TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                    : null,
                           ),
                         ),
                         Positioned(
@@ -813,23 +828,27 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                             elevation: 3,
                             child: InkWell(
                               customBorder: const CircleBorder(),
-                              onTap: _isUploadingAvatar ? null : _showAvatarOptions,
+                              onTap:
+                                  _isUploadingAvatar
+                                      ? null
+                                      : _showAvatarOptions,
                               child: Padding(
                                 padding: const EdgeInsets.all(8),
-                                child: _isUploadingAvatar
-                                    ? SizedBox(
-                                        width: 16,
-                                        height: 16,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
+                                child:
+                                    _isUploadingAvatar
+                                        ? SizedBox(
+                                          width: 16,
+                                          height: 16,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: scheme.primary,
+                                          ),
+                                        )
+                                        : Icon(
+                                          Icons.edit,
+                                          size: 16,
                                           color: scheme.primary,
                                         ),
-                                      )
-                                    : Icon(
-                                        Icons.edit,
-                                        size: 16,
-                                        color: scheme.primary,
-                                      ),
                               ),
                             ),
                           ),
@@ -842,7 +861,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            userName,
+                            displayUserName,
                             style: theme.textTheme.headlineSmall?.copyWith(
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
@@ -850,7 +869,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            userEmail,
+                            displayUserEmail,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: Colors.white.withOpacity(0.82),
                             ),
@@ -905,7 +924,9 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                         ),
                       ),
                       child: QrImageView(
-                        data: tesseraUrl ?? 'https://www.wecoop.org/tessera-socio/?id=$tesseraNumero',
+                        data:
+                            tesseraUrl ??
+                            'https://www.wecoop.org/tessera-socio/?id=$tesseraNumero',
                         version: QrVersions.auto,
                         size: 180,
                         gapless: false,
@@ -930,7 +951,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            'Numero tessera non disponibile',
+                            l10n.translate('memberCardNumberUnavailable'),
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: scheme.onSurfaceVariant,
                               fontWeight: FontWeight.w600,
@@ -955,7 +976,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      _hasTesseraNumero ? tesseraNumero : 'Non assegnato',
+                      displayTesseraNumero,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.4,
@@ -972,8 +993,8 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
               context: context,
               icon: Icons.folder_outlined,
               accentColor: scheme.secondary,
-              title: 'I miei documenti',
-              subtitle: 'Gestisci i tuoi documenti personali',
+              title: l10n.myDocumentsTitle,
+              subtitle: l10n.translate('myDocumentsSubtitle'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -1059,9 +1080,10 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => EventoDetailScreen(
-                                    eventoId: evento.id,
-                                  ),
+                                  builder:
+                                      (context) => EventoDetailScreen(
+                                        eventoId: evento.id,
+                                      ),
                                 ),
                               );
                             },
@@ -1079,18 +1101,21 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                                         width: 60,
                                         height: 60,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (_, __, ___) => Container(
-                                          width: 60,
-                                          height: 60,
-                                          decoration: BoxDecoration(
-                                            color: scheme.primary.withOpacity(0.12),
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          child: Icon(
-                                            Icons.event,
-                                            color: scheme.primary,
-                                          ),
-                                        ),
+                                        errorBuilder:
+                                            (_, __, ___) => Container(
+                                              width: 60,
+                                              height: 60,
+                                              decoration: BoxDecoration(
+                                                color: scheme.primary
+                                                    .withOpacity(0.12),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: Icon(
+                                                Icons.event,
+                                                color: scheme.primary,
+                                              ),
+                                            ),
                                       ),
                                     )
                                   else
@@ -1109,13 +1134,15 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           evento.titolo,
-                                          style: theme.textTheme.bodyMedium?.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                          style: theme.textTheme.bodyMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w600,
+                                              ),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -1125,31 +1152,40 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                                             Icon(
                                               Icons.calendar_today,
                                               size: 14,
-                                              color: scheme.onSurface.withOpacity(0.65),
+                                              color: scheme.onSurface
+                                                  .withOpacity(0.65),
                                             ),
                                             const SizedBox(width: 4),
                                             Text(
                                               evento.dataInizio,
-                                              style: theme.textTheme.bodySmall?.copyWith(
-                                                color: scheme.onSurface.withOpacity(0.65),
-                                              ),
+                                              style: theme.textTheme.bodySmall
+                                                  ?.copyWith(
+                                                    color: scheme.onSurface
+                                                        .withOpacity(0.65),
+                                                  ),
                                             ),
                                             if (evento.luogo != null) ...[
                                               const SizedBox(width: 12),
                                               Icon(
                                                 Icons.location_on,
                                                 size: 14,
-                                                color: scheme.onSurface.withOpacity(0.65),
+                                                color: scheme.onSurface
+                                                    .withOpacity(0.65),
                                               ),
                                               const SizedBox(width: 4),
                                               Expanded(
                                                 child: Text(
                                                   evento.luogo!,
-                                                  style: theme.textTheme.bodySmall?.copyWith(
-                                                    color: scheme.onSurface.withOpacity(0.65),
-                                                  ),
+                                                  style: theme
+                                                      .textTheme
+                                                      .bodySmall
+                                                      ?.copyWith(
+                                                        color: scheme.onSurface
+                                                            .withOpacity(0.65),
+                                                      ),
                                                   maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
                                               ),
                                             ],
@@ -1193,10 +1229,19 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                       border: const OutlineInputBorder(),
                     ),
                     value: selectedLanguageCode,
-                    items: const [
-                      DropdownMenuItem(value: 'it', child: Text('Italiano')),
-                      DropdownMenuItem(value: 'en', child: Text('English')),
-                      DropdownMenuItem(value: 'es', child: Text('Español')),
+                    items: [
+                      DropdownMenuItem(
+                        value: 'it',
+                        child: Text(l10n.translate('languageItalian')),
+                      ),
+                      DropdownMenuItem(
+                        value: 'en',
+                        child: Text(l10n.translate('languageEnglish')),
+                      ),
+                      DropdownMenuItem(
+                        value: 'es',
+                        child: Text(l10n.translate('languageSpanish')),
+                      ),
                     ],
                     onChanged: (value) {
                       if (value != null) {
@@ -1338,10 +1383,7 @@ class _AvatarCropScreen extends StatefulWidget {
   final Uint8List imageBytes;
   final _AvatarCropShape cropShape;
 
-  const _AvatarCropScreen({
-    required this.imageBytes,
-    required this.cropShape,
-  });
+  const _AvatarCropScreen({required this.imageBytes, required this.cropShape});
 
   @override
   State<_AvatarCropScreen> createState() => _AvatarCropScreenState();
@@ -1354,6 +1396,8 @@ class _AvatarCropScreenState extends State<_AvatarCropScreen> {
   void _handleCropResult(CropResult result) {
     if (!mounted) return;
 
+    final l10n = AppLocalizations.of(context)!;
+
     switch (result) {
       case CropSuccess(:final croppedImage):
         Navigator.of(context).pop(Uint8List.fromList(croppedImage));
@@ -1363,7 +1407,7 @@ class _AvatarCropScreenState extends State<_AvatarCropScreen> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Errore durante il crop: $cause'),
+            content: Text('${l10n.translate('cropError')}: $cause'),
             backgroundColor: Colors.red,
           ),
         );
@@ -1372,6 +1416,7 @@ class _AvatarCropScreenState extends State<_AvatarCropScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -1381,8 +1426,8 @@ class _AvatarCropScreenState extends State<_AvatarCropScreen> {
         foregroundColor: Colors.white,
         title: Text(
           widget.cropShape == _AvatarCropShape.circle
-              ? 'Crop avatar circolare'
-              : 'Crop avatar quadrato',
+              ? l10n.translate('avatarCircularCrop')
+              : l10n.translate('avatarSquareCrop'),
         ),
       ),
       body: Column(
@@ -1415,44 +1460,51 @@ class _AvatarCropScreenState extends State<_AvatarCropScreen> {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: _isCropping
-                          ? null
-                          : () => Navigator.of(context).pop(),
+                      onPressed:
+                          _isCropping
+                              ? null
+                              : () => Navigator.of(context).pop(),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
                         side: const BorderSide(color: Colors.white30),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: const Text('Annulla'),
+                      child: Text(l10n.cancel),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: _isCropping
-                          ? null
-                          : () {
-                              setState(() {
-                                _isCropping = true;
-                              });
-                              _controller.crop();
-                            },
+                      onPressed:
+                          _isCropping
+                              ? null
+                              : () {
+                                setState(() {
+                                  _isCropping = true;
+                                });
+                                _controller.crop();
+                              },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: scheme.primary,
                         foregroundColor: scheme.onPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      icon: _isCropping
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Icon(Icons.check_rounded),
-                      label: Text(_isCropping ? 'Elaborazione...' : 'Applica'),
+                      icon:
+                          _isCropping
+                              ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                              : const Icon(Icons.check_rounded),
+                      label: Text(
+                        _isCropping
+                            ? l10n.processing
+                            : l10n.translate('applyAction'),
+                      ),
                     ),
                   ),
                 ],

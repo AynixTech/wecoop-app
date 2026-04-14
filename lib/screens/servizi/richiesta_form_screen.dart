@@ -2164,15 +2164,14 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   Widget _buildModalitaConsegnaSection() {
     final l10n = AppLocalizations.of(context)!;
     final scheme = Theme.of(context).colorScheme;
+    final accent = scheme.primary;
 
-    // Mappa delle modalità disponibili con le loro chiavi e etichette localizzate
     final modalitaDisponibili = {
       'courier': l10n.courierShipping,
       'pickup': l10n.pickupAtOffice,
       'email': l10n.emailDelivery,
     };
 
-    // Filtra solo le modalità disponibili per questo servizio
     final modalitaPerServizio = <String, String>{};
     for (var modalita in widget.modalitaConsegna!) {
       if (modalitaDisponibili.containsKey(modalita)) {
@@ -2180,225 +2179,399 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       }
     }
 
+    InputDecoration inputDecoration(String label, {IconData? icon}) {
+      OutlineInputBorder border(Color color) => OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(color: color, width: 1.2),
+      );
+
+      return InputDecoration(
+        labelText: label,
+        filled: true,
+        fillColor: Colors.white,
+        prefixIcon:
+            icon == null
+                ? null
+                : Icon(icon, color: scheme.primary.withOpacity(0.78)),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 16,
+        ),
+        border: border(scheme.outlineVariant),
+        enabledBorder: border(scheme.outlineVariant),
+        focusedBorder: border(scheme.primary),
+        errorBorder: border(scheme.error),
+        focusedErrorBorder: border(scheme.error),
+      );
+    }
+
+    Widget optionTile({
+      required String label,
+      required bool selected,
+      required VoidCallback onTap,
+    }) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: onTap,
+            child: Ink(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color:
+                    selected
+                        ? Color.alphaBlend(
+                          scheme.primary.withOpacity(0.08),
+                          Colors.white,
+                        )
+                        : Colors.white,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: selected ? scheme.primary : scheme.outlineVariant,
+                  width: selected ? 1.6 : 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: scheme.shadow.withOpacity(0.05),
+                    blurRadius: 14,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight:
+                            selected ? FontWeight.w700 : FontWeight.w500,
+                        color: const Color(0xFF253744),
+                      ),
+                    ),
+                  ),
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: selected ? scheme.primary : Colors.transparent,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: selected ? scheme.primary : scheme.outline,
+                        width: 2,
+                      ),
+                    ),
+                    child:
+                        selected
+                            ? Icon(
+                              Icons.check,
+                              size: 18,
+                              color: scheme.onPrimary,
+                            )
+                            : null,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    Widget panel({required Widget child}) {
+      return Container(
+        margin: const EdgeInsets.only(top: 8),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: scheme.outlineVariant),
+          boxShadow: [
+            BoxShadow(
+              color: scheme.shadow.withOpacity(0.05),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: child,
+      );
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: scheme.primaryContainer,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: scheme.primary.withOpacity(0.4), width: 2),
+        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color.alphaBlend(accent.withOpacity(0.16), Colors.white),
+            Color.alphaBlend(accent.withOpacity(0.06), scheme.surface),
+          ],
+        ),
+        border: Border.all(color: accent.withOpacity(0.20), width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: accent.withOpacity(0.12),
+            blurRadius: 24,
+            offset: const Offset(0, 14),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.local_shipping, color: scheme.onPrimaryContainer),
-              const SizedBox(width: 12),
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: accent,
+                  boxShadow: [
+                    BoxShadow(
+                      color: accent.withOpacity(0.24),
+                      blurRadius: 16,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.local_shipping_rounded,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 14),
               Expanded(
-                child: Text(
-                  l10n.deliveryMethodsTitle.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: scheme.onPrimaryContainer,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.deliveryMethodsTitle,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF20303C),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.selectDeliveryMethods,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        height: 1.35,
+                        color: Color(0xFF61717E),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.selectDeliveryMethods,
-            style: TextStyle(
-              fontSize: 12,
-              color: scheme.onPrimaryContainer.withOpacity(0.9),
-            ),
-          ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           ...modalitaPerServizio.entries.map((entry) {
             final key = entry.key;
             final label = entry.value;
             final isSelected = _modalitaConsegnaSelezionate.contains(key);
 
-            return CheckboxListTile(
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: scheme.onPrimaryContainer,
-                ),
-              ),
-              value: isSelected,
-              onChanged: (bool? value) {
+            return optionTile(
+              label: label,
+              selected: isSelected,
+              onTap: () {
                 setState(() {
-                  if (value == true) {
-                    _modalitaConsegnaSelezionate.add(key);
-                  } else {
+                  if (isSelected) {
                     _modalitaConsegnaSelezionate.remove(key);
+                  } else {
+                    _modalitaConsegnaSelezionate.add(key);
                   }
                 });
               },
-              activeColor: scheme.primary,
-              checkColor: scheme.onPrimary,
             );
           }),
 
-          // Campi dinamici per Corriere
           if (_modalitaConsegnaSelezionate.contains('courier'))
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 16),
-                const Divider(),
-                const SizedBox(height: 8),
-                Text(
-                  'Indirizzo di consegna',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: scheme.onPrimaryContainer,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _consegnaIndirizzoController,
-                  decoration: const InputDecoration(
-                    labelText: 'Indirizzo *',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.location_on),
-                  ),
-                  validator:
-                      (value) =>
-                          value?.isEmpty ?? true ? 'Campo obbligatorio' : null,
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: TextFormField(
-                        controller: _consegnaCittaController,
-                        decoration: const InputDecoration(
-                          labelText: 'Città *',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator:
-                            (value) =>
-                                value?.isEmpty ?? true ? 'Obbligatorio' : null,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _consegnaCapController,
-                        decoration: const InputDecoration(
-                          labelText: 'CAP *',
-                          border: OutlineInputBorder(),
-                        ),
-                        keyboardType: TextInputType.number,
-                        validator:
-                            (value) =>
-                                value?.isEmpty ?? true ? 'Obbligatorio' : null,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _consegnaProvinciaController,
-                  decoration: const InputDecoration(
-                    labelText: 'Provincia *',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator:
-                      (value) =>
-                          value?.isEmpty ?? true ? 'Campo obbligatorio' : null,
-                ),
-              ],
-            ),
-
-          // Campi dinamici per Email
-          if (_modalitaConsegnaSelezionate.contains('email'))
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 16),
-                const Divider(),
-                const SizedBox(height: 8),
-                Text(
-                  'Indirizzo email per la consegna',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: scheme.onPrimaryContainer,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _consegnaEmailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email *',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value?.isEmpty ?? true) return 'Campo obbligatorio';
-                    if (!value!.contains('@')) return 'Email non valida';
-                    return null;
-                  },
-                ),
-              ],
-            ),
-
-          // Informazioni per Ritiro in sede
-          if (_modalitaConsegnaSelezionate.contains('pickup'))
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 16),
-                const Divider(),
-                const SizedBox(height: 8),
-                Text(
-                  'Indirizzo di ritiro',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: scheme.onPrimaryContainer,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: scheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: scheme.secondary),
-                  ),
-                  child: Row(
+            panel(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      Icon(
-                        Icons.location_on,
-                        color: scheme.onSecondaryContainer,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Via Populonia 8, 20159 Milano MI',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: scheme.onSecondaryContainer,
-                          ),
+                      Icon(Icons.home_work_rounded, color: accent),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Indirizzo di consegna',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF20303C),
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _consegnaIndirizzoController,
+                    decoration: inputDecoration(
+                      'Indirizzo *',
+                      icon: Icons.location_on_outlined,
+                    ),
+                    validator:
+                        (value) =>
+                            value?.isEmpty ?? true
+                                ? 'Campo obbligatorio'
+                                : null,
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: TextFormField(
+                          controller: _consegnaCittaController,
+                          decoration: inputDecoration('Città *'),
+                          validator:
+                              (value) =>
+                                  value?.isEmpty ?? true
+                                      ? 'Obbligatorio'
+                                      : null,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _consegnaCapController,
+                          decoration: inputDecoration('CAP *'),
+                          keyboardType: TextInputType.number,
+                          validator:
+                              (value) =>
+                                  value?.isEmpty ?? true
+                                      ? 'Obbligatorio'
+                                      : null,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _consegnaProvinciaController,
+                    decoration: inputDecoration('Provincia *'),
+                    validator:
+                        (value) =>
+                            value?.isEmpty ?? true
+                                ? 'Campo obbligatorio'
+                                : null,
+                  ),
+                ],
+              ),
+            ),
+
+          if (_modalitaConsegnaSelezionate.contains('email'))
+            panel(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.alternate_email_rounded, color: accent),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Indirizzo email per la consegna',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF20303C),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _consegnaEmailController,
+                    decoration: inputDecoration(
+                      'Email *',
+                      icon: Icons.email_outlined,
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value?.isEmpty ?? true) return 'Campo obbligatorio';
+                      if (!value!.contains('@')) return 'Email non valida';
+                      return null;
+                    },
+                  ),
+                ],
+              ),
+            ),
+
+          if (_modalitaConsegnaSelezionate.contains('pickup'))
+            panel(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.storefront_rounded, color: accent),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Indirizzo di ritiro',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF20303C),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: Color.alphaBlend(
+                        accent.withOpacity(0.08),
+                        Colors.white,
+                      ),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: accent.withOpacity(0.18)),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: accent,
+                          ),
+                          child: const Icon(
+                            Icons.location_on_rounded,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Text(
+                            'Via Populonia 8, 20159 Milano MI',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF20303C),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
         ],
       ),

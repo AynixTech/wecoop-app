@@ -10,6 +10,507 @@ import 'package:wecoop_app/services/offerte_lavoro_service.dart';
 import 'package:wecoop_app/services/annunci_submission_service.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 
+class _OfferteLavoroText {
+  static const Map<String, Map<String, String>> _values = {
+    'it': {
+      'cannotOpenWhatsapp': 'Impossibile aprire WhatsApp',
+      'supportTitle': 'Vuoi cercare lavoro?',
+      'supportDescription':
+          'Sfoglia le offerte disponibili in questa schermata oppure contatta WECOOP se vuoi supporto per orientamento, candidatura o attivazione dei servizi dedicati.',
+      'refreshOffers': 'Aggiorna offerte',
+      'openOrientation': 'Apri orientamento lavoro',
+      'contactWecoopWhatsapp': 'Contatta WECOOP su WhatsApp',
+      'supportWhatsappMessage':
+          'Ciao WECOOP, vorrei informazioni per cercare lavoro o attivare servizi dedicati.',
+      'screenTitle': 'Offerte e Annunci Lavoro',
+      'announcements': 'Annunci',
+      'seek': 'Cerco',
+      'offer': 'Offro',
+      'offersInfoTooltip': 'Info offerte',
+      'orientationTooltip': 'Servizio orientamento',
+      'seekServiceTitle': 'Cerco un servizio',
+      'seekServiceSubtitle':
+          'Pubblica una richiesta: ad esempio cerco babysitter, colf o aiuto anziani.',
+      'offerServiceTitle': 'Offro un servizio',
+      'offerServiceSubtitle':
+          'Pubblica la tua disponibilita professionale: ad esempio offro servizio di babysitter.',
+      'sendServiceRequest': 'Invia richiesta servizio',
+      'sendServiceOffer': 'Invia offerta servizio',
+      'filtersTitle': 'Filtri annunci',
+      'searchHint': 'Cerca: baby sitter, badante, colf, OSS...',
+      'scopes': 'Ambiti',
+      'all': 'Tutti',
+      'allFeminine': 'Tutte',
+      'macroCategories': 'Macrocategorie',
+      'macroCategory': 'Macrocategoria',
+      'subCategories': 'Sottocategorie',
+      'clearFilters': 'Pulisci filtri',
+      'apply': 'Applica',
+      'retry': 'Riprova',
+      'activeFilters': 'Filtri (attivi)',
+      'openFilters': 'Apri filtri',
+      'emptyFiltered':
+          'Nessun annuncio disponibile con questi filtri. Prova categorie come Pulizie/Limpieza, Badante o Baby sitter.',
+      'featured': 'In evidenza',
+      'attachedCv': 'CV allegato',
+      'loadMore': 'Carica altri annunci',
+      'detailUnavailable': 'Dettaglio non disponibile',
+      'applicationSent': 'Candidatura inviata',
+      'applicationError': 'Errore candidatura',
+      'selectMacroCategory': 'Seleziona una macrocategoria',
+      'selectSubCategory': 'Seleziona una sottocategoria',
+      'acceptPrivacy': 'Devi accettare il consenso privacy',
+      'selectValidSubCategory': 'Seleziona una sottocategoria valida',
+      'invalidSubCategoryAfterAi':
+          'Sottocategoria non valida dopo il controllo AI',
+      'imageEncodingError': 'Errore nella codifica immagine: {error}',
+      'imageLoadingError': 'Errore nel caricamento immagine: {error}',
+      'announcementSentSuccess': 'Annuncio inviato con successo!',
+      'sendError': 'Errore nell\'invio',
+      'aiCategoryCheck': 'Controllo AI categoria',
+      'aiCategoryCheckMessage':
+          'La categoria selezionata sembra non coerente con la descrizione.\n\nSelezione attuale:\n• Macrocategoria: {currentMacro}\n• Sottocategoria: {currentCategory}\n\nSuggerimento AI:\n• Macrocategoria: {suggestedMacro}\n• Sottocategoria: {suggestedCategory}{reasonBlock}',
+      'reasonLabel': 'Motivo: {reason}',
+      'cancel': 'Annulla',
+      'sendAnyway': 'Invia comunque',
+      'applySuggestion': 'Applica suggerimento',
+      'aiSuggestionNotApplicable':
+          'Suggerimento AI non applicabile alle categorie disponibili',
+      'aiCategoryApplied': 'Categoria AI applicata',
+      'min12BaseDescription':
+          'Inserisci almeno 12 caratteri nella descrizione base',
+      'aiDescriptionUnavailable': 'Nessuna descrizione AI disponibile',
+      'improveDescriptionUnavailable': 'Impossibile migliorare la descrizione',
+      'min12Description': 'Inserisci almeno 12 caratteri nella descrizione',
+      'suggestionUnavailable': 'Suggerimento non disponibile',
+      'noUsefulSuggestion': 'Nessun suggerimento utile trovato',
+      'aiDescriptionGenerated':
+          'Descrizione AI generata. Puoi modificarla prima di inviare.',
+      'aiDescriptionGeneratedWithSource':
+          'Descrizione AI generata ({source}). Puoi modificarla prima di inviare.',
+      'loadMyAnnouncementsError': 'Impossibile caricare i tuoi annunci',
+      'applyAiSuggestionQuestion': 'Applicare suggerimento AI?',
+      'setSelectionQuestion':
+          'Vuoi impostare questa selezione?\nMacrocategoria: {macro}\nSottocategoria: {category}',
+      'no': 'No',
+      'yesApply': 'Si, applica',
+      'suggestionNotApplied': 'Suggerimento non applicato',
+      'suggestionWithReason': 'Suggerimento {source}: {reason}',
+      'suggestedCategoryApplied': 'Categoria suggerita applicata',
+      'mySeekAnnouncements': 'Le mie richieste (Cerco)',
+      'myOfferAnnouncements': 'Le mie offerte (Offro)',
+      'noAnnouncementsToShow': 'Non hai ancora annunci da mostrare.',
+      'announcementFallback': 'Annuncio #{id}',
+      'withoutCity': 'Senza citta',
+      'deleteAnnouncementTooltip': 'Elimina annuncio',
+      'deleteAnnouncementTitle': 'Eliminare annuncio?',
+      'deleteAnnouncementMessage':
+          'Questa azione spostera l\'annuncio nel cestino.',
+      'delete': 'Elimina',
+      'announcementDeleted': 'Annuncio eliminato',
+      'deleteError': 'Errore eliminazione',
+      'profileCompleteVerified':
+          'Il tuo profilo e completo: i tuoi annunci mostreranno la coccarda Profilo verificato.',
+      'profileIncompleteVerified':
+          'Completa il profilo se vuoi mostrare la coccarda Profilo verificato nei tuoi annunci.',
+      'myAnnouncements': 'I miei annunci',
+      'announcementTitle': 'Titolo annuncio',
+      'city': 'Citta',
+      'contactLabel': 'Telefono o email di contatto',
+      'description': 'Descrizione',
+      'descriptionHint':
+          'Descrivi mansione/servizio, orari e requisiti principali',
+      'requiredField': 'Campo obbligatorio',
+      'min20Chars': 'Inserisci almeno 20 caratteri',
+      'aiImproveRunning': 'Miglioramento AI in corso...',
+      'improveWithAi': 'Migliora descrizione con AI',
+      'aiDescriptionEditable': 'Descrizione AI (modificabile)',
+      'aiDescriptionHint':
+          'La descrizione migliorata comparira qui. Puoi modificarla prima di inviare.',
+      'aiSuggestionRunning': 'Suggerimento AI in corso...',
+      'suggestCategoryWithAi': 'Suggerisci categoria con AI',
+      'imageOptional': 'Immagine o foto (Opzionale)',
+      'change': 'Cambia',
+      'remove': 'Rimuovi',
+      'selectImage': 'Seleziona immagine',
+      'attachGeneratedCv': 'Allega un CV generato',
+      'refreshCv': 'Aggiorna CV',
+      'attachGeneratedCvHint':
+          'Se stai cercando lavoro puoi associare uno dei tuoi CV generati. Chi apre l\'annuncio potra consultarlo.',
+      'noGeneratedCv':
+          'Nessun CV generato disponibile. Crea prima un CV nella sezione CV AI.',
+      'attachCvOptional': 'CV da allegare (opzionale)',
+      'noCvAttached': 'Nessun CV allegato',
+      'pdfPreview': 'Anteprima PDF',
+      'openWord': 'Apri Word',
+      'privacyConsent': 'Accetto il trattamento dei dati personali',
+      'sending': 'Invio in corso...',
+      'insertAnnouncement': 'Inserisci annuncio',
+      'insertAnnouncementDescription':
+          'Compila i dati e invia la richiesta a WECOOP per la pubblicazione.',
+      'sendAnnouncement': 'Invia annuncio',
+      'verifiedProfile': 'Profilo verificato',
+      'detailAnnouncement': 'Dettaglio annuncio',
+      'schedule': 'Orari',
+      'salary': 'Retribuzione',
+      'deadline': 'Scadenza',
+      'categories': 'Categorie',
+      'attachedResume': 'Curriculum allegato',
+      'attachedCvByAuthor': 'CV allegato dall\'autore dell\'annuncio',
+      'viewCv': 'Vedi CV',
+      'phone': 'Telefono',
+      'call': 'Chiama',
+      'contactWhatsapp': 'Contatta su WhatsApp',
+      'openOriginalAnnouncement': 'Apri annuncio originale',
+      'quickApplication': 'Candidatura rapida',
+      'fullName': 'Nome e cognome',
+      'phoneWhatsapp': 'Telefono / WhatsApp',
+      'emailOptional': 'Email (opzionale)',
+      'cityOptional': 'Citta (opzionale)',
+      'noteOptional': 'Nota (opzionale)',
+      'sendApplication': 'Invia candidatura',
+      'selectMacroToSeeSubcategories':
+          'Seleziona una macrocategoria per vedere le sottocategorie allineate.',
+    },
+    'en': {
+      'cannotOpenWhatsapp': 'Unable to open WhatsApp',
+      'supportTitle': 'Do you want to look for a job?',
+      'supportDescription':
+          'Browse the available opportunities on this screen or contact WECOOP if you want support for guidance, applications, or activation of dedicated services.',
+      'refreshOffers': 'Refresh offers',
+      'openOrientation': 'Open job guidance',
+      'contactWecoopWhatsapp': 'Contact WECOOP on WhatsApp',
+      'supportWhatsappMessage':
+          'Hello WECOOP, I would like information about looking for a job or activating dedicated services.',
+      'screenTitle': 'Job Offers and Announcements',
+      'announcements': 'Announcements',
+      'seek': 'Seeking',
+      'offer': 'Offering',
+      'offersInfoTooltip': 'Offers info',
+      'orientationTooltip': 'Guidance service',
+      'seekServiceTitle': 'I am looking for a service',
+      'seekServiceSubtitle':
+          'Publish a request: for example, I am looking for a babysitter, housekeeper, or elderly care support.',
+      'offerServiceTitle': 'I offer a service',
+      'offerServiceSubtitle':
+          'Publish your professional availability: for example, I offer babysitting services.',
+      'sendServiceRequest': 'Send service request',
+      'sendServiceOffer': 'Send service offer',
+      'filtersTitle': 'Announcement filters',
+      'searchHint':
+          'Search: babysitter, caregiver, housekeeper, health assistant...',
+      'scopes': 'Scopes',
+      'all': 'All',
+      'allFeminine': 'All',
+      'macroCategories': 'Macro categories',
+      'macroCategory': 'Macro category',
+      'subCategories': 'Subcategories',
+      'clearFilters': 'Clear filters',
+      'apply': 'Apply',
+      'retry': 'Retry',
+      'activeFilters': 'Filters (active)',
+      'openFilters': 'Open filters',
+      'emptyFiltered':
+          'No announcements available with these filters. Try categories such as Cleaning, Caregiver, or Babysitter.',
+      'featured': 'Featured',
+      'attachedCv': 'CV attached',
+      'loadMore': 'Load more announcements',
+      'detailUnavailable': 'Details not available',
+      'applicationSent': 'Application sent',
+      'applicationError': 'Application error',
+      'selectMacroCategory': 'Select a macro category',
+      'selectSubCategory': 'Select a subcategory',
+      'acceptPrivacy': 'You must accept the privacy consent',
+      'selectValidSubCategory': 'Select a valid subcategory',
+      'invalidSubCategoryAfterAi': 'Invalid subcategory after AI check',
+      'imageEncodingError': 'Image encoding error: {error}',
+      'imageLoadingError': 'Image loading error: {error}',
+      'announcementSentSuccess': 'Announcement sent successfully!',
+      'sendError': 'Sending error',
+      'aiCategoryCheck': 'AI category check',
+      'aiCategoryCheckMessage':
+          'The selected category does not seem consistent with the description.\n\nCurrent selection:\n• Macro category: {currentMacro}\n• Subcategory: {currentCategory}\n\nAI suggestion:\n• Macro category: {suggestedMacro}\n• Subcategory: {suggestedCategory}{reasonBlock}',
+      'reasonLabel': 'Reason: {reason}',
+      'cancel': 'Cancel',
+      'sendAnyway': 'Send anyway',
+      'applySuggestion': 'Apply suggestion',
+      'aiSuggestionNotApplicable':
+          'AI suggestion cannot be applied to available categories',
+      'aiCategoryApplied': 'AI category applied',
+      'min12BaseDescription':
+          'Enter at least 12 characters in the base description',
+      'aiDescriptionUnavailable': 'No AI description available',
+      'improveDescriptionUnavailable': 'Unable to improve the description',
+      'min12Description': 'Enter at least 12 characters in the description',
+      'suggestionUnavailable': 'Suggestion not available',
+      'noUsefulSuggestion': 'No useful suggestion found',
+      'aiDescriptionGenerated':
+          'AI description generated. You can edit it before sending.',
+      'aiDescriptionGeneratedWithSource':
+          'AI description generated ({source}). You can edit it before sending.',
+      'loadMyAnnouncementsError': 'Unable to load your announcements',
+      'applyAiSuggestionQuestion': 'Apply AI suggestion?',
+      'setSelectionQuestion':
+          'Do you want to set this selection?\nMacro category: {macro}\nSubcategory: {category}',
+      'no': 'No',
+      'yesApply': 'Yes, apply',
+      'suggestionNotApplied': 'Suggestion not applied',
+      'suggestionWithReason': 'Suggestion {source}: {reason}',
+      'suggestedCategoryApplied': 'Suggested category applied',
+      'mySeekAnnouncements': 'My requests (Seeking)',
+      'myOfferAnnouncements': 'My offers (Offering)',
+      'noAnnouncementsToShow': 'You do not have any announcements to show yet.',
+      'announcementFallback': 'Announcement #{id}',
+      'withoutCity': 'Without city',
+      'deleteAnnouncementTooltip': 'Delete announcement',
+      'deleteAnnouncementTitle': 'Delete announcement?',
+      'deleteAnnouncementMessage':
+          'This action will move the announcement to the trash.',
+      'delete': 'Delete',
+      'announcementDeleted': 'Announcement deleted',
+      'deleteError': 'Delete error',
+      'profileCompleteVerified':
+          'Your profile is complete: your announcements will show the Verified profile badge.',
+      'profileIncompleteVerified':
+          'Complete your profile if you want to show the Verified profile badge on your announcements.',
+      'myAnnouncements': 'My announcements',
+      'announcementTitle': 'Announcement title',
+      'city': 'City',
+      'contactLabel': 'Contact phone or email',
+      'description': 'Description',
+      'descriptionHint':
+          'Describe duties/service, schedule, and main requirements',
+      'requiredField': 'Required field',
+      'min20Chars': 'Enter at least 20 characters',
+      'aiImproveRunning': 'AI improvement in progress...',
+      'improveWithAi': 'Improve description with AI',
+      'aiDescriptionEditable': 'AI description (editable)',
+      'aiDescriptionHint':
+          'The improved description will appear here. You can edit it before sending.',
+      'aiSuggestionRunning': 'AI suggestion in progress...',
+      'suggestCategoryWithAi': 'Suggest category with AI',
+      'imageOptional': 'Image or photo (Optional)',
+      'change': 'Change',
+      'remove': 'Remove',
+      'selectImage': 'Select image',
+      'attachGeneratedCv': 'Attach a generated CV',
+      'refreshCv': 'Refresh CV',
+      'attachGeneratedCvHint':
+          'If you are looking for a job, you can link one of your generated CVs. Anyone opening the announcement will be able to view it.',
+      'noGeneratedCv':
+          'No generated CV available. Create a CV first in the AI CV section.',
+      'attachCvOptional': 'CV to attach (optional)',
+      'noCvAttached': 'No CV attached',
+      'pdfPreview': 'PDF preview',
+      'openWord': 'Open Word',
+      'privacyConsent': 'I accept the processing of personal data',
+      'sending': 'Sending...',
+      'insertAnnouncement': 'Insert announcement',
+      'insertAnnouncementDescription':
+          'Fill in the details and send the request to WECOOP for publication.',
+      'sendAnnouncement': 'Send announcement',
+      'verifiedProfile': 'Verified profile',
+      'detailAnnouncement': 'Announcement details',
+      'schedule': 'Schedule',
+      'salary': 'Salary',
+      'deadline': 'Deadline',
+      'categories': 'Categories',
+      'attachedResume': 'Attached resume',
+      'attachedCvByAuthor': 'CV attached by the author of the announcement',
+      'viewCv': 'View CV',
+      'phone': 'Phone',
+      'call': 'Call',
+      'contactWhatsapp': 'Contact on WhatsApp',
+      'openOriginalAnnouncement': 'Open original announcement',
+      'quickApplication': 'Quick application',
+      'fullName': 'Full name',
+      'phoneWhatsapp': 'Phone / WhatsApp',
+      'emailOptional': 'Email (optional)',
+      'cityOptional': 'City (optional)',
+      'noteOptional': 'Note (optional)',
+      'sendApplication': 'Send application',
+      'selectMacroToSeeSubcategories':
+          'Select a macro category to see the aligned subcategories.',
+    },
+    'es': {
+      'cannotOpenWhatsapp': 'No se puede abrir WhatsApp',
+      'supportTitle': '¿Quieres buscar trabajo?',
+      'supportDescription':
+          'Explora las ofertas disponibles en esta pantalla o contacta a WECOOP si quieres apoyo para orientación, candidatura o activación de servicios dedicados.',
+      'refreshOffers': 'Actualizar ofertas',
+      'openOrientation': 'Abrir orientación laboral',
+      'contactWecoopWhatsapp': 'Contactar a WECOOP por WhatsApp',
+      'supportWhatsappMessage':
+          'Hola WECOOP, quisiera información para buscar trabajo o activar servicios dedicados.',
+      'screenTitle': 'Ofertas y Anuncios de Trabajo',
+      'announcements': 'Anuncios',
+      'seek': 'Busco',
+      'offer': 'Ofrezco',
+      'offersInfoTooltip': 'Información de ofertas',
+      'orientationTooltip': 'Servicio de orientación',
+      'seekServiceTitle': 'Busco un servicio',
+      'seekServiceSubtitle':
+          'Publica una solicitud: por ejemplo busco niñera, empleada doméstica o ayuda para personas mayores.',
+      'offerServiceTitle': 'Ofrezco un servicio',
+      'offerServiceSubtitle':
+          'Publica tu disponibilidad profesional: por ejemplo ofrezco servicio de niñera.',
+      'sendServiceRequest': 'Enviar solicitud de servicio',
+      'sendServiceOffer': 'Enviar oferta de servicio',
+      'filtersTitle': 'Filtros de anuncios',
+      'searchHint':
+          'Buscar: niñera, cuidador, limpieza, asistente sociosanitario...',
+      'scopes': 'Ámbitos',
+      'all': 'Todos',
+      'allFeminine': 'Todas',
+      'macroCategories': 'Macrocategorías',
+      'macroCategory': 'Macrocategoría',
+      'subCategories': 'Subcategorías',
+      'clearFilters': 'Limpiar filtros',
+      'apply': 'Aplicar',
+      'retry': 'Reintentar',
+      'activeFilters': 'Filtros (activos)',
+      'openFilters': 'Abrir filtros',
+      'emptyFiltered':
+          'No hay anuncios disponibles con estos filtros. Prueba categorías como Limpieza, Cuidador o Niñera.',
+      'featured': 'Destacado',
+      'attachedCv': 'CV adjunto',
+      'loadMore': 'Cargar más anuncios',
+      'detailUnavailable': 'Detalle no disponible',
+      'applicationSent': 'Candidatura enviada',
+      'applicationError': 'Error en la candidatura',
+      'selectMacroCategory': 'Selecciona una macrocategoría',
+      'selectSubCategory': 'Selecciona una subcategoría',
+      'acceptPrivacy': 'Debes aceptar el consentimiento de privacidad',
+      'selectValidSubCategory': 'Selecciona una subcategoría válida',
+      'invalidSubCategoryAfterAi':
+          'Subcategoría no válida después del control de IA',
+      'imageEncodingError': 'Error al codificar la imagen: {error}',
+      'imageLoadingError': 'Error al cargar la imagen: {error}',
+      'announcementSentSuccess': '¡Anuncio enviado con éxito!',
+      'sendError': 'Error al enviar',
+      'aiCategoryCheck': 'Control de categoría con IA',
+      'aiCategoryCheckMessage':
+          'La categoría seleccionada no parece coherente con la descripción.\n\nSelección actual:\n• Macrocategoría: {currentMacro}\n• Subcategoría: {currentCategory}\n\nSugerencia de IA:\n• Macrocategoría: {suggestedMacro}\n• Subcategoría: {suggestedCategory}{reasonBlock}',
+      'reasonLabel': 'Motivo: {reason}',
+      'cancel': 'Cancelar',
+      'sendAnyway': 'Enviar de todos modos',
+      'applySuggestion': 'Aplicar sugerencia',
+      'aiSuggestionNotApplicable':
+          'La sugerencia de IA no se puede aplicar a las categorías disponibles',
+      'aiCategoryApplied': 'Categoría de IA aplicada',
+      'min12BaseDescription':
+          'Ingresa al menos 12 caracteres en la descripción base',
+      'aiDescriptionUnavailable': 'No hay descripción IA disponible',
+      'improveDescriptionUnavailable': 'No se puede mejorar la descripción',
+      'min12Description': 'Ingresa al menos 12 caracteres en la descripción',
+      'suggestionUnavailable': 'Sugerencia no disponible',
+      'noUsefulSuggestion': 'No se encontró una sugerencia útil',
+      'aiDescriptionGenerated':
+          'Descripción IA generada. Puedes modificarla antes de enviarla.',
+      'aiDescriptionGeneratedWithSource':
+          'Descripción IA generada ({source}). Puedes modificarla antes de enviarla.',
+      'loadMyAnnouncementsError': 'No se pueden cargar tus anuncios',
+      'applyAiSuggestionQuestion': '¿Aplicar sugerencia de IA?',
+      'setSelectionQuestion':
+          '¿Quieres establecer esta selección?\nMacrocategoría: {macro}\nSubcategoría: {category}',
+      'no': 'No',
+      'yesApply': 'Sí, aplicar',
+      'suggestionNotApplied': 'Sugerencia no aplicada',
+      'suggestionWithReason': 'Sugerencia {source}: {reason}',
+      'suggestedCategoryApplied': 'Categoría sugerida aplicada',
+      'mySeekAnnouncements': 'Mis solicitudes (Busco)',
+      'myOfferAnnouncements': 'Mis ofertas (Ofrezco)',
+      'noAnnouncementsToShow': 'Todavía no tienes anuncios para mostrar.',
+      'announcementFallback': 'Anuncio #{id}',
+      'withoutCity': 'Sin ciudad',
+      'deleteAnnouncementTooltip': 'Eliminar anuncio',
+      'deleteAnnouncementTitle': '¿Eliminar anuncio?',
+      'deleteAnnouncementMessage':
+          'Esta acción moverá el anuncio a la papelera.',
+      'delete': 'Eliminar',
+      'announcementDeleted': 'Anuncio eliminado',
+      'deleteError': 'Error al eliminar',
+      'profileCompleteVerified':
+          'Tu perfil está completo: tus anuncios mostrarán la insignia Perfil verificado.',
+      'profileIncompleteVerified':
+          'Completa el perfil si quieres mostrar la insignia Perfil verificado en tus anuncios.',
+      'myAnnouncements': 'Mis anuncios',
+      'announcementTitle': 'Título del anuncio',
+      'city': 'Ciudad',
+      'contactLabel': 'Teléfono o email de contacto',
+      'description': 'Descripción',
+      'descriptionHint':
+          'Describe tarea/servicio, horarios y requisitos principales',
+      'requiredField': 'Campo obligatorio',
+      'min20Chars': 'Ingresa al menos 20 caracteres',
+      'aiImproveRunning': 'Mejora con IA en curso...',
+      'improveWithAi': 'Mejorar descripción con IA',
+      'aiDescriptionEditable': 'Descripción IA (editable)',
+      'aiDescriptionHint':
+          'La descripción mejorada aparecerá aquí. Puedes modificarla antes de enviarla.',
+      'aiSuggestionRunning': 'Sugerencia IA en curso...',
+      'suggestCategoryWithAi': 'Sugerir categoría con IA',
+      'imageOptional': 'Imagen o foto (Opcional)',
+      'change': 'Cambiar',
+      'remove': 'Quitar',
+      'selectImage': 'Seleccionar imagen',
+      'attachGeneratedCv': 'Adjuntar un CV generado',
+      'refreshCv': 'Actualizar CV',
+      'attachGeneratedCvHint':
+          'Si estás buscando trabajo, puedes asociar uno de tus CV generados. Quien abra el anuncio podrá consultarlo.',
+      'noGeneratedCv':
+          'No hay ningún CV generado disponible. Crea primero un CV en la sección CV IA.',
+      'attachCvOptional': 'CV para adjuntar (opcional)',
+      'noCvAttached': 'Ningún CV adjunto',
+      'pdfPreview': 'Vista previa PDF',
+      'openWord': 'Abrir Word',
+      'privacyConsent': 'Acepto el tratamiento de los datos personales',
+      'sending': 'Envío en curso...',
+      'insertAnnouncement': 'Insertar anuncio',
+      'insertAnnouncementDescription':
+          'Completa los datos y envía la solicitud a WECOOP para la publicación.',
+      'sendAnnouncement': 'Enviar anuncio',
+      'verifiedProfile': 'Perfil verificado',
+      'detailAnnouncement': 'Detalle del anuncio',
+      'schedule': 'Horario',
+      'salary': 'Retribución',
+      'deadline': 'Vencimiento',
+      'categories': 'Categorías',
+      'attachedResume': 'Currículum adjunto',
+      'attachedCvByAuthor': 'CV adjunto por el autor del anuncio',
+      'viewCv': 'Ver CV',
+      'phone': 'Teléfono',
+      'call': 'Llamar',
+      'contactWhatsapp': 'Contactar por WhatsApp',
+      'openOriginalAnnouncement': 'Abrir anuncio original',
+      'quickApplication': 'Candidatura rápida',
+      'fullName': 'Nombre y apellidos',
+      'phoneWhatsapp': 'Teléfono / WhatsApp',
+      'emailOptional': 'Email (opcional)',
+      'cityOptional': 'Ciudad (opcional)',
+      'noteOptional': 'Nota (opcional)',
+      'sendApplication': 'Enviar candidatura',
+      'selectMacroToSeeSubcategories':
+          'Selecciona una macrocategoría para ver las subcategorías alineadas.',
+    },
+  };
+
+  static String tr(
+    BuildContext context,
+    String key, {
+    Map<String, String>? params,
+  }) {
+    final code = Localizations.localeOf(context).languageCode;
+    var text = _values[code]?[key] ?? _values['it']?[key] ?? key;
+    if (params != null) {
+      for (final entry in params.entries) {
+        text = text.replaceAll('{${entry.key}}', entry.value);
+      }
+    }
+    return text;
+  }
+}
+
 class _CategoriaMenuHelper {
   static const Map<String, List<String>> macroKeywordMap = {
     'personal-care': [
@@ -188,11 +689,7 @@ class _CategoriaMenuHelper {
       'en': 'Home support services',
       'es': 'Servicios de apoyo domestico',
     },
-    'other': {
-      'it': 'Altro',
-      'en': 'Other',
-      'es': 'Otros',
-    },
+    'other': {'it': 'Altro', 'en': 'Other', 'es': 'Otros'},
   };
 
   static const Map<String, String> categoryValueBySlug = {
@@ -250,16 +747,8 @@ class _CategoriaMenuHelper {
   };
 
   static const Map<String, Map<String, String>> categoryLabels = {
-    'babysitter': {
-      'it': 'Baby sitter',
-      'en': 'Babysitter',
-      'es': 'Ninera',
-    },
-    'caregiver': {
-      'it': 'Badante',
-      'en': 'Caregiver',
-      'es': 'Cuidador/a',
-    },
+    'babysitter': {'it': 'Baby sitter', 'en': 'Babysitter', 'es': 'Ninera'},
+    'caregiver': {'it': 'Badante', 'en': 'Caregiver', 'es': 'Cuidador/a'},
     'housekeeper': {
       'it': 'Colf',
       'en': 'Housekeeper',
@@ -315,11 +804,7 @@ class _CategoriaMenuHelper {
       'en': 'Cleaning',
       'es': 'Limpieza',
     },
-    'dishwasher': {
-      'it': 'Lavapiatti',
-      'en': 'Dishwasher',
-      'es': 'Lavaplatos',
-    },
+    'dishwasher': {'it': 'Lavapiatti', 'en': 'Dishwasher', 'es': 'Lavaplatos'},
     'kitchen-assistant': {
       'it': 'Aiuto cucina',
       'en': 'Kitchen assistant',
@@ -330,11 +815,7 @@ class _CategoriaMenuHelper {
       'en': 'Waiter/Waitress',
       'es': 'Camarero/a',
     },
-    'pizza-chef': {
-      'it': 'Pizzaiolo/a',
-      'en': 'Pizza chef',
-      'es': 'Pizzero/a',
-    },
+    'pizza-chef': {'it': 'Pizzaiolo/a', 'en': 'Pizza chef', 'es': 'Pizzero/a'},
     'warehouse-worker': {
       'it': 'Magazziniere',
       'en': 'Warehouse worker',
@@ -345,11 +826,7 @@ class _CategoriaMenuHelper {
       'en': 'Delivery rider',
       'es': 'Repartidor/a',
     },
-    'driver': {
-      'it': 'Autista',
-      'en': 'Driver',
-      'es': 'Conductor/a',
-    },
+    'driver': {'it': 'Autista', 'en': 'Driver', 'es': 'Conductor/a'},
     'general-worker': {
       'it': 'Operaio generico',
       'en': 'General worker',
@@ -360,11 +837,7 @@ class _CategoriaMenuHelper {
       'en': 'Packaging worker',
       'es': 'Operario de envasado',
     },
-    'welder': {
-      'it': 'Saldatore',
-      'en': 'Welder',
-      'es': 'Soldador/a',
-    },
+    'welder': {'it': 'Saldatore', 'en': 'Welder', 'es': 'Soldador/a'},
     'farm-worker': {
       'it': 'Bracciante agricolo',
       'en': 'Farm worker',
@@ -375,26 +848,14 @@ class _CategoriaMenuHelper {
       'en': 'Fruit picker',
       'es': 'Recolector/a de fruta',
     },
-    'gardener': {
-      'it': 'Giardiniere',
-      'en': 'Gardener',
-      'es': 'Jardinero/a',
-    },
+    'gardener': {'it': 'Giardiniere', 'en': 'Gardener', 'es': 'Jardinero/a'},
     'electrician': {
       'it': 'Elettricista',
       'en': 'Electrician',
       'es': 'Electricista',
     },
-    'plumber': {
-      'it': 'Idraulico',
-      'en': 'Plumber',
-      'es': 'Fontanero/a',
-    },
-    'painter': {
-      'it': 'Imbianchino',
-      'en': 'Painter',
-      'es': 'Pintor/a',
-    },
+    'plumber': {'it': 'Idraulico', 'en': 'Plumber', 'es': 'Fontanero/a'},
+    'painter': {'it': 'Imbianchino', 'en': 'Painter', 'es': 'Pintor/a'},
     'security-doorman': {
       'it': 'Portiere / Sicurezza',
       'en': 'Doorman / Security',
@@ -425,11 +886,7 @@ class _CategoriaMenuHelper {
       'en': 'Shelf stocker',
       'es': 'Repositor/a',
     },
-    'teacher': {
-      'it': 'Insegnante',
-      'en': 'Teacher',
-      'es': 'Profesor/a',
-    },
+    'teacher': {'it': 'Insegnante', 'en': 'Teacher', 'es': 'Profesor/a'},
     'educator': {
       'it': 'Educatore / Educatrice',
       'en': 'Educator',
@@ -450,11 +907,7 @@ class _CategoriaMenuHelper {
       'en': 'Administrative clerk',
       'es': 'Administrativo/a',
     },
-    'accountant': {
-      'it': 'Contabile',
-      'en': 'Accountant',
-      'es': 'Contable',
-    },
+    'accountant': {'it': 'Contabile', 'en': 'Accountant', 'es': 'Contable'},
     'receptionist': {
       'it': 'Front office / Reception',
       'en': 'Front office / Reception',
@@ -542,7 +995,8 @@ class _CategoriaMenuHelper {
       return mappedMacro;
     }
 
-    final haystack = '${_normalize(category.name)} ${_normalize(category.slug)}';
+    final haystack =
+        '${_normalize(category.name)} ${_normalize(category.slug)}';
 
     for (final entry in macroKeywordMap.entries) {
       for (final keyword in entry.value) {
@@ -695,6 +1149,9 @@ class _CategoryExplorerSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n =
+        (String key, {Map<String, String>? params}) =>
+            _OfferteLavoroText.tr(context, key, params: params);
     final macroNames = _CategoriaMenuHelper.sortMacroNames(
       categoriesByMacro.keys,
       languageCode,
@@ -744,7 +1201,9 @@ class _CategoryExplorerSelector extends StatelessWidget {
                 ),
               ),
               Icon(
-                isSelected ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                isSelected
+                    ? Icons.keyboard_arrow_up
+                    : Icons.keyboard_arrow_down,
                 size: 18,
                 color: isSelected ? const Color(0xFF1C4E80) : Colors.blueGrey,
               ),
@@ -772,10 +1231,7 @@ class _CategoryExplorerSelector extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            macroLabel,
-            style: const TextStyle(fontWeight: FontWeight.w700),
-          ),
+          Text(macroLabel, style: const TextStyle(fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
           buildMacroRow(null, allMacroText),
           const SizedBox(height: 8),
@@ -868,7 +1324,8 @@ class _CategoryExplorerSelector extends StatelessWidget {
                                         languageCode,
                                       ),
                                     ),
-                                    onSelected: (_) => onSubCategoryChanged(value),
+                                    onSelected:
+                                        (_) => onSubCategoryChanged(value),
                                   );
                                 }),
                               ],
@@ -886,7 +1343,7 @@ class _CategoryExplorerSelector extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 2),
               child: Text(
-                'Seleziona una macrocategoria per vedere le sottocategorie allineate.',
+                l10n('selectMacroToSeeSubcategories'),
                 style: TextStyle(color: Colors.blueGrey.shade600, fontSize: 13),
               ),
             ),
@@ -964,7 +1421,9 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
     if (selectedSlug == null || selectedSlug.isEmpty) return true;
 
     final normalizedSlug = _CategoriaMenuHelper._normalize(selectedSlug);
-    final selectedValue = _CategoriaMenuHelper.categoryValueFromSlug(selectedSlug);
+    final selectedValue = _CategoriaMenuHelper.categoryValueFromSlug(
+      selectedSlug,
+    );
     final normalizedValue = _CategoriaMenuHelper._normalize(selectedValue);
 
     if (offerta.categorySub.isNotEmpty) {
@@ -978,7 +1437,9 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
     }
 
     for (final category in offerta.categories) {
-      final normalizedCategorySlug = _CategoriaMenuHelper._normalize(category.slug);
+      final normalizedCategorySlug = _CategoriaMenuHelper._normalize(
+        category.slug,
+      );
       final normalizedCategoryValue = _CategoriaMenuHelper._normalize(
         _CategoriaMenuHelper.categoryValueFromSlug(category.slug),
       );
@@ -1020,7 +1481,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
     final isSelected = _tabController.index == index;
 
     return Tab(
-      height: 54,
+      height: 58,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -1091,7 +1552,9 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
     setState(() {
       _isLoading = false;
       _errorMessage =
-          (offerteResult['message'] ?? 'Errore caricamento annunci').toString();
+          (offerteResult['message'] ??
+                  _OfferteLavoroText.tr(context, 'sendError'))
+              .toString();
       _categorie =
           categorieResult['success'] == true
               ? (categorieResult['categorie'] as List<OffertaCategoria>)
@@ -1139,7 +1602,9 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            (result['message'] ?? 'Dettaglio non disponibile').toString(),
+            (result['message'] ??
+                    _OfferteLavoroText.tr(context, 'detailUnavailable'))
+                .toString(),
           ),
         ),
       );
@@ -1176,7 +1641,9 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
       SnackBar(
         content: Text(
           msg.isEmpty
-              ? (success ? 'Candidatura inviata' : 'Errore candidatura')
+              ? (success
+                  ? _OfferteLavoroText.tr(context, 'applicationSent')
+                  : _OfferteLavoroText.tr(context, 'applicationError'))
               : msg,
         ),
         backgroundColor: success ? Colors.green : Colors.red,
@@ -1194,7 +1661,9 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Impossibile aprire WhatsApp')),
+      SnackBar(
+        content: Text(_OfferteLavoroText.tr(context, 'cannotOpenWhatsapp')),
+      ),
     );
   }
 
@@ -1205,6 +1674,9 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (sheetContext) {
+        final t =
+            (String key, {Map<String, String>? params}) =>
+                _OfferteLavoroText.tr(sheetContext, key, params: params);
         return SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
@@ -1221,20 +1693,26 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                         color: const Color(0xFFEAF5F8),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(Icons.info_outline, color: Color(0xFF1282A8)),
+                      child: const Icon(
+                        Icons.info_outline,
+                        color: Color(0xFF1282A8),
+                      ),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'Vuoi cercare lavoro?',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                        t('supportTitle'),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 14),
-                const Text(
-                  'Sfoglia le offerte disponibili in questa schermata oppure contatta WECOOP se vuoi supporto per orientamento, candidatura o attivazione dei servizi dedicati.',
+                Text(
+                  t('supportDescription'),
                   style: TextStyle(fontSize: 14, height: 1.5),
                 ),
                 const SizedBox(height: 18),
@@ -1246,7 +1724,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                       _loadInitialData();
                     },
                     icon: const Icon(Icons.search),
-                    label: const Text('Aggiorna offerte'),
+                    label: Text(t('refreshOffers')),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -1263,7 +1741,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                       );
                     },
                     icon: const Icon(Icons.school_outlined),
-                    label: const Text('Apri orientamento lavoro'),
+                    label: Text(t('openOrientation')),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -1273,12 +1751,11 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                     onPressed: () {
                       Navigator.of(sheetContext).pop();
                       _openSupportWhatsApp(
-                        message:
-                            'Ciao WECOOP, vorrei informazioni per cercare lavoro o attivare servizi dedicati.',
+                        message: t('supportWhatsappMessage'),
                       );
                     },
                     icon: const Icon(Icons.chat_bubble_outline),
-                    label: const Text('Contatta WECOOP su WhatsApp'),
+                    label: Text(t('contactWecoopWhatsapp')),
                   ),
                 ),
               ],
@@ -1291,11 +1768,14 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
 
   @override
   Widget build(BuildContext context) {
+    final t =
+        (String key, {Map<String, String>? params}) =>
+            _OfferteLavoroText.tr(context, key, params: params);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Offerte e Annunci Lavoro'),
+        title: Text(t('screenTitle')),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
+          preferredSize: const Size.fromHeight(66),
           child: Container(
             color: Colors.white,
             child: TabBar(
@@ -1308,26 +1788,24 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
               indicator: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
                 color: _activeMenuColor.withOpacity(0.10),
-                border: Border.all(
-                  color: _activeMenuColor.withOpacity(0.16),
-                ),
+                border: Border.all(color: _activeMenuColor.withOpacity(0.16)),
               ),
-              padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+              padding: const EdgeInsets.fromLTRB(12, 6, 12, 10),
               tabs: [
                 _buildSvgTab(
                   index: 0,
                   assetPath: 'assets/icons/offerte-lavoro/annunci_lavoro.svg',
-                  label: 'Annunci',
+                  label: t('announcements'),
                 ),
                 _buildSvgTab(
                   index: 1,
                   assetPath: 'assets/icons/offerte-lavoro/cerco.svg',
-                  label: 'Cerco',
+                  label: t('seek'),
                 ),
                 _buildSvgTab(
                   index: 2,
                   assetPath: 'assets/icons/offerte-lavoro/offro.svg',
-                  label: 'Offro',
+                  label: t('offer'),
                 ),
               ],
             ),
@@ -1335,12 +1813,12 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
         ),
         actions: [
           IconButton(
-            tooltip: 'Info offerte',
+            tooltip: t('offersInfoTooltip'),
             onPressed: _openInfoModal,
             icon: const Icon(Icons.info_outline),
           ),
           IconButton(
-            tooltip: 'Servizio orientamento',
+            tooltip: t('orientationTooltip'),
             onPressed: () {
               Navigator.push(
                 context,
@@ -1367,22 +1845,22 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
           // Tab 2: CERCO SERVIZIO
           _PubblicaAnnuncioTab(
             categorie: _categorie,
-            title: 'Cerco un servizio',
-            subtitle: 'Pubblica una richiesta: ad esempio cerco babysitter, colf o aiuto anziani.',
+            title: t('seekServiceTitle'),
+            subtitle: t('seekServiceSubtitle'),
             fixedType: 'Servizio',
             categoryScope: 'service',
             categoryDirection: 'seek',
-            submitButtonText: 'Invia richiesta servizio',
+            submitButtonText: t('sendServiceRequest'),
           ),
           // Tab 3: OFFRO SERVIZIO
           _PubblicaAnnuncioTab(
             categorie: _categorie,
-            title: 'Offro un servizio',
-            subtitle: 'Pubblica la tua disponibilita professionale: ad esempio offro servizio di babysitter.',
+            title: t('offerServiceTitle'),
+            subtitle: t('offerServiceSubtitle'),
             fixedType: 'Servizio',
             categoryScope: 'service',
             categoryDirection: 'offer',
-            submitButtonText: 'Invia offerta servizio',
+            submitButtonText: t('sendServiceOffer'),
           ),
         ],
       ),
@@ -1412,12 +1890,17 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
         borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
       ),
       builder: (sheetContext) {
+        final t =
+            (String key, {Map<String, String>? params}) =>
+                _OfferteLavoroText.tr(sheetContext, key, params: params);
         return StatefulBuilder(
           builder: (context, setModalState) {
             final tempSelectedSubCategoryValue =
                 tempCategorySlug == null
                     ? null
-                    : _CategoriaMenuHelper.categoryValueFromSlug(tempCategorySlug!);
+                    : _CategoriaMenuHelper.categoryValueFromSlug(
+                      tempCategorySlug!,
+                    );
 
             return SafeArea(
               child: Padding(
@@ -1433,7 +1916,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Filtri annunci',
+                        t('filtersTitle'),
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 12),
@@ -1441,7 +1924,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                         controller: tempSearchCtrl,
                         textInputAction: TextInputAction.search,
                         decoration: InputDecoration(
-                          hintText: 'Cerca: baby sitter, badante, colf, OSS...',
+                          hintText: t('searchHint'),
                           prefixIcon: const Icon(Icons.search),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -1451,19 +1934,19 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                       const SizedBox(height: 14),
                       DropdownButtonFormField<String?>(
                         initialValue: tempJobDirection,
-                        decoration: const InputDecoration(labelText: 'Ambiti'),
-                        items: const [
+                        decoration: InputDecoration(labelText: t('scopes')),
+                        items: [
                           DropdownMenuItem<String?>(
                             value: null,
-                            child: Text('Tutti'),
+                            child: Text(t('all')),
                           ),
                           DropdownMenuItem<String?>(
                             value: 'seek',
-                            child: Text('Cerco'),
+                            child: Text(t('seek')),
                           ),
                           DropdownMenuItem<String?>(
                             value: 'offer',
-                            child: Text('Offro'),
+                            child: Text(t('offer')),
                           ),
                         ],
                         onChanged: (value) {
@@ -1480,10 +1963,10 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                         languageCode: languageCode,
                         selectedMacro: tempMacro,
                         selectedCategoryValue: tempSelectedSubCategoryValue,
-                        macroLabel: 'Macrocategorie',
-                        subCategoryLabel: 'Sottocategorie',
-                        allMacroText: 'Tutte',
-                        allSubCategoryText: 'Tutte',
+                        macroLabel: t('macroCategories'),
+                        subCategoryLabel: t('subCategories'),
+                        allMacroText: t('allFeminine'),
+                        allSubCategoryText: t('allFeminine'),
                         onMacroChanged: (value) {
                           setModalState(() {
                             tempMacro = value;
@@ -1496,15 +1979,19 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                                   ? const <OffertaCategoria>[]
                                   : (categoriesByMacro[tempMacro] ??
                                       const <OffertaCategoria>[]);
-                          final ordered = _CategoriaMenuHelper.sortSubCategories(
-                            base,
-                            languageCode,
+                          final ordered =
+                              _CategoriaMenuHelper.sortSubCategories(
+                                base,
+                                languageCode,
+                              );
+                          final selected =
+                              _CategoriaMenuHelper.findCategoryByValue(
+                                ordered,
+                                value,
+                              );
+                          setModalState(
+                            () => tempCategorySlug = selected?.slug,
                           );
-                          final selected = _CategoriaMenuHelper.findCategoryByValue(
-                            ordered,
-                            value,
-                          );
-                          setModalState(() => tempCategorySlug = selected?.slug);
                         },
                       ),
                       const SizedBox(height: 14),
@@ -1521,7 +2008,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                                 });
                               },
                               icon: const Icon(Icons.clear),
-                              label: const Text('Pulisci filtri'),
+                              label: Text(t('clearFilters')),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -1538,7 +2025,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                                 _loadInitialData();
                               },
                               icon: const Icon(Icons.check),
-                              label: const Text('Applica'),
+                              label: Text(t('apply')),
                             ),
                           ),
                         ],
@@ -1557,6 +2044,9 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
   }
 
   Widget _buildSearchBody() {
+    final t =
+        (String key, {Map<String, String>? params}) =>
+            _OfferteLavoroText.tr(context, key, params: params);
     if (_errorMessage != null) {
       return Column(
         children: [
@@ -1568,7 +2058,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
           Center(
             child: ElevatedButton(
               onPressed: _loadInitialData,
-              child: const Text('Riprova'),
+              child: Text(t('retry')),
             ),
           ),
         ],
@@ -1576,9 +2066,11 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
     }
 
     final selectedSubCategoryValue =
-      _selectedCategoriaSlug == null
-        ? null
-        : _CategoriaMenuHelper.categoryValueFromSlug(_selectedCategoriaSlug!);
+        _selectedCategoriaSlug == null
+            ? null
+            : _CategoriaMenuHelper.categoryValueFromSlug(
+              _selectedCategoriaSlug!,
+            );
     final displayedOfferte = _offerteFiltrate;
 
     return Column(
@@ -1593,8 +2085,8 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                       _selectedJobDirection != null ||
                       _selectedMacroCategoria != null ||
                       selectedSubCategoryValue != null)
-                  ? 'Filtri (attivi)'
-                  : 'Apri filtri',
+                  ? t('activeFilters')
+                  : t('openFilters'),
             ),
           ),
         ),
@@ -1606,9 +2098,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
               color: Colors.blue.shade50,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Text(
-              'Nessun annuncio disponibile con questi filtri. Prova categorie come Pulizie/Limpieza, Badante o Baby sitter.',
-            ),
+            child: Text(t('emptyFiltered')),
           )
         else
           ...displayedOfferte.map(
@@ -1665,14 +2155,11 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                             text: offerta.contractType,
                           ),
                         if (offerta.isFeatured)
-                          const _MetaChip(
-                            icon: Icons.star,
-                            text: 'In evidenza',
-                          ),
+                          _MetaChip(icon: Icons.star, text: t('featured')),
                         if (offerta.hasAttachedCv)
-                          const _MetaChip(
+                          _MetaChip(
                             icon: Icons.picture_as_pdf_outlined,
-                            text: 'CV allegato',
+                            text: t('attachedCv'),
                           ),
                       ],
                     ),
@@ -1694,7 +2181,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                         width: 18,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                      : const Text('Carica altri annunci'),
+                      : Text(t('loadMore')),
             ),
           ),
       ],
@@ -1703,25 +2190,28 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
 
   Widget _buildAuthorAvatar(OffertaLavoro offerta, {double radius = 24}) {
     final avatarUrl = offerta.authorAvatarUrl.trim();
-    final initialsSource = offerta.authorName.trim().isNotEmpty
-        ? offerta.authorName.trim()
-        : offerta.companyName.trim();
-    final initial = initialsSource.isNotEmpty ? initialsSource[0].toUpperCase() : '?';
+    final initialsSource =
+        offerta.authorName.trim().isNotEmpty
+            ? offerta.authorName.trim()
+            : offerta.companyName.trim();
+    final initial =
+        initialsSource.isNotEmpty ? initialsSource[0].toUpperCase() : '?';
 
     final avatar = CircleAvatar(
       radius: radius,
       backgroundColor: const Color(0xFFEAF5F8),
       backgroundImage: avatarUrl.isNotEmpty ? NetworkImage(avatarUrl) : null,
-      child: avatarUrl.isEmpty
-          ? Text(
-              initial,
-              style: TextStyle(
-                fontSize: radius * 0.8,
-                fontWeight: FontWeight.w700,
-                color: const Color(0xFF1282A8),
-              ),
-            )
-          : null,
+      child:
+          avatarUrl.isEmpty
+              ? Text(
+                initial,
+                style: TextStyle(
+                  fontSize: radius * 0.8,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF1282A8),
+                ),
+              )
+              : null,
     );
 
     if (avatarUrl.isEmpty) {
@@ -1830,49 +2320,58 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
     if (!mounted) return;
 
     if (result['success'] == true) {
-      final items = ((result['items'] as List?) ?? const <dynamic>[])
-          .whereType<Map>()
-          .map((e) => Map<String, dynamic>.from(e))
-          .toList();
+      final items =
+          ((result['items'] as List?) ?? const <dynamic>[])
+              .whereType<Map>()
+              .map((e) => Map<String, dynamic>.from(e))
+              .toList();
       final merged = _mergeCvEntries(items, localCached);
 
       setState(() {
-        _generatedCvs = merged
-            .where(
-              (entry) =>
-                  ((entry['status'] ?? entry['state'] ?? 'unknown')
-                          .toString()
-                          .trim()
-                          .toLowerCase() ==
-                      'generated') &&
-                  ((_cvEntryFiles(entry)?['pdfUrl'] ?? '').toString().trim().isNotEmpty ||
-                      (_cvEntryFiles(entry)?['docxUrl'] ?? '')
-                          .toString()
-                          .trim()
-                          .isNotEmpty),
-            )
-            .toList();
+        _generatedCvs =
+            merged
+                .where(
+                  (entry) =>
+                      ((entry['status'] ?? entry['state'] ?? 'unknown')
+                              .toString()
+                              .trim()
+                              .toLowerCase() ==
+                          'generated') &&
+                      ((_cvEntryFiles(entry)?['pdfUrl'] ?? '')
+                              .toString()
+                              .trim()
+                              .isNotEmpty ||
+                          (_cvEntryFiles(entry)?['docxUrl'] ?? '')
+                              .toString()
+                              .trim()
+                              .isNotEmpty),
+                )
+                .toList();
         _isLoadingGeneratedCvs = false;
       });
       return;
     }
 
     setState(() {
-      _generatedCvs = localCached
-          .where(
-            (entry) =>
-                ((entry['status'] ?? entry['state'] ?? 'unknown')
-                        .toString()
-                        .trim()
-                        .toLowerCase() ==
-                    'generated') &&
-                ((_cvEntryFiles(entry)?['pdfUrl'] ?? '').toString().trim().isNotEmpty ||
-                    (_cvEntryFiles(entry)?['docxUrl'] ?? '')
-                        .toString()
-                        .trim()
-                        .isNotEmpty),
-          )
-          .toList();
+      _generatedCvs =
+          localCached
+              .where(
+                (entry) =>
+                    ((entry['status'] ?? entry['state'] ?? 'unknown')
+                            .toString()
+                            .trim()
+                            .toLowerCase() ==
+                        'generated') &&
+                    ((_cvEntryFiles(entry)?['pdfUrl'] ?? '')
+                            .toString()
+                            .trim()
+                            .isNotEmpty ||
+                        (_cvEntryFiles(entry)?['docxUrl'] ?? '')
+                            .toString()
+                            .trim()
+                            .isNotEmpty),
+              )
+              .toList();
       _isLoadingGeneratedCvs = false;
     });
   }
@@ -1911,9 +2410,10 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
     void mergeFrom(List<Map<String, dynamic>> list) {
       for (final entry in list) {
         final id = _cvEntryId(entry).trim();
-        final key = id.isEmpty
-            ? 'fallback_${_parseCvEntryDate(entry).millisecondsSinceEpoch}_${byId.length}'
-            : id;
+        final key =
+            id.isEmpty
+                ? 'fallback_${_parseCvEntryDate(entry).millisecondsSinceEpoch}_${byId.length}'
+                : id;
         final previous = byId[key];
         byId[key] = previous == null ? entry : {...previous, ...entry};
       }
@@ -1960,19 +2460,25 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
   }
 
   String _cvEntryDisplayLabel(Map<String, dynamic> entry) {
-    final payload = entry['inputData'] is Map<String, dynamic>
-        ? entry['inputData'] as Map<String, dynamic>
-        : (entry['payload'] is Map<String, dynamic>
-            ? entry['payload'] as Map<String, dynamic>
-            : null);
+    final payload =
+        entry['inputData'] is Map<String, dynamic>
+            ? entry['inputData'] as Map<String, dynamic>
+            : (entry['payload'] is Map<String, dynamic>
+                ? entry['payload'] as Map<String, dynamic>
+                : null);
     final personalInfo = payload?['personalInfo'] as Map<String, dynamic>?;
     final firstName =
-        (personalInfo?['firstName'] ?? entry['firstName'] ?? '').toString().trim();
+        (personalInfo?['firstName'] ?? entry['firstName'] ?? '')
+            .toString()
+            .trim();
     final lastName =
-        (personalInfo?['lastName'] ?? entry['lastName'] ?? '').toString().trim();
-    final fullName = [firstName, lastName]
-        .where((part) => part.isNotEmpty)
-        .join(' ');
+        (personalInfo?['lastName'] ?? entry['lastName'] ?? '')
+            .toString()
+            .trim();
+    final fullName = [
+      firstName,
+      lastName,
+    ].where((part) => part.isNotEmpty).join(' ');
     final dateLabel = _formatCvDate(_cvEntryUpdatedAt(entry));
 
     if (fullName.isNotEmpty && dateLabel.isNotEmpty) {
@@ -2011,9 +2517,10 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
 
   Future<void> _openCreatedAnnouncement(Map<String, dynamic> result) async {
     final data = result['data'];
-    final announcementId = data is Map<String, dynamic>
-        ? (data['submission_id'] as num?)?.toInt()
-        : null;
+    final announcementId =
+        data is Map<String, dynamic>
+            ? (data['submission_id'] as num?)?.toInt()
+            : null;
     if (announcementId == null || announcementId <= 0 || !mounted) return;
 
     final detailResult = await OfferteLavoroService.getOfferta(announcementId);
@@ -2025,10 +2532,8 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => _OffertaLavoroDetailScreen(
-          offerta: offerta,
-          onApply: () {},
-        ),
+        builder:
+            (_) => _OffertaLavoroDetailScreen(offerta: offerta, onApply: () {}),
       ),
     );
   }
@@ -2064,20 +2569,24 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
     if (!_formKey.currentState!.validate()) return false;
     if (_selectedMacroCategoria == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Seleziona una macrocategoria')),
+        SnackBar(
+          content: Text(_OfferteLavoroText.tr(context, 'selectMacroCategory')),
+        ),
       );
       return false;
     }
     if (_selectedCategoriaValueEn == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Seleziona una sottocategoria')),
+        SnackBar(
+          content: Text(_OfferteLavoroText.tr(context, 'selectSubCategory')),
+        ),
       );
       return false;
     }
     if (_privacy) return true;
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Devi accettare il consenso privacy')),
+      SnackBar(content: Text(_OfferteLavoroText.tr(context, 'acceptPrivacy'))),
     );
     return false;
   }
@@ -2088,7 +2597,11 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
     final initialCategorySlug = _resolveSelectedCategorySlug();
     if (initialCategorySlug == null || initialCategorySlug.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Seleziona una sottocategoria valida')),
+        SnackBar(
+          content: Text(
+            _OfferteLavoroText.tr(context, 'selectValidSubCategory'),
+          ),
+        ),
       );
       return;
     }
@@ -2197,12 +2710,13 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
             : _descrizioneCtrl.text.trim();
     if (descriptionForCheck.length < 12) return true;
 
-    final result = await AnnunciSubmissionService.suggestCategoryFromDescription(
-      description: descriptionForCheck,
-      titleOffer: _titoloCtrl.text.trim(),
-      categoryScope: widget.categoryScope,
-      categoryDirection: widget.categoryDirection,
-    );
+    final result =
+        await AnnunciSubmissionService.suggestCategoryFromDescription(
+          description: descriptionForCheck,
+          titleOffer: _titoloCtrl.text.trim(),
+          categoryScope: widget.categoryScope,
+          categoryDirection: widget.categoryDirection,
+        );
 
     if (!mounted || result['success'] != true) {
       return true;
@@ -2245,11 +2759,16 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
             ? _CategoriaMenuHelper.categoryLabel(currentCategory, languageCode)
             : selectedCategorySlug;
 
-    final suggestedMacroLabel =
-        _CategoriaMenuHelper.macroLabel(suggestedMacro, languageCode);
+    final suggestedMacroLabel = _CategoriaMenuHelper.macroLabel(
+      suggestedMacro,
+      languageCode,
+    );
     final suggestedCategoryLabel =
         suggestedCategory != null
-            ? _CategoriaMenuHelper.categoryLabel(suggestedCategory, languageCode)
+            ? _CategoriaMenuHelper.categoryLabel(
+              suggestedCategory,
+              languageCode,
+            )
             : suggestedSlug;
 
     final reason = (result['reason'] ?? '').toString().trim();
@@ -2258,29 +2777,35 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
       context: context,
       builder:
           (ctx) => AlertDialog(
-            title: const Text('Controllo AI categoria'),
+            title: Text(_OfferteLavoroText.tr(ctx, 'aiCategoryCheck')),
             content: Text(
-              'La categoria selezionata sembra non coerente con la descrizione.\n\n'
-              'Selezione attuale:\n'
-              '• Macrocategoria: $currentMacroLabel\n'
-              '• Sottocategoria: $currentCategoryLabel\n\n'
-              'Suggerimento AI:\n'
-              '• Macrocategoria: $suggestedMacroLabel\n'
-              '• Sottocategoria: $suggestedCategoryLabel'
-              '${reason.isNotEmpty ? '\n\nMotivo: $reason' : ''}',
+              _OfferteLavoroText.tr(
+                ctx,
+                'aiCategoryCheckMessage',
+                params: {
+                  'currentMacro': currentMacroLabel,
+                  'currentCategory': currentCategoryLabel,
+                  'suggestedMacro': suggestedMacroLabel,
+                  'suggestedCategory': suggestedCategoryLabel,
+                  'reasonBlock':
+                      reason.isNotEmpty
+                          ? '\n\n${_OfferteLavoroText.tr(ctx, 'reasonLabel', params: {'reason': reason})}'
+                          : '',
+                },
+              ),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop('cancel'),
-                child: const Text('Annulla'),
+                child: Text(_OfferteLavoroText.tr(ctx, 'cancel')),
               ),
               OutlinedButton(
                 onPressed: () => Navigator.of(ctx).pop('keep'),
-                child: const Text('Invia comunque'),
+                child: Text(_OfferteLavoroText.tr(ctx, 'sendAnyway')),
               ),
               FilledButton(
                 onPressed: () => Navigator.of(ctx).pop('apply'),
-                child: const Text('Applica suggerimento'),
+                child: Text(_OfferteLavoroText.tr(ctx, 'applySuggestion')),
               ),
             ],
           ),
@@ -2300,9 +2825,9 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
 
     if (selectedInMacro == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Suggerimento AI non applicabile alle categorie disponibili',
+            _OfferteLavoroText.tr(context, 'aiSuggestionNotApplicable'),
           ),
         ),
       );
@@ -2315,7 +2840,9 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Categoria AI applicata')),
+      SnackBar(
+        content: Text(_OfferteLavoroText.tr(context, 'aiCategoryApplied')),
+      ),
     );
     return true;
   }
@@ -2324,8 +2851,8 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
     final baseDescription = _descrizioneCtrl.text.trim();
     if (baseDescription.length < 12) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Inserisci almeno 12 caratteri nella descrizione base'),
+        SnackBar(
+          content: Text(_OfferteLavoroText.tr(context, 'min12BaseDescription')),
         ),
       );
       return;
@@ -2333,21 +2860,31 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
 
     setState(() => _isImprovingDescription = true);
 
-    final result = await AnnunciSubmissionService.improveAnnouncementDescription(
-      titleOffer: _titoloCtrl.text.trim(),
-      city: _cittaCtrl.text.trim(),
-      contactPhone: _contattoCtrl.text.trim(),
-      description: baseDescription,
-      categoryScope: widget.categoryScope,
-      categoryDirection: widget.categoryDirection,
-    );
+    final result =
+        await AnnunciSubmissionService.improveAnnouncementDescription(
+          titleOffer: _titoloCtrl.text.trim(),
+          city: _cittaCtrl.text.trim(),
+          contactPhone: _contattoCtrl.text.trim(),
+          description: baseDescription,
+          categoryScope: widget.categoryScope,
+          categoryDirection: widget.categoryDirection,
+        );
 
     if (!mounted) return;
     setState(() => _isImprovingDescription = false);
 
     if (result['success'] != true) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text((result['message'] ?? 'Impossibile migliorare la descrizione').toString())),
+        SnackBar(
+          content: Text(
+            (result['message'] ??
+                    _OfferteLavoroText.tr(
+                      context,
+                      'improveDescriptionUnavailable',
+                    ))
+                .toString(),
+          ),
+        ),
       );
       return;
     }
@@ -2355,7 +2892,11 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
     final aiDescription = (result['ai_description'] ?? '').toString().trim();
     if (aiDescription.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nessuna descrizione AI disponibile')),
+        SnackBar(
+          content: Text(
+            _OfferteLavoroText.tr(context, 'aiDescriptionUnavailable'),
+          ),
+        ),
       );
       return;
     }
@@ -2366,8 +2907,12 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
       SnackBar(
         content: Text(
           source.isNotEmpty
-              ? 'Descrizione AI generata ($source). Puoi modificarla prima di inviare.'
-              : 'Descrizione AI generata. Puoi modificarla prima di inviare.',
+              ? _OfferteLavoroText.tr(
+                context,
+                'aiDescriptionGeneratedWithSource',
+                params: {'source': source},
+              )
+              : _OfferteLavoroText.tr(context, 'aiDescriptionGenerated'),
         ),
       ),
     );
@@ -2384,7 +2929,9 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            (initial['message'] ?? 'Impossibile caricare i tuoi annunci').toString(),
+            (initial['message'] ??
+                    _OfferteLavoroText.tr(context, 'loadMyAnnouncementsError'))
+                .toString(),
           ),
         ),
       );
@@ -2418,15 +2965,26 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                   children: [
                     Text(
                       widget.categoryDirection == 'seek'
-                          ? 'Le mie richieste (Cerco)'
-                          : 'Le mie offerte (Offro)',
+                          ? _OfferteLavoroText.tr(
+                            context,
+                            'mySeekAnnouncements',
+                          )
+                          : _OfferteLavoroText.tr(
+                            context,
+                            'myOfferAnnouncements',
+                          ),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 12),
                     if (items.isEmpty)
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.only(bottom: 12),
-                        child: Text('Non hai ancora annunci da mostrare.'),
+                        child: Text(
+                          _OfferteLavoroText.tr(
+                            context,
+                            'noAnnouncementsToShow',
+                          ),
+                        ),
                       )
                     else
                       Flexible(
@@ -2442,16 +3000,30 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                             return ListTile(
                               contentPadding: EdgeInsets.zero,
                               title: Text(
-                                title.isNotEmpty ? title : 'Annuncio #$id',
+                                title.isNotEmpty
+                                    ? title
+                                    : _OfferteLavoroText.tr(
+                                      context,
+                                      'announcementFallback',
+                                      params: {'id': '$id'},
+                                    ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               subtitle:
                                   city.isNotEmpty
                                       ? Text(city)
-                                      : const Text('Senza citta'),
+                                      : Text(
+                                        _OfferteLavoroText.tr(
+                                          context,
+                                          'withoutCity',
+                                        ),
+                                      ),
                               trailing: IconButton(
-                                tooltip: 'Elimina annuncio',
+                                tooltip: _OfferteLavoroText.tr(
+                                  context,
+                                  'deleteAnnouncementTooltip',
+                                ),
                                 icon: const Icon(
                                   Icons.delete_outline,
                                   color: Colors.redAccent,
@@ -2465,29 +3037,43 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                                                 context: sheetContext,
                                                 builder:
                                                     (ctx) => AlertDialog(
-                                                      title: const Text(
-                                                        'Eliminare annuncio?',
+                                                      title: Text(
+                                                        _OfferteLavoroText.tr(
+                                                          ctx,
+                                                          'deleteAnnouncementTitle',
+                                                        ),
                                                       ),
-                                                      content: const Text(
-                                                        'Questa azione spostera l\'annuncio nel cestino.',
+                                                      content: Text(
+                                                        _OfferteLavoroText.tr(
+                                                          ctx,
+                                                          'deleteAnnouncementMessage',
+                                                        ),
                                                       ),
                                                       actions: [
                                                         TextButton(
                                                           onPressed:
-                                                              () => Navigator.of(
-                                                                ctx,
-                                                              ).pop(false),
-                                                          child: const Text(
-                                                            'Annulla',
+                                                              () =>
+                                                                  Navigator.of(
+                                                                    ctx,
+                                                                  ).pop(false),
+                                                          child: Text(
+                                                            _OfferteLavoroText.tr(
+                                                              ctx,
+                                                              'cancel',
+                                                            ),
                                                           ),
                                                         ),
                                                         FilledButton(
                                                           onPressed:
-                                                              () => Navigator.of(
-                                                                ctx,
-                                                              ).pop(true),
-                                                          child: const Text(
-                                                            'Elimina',
+                                                              () =>
+                                                                  Navigator.of(
+                                                                    ctx,
+                                                                  ).pop(true),
+                                                          child: Text(
+                                                            _OfferteLavoroText.tr(
+                                                              ctx,
+                                                              'delete',
+                                                            ),
                                                           ),
                                                         ),
                                                       ],
@@ -2497,39 +3083,51 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
 
                                           if (!confirm) return;
 
-                                          setModalState(() => isDeleting = true);
+                                          setModalState(
+                                            () => isDeleting = true,
+                                          );
                                           final res =
                                               await AnnunciSubmissionService.deleteMyAnnouncement(
                                                 id,
                                               );
                                           if (!mounted) return;
-                                          setModalState(() => isDeleting = false);
+                                          setModalState(
+                                            () => isDeleting = false,
+                                          );
 
                                           if (res['success'] == true) {
                                             setModalState(
                                               () => items.removeAt(index),
                                             );
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                      (res['message'] ??
-                                                              'Annuncio eliminato')
-                                                          .toString(),
-                                                    ),
-                                                  ),
-                                                );
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  (res['message'] ??
+                                                          _OfferteLavoroText.tr(
+                                                            context,
+                                                            'announcementDeleted',
+                                                          ))
+                                                      .toString(),
+                                                ),
+                                              ),
+                                            );
                                           } else {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                      (res['message'] ??
-                                                              'Errore eliminazione')
-                                                          .toString(),
-                                                    ),
-                                                  ),
-                                                );
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  (res['message'] ??
+                                                          _OfferteLavoroText.tr(
+                                                            context,
+                                                            'deleteError',
+                                                          ))
+                                                      .toString(),
+                                                ),
+                                              ),
+                                            );
                                           }
                                         },
                               ),
@@ -2553,7 +3151,8 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
   }
 
   String? _resolveSelectedCategorySlug() {
-    if (_selectedCategoriaValueEn == null || _selectedCategoriaValueEn!.isEmpty) {
+    if (_selectedCategoriaValueEn == null ||
+        _selectedCategoriaValueEn!.isEmpty) {
       return null;
     }
 
@@ -2593,19 +3192,24 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
 
     setState(() => _isSuggestingCategory = true);
 
-    final result = await AnnunciSubmissionService.suggestCategoryFromDescription(
-      description: description,
-      titleOffer: _titoloCtrl.text.trim(),
-      categoryScope: widget.categoryScope,
-      categoryDirection: widget.categoryDirection,
-    );
+    final result =
+        await AnnunciSubmissionService.suggestCategoryFromDescription(
+          description: description,
+          titleOffer: _titoloCtrl.text.trim(),
+          categoryScope: widget.categoryScope,
+          categoryDirection: widget.categoryDirection,
+        );
 
     if (!mounted) return;
     setState(() => _isSuggestingCategory = false);
 
     if (result['success'] != true) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text((result['message'] ?? 'Suggerimento non disponibile').toString())),
+        SnackBar(
+          content: Text(
+            (result['message'] ?? 'Suggerimento non disponibile').toString(),
+          ),
+        ),
       );
       return;
     }
@@ -2636,7 +3240,10 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
     final macroLabel = _CategoriaMenuHelper.macroLabel(macro, languageCode);
     final categoryLabel =
         suggestedCategory != null
-            ? _CategoriaMenuHelper.categoryLabel(suggestedCategory, languageCode)
+            ? _CategoriaMenuHelper.categoryLabel(
+              suggestedCategory,
+              languageCode,
+            )
             : suggestedSlug;
 
     final shouldApply =
@@ -2644,20 +3251,24 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
           context: context,
           builder:
               (ctx) => AlertDialog(
-                title: const Text('Applicare suggerimento AI?'),
+                title: Text(
+                  _OfferteLavoroText.tr(ctx, 'applyAiSuggestionQuestion'),
+                ),
                 content: Text(
-                  'Vuoi impostare questa selezione?\n'
-                  'Macrocategoria: $macroLabel\n'
-                  'Sottocategoria: $categoryLabel',
+                  _OfferteLavoroText.tr(
+                    ctx,
+                    'setSelectionQuestion',
+                    params: {'macro': macroLabel, 'category': categoryLabel},
+                  ),
                 ),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(ctx).pop(false),
-                    child: const Text('No'),
+                    child: Text(_OfferteLavoroText.tr(ctx, 'no')),
                   ),
                   FilledButton(
                     onPressed: () => Navigator.of(ctx).pop(true),
-                    child: const Text('Si, applica'),
+                    child: Text(_OfferteLavoroText.tr(ctx, 'yesApply')),
                   ),
                 ],
               ),
@@ -2700,23 +3311,24 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              widget.title,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            Text(widget.title, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 6),
-            Text(
-              widget.subtitle,
-            ),
+            Text(widget.subtitle),
             const SizedBox(height: 10),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: _isProfileComplete ? Colors.green.shade50 : Colors.amber.shade50,
+                color:
+                    _isProfileComplete
+                        ? Colors.green.shade50
+                        : Colors.amber.shade50,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: _isProfileComplete ? Colors.green.shade200 : Colors.amber.shade200,
+                  color:
+                      _isProfileComplete
+                          ? Colors.green.shade200
+                          : Colors.amber.shade200,
                 ),
               ),
               child: Row(
@@ -2724,16 +3336,28 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                 children: [
                   Icon(
                     _isProfileComplete ? Icons.verified : Icons.info_outline,
-                    color: _isProfileComplete ? Colors.green.shade700 : Colors.amber.shade800,
+                    color:
+                        _isProfileComplete
+                            ? Colors.green.shade700
+                            : Colors.amber.shade800,
                   ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       _isProfileComplete
-                          ? 'Il tuo profilo e completo: i tuoi annunci mostreranno la coccarda Profilo verificato.'
-                          : 'Completa il profilo se vuoi mostrare la coccarda Profilo verificato nei tuoi annunci.',
+                          ? _OfferteLavoroText.tr(
+                            context,
+                            'profileCompleteVerified',
+                          )
+                          : _OfferteLavoroText.tr(
+                            context,
+                            'profileIncompleteVerified',
+                          ),
                       style: TextStyle(
-                        color: _isProfileComplete ? Colors.green.shade900 : Colors.amber.shade900,
+                        color:
+                            _isProfileComplete
+                                ? Colors.green.shade900
+                                : Colors.amber.shade900,
                       ),
                     ),
                   ),
@@ -2746,39 +3370,43 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
               child: TextButton.icon(
                 onPressed: _openMyAnnouncementsModal,
                 icon: const Icon(Icons.list_alt),
-                label: const Text('I miei annunci'),
+                label: Text(_OfferteLavoroText.tr(context, 'myAnnouncements')),
               ),
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _titoloCtrl,
-              decoration: const InputDecoration(labelText: 'Titolo annuncio'),
+              decoration: InputDecoration(
+                labelText: _OfferteLavoroText.tr(context, 'announcementTitle'),
+              ),
               validator:
                   (v) =>
                       (v == null || v.trim().isEmpty)
-                          ? 'Campo obbligatorio'
+                          ? _OfferteLavoroText.tr(context, 'requiredField')
                           : null,
             ),
             const SizedBox(height: 18),
             TextFormField(
               controller: _cittaCtrl,
-              decoration: const InputDecoration(labelText: 'Citta'),
+              decoration: InputDecoration(
+                labelText: _OfferteLavoroText.tr(context, 'city'),
+              ),
               validator:
                   (v) =>
                       (v == null || v.trim().isEmpty)
-                          ? 'Campo obbligatorio'
+                          ? _OfferteLavoroText.tr(context, 'requiredField')
                           : null,
             ),
             const SizedBox(height: 18),
             TextFormField(
               controller: _contattoCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Telefono o email di contatto',
+              decoration: InputDecoration(
+                labelText: _OfferteLavoroText.tr(context, 'contactLabel'),
               ),
               validator:
                   (v) =>
                       (v == null || v.trim().isEmpty)
-                          ? 'Campo obbligatorio'
+                          ? _OfferteLavoroText.tr(context, 'requiredField')
                           : null,
             ),
             const SizedBox(height: 18),
@@ -2786,15 +3414,14 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
               controller: _descrizioneCtrl,
               minLines: 3,
               maxLines: 5,
-              decoration: const InputDecoration(
-                labelText: 'Descrizione',
-                hintText:
-                    'Descrivi mansione/servizio, orari e requisiti principali',
+              decoration: InputDecoration(
+                labelText: _OfferteLavoroText.tr(context, 'description'),
+                hintText: _OfferteLavoroText.tr(context, 'descriptionHint'),
               ),
               validator:
                   (v) =>
                       (v == null || v.trim().length < 20)
-                          ? 'Inserisci almeno 20 caratteri'
+                          ? _OfferteLavoroText.tr(context, 'min20Chars')
                           : null,
             ),
             const SizedBox(height: 10),
@@ -2813,8 +3440,8 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                         : const Icon(Icons.edit_note),
                 label: Text(
                   _isImprovingDescription
-                      ? 'Miglioramento AI in corso...'
-                      : 'Migliora descrizione con AI',
+                      ? _OfferteLavoroText.tr(context, 'aiImproveRunning')
+                      : _OfferteLavoroText.tr(context, 'improveWithAi'),
                 ),
               ),
             ),
@@ -2823,17 +3450,20 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
               controller: _descrizioneAiCtrl,
               minLines: 4,
               maxLines: 8,
-              decoration: const InputDecoration(
-                labelText: 'Descrizione AI (modificabile)',
-                hintText:
-                    'La descrizione migliorata comparira qui. Puoi modificarla prima di inviare.',
+              decoration: InputDecoration(
+                labelText: _OfferteLavoroText.tr(
+                  context,
+                  'aiDescriptionEditable',
+                ),
+                hintText: _OfferteLavoroText.tr(context, 'aiDescriptionHint'),
               ),
             ),
             const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: _isSuggestingCategory ? null : _suggestCategoryWithAi,
+                onPressed:
+                    _isSuggestingCategory ? null : _suggestCategoryWithAi,
                 icon:
                     _isSuggestingCategory
                         ? const SizedBox(
@@ -2844,8 +3474,8 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                         : const Icon(Icons.auto_awesome),
                 label: Text(
                   _isSuggestingCategory
-                      ? 'Suggerimento AI in corso...'
-                      : 'Suggerisci categoria con AI',
+                      ? _OfferteLavoroText.tr(context, 'aiSuggestionRunning')
+                      : _OfferteLavoroText.tr(context, 'suggestCategoryWithAi'),
                 ),
               ),
             ),
@@ -2860,8 +3490,8 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Immagine o foto (Opzionale)',
+                  Text(
+                    _OfferteLavoroText.tr(context, 'imageOptional'),
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
@@ -2882,12 +3512,12 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                         OutlinedButton.icon(
                           onPressed: _pickImage,
                           icon: const Icon(Icons.image),
-                          label: const Text('Cambia'),
+                          label: Text(_OfferteLavoroText.tr(context, 'change')),
                         ),
                         OutlinedButton.icon(
                           onPressed: _clearImage,
                           icon: const Icon(Icons.delete),
-                          label: const Text('Rimuovi'),
+                          label: Text(_OfferteLavoroText.tr(context, 'remove')),
                         ),
                       ],
                     ),
@@ -2895,7 +3525,9 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                     OutlinedButton.icon(
                       onPressed: _pickImage,
                       icon: const Icon(Icons.image),
-                      label: const Text('Seleziona immagine'),
+                      label: Text(
+                        _OfferteLavoroText.tr(context, 'selectImage'),
+                      ),
                     ),
                 ],
               ),
@@ -2914,14 +3546,14 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                   children: [
                     Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'Allega un CV generato',
+                            _OfferteLavoroText.tr(context, 'attachGeneratedCv'),
                             style: TextStyle(fontWeight: FontWeight.w700),
                           ),
                         ),
                         IconButton(
-                          tooltip: 'Aggiorna CV',
+                          tooltip: _OfferteLavoroText.tr(context, 'refreshCv'),
                           onPressed:
                               _isLoadingGeneratedCvs ? null : _loadGeneratedCvs,
                           icon: const Icon(Icons.refresh),
@@ -2929,26 +3561,29 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                       ],
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      'Se stai cercando lavoro puoi associare uno dei tuoi CV generati. Chi apre l\'annuncio potra consultarlo.',
+                    Text(
+                      _OfferteLavoroText.tr(context, 'attachGeneratedCvHint'),
                     ),
                     const SizedBox(height: 10),
                     if (_isLoadingGeneratedCvs)
                       const LinearProgressIndicator(minHeight: 2)
                     else if (_generatedCvs.isEmpty)
-                      const Text(
-                        'Nessun CV generato disponibile. Crea prima un CV nella sezione CV AI.',
-                      )
+                      Text(_OfferteLavoroText.tr(context, 'noGeneratedCv'))
                     else
                       DropdownButtonFormField<String?>(
                         initialValue: _selectedCvId,
-                        decoration: const InputDecoration(
-                          labelText: 'CV da allegare (opzionale)',
+                        decoration: InputDecoration(
+                          labelText: _OfferteLavoroText.tr(
+                            context,
+                            'attachCvOptional',
+                          ),
                         ),
                         items: [
-                          const DropdownMenuItem<String?>(
+                          DropdownMenuItem<String?>(
                             value: null,
-                            child: Text('Nessun CV allegato'),
+                            child: Text(
+                              _OfferteLavoroText.tr(context, 'noCvAttached'),
+                            ),
                           ),
                           ..._generatedCvs.map(
                             (entry) => DropdownMenuItem<String?>(
@@ -2971,21 +3606,27 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                         children: [
                           if ((_selectedCvPdfUrl ?? '').isNotEmpty)
                             OutlinedButton.icon(
-                              onPressed: () => launchUrl(
-                                Uri.parse(_selectedCvPdfUrl!),
-                                mode: LaunchMode.externalApplication,
-                              ),
+                              onPressed:
+                                  () => launchUrl(
+                                    Uri.parse(_selectedCvPdfUrl!),
+                                    mode: LaunchMode.externalApplication,
+                                  ),
                               icon: const Icon(Icons.picture_as_pdf_outlined),
-                              label: const Text('Anteprima PDF'),
+                              label: Text(
+                                _OfferteLavoroText.tr(context, 'pdfPreview'),
+                              ),
                             ),
                           if ((_selectedCvDocxUrl ?? '').isNotEmpty)
                             OutlinedButton.icon(
-                              onPressed: () => launchUrl(
-                                Uri.parse(_selectedCvDocxUrl!),
-                                mode: LaunchMode.externalApplication,
-                              ),
+                              onPressed:
+                                  () => launchUrl(
+                                    Uri.parse(_selectedCvDocxUrl!),
+                                    mode: LaunchMode.externalApplication,
+                                  ),
                               icon: const Icon(Icons.description_outlined),
-                              label: const Text('Apri Word'),
+                              label: Text(
+                                _OfferteLavoroText.tr(context, 'openWord'),
+                              ),
                             ),
                         ],
                       ),
@@ -3000,10 +3641,10 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
               languageCode: languageCode,
               selectedMacro: _selectedMacroCategoria,
               selectedCategoryValue: _selectedCategoriaValueEn,
-              macroLabel: 'Macrocategoria',
-              subCategoryLabel: 'Sottocategorie',
-              allMacroText: 'Tutte',
-              allSubCategoryText: 'Tutte',
+              macroLabel: _OfferteLavoroText.tr(context, 'macroCategory'),
+              subCategoryLabel: _OfferteLavoroText.tr(context, 'subCategories'),
+              allMacroText: _OfferteLavoroText.tr(context, 'allFeminine'),
+              allSubCategoryText: _OfferteLavoroText.tr(context, 'allFeminine'),
               onMacroChanged: (value) {
                 setState(() {
                   _selectedMacroCategoria = value;
@@ -3021,7 +3662,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
               contentPadding: EdgeInsets.zero,
               value: _privacy,
               onChanged: (v) => setState(() => _privacy = v == true),
-              title: const Text('Accetto il trattamento dei dati personali'),
+              title: Text(_OfferteLavoroText.tr(context, 'privacyConsent')),
               controlAffinity: ListTileControlAffinity.leading,
             ),
             const SizedBox(height: 24),
@@ -3052,7 +3693,9 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                         )
                         : const Icon(Icons.send, size: 26),
                 label: Text(
-                  _isSending ? 'Invio in corso...' : widget.submitButtonText,
+                  _isSending
+                      ? _OfferteLavoroText.tr(context, 'sending')
+                      : widget.submitButtonText,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -3100,7 +3743,7 @@ class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
     if (_privacy) return true;
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Devi accettare il consenso privacy')),
+      SnackBar(content: Text(_OfferteLavoroText.tr(context, 'acceptPrivacy'))),
     );
     return false;
   }
@@ -3139,43 +3782,50 @@ class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Inserisci annuncio',
+                _OfferteLavoroText.tr(context, 'insertAnnouncement'),
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 6),
-              const Text(
-                'Compila i dati e invia la richiesta a WECOOP per la pubblicazione.',
+              Text(
+                _OfferteLavoroText.tr(context, 'insertAnnouncementDescription'),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _titoloCtrl,
-                decoration: const InputDecoration(labelText: 'Titolo annuncio'),
+                decoration: InputDecoration(
+                  labelText: _OfferteLavoroText.tr(
+                    context,
+                    'announcementTitle',
+                  ),
+                ),
                 validator:
                     (v) =>
                         (v == null || v.trim().isEmpty)
-                            ? 'Campo obbligatorio'
+                            ? _OfferteLavoroText.tr(context, 'requiredField')
                             : null,
               ),
               const SizedBox(height: 18),
               TextFormField(
                 controller: _cittaCtrl,
-                decoration: const InputDecoration(labelText: 'Citta'),
+                decoration: InputDecoration(
+                  labelText: _OfferteLavoroText.tr(context, 'city'),
+                ),
                 validator:
                     (v) =>
                         (v == null || v.trim().isEmpty)
-                            ? 'Campo obbligatorio'
+                            ? _OfferteLavoroText.tr(context, 'requiredField')
                             : null,
               ),
               const SizedBox(height: 18),
               TextFormField(
                 controller: _contattoCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Telefono o email di contatto',
+                decoration: InputDecoration(
+                  labelText: _OfferteLavoroText.tr(context, 'contactLabel'),
                 ),
                 validator:
                     (v) =>
                         (v == null || v.trim().isEmpty)
-                            ? 'Campo obbligatorio'
+                            ? _OfferteLavoroText.tr(context, 'requiredField')
                             : null,
               ),
               const SizedBox(height: 18),
@@ -3183,15 +3833,14 @@ class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
                 controller: _descrizioneCtrl,
                 minLines: 3,
                 maxLines: 5,
-                decoration: const InputDecoration(
-                  labelText: 'Descrizione',
-                  hintText:
-                      'Descrivi mansione/servizio, orari e requisiti principali',
+                decoration: InputDecoration(
+                  labelText: _OfferteLavoroText.tr(context, 'description'),
+                  hintText: _OfferteLavoroText.tr(context, 'descriptionHint'),
                 ),
                 validator:
                     (v) =>
                         (v == null || v.trim().length < 20)
-                            ? 'Inserisci almeno 20 caratteri'
+                            ? _OfferteLavoroText.tr(context, 'min20Chars')
                             : null,
               ),
               const SizedBox(height: 20),
@@ -3199,7 +3848,7 @@ class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
                 contentPadding: EdgeInsets.zero,
                 value: _privacy,
                 onChanged: (v) => setState(() => _privacy = v == true),
-                title: const Text('Accetto il trattamento dei dati personali'),
+                title: Text(_OfferteLavoroText.tr(context, 'privacyConsent')),
                 controlAffinity: ListTileControlAffinity.leading,
               ),
               const SizedBox(height: 24),
@@ -3230,7 +3879,9 @@ class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
                           )
                           : const Icon(Icons.send, size: 26),
                   label: Text(
-                    _isSending ? 'Invio in corso...' : 'Invia annuncio',
+                    _isSending
+                        ? _OfferteLavoroText.tr(context, 'sending')
+                        : _OfferteLavoroText.tr(context, 'sendAnnouncement'),
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -3330,7 +3981,7 @@ class _VerifiedBadge extends StatelessWidget {
           ),
           SizedBox(width: compact ? 4 : 6),
           Text(
-            'Profilo verificato',
+            _OfferteLavoroText.tr(context, 'verifiedProfile'),
             style: TextStyle(
               fontSize: compact ? 11 : 12,
               fontWeight: FontWeight.w700,
@@ -3383,25 +4034,28 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
     double radius = 24,
   }) {
     final avatarUrl = offerta.authorAvatarUrl.trim();
-    final initialsSource = offerta.authorName.trim().isNotEmpty
-        ? offerta.authorName.trim()
-        : offerta.companyName.trim();
-    final initial = initialsSource.isNotEmpty ? initialsSource[0].toUpperCase() : '?';
+    final initialsSource =
+        offerta.authorName.trim().isNotEmpty
+            ? offerta.authorName.trim()
+            : offerta.companyName.trim();
+    final initial =
+        initialsSource.isNotEmpty ? initialsSource[0].toUpperCase() : '?';
 
     final avatar = CircleAvatar(
       radius: radius,
       backgroundColor: const Color(0xFFEAF5F8),
       backgroundImage: avatarUrl.isNotEmpty ? NetworkImage(avatarUrl) : null,
-      child: avatarUrl.isEmpty
-          ? Text(
-              initial,
-              style: TextStyle(
-                fontSize: radius * 0.8,
-                fontWeight: FontWeight.w700,
-                color: const Color(0xFF1282A8),
-              ),
-            )
-          : null,
+      child:
+          avatarUrl.isEmpty
+              ? Text(
+                initial,
+                style: TextStyle(
+                  fontSize: radius * 0.8,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF1282A8),
+                ),
+              )
+              : null,
     );
 
     if (avatarUrl.isEmpty) {
@@ -3426,7 +4080,7 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dettaglio annuncio'),
+        title: Text(_OfferteLavoroText.tr(context, 'detailAnnouncement')),
       ),
       backgroundColor: const Color(0xFFF6F8FB),
       body: ListView(
@@ -3448,248 +4102,271 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-          Row(
-            children: [
-              _buildAuthorAvatar(context, offerta, radius: 28),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
                   children: [
-                    if (offerta.authorName.isNotEmpty)
-                      Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        spacing: 6,
-                        runSpacing: 6,
+                    _buildAuthorAvatar(context, offerta, radius: 28),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            offerta.authorName,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.black87,
+                          if (offerta.authorName.isNotEmpty)
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: 6,
+                              runSpacing: 6,
+                              children: [
+                                Text(
+                                  offerta.authorName,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                if (offerta.authorProfileComplete)
+                                  const _VerifiedBadge(),
+                              ],
                             ),
-                          ),
-                          if (offerta.authorProfileComplete)
-                            const _VerifiedBadge(),
+                          if (offerta.companyName.isNotEmpty)
+                            Text(
+                              offerta.companyName,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.black54,
+                              ),
+                            ),
                         ],
                       ),
-                    if (offerta.companyName.isNotEmpty)
-                      Text(
-                        offerta.companyName,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  offerta.title,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                if (offerta.imageUrl.isNotEmpty) ...[
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (_) => _FullScreenImageViewer(
+                                imageUrl: offerta.imageUrl,
+                              ),
                         ),
+                      );
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          return Image.network(
+                            offerta.imageUrl,
+                            width: double.infinity,
+                            height: constraints.maxWidth > 600 ? 300 : 200,
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.medium,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                width: double.infinity,
+                                height: constraints.maxWidth > 600 ? 300 : 200,
+                                color: Colors.grey.shade200,
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.image_not_supported,
+                                    size: 48,
+                                  ),
+                                ),
+                              );
+                            },
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Container(
+                                width: double.infinity,
+                                height: constraints.maxWidth > 600 ? 300 : 200,
+                                color: Colors.grey.shade200,
+                                child: const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    if (offerta.city.isNotEmpty)
+                      _MetaChip(icon: Icons.location_on, text: offerta.city),
+                    if (offerta.contractType.isNotEmpty)
+                      _MetaChip(icon: Icons.badge, text: offerta.contractType),
+                    if (offerta.workMode.isNotEmpty)
+                      _MetaChip(icon: Icons.workspaces, text: offerta.workMode),
+                    if (offerta.languageRequirement.isNotEmpty)
+                      _MetaChip(
+                        icon: Icons.language,
+                        text: offerta.languageRequirement,
                       ),
                   ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            offerta.title,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
-          if (offerta.imageUrl.isNotEmpty) ...[
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => _FullScreenImageViewer(imageUrl: offerta.imageUrl),
+                const SizedBox(height: 16),
+                if (offerta.content.isNotEmpty) ...[
+                  Text(
+                    _OfferteLavoroText.tr(context, 'description'),
+                    style: TextStyle(fontWeight: FontWeight.w700),
                   ),
-                );
-              },
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Image.network(
-                      offerta.imageUrl,
-                      width: double.infinity,
-                      height: constraints.maxWidth > 600 ? 300 : 200,
-                      fit: BoxFit.cover,
-                      filterQuality: FilterQuality.medium,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          width: double.infinity,
-                          height: constraints.maxWidth > 600 ? 300 : 200,
-                          color: Colors.grey.shade200,
-                          child: const Center(
-                            child: Icon(Icons.image_not_supported, size: 48),
-                          ),
-                        );
-                      },
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Container(
-                          width: double.infinity,
-                          height: constraints.maxWidth > 600 ? 300 : 200,
-                          color: Colors.grey.shade200,
-                          child: const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              if (offerta.city.isNotEmpty)
-                _MetaChip(icon: Icons.location_on, text: offerta.city),
-              if (offerta.contractType.isNotEmpty)
-                _MetaChip(icon: Icons.badge, text: offerta.contractType),
-              if (offerta.workMode.isNotEmpty)
-                _MetaChip(icon: Icons.workspaces, text: offerta.workMode),
-              if (offerta.languageRequirement.isNotEmpty)
-                _MetaChip(
-                  icon: Icons.language,
-                  text: offerta.languageRequirement,
-                ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          if (offerta.content.isNotEmpty) ...[
-            const Text(
-              'Descrizione',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 6),
-            Text(offerta.content),
-            const SizedBox(height: 12),
-          ] else if (offerta.requirements.isNotEmpty) ...[
-            const Text(
-              'Descrizione',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 6),
-            Text(offerta.requirements),
-            const SizedBox(height: 12),
-          ] else if (offerta.excerpt.isNotEmpty) ...[
-            const Text(
-              'Descrizione',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 6),
-            Text(offerta.excerpt),
-            const SizedBox(height: 12),
-          ],
-          if (offerta.schedule.isNotEmpty) ...[
-            const Text('Orari', style: TextStyle(fontWeight: FontWeight.w700)),
-            const SizedBox(height: 6),
-            Text(offerta.schedule),
-            const SizedBox(height: 12),
-          ],
-          if (offerta.salaryRange.isNotEmpty) ...[
-            const Text(
-              'Retribuzione',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 6),
-            Text(offerta.salaryRange),
-            const SizedBox(height: 12),
-          ],
-          if (offerta.expiresAt.isNotEmpty) ...[
-            const Text(
-              'Scadenza',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 6),
-            Text(offerta.expiresAt),
-            const SizedBox(height: 12),
-          ],
-          if (offerta.categories.isNotEmpty) ...[
-            const Text(
-              'Categorie',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 6),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children:
-                  offerta.categories
-                      .map((c) => Chip(label: Text(c.name)))
-                      .toList(),
-            ),
-            const SizedBox(height: 12),
-          ],
-          if (offerta.hasAttachedCv) ...[
-            const Text(
-              'Curriculum allegato',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              offerta.attachedCvLabel.isNotEmpty
-                  ? offerta.attachedCvLabel
-                  : 'CV allegato dall\'autore dell\'annuncio',
-            ),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: [
-                if (offerta.attachedCvPdfUrl.isNotEmpty)
-                  ElevatedButton.icon(
-                    onPressed: () => _openUrl(offerta.attachedCvPdfUrl),
-                    icon: const Icon(Icons.visibility_outlined),
-                    label: const Text('Vedi CV'),
+                  const SizedBox(height: 6),
+                  Text(offerta.content),
+                  const SizedBox(height: 12),
+                ] else if (offerta.requirements.isNotEmpty) ...[
+                  Text(
+                    _OfferteLavoroText.tr(context, 'description'),
+                    style: TextStyle(fontWeight: FontWeight.w700),
                   ),
-                if (offerta.attachedCvDocxUrl.isNotEmpty)
+                  const SizedBox(height: 6),
+                  Text(offerta.requirements),
+                  const SizedBox(height: 12),
+                ] else if (offerta.excerpt.isNotEmpty) ...[
+                  Text(
+                    _OfferteLavoroText.tr(context, 'description'),
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(offerta.excerpt),
+                  const SizedBox(height: 12),
+                ],
+                if (offerta.schedule.isNotEmpty) ...[
+                  Text(
+                    _OfferteLavoroText.tr(context, 'schedule'),
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(offerta.schedule),
+                  const SizedBox(height: 12),
+                ],
+                if (offerta.salaryRange.isNotEmpty) ...[
+                  Text(
+                    _OfferteLavoroText.tr(context, 'salary'),
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(offerta.salaryRange),
+                  const SizedBox(height: 12),
+                ],
+                if (offerta.expiresAt.isNotEmpty) ...[
+                  Text(
+                    _OfferteLavoroText.tr(context, 'deadline'),
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(offerta.expiresAt),
+                  const SizedBox(height: 12),
+                ],
+                if (offerta.categories.isNotEmpty) ...[
+                  Text(
+                    _OfferteLavoroText.tr(context, 'categories'),
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children:
+                        offerta.categories
+                            .map((c) => Chip(label: Text(c.name)))
+                            .toList(),
+                  ),
+                  const SizedBox(height: 12),
+                ],
+                if (offerta.hasAttachedCv) ...[
+                  Text(
+                    _OfferteLavoroText.tr(context, 'attachedResume'),
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    offerta.attachedCvLabel.isNotEmpty
+                        ? offerta.attachedCvLabel
+                        : _OfferteLavoroText.tr(context, 'attachedCvByAuthor'),
+                  ),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      if (offerta.attachedCvPdfUrl.isNotEmpty)
+                        ElevatedButton.icon(
+                          onPressed: () => _openUrl(offerta.attachedCvPdfUrl),
+                          icon: const Icon(Icons.visibility_outlined),
+                          label: Text(_OfferteLavoroText.tr(context, 'viewCv')),
+                        ),
+                      if (offerta.attachedCvDocxUrl.isNotEmpty)
+                        OutlinedButton.icon(
+                          onPressed: () => _openUrl(offerta.attachedCvDocxUrl),
+                          icon: const Icon(Icons.description_outlined),
+                          label: Text(
+                            _OfferteLavoroText.tr(context, 'openWord'),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                ],
+                if (offerta.phoneWhatsapp.isNotEmpty) ...[
+                  Text(
+                    _OfferteLavoroText.tr(context, 'phone'),
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 6),
+                  SelectableText(offerta.phoneWhatsapp),
+                  const SizedBox(height: 12),
+                ],
+                if (offerta.phoneWhatsapp.isNotEmpty)
                   OutlinedButton.icon(
-                    onPressed: () => _openUrl(offerta.attachedCvDocxUrl),
-                    icon: const Icon(Icons.description_outlined),
-                    label: const Text('Apri Word'),
+                    onPressed: () => _openPhoneDialer(offerta.phoneWhatsapp),
+                    icon: const Icon(Icons.phone),
+                    label: Text(_OfferteLavoroText.tr(context, 'call')),
                   ),
-              ],
-            ),
-            const SizedBox(height: 12),
-          ],
-          if (offerta.phoneWhatsapp.isNotEmpty) ...[
-            const Text(
-              'Telefono',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 6),
-            SelectableText(offerta.phoneWhatsapp),
-            const SizedBox(height: 12),
-          ],
-          if (offerta.phoneWhatsapp.isNotEmpty)
-            OutlinedButton.icon(
-              onPressed: () => _openPhoneDialer(offerta.phoneWhatsapp),
-              icon: const Icon(Icons.phone),
-              label: const Text('Chiama'),
-            ),
-          if (offerta.phoneWhatsapp.isNotEmpty) const SizedBox(height: 10),
-          if (offerta.phoneWhatsapp.isNotEmpty)
-            ElevatedButton.icon(
-              onPressed: () => _openWhatsApp(offerta.phoneWhatsapp),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF25D366),
-                foregroundColor: Colors.white,
-              ),
-              icon: const Icon(Icons.chat),
-              label: const Text('Contatta su WhatsApp'),
-            ),
-          if (offerta.phoneWhatsapp.isNotEmpty && offerta.sourceUrl.isNotEmpty)
-            const SizedBox(height: 10),
-          if (offerta.sourceUrl.isNotEmpty)
-            OutlinedButton.icon(
-              onPressed: () => _openUrl(offerta.sourceUrl),
-              icon: const Icon(Icons.open_in_new),
-              label: const Text('Apri annuncio originale'),
-            ),
+                if (offerta.phoneWhatsapp.isNotEmpty)
+                  const SizedBox(height: 10),
+                if (offerta.phoneWhatsapp.isNotEmpty)
+                  ElevatedButton.icon(
+                    onPressed: () => _openWhatsApp(offerta.phoneWhatsapp),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF25D366),
+                      foregroundColor: Colors.white,
+                    ),
+                    icon: const Icon(Icons.chat),
+                    label: Text(
+                      _OfferteLavoroText.tr(context, 'contactWhatsapp'),
+                    ),
+                  ),
+                if (offerta.phoneWhatsapp.isNotEmpty &&
+                    offerta.sourceUrl.isNotEmpty)
+                  const SizedBox(height: 10),
+                if (offerta.sourceUrl.isNotEmpty)
+                  OutlinedButton.icon(
+                    onPressed: () => _openUrl(offerta.sourceUrl),
+                    icon: const Icon(Icons.open_in_new),
+                    label: Text(
+                      _OfferteLavoroText.tr(
+                        context,
+                        'openOriginalAnnouncement',
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -3768,7 +4445,9 @@ class _CandidaturaSheetState extends State<_CandidaturaSheet> {
     if (!_formKey.currentState!.validate()) return;
     if (!_privacy) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Devi accettare il consenso privacy')),
+        SnackBar(
+          content: Text(_OfferteLavoroText.tr(context, 'acceptPrivacy')),
+        ),
       );
       return;
     }
@@ -3813,43 +4492,45 @@ class _CandidaturaSheetState extends State<_CandidaturaSheet> {
               const SizedBox(height: 12),
               TextFormField(
                 controller: _nameCtrl,
-                decoration: const InputDecoration(labelText: 'Nome e cognome'),
+                decoration: InputDecoration(
+                  labelText: _OfferteLavoroText.tr(context, 'fullName'),
+                ),
                 validator:
                     (v) =>
                         (v == null || v.trim().isEmpty)
-                            ? 'Campo obbligatorio'
+                            ? _OfferteLavoroText.tr(context, 'requiredField')
                             : null,
               ),
               TextFormField(
                 controller: _phoneCtrl,
                 keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  labelText: 'Telefono / WhatsApp',
+                decoration: InputDecoration(
+                  labelText: _OfferteLavoroText.tr(context, 'phoneWhatsapp'),
                 ),
                 validator:
                     (v) =>
                         (v == null || v.trim().isEmpty)
-                            ? 'Campo obbligatorio'
+                            ? _OfferteLavoroText.tr(context, 'requiredField')
                             : null,
               ),
               TextFormField(
                 controller: _emailCtrl,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Email (opzionale)',
+                decoration: InputDecoration(
+                  labelText: _OfferteLavoroText.tr(context, 'emailOptional'),
                 ),
               ),
               TextFormField(
                 controller: _cityCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Citta (opzionale)',
+                decoration: InputDecoration(
+                  labelText: _OfferteLavoroText.tr(context, 'cityOptional'),
                 ),
               ),
               TextFormField(
                 controller: _noteCtrl,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Nota (opzionale)',
+                decoration: InputDecoration(
+                  labelText: _OfferteLavoroText.tr(context, 'noteOptional'),
                 ),
               ),
               const SizedBox(height: 8),
@@ -3857,7 +4538,7 @@ class _CandidaturaSheetState extends State<_CandidaturaSheet> {
                 contentPadding: EdgeInsets.zero,
                 value: _privacy,
                 onChanged: (v) => setState(() => _privacy = v == true),
-                title: const Text('Accetto il trattamento dei dati personali'),
+                title: Text(_OfferteLavoroText.tr(context, 'privacyConsent')),
                 controlAffinity: ListTileControlAffinity.leading,
               ),
               const SizedBox(height: 8),
@@ -3872,7 +4553,9 @@ class _CandidaturaSheetState extends State<_CandidaturaSheet> {
                             height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                          : const Text('Invia candidatura'),
+                          : Text(
+                            _OfferteLavoroText.tr(context, 'sendApplication'),
+                          ),
                 ),
               ),
             ],

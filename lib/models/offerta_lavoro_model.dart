@@ -26,6 +26,9 @@ class OffertaLavoro {
   final String categoryMacro;
   final String categorySub;
   final String publishedAt;
+  final int authorUserId;
+  final String authorName;
+  final String authorAvatarUrl;
   final List<OffertaCategoria> categories;
 
   const OffertaLavoro({
@@ -56,6 +59,9 @@ class OffertaLavoro {
     required this.categoryMacro,
     required this.categorySub,
     required this.publishedAt,
+    required this.authorUserId,
+    required this.authorName,
+    required this.authorAvatarUrl,
     required this.categories,
   });
 
@@ -99,6 +105,9 @@ class OffertaLavoro {
       categoryMacro: (json['category_macro'] ?? '').toString(),
       categorySub: (json['category_sub'] ?? '').toString(),
       publishedAt: (json['published_at'] ?? '').toString(),
+      authorUserId: (json['author_user_id'] as num?)?.toInt() ?? 0,
+      authorName: (json['author_name'] ?? '').toString(),
+      authorAvatarUrl: (json['author_avatar_url'] ?? '').toString(),
       categories: categories,
     );
   }

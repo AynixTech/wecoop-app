@@ -1066,6 +1066,41 @@ class SocioService {
     }
   }
 
+  /// Upload avatar profilo
+  /// POST /soci/me/avatar
+  static Future<Map<String, dynamic>> uploadAvatar({required File file}) async {
+    try {
+      final headers = await _getHeaders(includeAuth: true);
+      headers.remove('Content-Type');
+
+      final url = '$baseUrl/soci/me/avatar';
+      final request = http.MultipartRequest('POST', Uri.parse(url));
+
+      headers.forEach((key, value) {
+        request.headers[key] = value;
+      });
+
+      request.files.add(await http.MultipartFile.fromPath('file', file.path));
+
+      final streamedResponse = await request.send().timeout(
+        const Duration(seconds: 60),
+      );
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      }
+
+      return {
+        'success': false,
+        'message': 'Errore upload avatar: ${response.statusCode}',
+      };
+    } catch (e) {
+      print('❌ Errore upload avatar: $e');
+      return {'success': false, 'message': 'Errore di connessione: $e'};
+    }
+  }
+
   /// Verifica se un username esiste
   /// GET /soci/check-username?username={username}
   static Future<Map<String, dynamic>> checkUsername(String username) async {

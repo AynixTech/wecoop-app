@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../services/user_avatar_store.dart';
 import 'annunci/annunci_screen.dart';
 import 'home/home_screen.dart';
 import 'calendar/calendar_screen.dart';
@@ -17,6 +18,12 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    UserAvatarStore.hydrate();
+  }
 
   List<Widget> get _screens => const [
     HomeScreen(),
@@ -69,6 +76,68 @@ class _MainScreenState extends State<MainScreen> {
             assetPath,
             selected: isSelected,
             size: 24,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileNavItem() {
+    const selectedColor = Color(0xFF1282A8);
+    const unselectedColor = Color(0xFF9CA3AF);
+    final isSelected = _selectedIndex == 6;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(18),
+      onTap: () => _onItemTapped(6),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 4),
+        child: Center(
+          child: ValueListenableBuilder<String?>(
+            valueListenable: UserAvatarStore.avatarUrl,
+            builder: (context, avatarUrl, _) {
+              if (avatarUrl == null) {
+                return _buildMenuIcon(
+                  'assets/icons/menu/profilo.svg',
+                  selected: isSelected,
+                  size: 24,
+                );
+              }
+
+              return Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isSelected ? selectedColor : unselectedColor,
+                    width: isSelected ? 2.4 : 1.6,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(isSelected ? 0.12 : 0.06),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: ClipOval(
+                  child: Image.network(
+                    avatarUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: const Color(0xFFF1F5F9),
+                      alignment: Alignment.center,
+                      child: Icon(
+                        Icons.person,
+                        color: isSelected ? selectedColor : unselectedColor,
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -174,10 +243,7 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                     ),
                     Expanded(
-                      child: _buildNavItem(
-                        index: 6,
-                        assetPath: 'assets/icons/menu/profilo.svg',
-                      ),
+                      child: _buildProfileNavItem(),
                     ),
                   ],
                 ),
@@ -201,3 +267,4 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
+

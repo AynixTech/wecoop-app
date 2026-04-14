@@ -8,9 +8,9 @@ import '../../models/project_opportunity_catalog.dart';
 import '../../services/wordpress_service.dart';
 import '../../services/eventi_service.dart';
 import '../../services/documento_service.dart';
+import '../../services/user_avatar_store.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../servizi/accoglienza_screen.dart';
-import '../servizi/cv_ai_screen.dart';
 import '../servizi/mediazione_fiscale_screen.dart';
 import '../servizi/supporto_contabile_screen.dart';
 import '../servizi/educazione_finanziaria_credito_screen.dart';
@@ -36,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    UserAvatarStore.hydrate();
     _loadUserData();
   }
 
@@ -383,6 +384,7 @@ class _GreetingSection extends StatelessWidget {
         ],
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: Column(
@@ -408,34 +410,156 @@ class _GreetingSection extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            decoration: BoxDecoration(
-              color: scheme.onPrimary.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: scheme.onPrimary.withOpacity(0.3)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  isLoggedIn ? Icons.verified_user : Icons.person_outline,
-                  color: scheme.onPrimary,
-                  size: 16,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              ValueListenableBuilder<String?>(
+                valueListenable: UserAvatarStore.avatarUrl,
+                builder: (context, avatarUrl, _) {
+                  return _HomeUserAvatar(
+                    avatarUrl: avatarUrl,
+                    userName: userName,
+                    isLoggedIn: isLoggedIn,
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: scheme.onPrimary.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: scheme.onPrimary.withOpacity(0.3)),
                 ),
-                const SizedBox(width: 6),
-                Text(
-                  isLoggedIn ? 'Area soci' : 'Guest',
-                  style: TextStyle(
-                    color: scheme.onPrimary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isLoggedIn ? Icons.verified_user : Icons.person_outline,
+                      color: scheme.onPrimary,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      isLoggedIn ? 'Area soci' : 'Guest',
+                      style: TextStyle(
+                        color: scheme.onPrimary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomeUserAvatar extends StatelessWidget {
+  final String? avatarUrl;
+  final String userName;
+  final bool isLoggedIn;
+
+  const _HomeUserAvatar({
+    required this.avatarUrl,
+    required this.userName,
+    required this.isLoggedIn,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final initials = _resolveInitials(userName);
+
+    return Container(
+      width: 72,
+      height: 72,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: scheme.onPrimary.withOpacity(0.32),
+          width: 3,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.12),
+            blurRadius: 14,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipOval(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                scheme.onPrimary.withOpacity(0.3),
+                scheme.onPrimary.withOpacity(0.12),
               ],
             ),
           ),
-        ],
+          child: avatarUrl != null
+              ? Image.network(
+                  avatarUrl!,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => _AvatarFallback(
+                    initials: initials,
+                    icon: isLoggedIn ? Icons.person : Icons.person_outline,
+                  ),
+                )
+              : _AvatarFallback(
+                  initials: initials,
+                  icon: isLoggedIn ? Icons.person : Icons.person_outline,
+                ),
+        ),
+      ),
+    );
+  }
+
+  String _resolveInitials(String value) {
+    final parts = value
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((part) => part.isNotEmpty)
+        .toList();
+    if (parts.isEmpty) {
+      return 'U';
+    }
+    if (parts.length == 1) {
+      return parts.first.substring(0, 1).toUpperCase();
+    }
+    return '${parts.first.substring(0, 1)}${parts.last.substring(0, 1)}'
+        .toUpperCase();
+  }
+}
+
+class _AvatarFallback extends StatelessWidget {
+  final String initials;
+  final IconData icon;
+
+  const _AvatarFallback({required this.initials, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return Container(
+      color: scheme.onPrimary.withOpacity(0.16),
+      alignment: Alignment.center,
+      child: Text(
+        initials,
+        style: TextStyle(
+          color: scheme.onPrimary,
+          fontWeight: FontWeight.w800,
+          fontSize: 22,
+          letterSpacing: 0.4,
+        ),
       ),
     );
   }

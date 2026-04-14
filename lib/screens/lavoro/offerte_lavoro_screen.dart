@@ -1567,6 +1567,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
               margin: const EdgeInsets.only(bottom: 12),
               child: ListTile(
                 onTap: () => _openDetail(offerta),
+                leading: _buildAuthorAvatar(offerta, radius: 24),
                 title: Text(
                   offerta.title,
                   maxLines: 2,
@@ -1575,6 +1576,16 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (offerta.authorName.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        offerta.authorName,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                     if (offerta.companyName.isNotEmpty)
                       Text(offerta.companyName),
                     const SizedBox(height: 4),
@@ -1622,6 +1633,47 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
             ),
           ),
       ],
+    );
+  }
+
+  Widget _buildAuthorAvatar(OffertaLavoro offerta, {double radius = 24}) {
+    final avatarUrl = offerta.authorAvatarUrl.trim();
+    final initialsSource = offerta.authorName.trim().isNotEmpty
+        ? offerta.authorName.trim()
+        : offerta.companyName.trim();
+    final initial = initialsSource.isNotEmpty ? initialsSource[0].toUpperCase() : '?';
+
+    final avatar = CircleAvatar(
+      radius: radius,
+      backgroundColor: const Color(0xFFEAF5F8),
+      backgroundImage: avatarUrl.isNotEmpty ? NetworkImage(avatarUrl) : null,
+      child: avatarUrl.isEmpty
+          ? Text(
+              initial,
+              style: TextStyle(
+                fontSize: radius * 0.8,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF1282A8),
+              ),
+            )
+          : null,
+    );
+
+    if (avatarUrl.isEmpty) {
+      return avatar;
+    }
+
+    return InkWell(
+      customBorder: const CircleBorder(),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => _FullScreenImageViewer(imageUrl: avatarUrl),
+          ),
+        );
+      },
+      child: avatar,
     );
   }
 }
@@ -2848,6 +2900,51 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
     }
   }
 
+  Widget _buildAuthorAvatar(
+    BuildContext context,
+    OffertaLavoro offerta, {
+    double radius = 24,
+  }) {
+    final avatarUrl = offerta.authorAvatarUrl.trim();
+    final initialsSource = offerta.authorName.trim().isNotEmpty
+        ? offerta.authorName.trim()
+        : offerta.companyName.trim();
+    final initial = initialsSource.isNotEmpty ? initialsSource[0].toUpperCase() : '?';
+
+    final avatar = CircleAvatar(
+      radius: radius,
+      backgroundColor: const Color(0xFFEAF5F8),
+      backgroundImage: avatarUrl.isNotEmpty ? NetworkImage(avatarUrl) : null,
+      child: avatarUrl.isEmpty
+          ? Text(
+              initial,
+              style: TextStyle(
+                fontSize: radius * 0.8,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF1282A8),
+              ),
+            )
+          : null,
+    );
+
+    if (avatarUrl.isEmpty) {
+      return avatar;
+    }
+
+    return InkWell(
+      customBorder: const CircleBorder(),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => _FullScreenImageViewer(imageUrl: avatarUrl),
+          ),
+        );
+      },
+      child: avatar,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -2877,16 +2974,41 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+          Row(
+            children: [
+              _buildAuthorAvatar(context, offerta, radius: 28),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (offerta.authorName.isNotEmpty)
+                      Text(
+                        offerta.authorName,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    if (offerta.companyName.isNotEmpty)
+                      Text(
+                        offerta.companyName,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
           Text(
             offerta.title,
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 8),
-          if (offerta.companyName.isNotEmpty)
-            Text(
-              offerta.companyName,
-              style: const TextStyle(fontSize: 16, color: Colors.black87),
-            ),
           const SizedBox(height: 12),
           if (offerta.imageUrl.isNotEmpty) ...[
             GestureDetector(

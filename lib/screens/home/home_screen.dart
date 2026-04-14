@@ -8,6 +8,7 @@ import '../../models/project_opportunity_catalog.dart';
 import '../../services/wordpress_service.dart';
 import '../../services/eventi_service.dart';
 import '../../services/documento_service.dart';
+import '../../services/lavoro_service.dart';
 import '../../services/user_avatar_store.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../servizi/accoglienza_screen.dart';
@@ -32,6 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final storage = SecureStorageService();
   String userName = '...'; // valore iniziale
   bool isLoggedIn = false;
+  bool _isCheckingWorkServiceStatus = true;
+  bool _isWorkServiceActive = false;
 
   @override
   void initState() {
@@ -68,6 +71,43 @@ class _HomeScreenState extends State<HomeScreen> {
         isLoggedIn = logged;
       });
     }
+
+    await _refreshWorkServiceStatus();
+  }
+
+  Future<void> _refreshWorkServiceStatus() async {
+    var isActive = false;
+
+    if (isLoggedIn) {
+      final profileId = await LavoroService.resolveProfileId();
+      if (profileId != null && profileId.isNotEmpty) {
+        try {
+          final result = await LavoroService.getJobStatus(profileId: profileId);
+          final status = LavoroService.extractJobStatus(result);
+          isActive = LavoroService.isJobServiceActiveStatus(status);
+        } catch (_) {
+          isActive = false;
+        }
+      }
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _isWorkServiceActive = isActive;
+      _isCheckingWorkServiceStatus = false;
+    });
+  }
+
+  Future<void> _openWorkService(BuildContext context) async {
+    final destination =
+        isLoggedIn ? const LavoroOrientamentoScreen() : const FirstAccessScreen();
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => destination),
+    );
+
+    await _refreshWorkServiceStatus();
   }
 
   @override
@@ -195,6 +235,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (!isLoggedIn) const SizedBox(height: 24),
 
                 const _ServicesSection(),
+                if (isLoggedIn) const SizedBox(height: 16),
+                if (isLoggedIn)
+                  _WorkServiceStatusCard(
+                    isLoading: _isCheckingWorkServiceStatus,
+                    isActive: _isWorkServiceActive,
+                    onTap: () => _openWorkService(context),
+                  ),
                 const SizedBox(height: 24),
 
                 const _UpcomingEventsSection(),
@@ -207,6 +254,173 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 const _LatestPostsSection(),
                 const SizedBox(height: 32),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _WorkServiceStatusCard extends StatelessWidget {
+  final bool isLoading;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _WorkServiceStatusCard({
+    required this.isLoading,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
+    final chipLabel =
+        isLoading
+            ? 'Verifica in corso'
+            : (isActive
+          ? l10n.translate('deactivateServiceCta')
+          : l10n.translate('activateServiceCta'));
+    final visualChipLabel =
+        isLoading
+            ? 'Verifica in corso'
+            : (isActive
+                ? l10n.translate('jobStatusServiceActivated')
+                : l10n.translate('jobStatusDeactivated'));
+    final description =
+        isLoading
+            ? 'Controlliamo se il supporto lavoro e gia attivo sul tuo profilo.'
+            : (isActive
+                ? l10n.translate('activateWorkServiceActiveDesc')
+                : l10n.translate('activateWorkServiceDesc'));
+    final accentColor = isActive ? const Color(0xFF0F9D58) : scheme.primary;
+    final chipBackground =
+        isActive ? const Color(0xFFE7F6EC) : scheme.primary.withOpacity(0.12);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: isLoading ? null : onTap,
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color.alphaBlend(accentColor.withOpacity(0.12), Colors.white),
+                Color.alphaBlend(accentColor.withOpacity(0.04), scheme.surface),
+              ],
+            ),
+            border: Border.all(
+              color: accentColor.withOpacity(0.18),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: accentColor.withOpacity(0.10),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: chipBackground,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(
+                        isActive ? Icons.verified_user_outlined : Icons.work_outline,
+                        color: accentColor,
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.translate('workAndOrientation'),
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w800,
+                              color: scheme.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: chipBackground,
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: Text(
+                              visualChipLabel,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: accentColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  description,
+                  style: TextStyle(
+                    fontSize: 13,
+                    height: 1.45,
+                    color: scheme.onSurface.withOpacity(0.75),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    if (isLoading)
+                      SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.2,
+                          valueColor: AlwaysStoppedAnimation<Color>(accentColor),
+                        ),
+                      ),
+                    if (isLoading) const SizedBox(width: 10),
+                    Text(
+                      isLoading ? 'Aggiornamento stato...' : chipLabel,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: accentColor,
+                      ),
+                    ),
+                    const Spacer(),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: accentColor,
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

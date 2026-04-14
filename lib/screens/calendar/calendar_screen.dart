@@ -1910,7 +1910,37 @@ class _CalendarScreenState extends State<CalendarScreen>
 
     print('🔐 [FirmaFlow] Rientro da FirmaDocumentoScreen, ricarico richieste');
 
+    await _refreshLoggedUserSocioStatus();
     _caricaRichieste();
+  }
+
+  Future<void> _refreshLoggedUserSocioStatus() async {
+    try {
+      final meData = await SocioService.getMe();
+      if (meData == null) {
+        return;
+      }
+
+      final statusSocio = (meData['status_socio'] ?? '').toString().trim();
+      final isSocio = meData['is_socio'] == true || statusSocio == 'attivo';
+      final numeroTessera = (meData['numero_tessera'] ?? '').toString().trim();
+      final dataAdesione = (meData['data_adesione'] ?? '').toString().trim();
+
+      await storage.write(key: 'stato_socio', value: statusSocio.isNotEmpty ? statusSocio : 'attivo');
+      await storage.write(key: 'socio_id', value: (meData['id'] ?? '').toString());
+
+      if (numeroTessera.isNotEmpty) {
+        await storage.write(key: 'tessera_numero', value: numeroTessera);
+      }
+
+      if (dataAdesione.isNotEmpty) {
+        await storage.write(key: 'data_iscrizione', value: dataAdesione);
+      }
+
+      print('✅ [FirmaFlow] Stato socio sincronizzato dopo firma. isSocio=$isSocio status=${statusSocio.isNotEmpty ? statusSocio : 'attivo'}');
+    } catch (e) {
+      print('⚠️ [FirmaFlow] Impossibile sincronizzare stato socio dopo firma: $e');
+    }
   }
 
   Widget _buildDettaglioSheet(Map<String, dynamic> richiesta) {

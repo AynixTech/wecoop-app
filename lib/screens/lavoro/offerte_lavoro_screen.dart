@@ -1657,6 +1657,11 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                             icon: Icons.star,
                             text: 'In evidenza',
                           ),
+                        if (offerta.hasAttachedCv)
+                          const _MetaChip(
+                            icon: Icons.picture_as_pdf_outlined,
+                            text: 'CV allegato',
+                          ),
                       ],
                     ),
                   ],
@@ -1762,11 +1767,25 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
   bool _isSending = false;
   bool _isSuggestingCategory = false;
   bool _isImprovingDescription = false;
+  bool _isLoadingGeneratedCvs = false;
   File? _selectedImage;
+  List<Map<String, dynamic>> _generatedCvs = const [];
+  String? _selectedCvId;
+  String? _selectedCvLabel;
+  String? _selectedCvPdfUrl;
+  String? _selectedCvDocxUrl;
   final _imagePicker = ImagePicker();
 
   Map<String, List<OffertaCategoria>> get _categorieByMacro {
     return _CategoriaMenuHelper.groupByMacro(widget.categorie);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.categoryDirection == 'seek') {
+      _loadGeneratedCvs();
+    }
   }
 
   @override
@@ -1777,6 +1796,109 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
     _descrizioneCtrl.dispose();
     _descrizioneAiCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadGeneratedCvs() async {
+    setState(() => _isLoadingGeneratedCvs = true);
+    final result = await AnnunciSubmissionService.getGeneratedCvs();
+    if (!mounted) return;
+
+    if (result['success'] == true) {
+      final items = ((result['items'] as List?) ?? const <dynamic>[])
+          .whereType<Map>()
+          .map((e) => Map<String, dynamic>.from(e))
+          .toList();
+
+      setState(() {
+        _generatedCvs = items;
+        _isLoadingGeneratedCvs = false;
+      });
+      return;
+    }
+
+    setState(() => _isLoadingGeneratedCvs = false);
+  }
+
+  String _cvEntryId(Map<String, dynamic> entry) {
+    return (entry['cvId'] ?? entry['cv_id'] ?? entry['id'] ?? '').toString();
+  }
+
+  Map<String, dynamic>? _cvEntryFiles(Map<String, dynamic> entry) {
+    final files = entry['files'];
+    if (files is Map<String, dynamic>) return files;
+    if (files is Map) {
+      return files.map((key, value) => MapEntry(key.toString(), value));
+    }
+    return null;
+  }
+
+  String _cvEntryUpdatedAt(Map<String, dynamic> entry) {
+    return (entry['updatedAt'] ??
+            entry['updated_at'] ??
+            entry['createdAt'] ??
+            entry['created_at'] ??
+            '')
+        .toString();
+  }
+
+  String _formatCvDate(String raw) {
+    final parsed = DateTime.tryParse(raw.trim());
+    if (parsed == null) return '';
+    final local = parsed.toLocal();
+    final day = local.day.toString().padLeft(2, '0');
+    final month = local.month.toString().padLeft(2, '0');
+    final year = local.year.toString().padLeft(4, '0');
+    return '$day/$month/$year';
+  }
+
+  String _cvEntryDisplayLabel(Map<String, dynamic> entry) {
+    final payload = entry['inputData'] is Map<String, dynamic>
+        ? entry['inputData'] as Map<String, dynamic>
+        : (entry['payload'] is Map<String, dynamic>
+            ? entry['payload'] as Map<String, dynamic>
+            : null);
+    final personalInfo = payload?['personalInfo'] as Map<String, dynamic>?;
+    final firstName =
+        (personalInfo?['firstName'] ?? entry['firstName'] ?? '').toString().trim();
+    final lastName =
+        (personalInfo?['lastName'] ?? entry['lastName'] ?? '').toString().trim();
+    final fullName = [firstName, lastName]
+        .where((part) => part.isNotEmpty)
+        .join(' ');
+    final dateLabel = _formatCvDate(_cvEntryUpdatedAt(entry));
+
+    if (fullName.isNotEmpty && dateLabel.isNotEmpty) {
+      return '$fullName • CV del $dateLabel';
+    }
+    if (fullName.isNotEmpty) return fullName;
+    if (dateLabel.isNotEmpty) return 'CV del $dateLabel';
+
+    final cvId = _cvEntryId(entry).trim();
+    return cvId.isNotEmpty ? 'CV $cvId' : 'CV generato';
+  }
+
+  void _selectCv(String? cvId) {
+    if (cvId == null || cvId.isEmpty) {
+      setState(() {
+        _selectedCvId = null;
+        _selectedCvLabel = null;
+        _selectedCvPdfUrl = null;
+        _selectedCvDocxUrl = null;
+      });
+      return;
+    }
+
+    final selected = _generatedCvs.firstWhere(
+      (entry) => _cvEntryId(entry) == cvId,
+      orElse: () => <String, dynamic>{},
+    );
+    final files = _cvEntryFiles(selected);
+    setState(() {
+      _selectedCvId = cvId;
+      _selectedCvLabel = _cvEntryDisplayLabel(selected);
+      _selectedCvPdfUrl = (files?['pdfUrl'] ?? '').toString().trim();
+      _selectedCvDocxUrl = (files?['docxUrl'] ?? '').toString().trim();
+    });
   }
 
   Future<void> _pickImage() async {
@@ -1889,6 +2011,10 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
       categoryMacro: _selectedMacroCategoria,
       categorySlug: selectedCategorySlug,
       imageBase64: imageBase64,
+      cvId: _selectedCvId,
+      cvLabel: _selectedCvLabel,
+      cvPdfUrl: _selectedCvPdfUrl,
+      cvDocxUrl: _selectedCvDocxUrl,
     );
 
     if (!mounted) return;
@@ -1911,6 +2037,10 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
         _privacy = false;
         _selectedMacroCategoria = null;
         _selectedCategoriaValueEn = null;
+        _selectedCvId = null;
+        _selectedCvLabel = null;
+        _selectedCvPdfUrl = null;
+        _selectedCvDocxUrl = null;
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -2606,6 +2736,100 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
               ),
             ),
             const SizedBox(height: 20),
+            if (widget.categoryDirection == 'seek') ...[
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.teal.shade200),
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.teal.shade50,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Text(
+                            'Allega un CV generato',
+                            style: TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                        IconButton(
+                          tooltip: 'Aggiorna CV',
+                          onPressed:
+                              _isLoadingGeneratedCvs ? null : _loadGeneratedCvs,
+                          icon: const Icon(Icons.refresh),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Se stai cercando lavoro puoi associare uno dei tuoi CV generati. Chi apre l\'annuncio potra consultarlo.',
+                    ),
+                    const SizedBox(height: 10),
+                    if (_isLoadingGeneratedCvs)
+                      const LinearProgressIndicator(minHeight: 2)
+                    else if (_generatedCvs.isEmpty)
+                      const Text(
+                        'Nessun CV generato disponibile. Crea prima un CV nella sezione CV AI.',
+                      )
+                    else
+                      DropdownButtonFormField<String?>(
+                        initialValue: _selectedCvId,
+                        decoration: const InputDecoration(
+                          labelText: 'CV da allegare (opzionale)',
+                        ),
+                        items: [
+                          const DropdownMenuItem<String?>(
+                            value: null,
+                            child: Text('Nessun CV allegato'),
+                          ),
+                          ..._generatedCvs.map(
+                            (entry) => DropdownMenuItem<String?>(
+                              value: _cvEntryId(entry),
+                              child: Text(
+                                _cvEntryDisplayLabel(entry),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                        ],
+                        onChanged: _selectCv,
+                      ),
+                    if ((_selectedCvPdfUrl ?? '').isNotEmpty ||
+                        (_selectedCvDocxUrl ?? '').isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          if ((_selectedCvPdfUrl ?? '').isNotEmpty)
+                            OutlinedButton.icon(
+                              onPressed: () => launchUrl(
+                                Uri.parse(_selectedCvPdfUrl!),
+                                mode: LaunchMode.externalApplication,
+                              ),
+                              icon: const Icon(Icons.picture_as_pdf_outlined),
+                              label: const Text('Anteprima PDF'),
+                            ),
+                          if ((_selectedCvDocxUrl ?? '').isNotEmpty)
+                            OutlinedButton.icon(
+                              onPressed: () => launchUrl(
+                                Uri.parse(_selectedCvDocxUrl!),
+                                mode: LaunchMode.externalApplication,
+                              ),
+                              icon: const Icon(Icons.description_outlined),
+                              label: const Text('Apri Word'),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
             _CategoryExplorerSelector(
               categoriesByMacro: categoriesByMacro,
               languageCode: languageCode,
@@ -3183,6 +3407,38 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
                   offerta.categories
                       .map((c) => Chip(label: Text(c.name)))
                       .toList(),
+            ),
+            const SizedBox(height: 12),
+          ],
+          if (offerta.hasAttachedCv) ...[
+            const Text(
+              'Curriculum allegato',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              offerta.attachedCvLabel.isNotEmpty
+                  ? offerta.attachedCvLabel
+                  : 'CV allegato dall\'autore dell\'annuncio',
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                if (offerta.attachedCvPdfUrl.isNotEmpty)
+                  ElevatedButton.icon(
+                    onPressed: () => _openUrl(offerta.attachedCvPdfUrl),
+                    icon: const Icon(Icons.visibility_outlined),
+                    label: const Text('Vedi CV'),
+                  ),
+                if (offerta.attachedCvDocxUrl.isNotEmpty)
+                  OutlinedButton.icon(
+                    onPressed: () => _openUrl(offerta.attachedCvDocxUrl),
+                    icon: const Icon(Icons.description_outlined),
+                    label: const Text('Apri Word'),
+                  ),
+              ],
             ),
             const SizedBox(height: 12),
           ],

@@ -50,6 +50,10 @@ class AnnunciSubmissionService {
     String? categoryMacro,
     String? categorySlug,
     String? imageBase64,
+    String? cvId,
+    String? cvLabel,
+    String? cvPdfUrl,
+    String? cvDocxUrl,
   }) async {
     try {
       // Validazione base lato client
@@ -83,6 +87,10 @@ class AnnunciSubmissionService {
         'category_direction': (categoryDirection ?? '').trim(),
         'category_macro': (categoryMacro ?? '').trim(),
         'category_slug': (categorySlug ?? '').trim(),
+        'cv_id': (cvId ?? '').trim(),
+        'cv_label': (cvLabel ?? '').trim(),
+        'cv_pdf_url': (cvPdfUrl ?? '').trim(),
+        'cv_docx_url': (cvDocxUrl ?? '').trim(),
         if (imageBase64 != null && imageBase64.isNotEmpty)
           'image_base64': imageBase64,
       };
@@ -138,6 +146,56 @@ class AnnunciSubmissionService {
       return {
         'success': false,
         'message': (body['message'] ?? 'Errore nell\'invio dell\'annuncio').toString(),
+      };
+    } catch (e) {
+      return {'success': false, 'message': 'Errore di connessione: $e'};
+    }
+  }
+
+  static Future<Map<String, dynamic>> getGeneratedCvs({
+    int limit = 20,
+    String status = 'generated',
+  }) async {
+    try {
+      final uri = Uri.parse('https://www.wecoop.org/wp-json/wecoop/v1/lavoro/cv')
+          .replace(
+        queryParameters: {
+          'limit': limit.toString(),
+          if (status.trim().isNotEmpty) 'status': status.trim(),
+        },
+      );
+
+      final response = await HttpClientService.get(
+        uri,
+        headers: await _getHeaders(),
+      );
+
+      final body = _parseMapResponse(
+        HttpClientService.decodeJsonResponse(response),
+      );
+
+      if (response.statusCode == 200) {
+        final rawItems = body['cvs'] ?? body['items'] ?? body['data'];
+        final items = <Map<String, dynamic>>[];
+
+        if (rawItems is List) {
+          for (final item in rawItems) {
+            if (item is Map<String, dynamic>) {
+              items.add(item);
+            } else if (item is Map) {
+              items.add(
+                item.map((key, value) => MapEntry(key.toString(), value)),
+              );
+            }
+          }
+        }
+
+        return {'success': true, 'items': items};
+      }
+
+      return {
+        'success': false,
+        'message': (body['message'] ?? 'Impossibile caricare i CV').toString(),
       };
     } catch (e) {
       return {'success': false, 'message': 'Errore di connessione: $e'};

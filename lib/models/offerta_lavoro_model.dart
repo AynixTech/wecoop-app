@@ -29,6 +29,11 @@ class OffertaLavoro {
   final int authorUserId;
   final String authorName;
   final String authorAvatarUrl;
+  final String attachedCvId;
+  final String attachedCvLabel;
+  final String attachedCvPdfUrl;
+  final String attachedCvDocxUrl;
+  final bool hasAttachedCv;
   final List<OffertaCategoria> categories;
 
   const OffertaLavoro({
@@ -62,6 +67,11 @@ class OffertaLavoro {
     required this.authorUserId,
     required this.authorName,
     required this.authorAvatarUrl,
+    required this.attachedCvId,
+    required this.attachedCvLabel,
+    required this.attachedCvPdfUrl,
+    required this.attachedCvDocxUrl,
+    required this.hasAttachedCv,
     required this.categories,
   });
 
@@ -108,6 +118,11 @@ class OffertaLavoro {
       authorUserId: (json['author_user_id'] as num?)?.toInt() ?? 0,
       authorName: (json['author_name'] ?? '').toString(),
       authorAvatarUrl: (json['author_avatar_url'] ?? '').toString(),
+      attachedCvId: (json['attached_cv_id'] ?? '').toString(),
+      attachedCvLabel: (json['attached_cv_label'] ?? '').toString(),
+      attachedCvPdfUrl: (json['attached_cv_pdf_url'] ?? '').toString(),
+      attachedCvDocxUrl: (json['attached_cv_docx_url'] ?? '').toString(),
+      hasAttachedCv: json['has_attached_cv'] == true,
       categories: categories,
     );
   }

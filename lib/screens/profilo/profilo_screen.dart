@@ -1383,7 +1383,6 @@ class _AvatarCropScreenState extends State<_AvatarCropScreen> {
           widget.cropShape == _AvatarCropShape.circle
               ? 'Crop avatar circolare'
               : 'Crop avatar quadrato',
-          style: const TextStyle(fontSize: 16),
         ),
       ),
       body: Column(

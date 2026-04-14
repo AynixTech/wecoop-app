@@ -1197,14 +1197,102 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
     );
   }
 
+  Future<void> _openInfoModal() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEAF5F8),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.info_outline, color: Color(0xFF1282A8)),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        'Vuoi cercare lavoro?',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                const Text(
+                  'Sfoglia le offerte disponibili in questa schermata oppure contatta WECOOP se vuoi supporto per orientamento, candidatura o attivazione dei servizi dedicati.',
+                  style: TextStyle(fontSize: 14, height: 1.5),
+                ),
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.of(sheetContext).pop();
+                      _loadInitialData();
+                    },
+                    icon: const Icon(Icons.search),
+                    label: const Text('Aggiorna offerte'),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.of(sheetContext).pop();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const LavoroOrientamentoScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.school_outlined),
+                    label: const Text('Apri orientamento lavoro'),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton.icon(
+                    onPressed: () {
+                      Navigator.of(sheetContext).pop();
+                      _openSupportWhatsApp(
+                        message:
+                            'Ciao WECOOP, vorrei informazioni per cercare lavoro o attivare servizi dedicati.',
+                      );
+                    },
+                    icon: const Icon(Icons.chat_bubble_outline),
+                    label: const Text('Contatta WECOOP su WhatsApp'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Offerte e Annunci Lavoro',
-          style: TextStyle(fontSize: 16),
-        ),
+        title: const Text('Offerte e Annunci Lavoro'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Container(
@@ -1245,6 +1333,11 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
           ),
         ),
         actions: [
+          IconButton(
+            tooltip: 'Info offerte',
+            onPressed: _openInfoModal,
+            icon: const Icon(Icons.info_outline),
+          ),
           IconButton(
             tooltip: 'Servizio orientamento',
             onPressed: () {
@@ -1298,52 +1391,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
   Widget _buildSearchTab() {
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: [
-        Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: Colors.amber.shade50,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.amber.shade200),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Vuoi cercare lavoro?',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Sfoglia le offerte disponibili o contatta WECOOP per supporto.',
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: _loadInitialData,
-                    icon: const Icon(Icons.search),
-                    label: const Text('Aggiorna'),
-                  ),
-                  TextButton.icon(
-                    onPressed:
-                        () => _openSupportWhatsApp(
-                          message:
-                              'Ciao WECOOP, vorrei informazioni per cercare lavoro o attivare servizi dedicati.',
-                        ),
-                    icon: const Icon(Icons.chat),
-                    label: const Text('WhatsApp'),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 12),
-        _buildSearchBody(),
-      ],
+      children: [_buildSearchBody()],
     );
   }
 
@@ -2949,10 +2997,7 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Dettaglio annuncio',
-          style: TextStyle(fontSize: 16),
-        ),
+        title: const Text('Dettaglio annuncio'),
       ),
       backgroundColor: const Color(0xFFF6F8FB),
       body: ListView(

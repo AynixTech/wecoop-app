@@ -285,10 +285,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
     return Scaffold(
       backgroundColor: scheme.surface,
       appBar: AppBar(
-        title: Text(
-          l10n.completeProfile,
-          style: const TextStyle(fontSize: 16),
-        ),
+        title: Text(l10n.completeProfile),
         elevation: 0,
         backgroundColor: scheme.primary,
         foregroundColor: scheme.onPrimary,

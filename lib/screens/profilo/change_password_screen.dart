@@ -99,10 +99,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          l10n.translate('changePassword'),
-          style: const TextStyle(fontSize: 16),
-        ),
+        title: Text(l10n.translate('changePassword')),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

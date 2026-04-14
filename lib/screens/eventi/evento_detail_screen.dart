@@ -131,10 +131,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
     if (_isLoading || _evento == null) {
       return Scaffold(
         appBar: AppBar(
-          title: Text(
-            l10n.loading,
-            style: const TextStyle(fontSize: 16),
-          ),
+          title: Text(l10n.loading),
         ),
         body: const Center(child: CircularProgressIndicator()),
       );

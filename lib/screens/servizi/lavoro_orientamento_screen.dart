@@ -505,6 +505,13 @@ class _AttivazioneServizioLavoroScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final scheme = Theme.of(context).colorScheme;
+    const paperTone = Color(0xFFF8F2E8);
+    const paperEdge = Color(0xFFE1D3BE);
+    final accent = _isServiceActive ? const Color(0xFF8E3B2E) : const Color(0xFF234B5C);
+    final buttonLabel =
+        _isServiceActive
+            ? l10n.translate('deactivateServiceCta')
+            : l10n.translate('activateServiceCta');
 
     if (_isCheckingStatus) {
       return Scaffold(
@@ -521,100 +528,367 @@ class _AttivazioneServizioLavoroScreenState
               : l10n.translate('activateWorkService'),
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color.alphaBlend(accent.withOpacity(0.07), scheme.surfaceContainerLowest),
+              scheme.surface,
+            ],
+          ),
+        ),
+        child: SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                _isServiceActive
-                    ? l10n.translate('workServiceAlreadyActive')
-                    : l10n.translate('workServiceQuestion'),
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: scheme.primaryContainer.withOpacity(0.35),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: scheme.outlineVariant),
-                ),
-                child: Text(
-                  _isServiceActive
-                      ? l10n.translate('activateWorkServiceActiveDesc')
-                      : l10n.translate('activateWorkServiceInfo'),
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: scheme.onSurface,
-                    height: 1.35,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              if (!_isServiceActive)
-                Container(
-                  decoration: BoxDecoration(
-                    color: scheme.surface,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: scheme.outlineVariant),
-                  ),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CheckboxListTile(
-                        value: _gdprConsent,
-                        title: Text(l10n.translate('consentGdpr')),
-                        onChanged:
-                            (value) =>
-                                setState(() => _gdprConsent = value ?? false),
+                      Text(
+                        _isServiceActive
+                            ? l10n.translate('workServiceAlreadyActive')
+                            : l10n.translate('workServiceQuestion'),
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: scheme.onSurface,
+                          height: 1.2,
+                        ),
                       ),
-                      CheckboxListTile(
-                        value: _shareCvConsent,
-                        title: Text(l10n.translate('consentShareCv')),
-                        onChanged:
-                            (value) =>
-                                setState(() => _shareCvConsent = value ?? false),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Consulta e sottoscrivi le condizioni del servizio in una forma chiara e leggibile.',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: scheme.onSurfaceVariant,
+                          height: 1.45,
+                        ),
                       ),
-                      CheckboxListTile(
-                        value: _whatsappConsent,
-                        title: Text(l10n.translate('consentWhatsapp')),
-                        onChanged:
-                            (value) =>
-                                setState(() => _whatsappConsent = value ?? false),
-                      ),
-                      CheckboxListTile(
-                        value: _termsConsent,
-                        title: Text(l10n.translate('consentTerms')),
-                        onChanged:
-                            (value) =>
-                                setState(() => _termsConsent = value ?? false),
+                      const SizedBox(height: 18),
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: paperTone,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: paperEdge),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.06),
+                              blurRadius: 22,
+                              offset: const Offset(0, 12),
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: accent.withOpacity(0.10),
+                                      borderRadius: BorderRadius.circular(999),
+                                    ),
+                                    child: Text(
+                                      _isServiceActive
+                                          ? 'Servizio in essere'
+                                          : 'Atto di adesione',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: 0.3,
+                                        color: accent,
+                                      ),
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    'WECOOP',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 1.6,
+                                      color: accent.withOpacity(0.88),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 18),
+                              Text(
+                                _isServiceActive
+                                    ? 'Mandato di supporto al lavoro'
+                                    : 'Accordo per l\'attivazione del supporto al lavoro',
+                                style: TextStyle(
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.w800,
+                                  height: 1.15,
+                                  color: const Color(0xFF2D241B),
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+                              Container(
+                                height: 1,
+                                color: paperEdge,
+                              ),
+                              const SizedBox(height: 18),
+                              Text(
+                                _isServiceActive
+                                    ? l10n.translate('activateWorkServiceActiveDesc')
+                                    : l10n.translate('activateWorkServiceInfo'),
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  height: 1.75,
+                                  color: Color(0xFF3E3428),
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+                              Container(
+                                padding: const EdgeInsets.all(14),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.56),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(color: paperEdge.withOpacity(0.9)),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Oggetto del consenso',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: 0.4,
+                                        color: accent,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      _isServiceActive
+                                          ? 'Il tuo mandato e attualmente valido. Puoi mantenerlo attivo oppure revocarlo con effetto immediato.'
+                                          : 'Autorizzi WECOOP a utilizzare i dati del tuo profilo professionale per accompagnarti nella ricerca di opportunita lavorative e nelle comunicazioni strettamente connesse al servizio.',
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        height: 1.6,
+                                        color: Color(0xFF4A4034),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (!_isServiceActive) ...[
+                                const SizedBox(height: 22),
+                                Text(
+                                  'Clausole da approvare',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 0.4,
+                                    color: accent,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                _ContractConsentTile(
+                                  value: _gdprConsent,
+                                  title: l10n.translate('consentGdpr'),
+                                  subtitle:
+                                      'Autorizzo il trattamento dei dati personali per la gestione del servizio lavoro.',
+                                  accentColor: accent,
+                                  onTap: () => setState(() => _gdprConsent = !_gdprConsent),
+                                ),
+                                const SizedBox(height: 10),
+                                _ContractConsentTile(
+                                  value: _shareCvConsent,
+                                  title: l10n.translate('consentShareCv'),
+                                  subtitle:
+                                      'Autorizzo la condivisione del CV con partner selezionati quando utile alla candidatura.',
+                                  accentColor: accent,
+                                  onTap:
+                                      () => setState(() => _shareCvConsent = !_shareCvConsent),
+                                ),
+                                const SizedBox(height: 10),
+                                _ContractConsentTile(
+                                  value: _whatsappConsent,
+                                  title: l10n.translate('consentWhatsapp'),
+                                  subtitle:
+                                      'Accetto contatti operativi tramite WhatsApp per aggiornamenti e opportunita.',
+                                  accentColor: accent,
+                                  onTap:
+                                      () => setState(() => _whatsappConsent = !_whatsappConsent),
+                                ),
+                                const SizedBox(height: 10),
+                                _ContractConsentTile(
+                                  value: _termsConsent,
+                                  title: l10n.translate('consentTerms'),
+                                  subtitle:
+                                      'Dichiaro di aver letto e compreso le condizioni del servizio e le modalita di utilizzo.',
+                                  accentColor: accent,
+                                  onTap: () => setState(() => _termsConsent = !_termsConsent),
+                                ),
+                                const SizedBox(height: 18),
+                                Text(
+                                  'La sottoscrizione del presente atto richiede l\'approvazione integrale di tutte le clausole sopra riportate.',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    height: 1.55,
+                                    color: scheme.onSurfaceVariant,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: _saving ? null : _activateService,
-                  icon:
-                      _saving
-                          ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                          : const Icon(Icons.check_circle_outline),
-                  label: Text(
-                    _isServiceActive
-                        ? l10n.translate('deactivateServiceCta')
-                        : l10n.translate('activateServiceCta'),
+              ),
+              Container(
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
+                decoration: BoxDecoration(
+                  color: scheme.surface.withOpacity(0.96),
+                  border: Border(
+                    top: BorderSide(color: scheme.outlineVariant.withOpacity(0.55)),
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 16,
+                      offset: const Offset(0, -6),
+                    ),
+                  ],
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _saving ? null : _activateService,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: accent,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                    ),
+                    icon:
+                        _saving
+                            ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
+                            : Icon(
+                              _isServiceActive
+                                  ? Icons.gpp_bad_outlined
+                                  : Icons.draw_outlined,
+                            ),
+                    label: Text(buttonLabel),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ContractConsentTile extends StatelessWidget {
+  final bool value;
+  final String title;
+  final String subtitle;
+  final Color accentColor;
+  final VoidCallback onTap;
+
+  const _ContractConsentTile({
+    required this.value,
+    required this.title,
+    required this.subtitle,
+    required this.accentColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: onTap,
+        child: Ink(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: value ? accentColor.withOpacity(0.08) : Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: value ? accentColor.withOpacity(0.45) : const Color(0xFFD8CBB7),
+            ),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: value ? accentColor : Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: value ? accentColor : const Color(0xFFB6A791),
+                    width: 1.4,
+                  ),
+                ),
+                alignment: Alignment.center,
+                child:
+                    value
+                        ? const Icon(Icons.check_rounded, color: Colors.white, size: 18)
+                        : const Icon(
+                          Icons.add_rounded,
+                          color: Color(0xFF8C7C68),
+                          size: 18,
+                        ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        height: 1.35,
+                        color: Color(0xFF31261C),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        height: 1.55,
+                        color: Color(0xFF5B4F41),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

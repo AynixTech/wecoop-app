@@ -151,7 +151,8 @@ class _WECOOPAppState extends State<WECOOPApp> {
               backgroundColor: const Color(0xFF1282A8),
               foregroundColor: Colors.white,
               titleTextStyle: GoogleFonts.inter(
-                fontSize: 30,
+                fontSize: 16,
+                height: 1.2,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
               ),

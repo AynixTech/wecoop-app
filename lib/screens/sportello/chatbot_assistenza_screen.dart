@@ -521,10 +521,7 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          l10n.translate('chatbotTitle'),
-          style: const TextStyle(fontSize: 16),
-        ),
+        title: Text(l10n.translate('chatbotTitle')),
         actions: [
           IconButton(
             icon: Icon(_showFAQ ? Icons.chat : Icons.help_outline),

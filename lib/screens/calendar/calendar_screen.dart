@@ -1106,7 +1106,12 @@ class _CalendarScreenState extends State<CalendarScreen>
       context,
       MaterialPageRoute(
         builder: (context) => Scaffold(
-          appBar: AppBar(title: Text(title ?? 'Visualizza documento')),
+          appBar: AppBar(
+            title: Text(
+              title ?? 'Visualizza documento',
+              style: const TextStyle(fontSize: 16),
+            ),
+          ),
           body: WebViewWidget(controller: controller),
         ),
       ),
@@ -1283,7 +1288,10 @@ class _CalendarScreenState extends State<CalendarScreen>
       MaterialPageRoute(
         builder: (context) => Scaffold(
           appBar: AppBar(
-            title: Text(title ?? 'Documento PDF'),
+            title: Text(
+              title ?? 'Documento PDF',
+              style: const TextStyle(fontSize: 16),
+            ),
           ),
           body: PDFView(
             filePath: file.path,
@@ -2565,7 +2573,10 @@ class _CalendarScreenState extends State<CalendarScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.myRequests),
+        title: Text(
+          l10n.myRequests,
+          style: const TextStyle(fontSize: 16),
+        ),
         actions: [
           IconButton(
             tooltip: 'Aggiorna',

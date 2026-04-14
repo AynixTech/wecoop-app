@@ -140,7 +140,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
               surface: Color(0xFFFFFFFF),
               onSurface: Color(0xFF1F2933),
             ),
-            textTheme: GoogleFonts.poppinsTextTheme().apply(
+            textTheme: GoogleFonts.interTextTheme().apply(
               bodyColor: const Color(0xFF1F2933),
               displayColor: const Color(0xFF1F2933),
             ),
@@ -150,7 +150,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
               centerTitle: false,
               backgroundColor: const Color(0xFF1282A8),
               foregroundColor: Colors.white,
-              titleTextStyle: GoogleFonts.poppins(
+              titleTextStyle: GoogleFonts.inter(
                 fontSize: 30,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
@@ -181,7 +181,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(999),
                 ),
-                textStyle: GoogleFonts.poppins(
+                textStyle: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -199,7 +199,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(999),
                 ),
-                textStyle: GoogleFonts.poppins(
+                textStyle: GoogleFonts.inter(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
@@ -208,7 +208,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
                 foregroundColor: const Color(0xFF1282A8),
-                textStyle: GoogleFonts.poppins(
+                textStyle: GoogleFonts.inter(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
@@ -217,8 +217,8 @@ class _WECOOPAppState extends State<WECOOPApp> {
             inputDecorationTheme: InputDecorationTheme(
               filled: true,
               fillColor: Colors.white,
-              hintStyle: GoogleFonts.poppins(color: const Color(0xFF6F7782)),
-              labelStyle: GoogleFonts.poppins(color: const Color(0xFF4D4C4C)),
+              hintStyle: GoogleFonts.inter(color: const Color(0xFF6F7782)),
+              labelStyle: GoogleFonts.inter(color: const Color(0xFF4D4C4C)),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: Color(0x22000000)),
@@ -246,7 +246,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
-              labelStyle: GoogleFonts.poppins(
+              labelStyle: GoogleFonts.inter(
                 fontWeight: FontWeight.w500,
                 color: const Color(0xFF1F2933),
               ),
@@ -259,10 +259,10 @@ class _WECOOPAppState extends State<WECOOPApp> {
               backgroundColor: Colors.white,
               selectedItemColor: const Color(0xFF1282A8),
               unselectedItemColor: const Color(0xFF6F7782),
-              selectedLabelStyle: GoogleFonts.poppins(
+              selectedLabelStyle: GoogleFonts.inter(
                 fontWeight: FontWeight.w600,
               ),
-              unselectedLabelStyle: GoogleFonts.poppins(
+              unselectedLabelStyle: GoogleFonts.inter(
                 fontWeight: FontWeight.w500,
               ),
               elevation: 10,

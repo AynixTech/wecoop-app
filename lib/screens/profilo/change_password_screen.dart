@@ -98,7 +98,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.translate('changePassword'))),
+      appBar: AppBar(
+        title: Text(
+          l10n.translate('changePassword'),
+          style: const TextStyle(fontSize: 16),
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(

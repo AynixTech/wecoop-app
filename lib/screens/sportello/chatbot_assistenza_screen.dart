@@ -11,6 +11,7 @@ import '../servizi/accoglienza_screen.dart';
 import '../servizi/lavoro_orientamento_screen.dart';
 import '../servizi/educazione_finanziaria_credito_screen.dart';
 import '../servizi/supporto_contabile_screen.dart';
+import '../lavoro/offerte_lavoro_screen.dart';
 
 class ChatbotAssistenzaScreen extends StatefulWidget {
   const ChatbotAssistenzaScreen({super.key});
@@ -165,19 +166,8 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
 
     if (asksWork) {
       _addBotMessage(
-        'Ottimo, posso accompagnarti su accesso al lavoro: candidature, orientamento e attivazione supporto lavoro.',
-        action: _buildNavigationButton('Apri Accesso al lavoro', () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder:
-                  (context) => const ServiziGateScreen(
-                    destinationScreen: LavoroOrientamentoScreen(),
-                    serviceName: 'Accesso al lavoro',
-                  ),
-            ),
-          );
-        }),
+        'Ottimo, posso accompagnarti sia nel percorso di accesso al lavoro sia nella pagina offerte e annunci lavoro.',
+        action: _buildWorkActions(),
       );
       return;
     }
@@ -358,18 +348,7 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
 
     switch (actionKey) {
       case 'open_work':
-        return _buildNavigationButton(label, () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder:
-                  (context) => const ServiziGateScreen(
-                    destinationScreen: LavoroOrientamentoScreen(),
-                    serviceName: 'Accesso al lavoro',
-                  ),
-            ),
-          );
-        });
+        return _buildWorkActions(primaryLabel: label);
       case 'open_credit':
         return _buildNavigationButton(label, () {
           Navigator.push(
@@ -470,6 +449,42 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
     );
   }
 
+  Widget _buildWorkActions({String? primaryLabel}) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          _buildNavigationButton(
+            primaryLabel ?? 'Apri Accesso al lavoro',
+            () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) => const ServiziGateScreen(
+                        destinationScreen: LavoroOrientamentoScreen(),
+                        serviceName: 'Accesso al lavoro',
+                      ),
+                ),
+              );
+            },
+            withTopPadding: false,
+          ),
+          _buildNavigationButton('Apri Offerte e annunci lavoro', () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const OfferteLavoroScreen(),
+              ),
+            );
+          }, withTopPadding: false),
+        ],
+      ),
+    );
+  }
+
   Widget _buildQuickReplyButton(String text, VoidCallback onPressed) {
     return OutlinedButton(
       onPressed: onPressed,
@@ -482,9 +497,13 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
     );
   }
 
-  Widget _buildNavigationButton(String text, VoidCallback onPressed) {
+  Widget _buildNavigationButton(
+    String text,
+    VoidCallback onPressed, {
+    bool withTopPadding = true,
+  }) {
     return Padding(
-      padding: const EdgeInsets.only(top: 8),
+      padding: withTopPadding ? const EdgeInsets.only(top: 8) : EdgeInsets.zero,
       child: ElevatedButton.icon(
         onPressed: onPressed,
         icon: const Icon(Icons.arrow_forward, size: 18),
@@ -502,7 +521,10 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.translate('chatbotTitle')),
+        title: Text(
+          l10n.translate('chatbotTitle'),
+          style: const TextStyle(fontSize: 16),
+        ),
         actions: [
           IconButton(
             icon: Icon(_showFAQ ? Icons.chat : Icons.help_outline),

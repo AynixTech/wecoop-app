@@ -458,6 +458,7 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
           widget.showFamilyDocuments
               ? AppLocalizations.of(context)!.documentsApplicantAndFamilyTitle
               : AppLocalizations.of(context)!.myDocumentsTitle,
+          style: const TextStyle(fontSize: 16),
         ),
       ),
       body:

@@ -75,7 +75,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.appTitle),
+        title: Text(
+          l10n.appTitle,
+          style: const TextStyle(fontSize: 16),
+        ),
         actions: [
           const LanguageSelector(),
           IconButton(icon: const Icon(Icons.notifications), onPressed: () {}),

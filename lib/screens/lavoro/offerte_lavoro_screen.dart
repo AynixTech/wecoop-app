@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wecoop_app/models/offerta_lavoro_model.dart';
@@ -898,6 +899,8 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   static const String _wecoopWhatsAppNumber = '393515112113';
+  static const Color _activeMenuColor = Color(0xFF1282A8);
+  static const Color _inactiveMenuColor = Color(0xFF9CA3AF);
 
   final TextEditingController _searchController = TextEditingController();
 
@@ -991,14 +994,56 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(_handleTabChanged);
     _loadInitialData();
+  }
+
+  void _handleTabChanged() {
+    if (!mounted) return;
+    setState(() {});
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_handleTabChanged);
     _tabController.dispose();
     _searchController.dispose();
     super.dispose();
+  }
+
+  Widget _buildSvgTab({
+    required int index,
+    required String assetPath,
+    required String label,
+  }) {
+    final isSelected = _tabController.index == index;
+
+    return Tab(
+      height: 54,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            assetPath,
+            width: 20,
+            height: 20,
+            colorFilter: ColorFilter.mode(
+              isSelected ? _activeMenuColor : _inactiveMenuColor,
+              BlendMode.srcIn,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+              color: isSelected ? _activeMenuColor : _inactiveMenuColor,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _loadInitialData({bool showLoading = true}) async {
@@ -1156,21 +1201,45 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Offerte e Annunci Lavoro'),
+        title: const Text(
+          'Offerte e Annunci Lavoro',
+          style: TextStyle(fontSize: 16),
+        ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(56),
+          preferredSize: const Size.fromHeight(60),
           child: Container(
             color: Colors.white,
             child: TabBar(
               controller: _tabController,
               isScrollable: false,
-              labelColor: Colors.black87,
-              unselectedLabelColor: Colors.black54,
-              indicatorColor: Colors.black87,
-              tabs: const [
-                Tab(icon: Icon(Icons.work), text: 'Annunci'),
-                Tab(icon: Icon(Icons.search), text: 'Cerco'),
-                Tab(icon: Icon(Icons.volunteer_activism), text: 'Offro'),
+              labelColor: _activeMenuColor,
+              unselectedLabelColor: _inactiveMenuColor,
+              indicatorSize: TabBarIndicatorSize.tab,
+              dividerColor: Colors.transparent,
+              indicator: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                color: _activeMenuColor.withOpacity(0.10),
+                border: Border.all(
+                  color: _activeMenuColor.withOpacity(0.16),
+                ),
+              ),
+              padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+              tabs: [
+                _buildSvgTab(
+                  index: 0,
+                  assetPath: 'assets/icons/offerte-lavoro/annunci_lavoro.svg',
+                  label: 'Annunci',
+                ),
+                _buildSvgTab(
+                  index: 1,
+                  assetPath: 'assets/icons/offerte-lavoro/cerco.svg',
+                  label: 'Cerco',
+                ),
+                _buildSvgTab(
+                  index: 2,
+                  assetPath: 'assets/icons/offerte-lavoro/offro.svg',
+                  label: 'Offro',
+                ),
               ],
             ),
           ),
@@ -2782,7 +2851,12 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Dettaglio annuncio')),
+      appBar: AppBar(
+        title: const Text(
+          'Dettaglio annuncio',
+          style: TextStyle(fontSize: 16),
+        ),
+      ),
       backgroundColor: const Color(0xFFF6F8FB),
       body: ListView(
         padding: const EdgeInsets.all(16),

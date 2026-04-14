@@ -76,7 +76,10 @@ class _EventiScreenState extends State<EventiScreen> {
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.events),
+        title: Text(
+          l10n.events,
+          style: const TextStyle(fontSize: 16),
+        ),
         actions: [
           PopupMenuButton<String>(
             icon: const Icon(Icons.filter_list),

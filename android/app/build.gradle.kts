@@ -16,6 +16,23 @@ val isReleaseBuildRequested = gradle.startParameter.taskNames.any {
         it.contains("bundle", ignoreCase = true)
 }
 var hasReleaseSigning = false
+val appRootDir = rootProject.projectDir.parentFile
+
+fun resolveKeystoreFile(path: String?): File? {
+    val configuredPath = path?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+    val rawFile = File(configuredPath)
+
+    val candidates = buildList {
+        if (rawFile.isAbsolute) {
+            add(rawFile)
+        }
+        add(rootProject.file(configuredPath))
+        add(appRootDir.resolve(configuredPath))
+        add(appRootDir.resolve(rawFile.name))
+    }
+
+    return candidates.firstOrNull { it.exists() }
+}
 
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
@@ -47,7 +64,7 @@ android {
    signingConfigs {
     create("release") {
         val storeFilePath = keystoreProperties.getProperty("storeFile")
-        val resolvedFile = storeFilePath?.let { File(it) }
+        val resolvedFile = resolveKeystoreFile(storeFilePath)
 
         if (resolvedFile != null && resolvedFile.exists()) {
             hasReleaseSigning = true
@@ -60,8 +77,6 @@ android {
             throw GradleException(
                 "❌ Errore: il file di firma '${storeFilePath}' non esiste o non è accessibile.",
             )
-        } else {
-            println("⚠️ Keystore release non disponibile: uso firma debug per build locali.")
         }
     }
 }

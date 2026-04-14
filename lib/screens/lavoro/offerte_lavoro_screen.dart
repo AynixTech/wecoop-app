@@ -8,6 +8,7 @@ import 'package:wecoop_app/models/offerta_lavoro_model.dart';
 import 'package:wecoop_app/screens/servizi/lavoro_orientamento_screen.dart';
 import 'package:wecoop_app/services/offerte_lavoro_service.dart';
 import 'package:wecoop_app/services/annunci_submission_service.dart';
+import 'package:wecoop_app/services/secure_storage_service.dart';
 
 class _CategoriaMenuHelper {
   static const Map<String, List<String>> macroKeywordMap = {
@@ -1755,7 +1756,10 @@ class _PubblicaAnnuncioTab extends StatefulWidget {
 }
 
 class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
+  static const String _localCvsKey = 'cv_ai_local_cvs_v1';
+
   final _formKey = GlobalKey<FormState>();
+  final _storage = SecureStorageService();
   final _titoloCtrl = TextEditingController();
   final _cittaCtrl = TextEditingController();
   final _contattoCtrl = TextEditingController();
@@ -1800,6 +1804,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
 
   Future<void> _loadGeneratedCvs() async {
     setState(() => _isLoadingGeneratedCvs = true);
+    final localCached = await _loadLocalCachedCvs();
     final result = await AnnunciSubmissionService.getGeneratedCvs();
     if (!mounted) return;
 
@@ -1808,15 +1813,97 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
           .whereType<Map>()
           .map((e) => Map<String, dynamic>.from(e))
           .toList();
+      final merged = _mergeCvEntries(items, localCached);
 
       setState(() {
-        _generatedCvs = items;
+        _generatedCvs = merged
+            .where(
+              (entry) =>
+                  ((entry['status'] ?? entry['state'] ?? 'unknown')
+                          .toString()
+                          .trim()
+                          .toLowerCase() ==
+                      'generated') &&
+                  ((_cvEntryFiles(entry)?['pdfUrl'] ?? '').toString().trim().isNotEmpty ||
+                      (_cvEntryFiles(entry)?['docxUrl'] ?? '')
+                          .toString()
+                          .trim()
+                          .isNotEmpty),
+            )
+            .toList();
         _isLoadingGeneratedCvs = false;
       });
       return;
     }
 
-    setState(() => _isLoadingGeneratedCvs = false);
+    setState(() {
+      _generatedCvs = localCached
+          .where(
+            (entry) =>
+                ((entry['status'] ?? entry['state'] ?? 'unknown')
+                        .toString()
+                        .trim()
+                        .toLowerCase() ==
+                    'generated') &&
+                ((_cvEntryFiles(entry)?['pdfUrl'] ?? '').toString().trim().isNotEmpty ||
+                    (_cvEntryFiles(entry)?['docxUrl'] ?? '')
+                        .toString()
+                        .trim()
+                        .isNotEmpty),
+          )
+          .toList();
+      _isLoadingGeneratedCvs = false;
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> _loadLocalCachedCvs() async {
+    try {
+      final raw = await _storage.read(key: _localCvsKey);
+      if (raw == null || raw.trim().isEmpty) return [];
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return [];
+      return decoded
+          .whereType<Map>()
+          .map((e) => e.map((key, value) => MapEntry(key.toString(), value)))
+          .toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  DateTime _parseCvEntryDate(Map<String, dynamic> entry) {
+    final updated =
+        (entry['updatedAt'] ?? entry['updated_at'] ?? '').toString().trim();
+    final created =
+        (entry['createdAt'] ?? entry['created_at'] ?? '').toString().trim();
+    return DateTime.tryParse(updated) ??
+        DateTime.tryParse(created) ??
+        DateTime.fromMillisecondsSinceEpoch(0);
+  }
+
+  List<Map<String, dynamic>> _mergeCvEntries(
+    List<Map<String, dynamic>> primary,
+    List<Map<String, dynamic>> secondary,
+  ) {
+    final byId = <String, Map<String, dynamic>>{};
+
+    void mergeFrom(List<Map<String, dynamic>> list) {
+      for (final entry in list) {
+        final id = _cvEntryId(entry).trim();
+        final key = id.isEmpty
+            ? 'fallback_${_parseCvEntryDate(entry).millisecondsSinceEpoch}_${byId.length}'
+            : id;
+        final previous = byId[key];
+        byId[key] = previous == null ? entry : {...previous, ...entry};
+      }
+    }
+
+    mergeFrom(secondary);
+    mergeFrom(primary);
+
+    final merged = byId.values.toList();
+    merged.sort((a, b) => _parseCvEntryDate(b).compareTo(_parseCvEntryDate(a)));
+    return merged;
   }
 
   String _cvEntryId(Map<String, dynamic> entry) {
@@ -1899,6 +1986,30 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
       _selectedCvPdfUrl = (files?['pdfUrl'] ?? '').toString().trim();
       _selectedCvDocxUrl = (files?['docxUrl'] ?? '').toString().trim();
     });
+  }
+
+  Future<void> _openCreatedAnnouncement(Map<String, dynamic> result) async {
+    final data = result['data'];
+    final announcementId = data is Map<String, dynamic>
+        ? (data['submission_id'] as num?)?.toInt()
+        : null;
+    if (announcementId == null || announcementId <= 0 || !mounted) return;
+
+    final detailResult = await OfferteLavoroService.getOfferta(announcementId);
+    if (!mounted || detailResult['success'] != true) return;
+
+    final offerta = detailResult['offerta'];
+    if (offerta is! OffertaLavoro) return;
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _OffertaLavoroDetailScreen(
+          offerta: offerta,
+          onApply: () {},
+        ),
+      ),
+    );
   }
 
   Future<void> _pickImage() async {
@@ -2042,6 +2153,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
         _selectedCvPdfUrl = null;
         _selectedCvDocxUrl = null;
       });
+      await _openCreatedAnnouncement(result);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

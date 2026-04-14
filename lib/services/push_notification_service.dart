@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter/foundation.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
 
@@ -11,7 +13,7 @@ class PushNotificationService {
   factory PushNotificationService() => _instance;
   PushNotificationService._internal();
 
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  FirebaseMessaging get _firebaseMessaging => FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
   final SecureStorageService _storage = SecureStorageService();
@@ -24,6 +26,11 @@ class PushNotificationService {
 
   /// Inizializza il servizio push
   Future<void> initialize() async {
+    if (Firebase.apps.isEmpty) {
+      debugPrint('Push notifications disabilitate: Firebase non disponibile');
+      return;
+    }
+
     // Richiedi permessi
     NotificationSettings settings = await _firebaseMessaging.requestPermission(
       alert: true,
@@ -303,12 +310,14 @@ class PushNotificationService {
 
   /// Subscribe a topic (opzionale)
   Future<void> subscribeToTopic(String topic) async {
+    if (Firebase.apps.isEmpty) return;
     await _firebaseMessaging.subscribeToTopic(topic);
     print('📢 Iscritto al topic: $topic');
   }
 
   /// Unsubscribe da topic (opzionale)
   Future<void> unsubscribeFromTopic(String topic) async {
+    if (Firebase.apps.isEmpty) return;
     await _firebaseMessaging.unsubscribeFromTopic(topic);
     print('🔕 Disiscritto dal topic: $topic');
   }

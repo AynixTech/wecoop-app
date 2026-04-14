@@ -39,12 +39,16 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Abbiamo bisogno di accedere alla fotocamera per scattare foto ai tuoi documenti</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Usiamo Face ID per permetterti un accesso rapido e sicuro</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Abbiamo bisogno di salvare i documenti generati nella tua libreria quando lo richiedi</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Abbiamo bisogno di accedere alla galleria per selezionare i tuoi documenti</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

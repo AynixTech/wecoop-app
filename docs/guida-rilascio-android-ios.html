@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <title>Guida Rilascio Android e iOS - WeCoop</title>
+  <style>
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+      margin: 36px;
+      color: #1f2933;
+    }
+    h1, h2, h3 {
+      color: #0f5f78;
+    }
+    h1 {
+      font-size: 26px;
+      margin-bottom: 8px;
+    }
+    h2 {
+      font-size: 20px;
+      margin-top: 26px;
+      border-bottom: 1px solid #d8e1e8;
+      padding-bottom: 4px;
+    }
+    h3 {
+      font-size: 16px;
+      margin-top: 18px;
+    }
+    p, li {
+      font-size: 12px;
+    }
+    code {
+      font-family: Menlo, Monaco, monospace;
+      background: #f3f6f8;
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+    pre {
+      background: #f3f6f8;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 11px;
+    }
+    .meta {
+      color: #52606d;
+      margin-bottom: 24px;
+    }
+    .box {
+      background: #eef7fb;
+      border: 1px solid #c8e2ef;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin: 14px 0;
+    }
+    .warning {
+      background: #fff7e8;
+      border-color: #f5d38a;
+    }
+    .ok {
+      background: #eefbf3;
+      border-color: #b8e3c5;
+    }
+    a {
+      color: #0b6a88;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Guida Rilascio Android e iOS</h1>
+  <p class="meta">Progetto: WeCoop<br>Bundle ID iOS: <code>com.wecoop.app</code><br>Versione attuale: <code>1.3.0+13</code><br>Aggiornata il 14 aprile 2026</p>
+
+  <div class="box ok">
+    <strong>Stato attuale del progetto</strong><br>
+    L'app compila e gira su Android e iPhone reale. Per i tester iOS la strada consigliata è <strong>TestFlight</strong>. Per Android puoi continuare con <strong>Firebase App Distribution</strong> o Play Console Internal Testing.
+  </div>
+
+  <h2>1. Strategia consigliata</h2>
+  <ul>
+    <li><strong>Android tester:</strong> Firebase App Distribution oppure Play Console Internal Testing.</li>
+    <li><strong>iOS tester:</strong> TestFlight.</li>
+    <li><strong>Release pubblica:</strong> Play Store e App Store usando account aziendali Aynix.</li>
+  </ul>
+
+  <div class="box warning">
+    <strong>Importante</strong><br>
+    Se vuoi pubblicare a nome di Aynix, gli account corretti devono essere quelli aziendali: Apple Developer Organization, App Store Connect e Google Play Console intestati ad Aynix.
+  </div>
+
+  <h2>2. Prerequisiti generali</h2>
+  <ol>
+    <li>Avere il team Apple Developer dell'azienda configurato in Xcode.</li>
+    <li>Avere l'account Google Play Console dell'azienda.</li>
+    <li>Avere le chiavi live Stripe da passare via <code>--dart-define</code>.</li>
+    <li>Per iOS, aggiungere il file <code>GoogleService-Info.plist</code> corretto se vuoi notifiche Firebase attive.</li>
+    <li>Per Android, verificare <code>android/key.properties</code> e il keystore release.</li>
+  </ol>
+
+  <h2>3. Link utili</h2>
+  <ul>
+    <li><a href="https://play.google.com/console">Google Play Console</a></li>
+    <li><a href="https://firebase.google.com/docs/app-distribution">Firebase App Distribution</a></li>
+    <li><a href="https://developer.apple.com/account/">Apple Developer</a></li>
+    <li><a href="https://appstoreconnect.apple.com/">App Store Connect</a></li>
+    <li><a href="https://developer.apple.com/testflight/">TestFlight</a></li>
+    <li><a href="https://docs.flutter.dev/deployment/android">Flutter deployment Android</a></li>
+    <li><a href="https://docs.flutter.dev/deployment/ios">Flutter deployment iOS</a></li>
+  </ul>
+
+  <h2>4. Android</h2>
+
+  <h3>4.1 Prima della build</h3>
+  <ol>
+    <li>Verifica che il keystore release sia corretto.</li>
+    <li>Verifica che <code>android/key.properties</code> punti al file giusto.</li>
+    <li>Verifica di avere le chiavi Stripe live.</li>
+    <li>Se usi Firebase App Distribution, verifica app Firebase e tester/gruppi.</li>
+  </ol>
+
+  <h3>4.2 Build Android release</h3>
+  <pre><code>flutter build appbundle \
+  --release \
+  --dart-define=STRIPE_PUBLISHABLE_KEY=pk_live_xxx \
+  --dart-define=STRIPE_URL_SCHEME=wecoop \
+  --dart-define=STRIPE_MERCHANT_IDENTIFIER=merchant.org.wecoop \
+  --dart-define=STRIPE_BACKEND_URL=https://www.wecoop.org/wp-json/wecoop/v1</code></pre>
+
+  <p>Output atteso: <code>build/app/outputs/bundle/release/app-release.aab</code></p>
+
+  <h3>4.3 Distribuzione Android ai tester</h3>
+  <p><strong>Opzione consigliata se già la usi:</strong> Firebase App Distribution.</p>
+  <ol>
+    <li>Apri Firebase Console.</li>
+    <li>Seleziona l'app Android corretta.</li>
+    <li>Vai in App Distribution.</li>
+    <li>Carica il file <code>.aab</code> o <code>.apk</code>.</li>
+    <li>Assegna tester o gruppi.</li>
+    <li>Invia la release.</li>
+  </ol>
+
+  <p><strong>Alternativa:</strong> Google Play Console Internal testing.</p>
+  <ol>
+    <li>Apri Google Play Console.</li>
+    <li>Vai su Testing &gt; Internal testing.</li>
+    <li>Crea una release.</li>
+    <li>Carica il file <code>.aab</code>.</li>
+    <li>Aggiungi i tester.</li>
+    <li>Pubblica sul track interno.</li>
+  </ol>
+
+  <h3>4.4 Checklist Android</h3>
+  <ul>
+    <li>Data safety compilata.</li>
+    <li>Privacy policy disponibile.</li>
+    <li>Screenshot e icona pronti.</li>
+    <li>Login, pagamenti, upload documenti e notifiche testati in release.</li>
+  </ul>
+
+  <h2>5. iOS</h2>
+
+  <h3>5.1 Scelta consigliata per tester iPhone</h3>
+  <p>Usa <strong>TestFlight</strong>, non Firebase App Distribution, salvo casi tecnici molto specifici.</p>
+  <ul>
+    <li>Non devi raccogliere UDID.</li>
+    <li>I tester installano tramite app TestFlight.</li>
+    <li>Apple gestisce trust e installazione.</li>
+    <li>Il flusso è quello giusto anche per la release finale.</li>
+  </ul>
+
+  <h3>5.2 Requisiti iOS prima dell'archive</h3>
+  <ol>
+    <li>Essere dentro il team Apple Developer aziendale Aynix.</li>
+    <li>Avere i permessi per certificati, profili e App Store Connect.</li>
+    <li>Avere un certificato <strong>Apple Distribution</strong> valido.</li>
+    <li>Avere un provisioning profile App Store per <code>com.wecoop.app</code>.</li>
+    <li>Avere l'app registrata in App Store Connect.</li>
+    <li>Se vuoi notifiche Firebase attive, avere <code>GoogleService-Info.plist</code> corretto.</li>
+  </ol>
+
+  <h3>5.3 Build iOS release</h3>
+  <pre><code>flutter build ipa \
+  --release \
+  --dart-define=STRIPE_PUBLISHABLE_KEY=pk_live_xxx \
+  --dart-define=STRIPE_URL_SCHEME=wecoop \
+  --dart-define=STRIPE_MERCHANT_IDENTIFIER=merchant.org.wecoop \
+  --dart-define=STRIPE_BACKEND_URL=https://www.wecoop.org/wp-json/wecoop/v1</code></pre>
+
+  <p>Se l'export IPA fallisce ma l'archive va a buon fine, il problema è quasi sempre di team/certificati/profili Apple, non del codice.</p>
+
+  <h3>5.4 Caricare la build su TestFlight</h3>
+  <ol>
+    <li>Apri Xcode Organizer oppure App Store Connect.</li>
+    <li>Carica l'archive usando il team aziendale corretto.</li>
+    <li>Attendi processing della build.</li>
+    <li>Apri la sezione TestFlight in App Store Connect.</li>
+    <li>Aggiungi tester interni o esterni.</li>
+    <li>Invia l'invito ai tester.</li>
+  </ol>
+
+  <h3>5.5 Cosa serve chiedere ad Aynix</h3>
+  <ul>
+    <li>Accesso al team Apple Developer Organization.</li>
+    <li>Accesso App Store Connect per TestFlight.</li>
+    <li>Permessi su certificati e provisioning profile.</li>
+    <li>Conferma che l'app venga pubblicata sotto il nome legale corretto di Aynix.</li>
+  </ul>
+
+  <h3>5.6 Checklist iOS</h3>
+  <ul>
+    <li>App icon reale, non placeholder.</li>
+    <li>Privacy policy URL.</li>
+    <li>Support URL.</li>
+    <li>App Privacy compilata in App Store Connect.</li>
+    <li>Account deletion flow se richiesto dal prodotto.</li>
+    <li>TestFlight testato su iPhone reale.</li>
+  </ul>
+
+  <h2>6. Problemi tipici e significato</h2>
+  <ul>
+    <li><strong>No signing certificate iOS Distribution:</strong> manca il certificato di distribuzione del team Apple.</li>
+    <li><strong>No profiles for com.wecoop.app were found:</strong> manca il provisioning profile App Store/TestFlight.</li>
+    <li><strong>Developer not authorized su iPhone:</strong> l'app di debug va autorizzata sul dispositivo.</li>
+    <li><strong>Firebase non configurato correttamente:</strong> manca o è errato il file <code>GoogleService-Info.plist</code>.</li>
+    <li><strong>Stripe non inizializzato:</strong> mancano le chiavi passate con <code>--dart-define</code>.</li>
+  </ul>
+
+  <h2>7. Ordine consigliato di rilascio</h2>
+  <ol>
+    <li>Chiudi configurazione account aziendali Aynix.</li>
+    <li>Genera build Android per tester.</li>
+    <li>Genera archive iOS con team aziendale corretto.</li>
+    <li>Pubblica iOS su TestFlight.</li>
+    <li>Fai test finali su Android e iPhone.</li>
+    <li>Procedi con release pubblica su Play Store e App Store.</li>
+  </ol>
+
+  <h2>8. Comandi rapidi</h2>
+  <pre><code>flutter analyze
+flutter build appbundle --release
+flutter build ipa --release</code></pre>
+
+  <p><strong>Nota finale:</strong> per WeCoop la combinazione migliore oggi è <strong>Firebase App Distribution per Android</strong> e <strong>TestFlight per iOS</strong>.</p>
+</body>
+</html>

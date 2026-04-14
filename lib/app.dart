@@ -34,7 +34,6 @@ class _WECOOPAppState extends State<WECOOPApp> {
   @override
   void initState() {
     super.initState();
-    GoogleFonts.config.allowRuntimeFetching = false;
     MaintenanceHandler.bindNavigatorKey(_navigatorKey);
     _initializePushNotifications();
     _initializeDeepLinks();

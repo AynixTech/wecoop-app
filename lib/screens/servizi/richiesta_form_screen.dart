@@ -698,53 +698,79 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   }) {
     final scheme = Theme.of(context).colorScheme;
     final isComplete = documentiMancanti.isEmpty;
-    final containerColor =
-        isComplete ? scheme.secondaryContainer : scheme.tertiaryContainer;
-    final contentColor =
-        isComplete ? scheme.onSecondaryContainer : scheme.onTertiaryContainer;
+    final accent = isComplete ? scheme.secondary : scheme.tertiary;
+    final badgeBackground = Color.alphaBlend(
+      accent.withOpacity(0.12),
+      Colors.white,
+    );
+    final badgeForeground = isComplete ? scheme.secondary : scheme.tertiary;
+
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: containerColor,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: isComplete ? scheme.secondary : scheme.tertiary,
-          ),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: accent.withOpacity(0.18)),
+          boxShadow: [
+            BoxShadow(
+              color: scheme.shadow.withOpacity(0.05),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(
-                  isComplete ? Icons.check_circle : Icons.warning_amber_rounded,
-                  color: contentColor,
-                  size: 18,
+                Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    color: badgeBackground,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    isComplete
+                        ? Icons.check_circle_rounded
+                        : Icons.warning_amber_rounded,
+                    color: badgeForeground,
+                    size: 18,
+                  ),
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: contentColor,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF20303C),
                     ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              isComplete
-                  ? AppLocalizations.of(context)!.documentsComplete
-                  : AppLocalizations.of(
-                    context,
-                  )!.missingDocumentsCount(documentiMancanti.length),
-              style: TextStyle(
-                fontSize: 13,
-                color: contentColor,
-                fontWeight: FontWeight.w600,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: badgeBackground,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Text(
+                isComplete
+                    ? AppLocalizations.of(context)!.documentsComplete
+                    : AppLocalizations.of(
+                      context,
+                    )!.missingDocumentsCount(documentiMancanti.length),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: badgeForeground,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ],
@@ -764,85 +790,137 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
 
     return Container(
       margin: const EdgeInsets.only(top: 12),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(color: scheme.outlineVariant),
+        boxShadow: [
+          BoxShadow(
+            color: scheme.shadow.withOpacity(0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF20303C),
+            ),
           ),
           if (subtitle != null) ...[
             const SizedBox(height: 4),
             Text(
               subtitle,
-              style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
+              style: const TextStyle(
+                fontSize: 13,
+                height: 1.35,
+                color: Color(0xFF61717E),
+              ),
             ),
           ],
-          const SizedBox(height: 10),
+          const SizedBox(height: 14),
           ...documenti.map((tipo) {
             final haDocumento = !documentiMancanti.contains(tipo);
             final showAsUploaded = haDocumento;
-            final showAsMissing = !haDocumento;
+            final iconColor =
+                showAsUploaded ? scheme.secondary : scheme.primary;
 
             return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                children: [
-                  Icon(
-                    showAsUploaded
-                        ? Icons.check_circle
-                        : showAsMissing
-                        ? Icons.radio_button_unchecked
-                        : Icons.folder_shared_outlined,
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color:
+                      showAsUploaded
+                          ? Color.alphaBlend(
+                            scheme.secondary.withOpacity(0.07),
+                            Colors.white,
+                          )
+                          : Color.alphaBlend(
+                            scheme.primary.withOpacity(0.05),
+                            Colors.white,
+                          ),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
                     color:
                         showAsUploaded
-                            ? scheme.secondary
-                            : showAsMissing
-                            ? scheme.onSurfaceVariant
-                            : scheme.primary,
-                    size: 20,
+                            ? scheme.secondary.withOpacity(0.22)
+                            : scheme.outlineVariant,
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      _getRequiredDocumentLabel(tipo),
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ),
-                  if (showAsUploaded)
+                ),
+                child: Row(
+                  children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
+                      width: 34,
+                      height: 34,
                       decoration: BoxDecoration(
-                        color: scheme.secondaryContainer,
+                        color: iconColor.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: scheme.secondary),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.check, size: 12, color: scheme.secondary),
-                          const SizedBox(width: 4),
-                          Text(
-                            l10n.alreadyUploaded,
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: scheme.onSecondaryContainer,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+                      child: Icon(
+                        showAsUploaded
+                            ? Icons.check_circle_rounded
+                            : Icons.description_outlined,
+                        color: iconColor,
+                        size: 18,
                       ),
                     ),
-                ],
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        _getRequiredDocumentLabel(tipo),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF253744),
+                        ),
+                      ),
+                    ),
+                    if (showAsUploaded)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: scheme.secondary.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: scheme.secondary.withOpacity(0.2),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.check,
+                              size: 12,
+                              color: scheme.secondary,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              l10n.alreadyUploaded,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: scheme.secondary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
               ),
             );
           }),
@@ -1875,55 +1953,91 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     final scheme = Theme.of(context).colorScheme;
     final allUploaded =
         _documentiMancanti.isEmpty && _documentiMancantiFamiliare.isEmpty;
-    final sectionTextColor =
-        allUploaded ? scheme.onSecondaryContainer : scheme.onTertiaryContainer;
+    final accent = allUploaded ? scheme.secondary : scheme.primary;
+    final subtitle =
+        _isMotiviFamiliariFlow()
+            ? l10n.documentsManagedSeparately
+            : (allUploaded
+                ? l10n.documentsComplete
+                : l10n.uploadMissingDocuments);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color:
-            allUploaded ? scheme.secondaryContainer : scheme.tertiaryContainer,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: allUploaded ? scheme.secondary : scheme.tertiary,
-          width: 2,
+        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color.alphaBlend(accent.withOpacity(0.16), Colors.white),
+            Color.alphaBlend(accent.withOpacity(0.06), scheme.surface),
+          ],
         ),
+        border: Border.all(color: accent.withOpacity(0.20), width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: accent.withOpacity(0.12),
+            blurRadius: 24,
+            offset: const Offset(0, 14),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                allUploaded ? Icons.check_circle : Icons.upload_file,
-                color: sectionTextColor,
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: accent,
+                  boxShadow: [
+                    BoxShadow(
+                      color: accent.withOpacity(0.24),
+                      blurRadius: 16,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  allUploaded ? Icons.check_circle_rounded : Icons.upload_file,
+                  color: Colors.white,
+                  size: 24,
+                ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
               Expanded(
-                child: Text(
-                  l10n.requiredDocuments.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: sectionTextColor,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.requiredDocuments,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF20303C),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        height: 1.35,
+                        color: Color(0xFF61717E),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          if (_isMotiviFamiliariFlow())
-            Text(
-              l10n.documentsManagedSeparately,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                color: sectionTextColor,
-              ),
-            ),
+          const SizedBox(height: 16),
           if (_isMotiviFamiliariFlow()) ...[
-            const SizedBox(height: 12),
             Row(
               children: [
                 _buildDocumentStatusSummary(
@@ -1970,7 +2084,14 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                 },
                 icon: const Icon(Icons.edit_document),
                 label: Text(l10n.reloadFamilyDocuments),
-                style: TextButton.styleFrom(foregroundColor: scheme.primary),
+                style: TextButton.styleFrom(
+                  foregroundColor: scheme.primary,
+                  backgroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                ),
               ),
             ),
           ] else
@@ -2003,8 +2124,13 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   AppLocalizations.of(context)!.uploadMissingDocuments,
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: scheme.tertiary,
-                  foregroundColor: scheme.onTertiary,
+                  backgroundColor: accent,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
                 ),
               ),
             ),

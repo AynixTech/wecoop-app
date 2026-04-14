@@ -154,6 +154,21 @@ class HttpClientService {
     );
   }
 
+  /// Faz una richiesta PATCH con refresh token automatico
+  static Future<http.Response> patch(
+    Uri url, {
+    Map<String, String>? headers,
+    Object? body,
+    Encoding? encoding,
+  }) async {
+    return _makeRequestWithRefresh(
+      () => http
+          .patch(url, headers: headers, body: body, encoding: encoding)
+          .timeout(const Duration(seconds: 30)),
+      url.toString(),
+    );
+  }
+
   /// Faz una richiesta DELETE con refresh token automatico
   static Future<http.Response> delete(
     Uri url, {

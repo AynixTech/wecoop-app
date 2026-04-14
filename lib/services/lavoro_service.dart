@@ -7,6 +7,15 @@ import 'package:wecoop_app/utils/html_utils.dart';
 class LavoroService {
   static const String baseUrl = 'https://www.wecoop.org/wp-json/wecoop/v1';
   static final SecureStorageService _storage = SecureStorageService();
+  static const Set<String> _activeStatuses = {
+    'service_activated',
+    'consent_signed',
+    'in_review',
+    'ready_to_send',
+    'sent',
+    'under_evaluation',
+    'interview',
+  };
 
   static void _log(String event, Map<String, dynamic> data) {
     print('[LAVORO_SERVICE] $event ${jsonEncode(data)}');
@@ -98,6 +107,69 @@ class LavoroService {
     }
 
     return null;
+  }
+
+  static String normalizeJobStatus(String raw) {
+    final value = raw.trim().toLowerCase();
+    const map = {
+      'profile_created': 'profile_created',
+      'profilo_creato': 'profile_created',
+      'cv_generated': 'cv_generated',
+      'cv_generato': 'cv_generated',
+      'service_activated': 'service_activated',
+      'servizio_attivato': 'service_activated',
+      'consent_signed': 'consent_signed',
+      'consenso_firmato': 'consent_signed',
+      'in_review': 'in_review',
+      'in_revisione': 'in_review',
+      'ready_to_send': 'ready_to_send',
+      'pronto_invio': 'ready_to_send',
+      'sent': 'sent',
+      'inviato': 'sent',
+      'under_evaluation': 'under_evaluation',
+      'in_valutazione': 'under_evaluation',
+      'interview': 'interview',
+      'colloquio': 'interview',
+      'closed': 'closed',
+      'chiuso': 'closed',
+      'not_selected': 'not_selected',
+      'non_selezionato': 'not_selected',
+      'deactivated': 'deactivated',
+      'disattivato': 'deactivated',
+    };
+
+    return map[value] ?? value;
+  }
+
+  static String? extractJobStatus(Map<String, dynamic> result) {
+    final data = result['data'];
+    if (data is! Map<String, dynamic>) {
+      return null;
+    }
+
+    final job = data['job'];
+    if (job is Map<String, dynamic>) {
+      final status = (job['status'] ?? '').toString();
+      if (status.trim().isNotEmpty) {
+        return normalizeJobStatus(status);
+      }
+    }
+
+    final directStatus =
+        (data['currentStatus'] ?? data['status'] ?? data['state'] ?? '')
+            .toString();
+    if (directStatus.trim().isEmpty) {
+      return null;
+    }
+
+    return normalizeJobStatus(directStatus);
+  }
+
+  static bool isJobServiceActiveStatus(String? status) {
+    if (status == null || status.trim().isEmpty) {
+      return false;
+    }
+    return _activeStatuses.contains(normalizeJobStatus(status));
   }
 
   static Map<String, dynamic> _wrapResult(
@@ -307,6 +379,41 @@ class LavoroService {
     final body = _parseResponseBody(response.body);
     final result = _wrapResult(response.statusCode, body);
     _log('get_job_status_response', {
+      'statusCode': response.statusCode,
+      'result': result,
+      'profileId': profileId,
+    });
+    return result;
+  }
+
+  static Future<Map<String, dynamic>> updateJobStatus({
+    required String profileId,
+    required String status,
+    String? note,
+  }) async {
+    final headers = await _getHeaders();
+    final payload = <String, dynamic>{
+      'status': status,
+      if (note != null && note.trim().isNotEmpty) 'note': note.trim(),
+    };
+
+    final uri = Uri.parse('$baseUrl/lavoro/job/status/$profileId');
+    _log('update_job_status_request', {
+      'method': 'PATCH',
+      'url': uri.toString(),
+      'headers': _sanitizeHeaders(headers),
+      'profileId': profileId,
+      'payload': payload,
+    });
+
+    final response = await HttpClientService.patch(
+      uri,
+      headers: headers,
+      body: jsonEncode(payload),
+    );
+    final body = _parseResponseBody(response.body);
+    final result = _wrapResult(response.statusCode, body);
+    _log('update_job_status_response', {
       'statusCode': response.statusCode,
       'result': result,
       'profileId': profileId,

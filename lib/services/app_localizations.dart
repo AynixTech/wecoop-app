@@ -223,12 +223,18 @@ class AppLocalizations {
       'workServiceQuestion':
           'Vuoi che WECOOP ti aiuti a trovare opportunita lavorative?',
       'activateServiceCta': 'Attiva servizio',
+      'deactivateServiceCta': 'Disattiva servizio',
       'consentGdpr': 'Accetto il trattamento dati (GDPR)',
       'consentShareCv': 'Accetto l\'invio del CV a partner terzi',
       'consentWhatsapp': 'Accetto il contatto via WhatsApp',
       'consentTerms': 'Accetto le condizioni del servizio',
       'consentRequired': 'Devi accettare tutti i consensi per continuare',
       'workServiceActivated': 'Servizio lavoro attivato con successo',
+      'workServiceDeactivated': 'Servizio lavoro disattivato',
+      'activateWorkServiceActiveDesc':
+          'Il supporto WECOOP e gia attivo. Tocca per gestirlo o disattivarlo.',
+      'workServiceAlreadyActive':
+          'Il servizio lavoro e gia attivo. Se non ti serve piu, puoi disattivarlo da qui.',
       'whatsAppActivationText':
           'Ciao WECOOP, ho attivato il servizio lavoro dalla app e desidero supporto.',
       'applicationStatusTitle': 'Stato candidatura',
@@ -243,6 +249,7 @@ class AppLocalizations {
       'jobStatusSent': 'Inviato',
       'jobStatusUnderEvaluation': 'In valutazione',
       'jobStatusInterview': 'Intervista',
+    'jobStatusDeactivated': 'Disattivato',
       'jobStatusClosed': 'Chiuso',
       'jobStatusNotSelected': 'Non selezionato',
       'trainingIntro':
@@ -1424,12 +1431,18 @@ class AppLocalizations {
       'workServiceQuestion':
           'Do you want WECOOP to help you find job opportunities?',
       'activateServiceCta': 'Activate service',
+      'deactivateServiceCta': 'Deactivate service',
       'consentGdpr': 'I accept personal data processing (GDPR)',
       'consentShareCv': 'I accept sharing my CV with third-party partners',
       'consentWhatsapp': 'I accept contact via WhatsApp',
       'consentTerms': 'I accept service terms and conditions',
       'consentRequired': 'You must accept all consents to continue',
       'workServiceActivated': 'Job service activated successfully',
+      'workServiceDeactivated': 'Job service deactivated',
+      'activateWorkServiceActiveDesc':
+          'WECOOP support is already active. Tap to manage or deactivate it.',
+      'workServiceAlreadyActive':
+          'The job service is already active. If you no longer need it, you can deactivate it here.',
       'whatsAppActivationText':
           'Hi WECOOP, I activated the job service from the app and would like support.',
       'applicationStatusTitle': 'Application status',
@@ -1444,6 +1457,7 @@ class AppLocalizations {
       'jobStatusSent': 'Sent',
       'jobStatusUnderEvaluation': 'Under evaluation',
       'jobStatusInterview': 'Interview',
+    'jobStatusDeactivated': 'Deactivated',
       'jobStatusClosed': 'Closed',
       'jobStatusNotSelected': 'Not selected',
       'trainingIntro':
@@ -2592,12 +2606,18 @@ class AppLocalizations {
       'workServiceQuestion':
           'Quieres que WECOOP te ayude a encontrar oportunidades laborales?',
       'activateServiceCta': 'Activar servicio',
+      'deactivateServiceCta': 'Desactivar servicio',
       'consentGdpr': 'Acepto el tratamiento de datos (GDPR)',
       'consentShareCv': 'Acepto el envio de mi CV a partners terceros',
       'consentWhatsapp': 'Acepto el contacto por WhatsApp',
       'consentTerms': 'Acepto las condiciones del servicio',
       'consentRequired': 'Debes aceptar todos los consentimientos',
       'workServiceActivated': 'Servicio de trabajo activado correctamente',
+      'workServiceDeactivated': 'Servicio de trabajo desactivado',
+      'activateWorkServiceActiveDesc':
+          'El apoyo de WECOOP ya esta activo. Toca para gestionarlo o desactivarlo.',
+      'workServiceAlreadyActive':
+          'El servicio de trabajo ya esta activo. Si ya no lo necesitas, puedes desactivarlo aqui.',
       'whatsAppActivationText':
           'Hola WECOOP, active el servicio de trabajo desde la app y deseo apoyo.',
       'applicationStatusTitle': 'Estado de candidatura',
@@ -2612,6 +2632,7 @@ class AppLocalizations {
       'jobStatusSent': 'Enviado',
       'jobStatusUnderEvaluation': 'En evaluación',
       'jobStatusInterview': 'Entrevista',
+    'jobStatusDeactivated': 'Desactivado',
       'jobStatusClosed': 'Cerrado',
       'jobStatusNotSelected': 'No seleccionado',
       'trainingIntro':

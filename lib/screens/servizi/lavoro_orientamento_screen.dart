@@ -7,11 +7,26 @@ import '../../services/lavoro_service.dart';
 import '../../services/secure_storage_service.dart';
 import 'cv_ai_screen.dart';
 
-class LavoroOrientamentoScreen extends StatelessWidget {
+class LavoroOrientamentoScreen extends StatefulWidget {
   const LavoroOrientamentoScreen({super.key});
+
+  @override
+  State<LavoroOrientamentoScreen> createState() =>
+      _LavoroOrientamentoScreenState();
+}
+
+class _LavoroOrientamentoScreenState extends State<LavoroOrientamentoScreen> {
+  bool _isCheckingServiceStatus = true;
+  bool _isServiceActive = false;
 
   static const String _jobServiceTrackingKey = 'job_service_tracking_v1';
   static const String _cvLocalCacheKey = 'cv_ai_local_cvs_v1';
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshServiceStatus();
+  }
 
   Future<bool> _hasGeneratedCv() async {
     final storage = SecureStorageService();
@@ -41,8 +56,47 @@ class LavoroOrientamentoScreen extends StatelessWidget {
     return false;
   }
 
+  Future<void> _refreshServiceStatus() async {
+    final profileId = await LavoroService.resolveProfileId();
+    var isActive = false;
+
+    if (profileId != null && profileId.isNotEmpty) {
+      try {
+        final statusResult = await LavoroService.getJobStatus(profileId: profileId);
+        final status = LavoroService.extractJobStatus(statusResult);
+        isActive = LavoroService.isJobServiceActiveStatus(status);
+      } catch (_) {
+        isActive = false;
+      }
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _isServiceActive = isActive;
+      _isCheckingServiceStatus = false;
+    });
+  }
+
   Future<void> _handleActivateWorkServiceTap(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
+
+    if (_isServiceActive) {
+      final refreshed = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(
+          builder:
+              (context) => AttivazioneServizioLavoroScreen(
+                trackingKey: _jobServiceTrackingKey,
+                serviceAlreadyActive: true,
+              ),
+        ),
+      );
+      if (refreshed == true && mounted) {
+        await _refreshServiceStatus();
+      }
+      return;
+    }
+
     final hasGeneratedCv = await _hasGeneratedCv();
     if (!context.mounted) return;
 
@@ -78,7 +132,7 @@ class LavoroOrientamentoScreen extends StatelessWidget {
       return;
     }
 
-    Navigator.push(
+    final refreshed = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
         builder:
@@ -87,11 +141,22 @@ class LavoroOrientamentoScreen extends StatelessWidget {
             ),
       ),
     );
+    if (refreshed == true && mounted) {
+      await _refreshServiceStatus();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final activateTitle =
+        _isServiceActive
+            ? l10n.translate('deactivateServiceCta')
+            : l10n.translate('activateWorkService');
+    final activateDescription =
+        _isServiceActive
+            ? l10n.translate('activateWorkServiceActiveDesc')
+            : l10n.translate('activateWorkServiceDesc');
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.translate('workAndOrientation'))),
@@ -118,11 +183,17 @@ class LavoroOrientamentoScreen extends StatelessWidget {
             const SizedBox(height: 12),
             _ServiceCard(
               icon: Icons.work_outline,
-              title: l10n.translate('activateWorkService'),
-              description: l10n.translate('activateWorkServiceDesc'),
-              onTap: () {
-                _handleActivateWorkServiceTap(context);
-              },
+              title: activateTitle,
+              description:
+                  _isCheckingServiceStatus
+                      ? 'Controlliamo lo stato del servizio lavoro...'
+                      : activateDescription,
+              onTap:
+                  _isCheckingServiceStatus
+                      ? () {}
+                      : () {
+                        _handleActivateWorkServiceTap(context);
+                      },
             ),
           ],
         ),
@@ -133,8 +204,13 @@ class LavoroOrientamentoScreen extends StatelessWidget {
 
 class AttivazioneServizioLavoroScreen extends StatefulWidget {
   final String trackingKey;
+  final bool serviceAlreadyActive;
 
-  const AttivazioneServizioLavoroScreen({super.key, required this.trackingKey});
+  const AttivazioneServizioLavoroScreen({
+    super.key,
+    required this.trackingKey,
+    this.serviceAlreadyActive = false,
+  });
 
   @override
   State<AttivazioneServizioLavoroScreen> createState() =>
@@ -154,9 +230,37 @@ class _AttivazioneServizioLavoroScreenState
   bool _whatsappConsent = false;
   bool _termsConsent = false;
   bool _saving = false;
+  bool _isCheckingStatus = true;
+  bool _isServiceActive = false;
 
   bool get _allChecked =>
       _gdprConsent && _shareCvConsent && _whatsappConsent && _termsConsent;
+
+  @override
+  void initState() {
+    super.initState();
+    _isServiceActive = widget.serviceAlreadyActive;
+    _loadCurrentStatus();
+  }
+
+  Future<void> _loadCurrentStatus() async {
+    final profileId = await LavoroService.resolveProfileId();
+    var isActive = widget.serviceAlreadyActive;
+
+    if (profileId != null && profileId.isNotEmpty) {
+      try {
+        final result = await LavoroService.getJobStatus(profileId: profileId);
+        final status = LavoroService.extractJobStatus(result);
+        isActive = LavoroService.isJobServiceActiveStatus(status);
+      } catch (_) {}
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _isServiceActive = isActive;
+      _isCheckingStatus = false;
+    });
+  }
 
   Future<String> _buildDigitalSignature() async {
     final fullName = (await _storage.read(key: 'full_name'))?.trim();
@@ -171,6 +275,12 @@ class _AttivazioneServizioLavoroScreenState
 
   Future<void> _activateService() async {
     final l10n = AppLocalizations.of(context)!;
+
+    if (_isServiceActive) {
+      await _deactivateService();
+      return;
+    }
+
     if (!_allChecked) {
       _log('activate_blocked_missing_consents', {
         'gdpr': _gdprConsent,
@@ -282,9 +392,13 @@ class _AttivazioneServizioLavoroScreenState
       _log('tracking_saved', {'trackingKey': widget.trackingKey});
 
       if (!mounted) return;
+      setState(() {
+        _isServiceActive = true;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.translate('workServiceActivated'))),
       );
+      Navigator.of(context).pop(true);
       _log('activate_completed', {'openWhatsAppAutomatically': false});
     } catch (error, stackTrace) {
       _log('activate_failed', {
@@ -304,13 +418,109 @@ class _AttivazioneServizioLavoroScreenState
     }
   }
 
+  Future<void> _deactivateService() async {
+    final l10n = AppLocalizations.of(context)!;
+
+    setState(() {
+      _saving = true;
+    });
+
+    try {
+      final profileId = await LavoroService.resolveProfileId();
+      if (profileId == null || profileId.isEmpty) {
+        throw Exception('profile_id_missing');
+      }
+
+      final result = await LavoroService.updateJobStatus(
+        profileId: profileId,
+        status: 'disattivato',
+        note: 'Servizio lavoro disattivato dall\'utente tramite app',
+      );
+      if (result['success'] != true) {
+        throw Exception(result['message'] ?? 'deactivation_failed');
+      }
+
+      final rawTracking = await _storage.read(key: widget.trackingKey);
+      final now = DateTime.now().toIso8601String();
+      Map<String, dynamic> tracking = {
+        'currentStatus': 'deactivated',
+        'updatedAt': now,
+        'timeline': [
+          {'status': 'deactivated', 'at': now},
+        ],
+      };
+
+      if (rawTracking != null && rawTracking.isNotEmpty) {
+        try {
+          final decoded = jsonDecode(rawTracking);
+          if (decoded is Map<String, dynamic>) {
+            final timeline =
+                decoded['timeline'] is List
+                    ? List<Map<String, dynamic>>.from(
+                      (decoded['timeline'] as List)
+                          .whereType<Map>()
+                          .map((item) => Map<String, dynamic>.from(item)),
+                    )
+                    : <Map<String, dynamic>>[];
+            timeline.add({'status': 'deactivated', 'at': now});
+            tracking = {
+              ...decoded,
+              'currentStatus': 'deactivated',
+              'updatedAt': now,
+              'timeline': timeline,
+            };
+          }
+        } catch (_) {}
+      }
+
+      await _storage.write(key: widget.trackingKey, value: jsonEncode(tracking));
+
+      if (!mounted) return;
+      setState(() {
+        _isServiceActive = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.translate('workServiceDeactivated'))),
+      );
+      Navigator.of(context).pop(true);
+    } catch (error, stackTrace) {
+      _log('deactivate_failed', {
+        'error': error.toString(),
+        'stackTrace': stackTrace.toString(),
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.sendingError)),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _saving = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final scheme = Theme.of(context).colorScheme;
 
+    if (_isCheckingStatus) {
+      return Scaffold(
+        appBar: AppBar(title: Text(l10n.translate('activateWorkService'))),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.translate('activateWorkService'))),
+      appBar: AppBar(
+        title: Text(
+          _isServiceActive
+              ? l10n.translate('deactivateServiceCta')
+              : l10n.translate('activateWorkService'),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -318,7 +528,9 @@ class _AttivazioneServizioLavoroScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                l10n.translate('workServiceQuestion'),
+                _isServiceActive
+                    ? l10n.translate('workServiceAlreadyActive')
+                    : l10n.translate('workServiceQuestion'),
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -334,7 +546,9 @@ class _AttivazioneServizioLavoroScreenState
                   border: Border.all(color: scheme.outlineVariant),
                 ),
                 child: Text(
-                  l10n.translate('activateWorkServiceInfo'),
+                  _isServiceActive
+                      ? l10n.translate('activateWorkServiceActiveDesc')
+                      : l10n.translate('activateWorkServiceInfo'),
                   style: TextStyle(
                     fontSize: 14,
                     color: scheme.onSurface,
@@ -343,45 +557,46 @@ class _AttivazioneServizioLavoroScreenState
                 ),
               ),
               const SizedBox(height: 16),
-              Container(
-                decoration: BoxDecoration(
-                  color: scheme.surface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: scheme.outlineVariant),
+              if (!_isServiceActive)
+                Container(
+                  decoration: BoxDecoration(
+                    color: scheme.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: scheme.outlineVariant),
+                  ),
+                  child: Column(
+                    children: [
+                      CheckboxListTile(
+                        value: _gdprConsent,
+                        title: Text(l10n.translate('consentGdpr')),
+                        onChanged:
+                            (value) =>
+                                setState(() => _gdprConsent = value ?? false),
+                      ),
+                      CheckboxListTile(
+                        value: _shareCvConsent,
+                        title: Text(l10n.translate('consentShareCv')),
+                        onChanged:
+                            (value) =>
+                                setState(() => _shareCvConsent = value ?? false),
+                      ),
+                      CheckboxListTile(
+                        value: _whatsappConsent,
+                        title: Text(l10n.translate('consentWhatsapp')),
+                        onChanged:
+                            (value) =>
+                                setState(() => _whatsappConsent = value ?? false),
+                      ),
+                      CheckboxListTile(
+                        value: _termsConsent,
+                        title: Text(l10n.translate('consentTerms')),
+                        onChanged:
+                            (value) =>
+                                setState(() => _termsConsent = value ?? false),
+                      ),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    CheckboxListTile(
-                      value: _gdprConsent,
-                      title: Text(l10n.translate('consentGdpr')),
-                      onChanged:
-                          (value) =>
-                              setState(() => _gdprConsent = value ?? false),
-                    ),
-                    CheckboxListTile(
-                      value: _shareCvConsent,
-                      title: Text(l10n.translate('consentShareCv')),
-                      onChanged:
-                          (value) =>
-                              setState(() => _shareCvConsent = value ?? false),
-                    ),
-                    CheckboxListTile(
-                      value: _whatsappConsent,
-                      title: Text(l10n.translate('consentWhatsapp')),
-                      onChanged:
-                          (value) =>
-                              setState(() => _whatsappConsent = value ?? false),
-                    ),
-                    CheckboxListTile(
-                      value: _termsConsent,
-                      title: Text(l10n.translate('consentTerms')),
-                      onChanged:
-                          (value) =>
-                              setState(() => _termsConsent = value ?? false),
-                    ),
-                  ],
-                ),
-              ),
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
@@ -395,7 +610,11 @@ class _AttivazioneServizioLavoroScreenState
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                           : const Icon(Icons.check_circle_outline),
-                  label: Text(l10n.translate('activateServiceCta')),
+                  label: Text(
+                    _isServiceActive
+                        ? l10n.translate('deactivateServiceCta')
+                        : l10n.translate('activateServiceCta'),
+                  ),
                 ),
               ),
             ],
@@ -431,6 +650,7 @@ class _StatoCandidaturaScreenState extends State<StatoCandidaturaScreen> {
     'sent',
     'under_evaluation',
     'interview',
+    'deactivated',
     'closed',
     'not_selected',
   ];
@@ -467,6 +687,9 @@ class _StatoCandidaturaScreenState extends State<StatoCandidaturaScreen> {
       'interview': 'interview',
       'colloquio': 'interview',
       'entrevista': 'interview',
+      'deactivated': 'deactivated',
+      'disattivato': 'deactivated',
+      'desactivado': 'deactivated',
       'closed': 'closed',
       'chiuso': 'closed',
       'cerrado': 'closed',
@@ -506,15 +729,28 @@ class _StatoCandidaturaScreenState extends State<StatoCandidaturaScreen> {
         final remote = await LavoroService.getJobStatus(profileId: profileId);
         if (remote['success'] == true) {
           final data =
-              remote['data'] is Map<String, dynamic>
-                  ? remote['data'] as Map<String, dynamic>
-                  : <String, dynamic>{};
+            remote['data'] is Map<String, dynamic>
+              ? remote['data'] as Map<String, dynamic>
+              : <String, dynamic>{};
+          final job =
+            data['job'] is Map<String, dynamic>
+              ? data['job'] as Map<String, dynamic>
+              : <String, dynamic>{};
           final remoteStatus = _normalizeStatus(
-            (data['currentStatus'] ?? data['status'] ?? data['state'] ?? '')
-                .toString(),
+          LavoroService.extractJobStatus(remote) ?? '',
           );
           final remoteUpdatedAt =
-              (data['updatedAt'] ?? data['updated_at'] ?? '').toString().trim();
+            (job['updatedAt'] ??
+                job['updated_at'] ??
+                data['updatedAt'] ??
+                data['updated_at'] ??
+                '')
+              .toString()
+              .trim();
+          final remoteTimeline =
+            job['history'] is List
+              ? job['history']
+              : (data['timeline'] is List ? data['timeline'] : null);
 
           tracking = {
             'currentStatus':
@@ -526,8 +762,8 @@ class _StatoCandidaturaScreenState extends State<StatoCandidaturaScreen> {
                     ? DateTime.now().toIso8601String()
                     : remoteUpdatedAt,
             'timeline':
-                data['timeline'] is List
-                    ? (data['timeline'] as List)
+              remoteTimeline is List
+                ? remoteTimeline
                         .whereType<Map>()
                         .map(
                           (e) => {
@@ -572,6 +808,7 @@ class _StatoCandidaturaScreenState extends State<StatoCandidaturaScreen> {
       'sent': 'jobStatusSent',
       'under_evaluation': 'jobStatusUnderEvaluation',
       'interview': 'jobStatusInterview',
+      'deactivated': 'jobStatusDeactivated',
       'closed': 'jobStatusClosed',
       'not_selected': 'jobStatusNotSelected',
     };

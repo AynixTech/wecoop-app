@@ -10,18 +10,25 @@ import 'profilo/profilo_screen.dart';
 import 'eventi/eventi_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final int initialIndex;
+
+  const MainScreen({
+    super.key,
+    this.initialIndex = 0,
+  });
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
+  int _profileScreenVersion = 0;
 
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.initialIndex;
     UserAvatarStore.hydrate();
   }
 
@@ -32,14 +39,28 @@ class _MainScreenState extends State<MainScreen> {
     CalendarScreen(),
     OfferteLavoroScreen(),
     SportelloScreen(),
-    ProfiloScreen(),
+    // Placeholder, replaced below to keep the profile tab refreshable.
+    SizedBox.shrink(),
   ];
 
   void _onItemTapped(int index) {
     setState(() {
+      if (index == 6 && _selectedIndex != 6) {
+        _profileScreenVersion++;
+      }
       _selectedIndex = index;
     });
   }
+
+  List<Widget> get _resolvedScreens => [
+    _screens[0],
+    _screens[1],
+    _screens[2],
+    _screens[3],
+    _screens[4],
+    _screens[5],
+    ProfiloScreen(key: ValueKey('profile-$_profileScreenVersion')),
+  ];
 
   Widget _buildMenuIcon(
     String assetPath, {
@@ -262,7 +283,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _selectedIndex, children: _screens),
+      body: IndexedStack(index: _selectedIndex, children: _resolvedScreens),
       bottomNavigationBar: _buildBottomNav(),
     );
   }

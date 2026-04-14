@@ -5,6 +5,7 @@ import 'package:wecoop_app/widgets/help_button_widget.dart';
 import '../../services/socio_service.dart';
 import '../../services/documento_service.dart';
 import '../../models/documento.dart';
+import '../main_screen.dart';
 import '../profilo/documenti_screen.dart';
 import 'pagamento_screen.dart';
 
@@ -1814,9 +1815,12 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop(); // Chiudi dialog
-                      Navigator.of(
-                        this.context,
-                      ).pushReplacementNamed('/calendar');
+                      Navigator.of(this.context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (_) => const MainScreen(initialIndex: 3),
+                        ),
+                        (route) => false,
+                      );
                     },
                     child: Text(requiresPayment ? l10n.payLater : l10n.ok),
                   ),

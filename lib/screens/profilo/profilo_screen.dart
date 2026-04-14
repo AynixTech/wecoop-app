@@ -46,6 +46,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   List<Evento> _mieiEventi = [];
   bool _isLoadingEventi = false;
   bool _isUploadingAvatar = false;
+  bool _isLoadingProfile = true;
 
   @override
   void initState() {
@@ -78,6 +79,12 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   }
 
   Future<void> _loadUserData() async {
+    if (mounted) {
+      setState(() {
+        _isLoadingProfile = true;
+      });
+    }
+
     final name = await storage.read(key: 'full_name');
     final displayName = await storage.read(key: 'user_display_name');
     final email = await storage.read(key: 'user_email');
@@ -132,6 +139,12 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
       }
     } catch (e) {
       print('Errore refresh dati profilo: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingProfile = false;
+        });
+      }
     }
   }
 
@@ -584,6 +597,89 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
+
+    if (_isLoadingProfile) {
+      return Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                scheme.surfaceContainerLowest,
+                Color.alphaBlend(
+                  scheme.primary.withOpacity(0.08),
+                  scheme.surface,
+                ),
+              ],
+            ),
+          ),
+          child: SafeArea(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 28),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 96,
+                      height: 96,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: scheme.primary.withOpacity(0.14),
+                            blurRadius: 24,
+                            offset: const Offset(0, 12),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(18),
+                        child: Image.asset('assets/icons/app_icon.png'),
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    Text(
+                      'Stiamo preparando il tuo profilo',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: scheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Recuperiamo tessera, dati personali e preferenze aggiornate.',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                        height: 1.45,
+                      ),
+                    ),
+                    const SizedBox(height: 26),
+                    SizedBox(
+                      width: 220,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(999),
+                        child: LinearProgressIndicator(
+                          minHeight: 8,
+                          backgroundColor: scheme.primary.withOpacity(0.12),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            scheme.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       body: SafeArea(

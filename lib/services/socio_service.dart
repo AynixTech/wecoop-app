@@ -1174,7 +1174,7 @@ class SocioService {
         return {
           'success': true,
           'message':
-              data['message'] ?? 'Password resettata. Controlla la tua email.',
+              data['message'] ?? 'Ti abbiamo inviato un link via email per reimpostare la password.',
           'email_sent_to': data['email_sent_to'],
         };
       } else {
@@ -1232,6 +1232,48 @@ class SocioService {
       }
     } catch (e) {
       print('❌ Errore cambio password: $e');
+      return {'success': false, 'message': 'Errore di connessione: $e'};
+    }
+  }
+
+  static Future<Map<String, dynamic>> confirmPasswordReset({
+    required String token,
+    required String newPassword,
+  }) async {
+    try {
+      final url = '$baseUrl/soci/reset-password/confirm';
+      final headers = await _getHeaders(includeAuth: false);
+
+      final body = {'token': token, 'new_password': newPassword};
+
+      print('📤 POST /soci/reset-password/confirm');
+      print('📤 Body: {token: ***, new_password: ***}');
+
+      final response = await HttpClientService.post(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode(body),
+      );
+
+      print('📥 Response status: ${response.statusCode}');
+      print('📥 Response body: ${response.body}');
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return {
+          'success': true,
+          'message': data['message'] ?? 'Password cambiata con successo',
+        };
+      }
+
+      return {
+        'success': false,
+        'message': data['message'] ?? 'Errore reset password',
+        'code': data['code'],
+      };
+    } catch (e) {
+      print('❌ Errore conferma reset password: $e');
       return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }

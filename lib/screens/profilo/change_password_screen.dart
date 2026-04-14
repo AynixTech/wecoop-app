@@ -3,7 +3,9 @@ import '../../services/app_localizations.dart';
 import '../../services/socio_service.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
-  const ChangePasswordScreen({super.key});
+  final String? resetToken;
+
+  const ChangePasswordScreen({super.key, this.resetToken});
 
   @override
   State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
@@ -19,6 +21,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool _showOldPassword = false;
   bool _showNewPassword = false;
   bool _showConfirmPassword = false;
+
+  bool get _isResetFlow => widget.resetToken != null && widget.resetToken!.isNotEmpty;
 
   @override
   void dispose() {
@@ -38,10 +42,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     });
 
     try {
-      final result = await SocioService.changePassword(
-        oldPassword: _oldPasswordController.text,
-        newPassword: _newPasswordController.text,
-      );
+      final result =
+          _isResetFlow
+              ? await SocioService.confirmPasswordReset(
+                token: widget.resetToken!,
+                newPassword: _newPasswordController.text,
+              )
+              : await SocioService.changePassword(
+                oldPassword: _oldPasswordController.text,
+                newPassword: _newPasswordController.text,
+              );
 
       if (!mounted) return;
 
@@ -60,7 +70,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         // Torna indietro dopo 1 secondo
         await Future.delayed(const Duration(seconds: 1));
         if (mounted) {
-          Navigator.pop(context, true); // true = password cambiata
+          if (_isResetFlow) {
+            Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+          } else {
+            Navigator.pop(context, true);
+          }
         }
       } else {
         // Errore
@@ -135,37 +149,37 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
               const SizedBox(height: 32),
 
-              // Password Attuale
-              TextFormField(
-                controller: _oldPasswordController,
-                obscureText: !_showOldPassword,
-                decoration: InputDecoration(
-                  labelText: l10n.translate('currentPassword'),
-                  hintText: l10n.translate('enterCurrentPassword'),
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _showOldPassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+              if (!_isResetFlow) ...[
+                TextFormField(
+                  controller: _oldPasswordController,
+                  obscureText: !_showOldPassword,
+                  decoration: InputDecoration(
+                    labelText: l10n.translate('currentPassword'),
+                    hintText: l10n.translate('enterCurrentPassword'),
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _showOldPassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _showOldPassword = !_showOldPassword;
+                        });
+                      },
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _showOldPassword = !_showOldPassword;
-                      });
-                    },
+                    border: const OutlineInputBorder(),
                   ),
-                  border: const OutlineInputBorder(),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return l10n.translate('enterCurrentPassword');
+                    }
+                    return null;
+                  },
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return l10n.translate('enterCurrentPassword');
-                  }
-                  return null;
-                },
-              ),
-
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
+              ],
 
               // Nuova Password
               TextFormField(
@@ -201,7 +215,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   if (value.length < 6) {
                     return l10n.translate('passwordTooShort');
                   }
-                  if (value == _oldPasswordController.text) {
+                  if (!_isResetFlow && value == _oldPasswordController.text) {
                     return l10n.translate('passwordMustBeDifferent');
                   }
                   return null;

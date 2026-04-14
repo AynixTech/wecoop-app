@@ -68,150 +68,168 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            // Banner verde informativo
-            _buildInfoBanner(),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [scheme.surfaceContainerLowest, scheme.surface],
+            ),
+          ),
+          child: Column(
+            children: [
+              _buildInfoBanner(),
 
-            // Form registrazione
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 20),
-
-                      // Logo/Icona
-                      const Icon(
-                        Icons.person_add,
-                        size: 80,
-                        color: Color(0xFF2196F3),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Titolo
-                      Text(
-                        AppLocalizations.of(context)!.welcomeExclamation,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF2196F3),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-
-                      Text(
-                        AppLocalizations.of(context)!.enterYourDataToStart,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                      ),
-                      const SizedBox(height: 40),
-
-                      // Campo Nome
-                      TextFormField(
-                        controller: _nomeController,
-                        decoration: InputDecoration(
-                          labelText: AppLocalizations.of(context)!.nameRequired,
-                          hintText: 'Mario',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          prefixIcon: const Icon(Icons.person),
-                        ),
-                        textCapitalization: TextCapitalization.words,
-                        validator: (value) {
-                          final l10n = AppLocalizations.of(context)!;
-                          if (value == null || value.trim().isEmpty) {
-                            return l10n.nameIsMandatory;
-                          }
-                          if (value.trim().length < 2) {
-                            return l10n.nameMinLength;
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Campo Cognome
-                      TextFormField(
-                        controller: _cognomeController,
-                        decoration: InputDecoration(
-                          labelText:
-                              AppLocalizations.of(context)!.surnameRequired,
-                          hintText: 'Rossi',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          prefixIcon: const Icon(Icons.person_outline),
-                        ),
-                        textCapitalization: TextCapitalization.words,
-                        validator: (value) {
-                          final l10n = AppLocalizations.of(context)!;
-                          if (value == null || value.trim().isEmpty) {
-                            return l10n.surnameIsMandatory;
-                          }
-                          if (value.trim().length < 2) {
-                            return l10n.surnameMinLength;
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Prefisso + Telefono in riga
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Prefisso (dropdown)
-                          SizedBox(
-                            width: 100,
-                            child: DropdownButtonFormField<String>(
-                              value: _prefixController.text,
-                              decoration: InputDecoration(
-                                labelText:
-                                    AppLocalizations.of(
-                                      context,
-                                    )!.prefixRequired,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: 12),
+                        Center(
+                          child: Container(
+                            width: 96,
+                            height: 96,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  scheme.primary,
+                                  Color.alphaBlend(
+                                    scheme.secondary.withOpacity(0.28),
+                                    scheme.primary,
+                                  ),
+                                ],
                               ),
-                              items:
-                                  _prefissi.map((String prefix) {
-                                    return DropdownMenuItem<String>(
-                                      value: prefix,
-                                      child: Text(prefix),
-                                    );
-                                  }).toList(),
-                              onChanged: (String? newValue) {
-                                if (newValue != null) {
-                                  setState(() {
-                                    _prefixController.text = newValue;
-                                  });
-                                }
-                              },
+                              boxShadow: [
+                                BoxShadow(
+                                  color: scheme.primary.withOpacity(0.24),
+                                  blurRadius: 18,
+                                  offset: const Offset(0, 10),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              Icons.person_add,
+                              size: 46,
+                              color: scheme.onPrimary,
                             ),
                           ),
-                          const SizedBox(width: 12),
+                        ),
+                        const SizedBox(height: 24),
 
-                          // Telefono
-                          Expanded(
-                            child: TextFormField(
-                              controller: _telefonoController,
-                              decoration: InputDecoration(
-                                labelText:
-                                    AppLocalizations.of(context)!.phoneRequired,
-                                hintText: '3331234567',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                        Text(
+                          AppLocalizations.of(context)!.welcomeExclamation,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w800,
+                            color: scheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+
+                        Text(
+                          AppLocalizations.of(context)!.enterYourDataToStart,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16,
+                            height: 1.4,
+                            color: scheme.onSurface.withOpacity(0.72),
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+
+                        TextFormField(
+                          controller: _nomeController,
+                          decoration: _buildFieldDecoration(
+                            context,
+                            labelText: AppLocalizations.of(context)!.nameRequired,
+                            hintText: 'Mario',
+                            icon: Icons.person,
+                          ),
+                          textCapitalization: TextCapitalization.words,
+                          validator: (value) {
+                            final l10n = AppLocalizations.of(context)!;
+                            if (value == null || value.trim().isEmpty) {
+                              return l10n.nameIsMandatory;
+                            }
+                            if (value.trim().length < 2) {
+                              return l10n.nameMinLength;
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+
+                        TextFormField(
+                          controller: _cognomeController,
+                          decoration: _buildFieldDecoration(
+                            context,
+                            labelText: AppLocalizations.of(context)!.surnameRequired,
+                            hintText: 'Rossi',
+                            icon: Icons.person_outline,
+                          ),
+                          textCapitalization: TextCapitalization.words,
+                          validator: (value) {
+                            final l10n = AppLocalizations.of(context)!;
+                            if (value == null || value.trim().isEmpty) {
+                              return l10n.surnameIsMandatory;
+                            }
+                            if (value.trim().length < 2) {
+                              return l10n.surnameMinLength;
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            final useVerticalLayout = constraints.maxWidth < 360;
+                            final prefixField = SizedBox(
+                              width: useVerticalLayout ? double.infinity : 108,
+                              child: DropdownButtonFormField<String>(
+                                value: _prefixController.text,
+                                isExpanded: true,
+                                decoration: _buildFieldDecoration(
+                                  context,
+                                  labelText: AppLocalizations.of(context)!.prefixRequired,
+                                  icon: Icons.public,
                                 ),
-                                prefixIcon: const Icon(Icons.phone),
+                                items:
+                                    _prefissi.map((String prefix) {
+                                      return DropdownMenuItem<String>(
+                                        value: prefix,
+                                        child: Text(prefix),
+                                      );
+                                    }).toList(),
+                                onChanged: (String? newValue) {
+                                  if (newValue != null) {
+                                    setState(() {
+                                      _prefixController.text = newValue;
+                                    });
+                                  }
+                                },
+                              ),
+                            );
+
+                            final phoneField = TextFormField(
+                              controller: _telefonoController,
+                              decoration: _buildFieldDecoration(
+                                context,
+                                labelText: AppLocalizations.of(context)!.phoneRequired,
+                                hintText: '3331234567',
+                                icon: Icons.phone,
                               ),
                               keyboardType: TextInputType.phone,
                               validator: (value) {
@@ -220,19 +238,16 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                                   return l10n.phoneIsMandatory;
                                 }
 
-                                // Rimuovi spazi e caratteri non numerici
                                 final cleanPhone = value.replaceAll(
                                   RegExp(r'[^\d]'),
                                   '',
                                 );
 
-                                // Per +39 deve essere 10 cifre (333 123 4567)
                                 if (_prefixController.text == '+39') {
                                   if (cleanPhone.length != 10) {
                                     return l10n.phoneMust10Digits;
                                   }
                                 } else {
-                                  // Altri prefissi: almeno 8 cifre
                                   if (cleanPhone.length < 8) {
                                     return l10n.phoneInvalid;
                                   }
@@ -240,113 +255,203 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
 
                                 return null;
                               },
+                            );
+
+                            if (useVerticalLayout) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  prefixField,
+                                  const SizedBox(height: 12),
+                                  phoneField,
+                                ],
+                              );
+                            }
+
+                            return Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                prefixField,
+                                const SizedBox(width: 12),
+                                Expanded(child: phoneField),
+                              ],
+                            );
+                          },
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        ElevatedButton(
+                          onPressed: _isLoading ? null : _completaPrimoAccesso,
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 18),
+                            backgroundColor: scheme.primary,
+                            foregroundColor: scheme.onPrimary,
+                            elevation: 0,
+                            shadowColor: scheme.primary.withOpacity(0.24),
+                            disabledBackgroundColor: Colors.grey[300],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
                             ),
                           ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 32),
-
-                      // Pulsante Continua
-                      ElevatedButton(
-                        onPressed: _isLoading ? null : _completaPrimoAccesso,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          backgroundColor: const Color(0xFF2196F3),
-                          disabledBackgroundColor: Colors.grey[300],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child:
-                            _isLoading
-                                ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
+                          child:
+                              _isLoading
+                                  ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                  : Text(
+                                    AppLocalizations.of(context)!.continue_,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                )
-                                : Text(
-                                  AppLocalizations.of(context)!.continue_,
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Color.alphaBlend(
+                              scheme.primary.withOpacity(0.08),
+                              Colors.white,
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: scheme.primary.withOpacity(0.18),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: scheme.primary.withOpacity(0.06),
+                                blurRadius: 16,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                color: scheme.primary,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  AppLocalizations.of(context)!.afterRegistrationInfo,
                                   style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                    fontSize: 13,
+                                    height: 1.45,
+                                    color: scheme.onSurface.withOpacity(0.8),
                                   ),
-                                ),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Note informative
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.blue[50],
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.blue[200]!),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Icon(
-                              Icons.info_outline,
-                              color: Colors.blue[700],
-                              size: 20,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                AppLocalizations.of(
-                                  context,
-                                )!.afterRegistrationInfo,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.blue[900],
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
+  InputDecoration _buildFieldDecoration(
+    BuildContext context, {
+    required String labelText,
+    String? hintText,
+    required IconData icon,
+  }) {
+    final scheme = Theme.of(context).colorScheme;
+
+    OutlineInputBorder border(Color color, {double width = 1}) {
+      return OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: color, width: width),
+      );
+    }
+
+    return InputDecoration(
+      labelText: labelText,
+      hintText: hintText,
+      filled: true,
+      fillColor: scheme.surfaceContainerLowest,
+      prefixIcon: Icon(icon, color: scheme.primary),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+      border: border(Colors.black.withOpacity(0.08)),
+      enabledBorder: border(Colors.black.withOpacity(0.08)),
+      focusedBorder: border(scheme.primary.withOpacity(0.75), width: 1.4),
+      errorBorder: border(Colors.red.withOpacity(0.45)),
+      focusedErrorBorder: border(Colors.red.withOpacity(0.7), width: 1.4),
+      labelStyle: TextStyle(color: scheme.onSurface.withOpacity(0.72)),
+      hintStyle: TextStyle(color: scheme.onSurface.withOpacity(0.38)),
+    );
+  }
+
   Widget _buildInfoBanner() {
+    final scheme = Theme.of(context).colorScheme;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF2196F3),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            scheme.primary,
+            Color.alphaBlend(
+              scheme.secondary.withOpacity(0.28),
+              scheme.primary,
+            ),
+          ],
+        ),
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            color: scheme.primary.withOpacity(0.22),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Row(
         children: [
-          const Icon(Icons.info_outline, color: Colors.white, size: 24),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: scheme.onPrimary.withOpacity(0.15),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: scheme.onPrimary.withOpacity(0.25),
+              ),
+            ),
+            child: Icon(Icons.info_outline, color: scheme.onPrimary, size: 22),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               AppLocalizations.of(context)!.completeDataToAccessServices,
               style: TextStyle(
-                color: Colors.white,
+                color: scheme.onPrimary,
                 fontSize: 16,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -601,9 +706,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
         }
       } else {
         print('❌ Status code NON 200: ${response.statusCode}');
-        _showErrorDialog(
-          'Errore del server (${response.statusCode}). Riprova più tardi.',
-        );
+        await _handleFirstAccessErrorResponse(response, telefonoCompleto);
       }
     } catch (e, stackTrace) {
       print('\n❌ ECCEZIONE CATTURATA:');
@@ -617,6 +720,55 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
       }
       print('=== FINE PRIMO ACCESSO ===\n');
     }
+  }
+
+  Future<void> _handleFirstAccessErrorResponse(
+    http.Response response,
+    String telefonoCompleto,
+  ) async {
+    Map<String, dynamic>? data;
+
+    try {
+      final decoded = jsonDecode(response.body);
+      if (decoded is Map<String, dynamic>) {
+        data = decoded;
+      }
+    } catch (_) {
+      data = null;
+    }
+
+    final message = data?['message']?.toString();
+    final code = data?['code']?.toString().toLowerCase();
+    final normalizedMessage = (message ?? '').toLowerCase();
+    final normalizedBody = response.body.toLowerCase();
+    final isAlreadyRegistered =
+        code == 'duplicate_phone' ||
+        code == 'username_exists' ||
+        normalizedMessage.contains('gia registrato') ||
+        normalizedMessage.contains('già registrato') ||
+        normalizedMessage.contains('gia presente') ||
+        normalizedMessage.contains('già presente') ||
+        normalizedBody.contains('duplicate_phone') ||
+        normalizedBody.contains('gia registrato') ||
+        normalizedBody.contains('già registrato');
+
+    if (isAlreadyRegistered) {
+      final loginPhone = telefonoCompleto.replaceAll(RegExp(r'[^\d]'), '');
+      await _storage.write(key: 'last_login_phone', value: loginPhone);
+
+      if (!mounted) return;
+
+      _showDuplicatePhoneDialog(
+        message ?? 'Questo numero è già registrato.',
+      );
+      return;
+    }
+
+    if (!mounted) return;
+
+    _showErrorDialog(
+      message ?? 'Errore del server (${response.statusCode}). Riprova più tardi.',
+    );
   }
 
   /// Login automatico dopo registrazione
@@ -1131,19 +1283,29 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
     showDialog(
       context: context,
       builder:
-          (context) => AlertDialog(
+          (context) {
+            final scheme = Theme.of(context).colorScheme;
+
+            return AlertDialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
+            scrollable: true,
+            actionsOverflowDirection: VerticalDirection.down,
+            actionsOverflowButtonSpacing: 8,
             title: Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.info_outline,
-                  color: Color(0xFF2196F3),
+                  color: scheme.primary,
                   size: 32,
                 ),
                 const SizedBox(width: 12),
-                Text(AppLocalizations.of(context)!.phoneAlreadyRegistered),
+                Expanded(
+                  child: Text(
+                    AppLocalizations.of(context)!.phoneAlreadyRegistered,
+                  ),
+                ),
               ],
             ),
             content: Column(
@@ -1155,14 +1317,17 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.blue[50],
+                    color: Color.alphaBlend(
+                      scheme.primary.withOpacity(0.08),
+                      Colors.white,
+                    ),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.lightbulb_outline,
-                        color: Color(0xFF2196F3),
+                        color: scheme.primary,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
@@ -1188,12 +1353,13 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                   Navigator.of(context).pushReplacementNamed('/login');
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2196F3),
+                  backgroundColor: scheme.primary,
                 ),
                 child: Text(AppLocalizations.of(context)!.goToLogin),
               ),
             ],
-          ),
+          );
+          },
     );
   }
 }

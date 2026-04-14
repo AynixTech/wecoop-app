@@ -1032,9 +1032,9 @@ class AppLocalizations {
       'resetPassword': 'Reset Password',
       'resetPasswordTitle': 'Recupera la tua password',
       'resetPasswordDescription':
-          'Inserisci il tuo numero di telefono o email per ricevere una nuova password',
+          'Inserisci il tuo numero di telefono o email per ricevere un link di accesso nell\'app',
       'resetPasswordHelp':
-          'Riceverai una nuova password via email. Potrai cambiarla dopo aver effettuato il login.',
+          'Riceverai una email con un link che aprira l\'app e ti permettera di scegliere una nuova password.',
       'backToLogin': 'Torna al Login',
       'changePassword': 'Cambia Password',
       'changePasswordTitle': 'Modifica la tua password',
@@ -2165,9 +2165,9 @@ class AppLocalizations {
       'resetPassword': 'Reset Password',
       'resetPasswordTitle': 'Recover your password',
       'resetPasswordDescription':
-          'Enter your phone number or email to receive a new password',
+          'Enter your phone number or email to receive a link that opens the app',
       'resetPasswordHelp':
-          'You will receive a new password via email. You can change it after logging in.',
+          'You will receive an email with a link that opens the app and lets you choose a new password.',
       'backToLogin': 'Back to Login',
       'changePassword': 'Change Password',
       'changePasswordTitle': 'Change your password',
@@ -3337,9 +3337,9 @@ class AppLocalizations {
       'resetPassword': 'Restablecer Contraseña',
       'resetPasswordTitle': 'Recupera tu contraseña',
       'resetPasswordDescription':
-          'Ingresa tu número de teléfono o email para recibir una nueva contraseña',
+          'Ingresa tu número de teléfono o email para recibir un enlace que abre la app',
       'resetPasswordHelp':
-          'Recibirás una nueva contraseña por email. Podrás cambiarla después de iniciar sesión.',
+          'Recibirás un email con un enlace que abre la app y te permite elegir una nueva contraseña.',
       'backToLogin': 'Volver al Login',
       'changePassword': 'Cambiar Contraseña',
       'changePasswordTitle': 'Modifica tu contraseña',

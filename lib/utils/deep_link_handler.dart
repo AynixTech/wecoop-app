@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../screens/profilo/change_password_screen.dart';
 import '../screens/servizi/pagamento_screen.dart';
 
 class DeepLinkHandler {
@@ -48,6 +49,25 @@ class DeepLinkHandler {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => PagamentoScreen(richiestaId: id),
+          ),
+        );
+      }
+      return;
+    }
+
+    if (path == '/reset-password') {
+      final token = queryParams['token'];
+      if (token != null && token.isNotEmpty) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ChangePasswordScreen(resetToken: token),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Link reset password non valido'),
+            duration: Duration(seconds: 3),
           ),
         );
       }

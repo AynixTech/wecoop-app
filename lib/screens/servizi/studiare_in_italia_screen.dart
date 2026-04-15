@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/app_localizations.dart';
+import '../../services/secure_storage_service.dart';
 import '../../services/wordpress_service.dart';
 import '../../models/offerta_formativa_model.dart';
 
@@ -40,9 +41,20 @@ class _StudiareInItaliaScreenState extends State<StudiareInItaliaScreen>
         title: Text(l10n.translate('studiareItalia')),
         bottom: TabBar(
           controller: _tabController,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white54,
+          indicatorColor: Colors.white,
+          indicatorWeight: 3,
+          dividerColor: Colors.transparent,
           tabs: [
-            Tab(text: l10n.translate('studiareItaliaTabForm')),
-            Tab(text: l10n.translate('studiareItaliaTabPercorsi')),
+            Tab(
+              icon: const Icon(Icons.assignment_outlined, size: 20),
+              text: l10n.translate('studiareItaliaTabForm'),
+            ),
+            Tab(
+              icon: const Icon(Icons.school_outlined, size: 20),
+              text: l10n.translate('studiareItaliaTabPercorsi'),
+            ),
           ],
         ),
       ),
@@ -171,15 +183,17 @@ class _SupportItem extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(9),
             decoration: BoxDecoration(
-              color: scheme.primaryContainer,
-              borderRadius: BorderRadius.circular(8),
+              color: scheme.primary.withOpacity(0.10),
+              shape: BoxShape.circle,
             ),
             child: Icon(icon, color: scheme.primary, size: 20),
           ),
           const SizedBox(width: 12),
-          Text(label, style: const TextStyle(fontSize: 15)),
+          Expanded(
+            child: Text(label, style: const TextStyle(fontSize: 15)),
+          ),
         ],
       ),
     );
@@ -404,10 +418,31 @@ class _StudiareItaliaFormScreenState extends State<_StudiareItaliaFormScreen> {
   bool _isSubmitting = false;
 
   // Step 1 – Dati base
-  final _nomeCognomeCtrl     = TextEditingController();
-  final _paeseOrigineCtrl    = TextEditingController();
-  final _emailCtrl           = TextEditingController();
-  final _whatsappCtrl        = TextEditingController();
+  final _nomeCognomeCtrl  = TextEditingController();
+  final _paeseOrigineCtrl = TextEditingController();
+  final _emailCtrl        = TextEditingController();
+  final _cellCtrl         = TextEditingController();
+
+  final _storage = SecureStorageService();
+
+  Future<void> _preloadProfileData() async {
+    final fullName    = (await _storage.read(key: 'full_name'))?.trim();
+    final displayName = (await _storage.read(key: 'user_display_name'))?.trim();
+    final email       = (await _storage.read(key: 'user_email'))?.trim();
+    final phone       = (await _storage.read(key: 'last_login_phone'))?.trim() ??
+                        (await _storage.read(key: 'auth_username'))?.trim();
+
+    if (!mounted) return;
+    setState(() {
+      if (fullName != null && fullName.isNotEmpty) {
+        _nomeCognomeCtrl.text = fullName;
+      } else if (displayName != null && displayName.isNotEmpty) {
+        _nomeCognomeCtrl.text = displayName;
+      }
+      if (email != null && email.isNotEmpty) _emailCtrl.text = email;
+      if (phone != null && phone.isNotEmpty) _cellCtrl.text = phone;
+    });
+  }
 
   // Step 2 – Profilo
   final _etaCtrl      = TextEditingController();
@@ -430,11 +465,17 @@ class _StudiareItaliaFormScreenState extends State<_StudiareItaliaFormScreen> {
   final _wpService = WordpressService();
 
   @override
+  void initState() {
+    super.initState();
+    _preloadProfileData();
+  }
+
+  @override
   void dispose() {
     _nomeCognomeCtrl.dispose();
     _paeseOrigineCtrl.dispose();
     _emailCtrl.dispose();
-    _whatsappCtrl.dispose();
+    _cellCtrl.dispose();
     _etaCtrl.dispose();
     _cosaStudiareCtrl.dispose();
     super.dispose();
@@ -467,7 +508,7 @@ class _StudiareItaliaFormScreenState extends State<_StudiareItaliaFormScreen> {
       'nome_cognome':     _nomeCognomeCtrl.text.trim(),
       'paese_origine':    _paeseOrigineCtrl.text.trim(),
       'email':            _emailCtrl.text.trim(),
-      'whatsapp':         _whatsappCtrl.text.trim(),
+      'telefono':         _cellCtrl.text.trim(),
       'eta':              _etaCtrl.text.trim(),
       'titolo_studio':    _titoloStudio ?? '',
       'livello_italiano': _livelloItaliano ?? '',
@@ -562,8 +603,10 @@ class _StudiareItaliaFormScreenState extends State<_StudiareItaliaFormScreen> {
             ),
           ),
           // Navigation buttons
-          Padding(
-            padding: const EdgeInsets.all(20),
+          SafeArea(
+            top: false,
+            child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
             child: Row(
               children: [
                 if (_currentStep > 0)
@@ -595,6 +638,7 @@ class _StudiareItaliaFormScreenState extends State<_StudiareItaliaFormScreen> {
                 ),
               ],
             ),
+          ),
           ),
         ],
       ),
@@ -633,9 +677,9 @@ class _StudiareItaliaFormScreenState extends State<_StudiareItaliaFormScreen> {
         ),
         const SizedBox(height: 16),
         _FormField(
-          controller: _whatsappCtrl,
+          controller: _cellCtrl,
           label: l10n.translate('studiareItaliaWhatsapp'),
-          icon: Icons.phone_outlined,
+          icon: Icons.smartphone_outlined,
           keyboardType: TextInputType.phone,
         ),
       ],

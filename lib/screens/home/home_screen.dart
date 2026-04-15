@@ -17,6 +17,7 @@ import '../servizi/mediazione_fiscale_screen.dart';
 import '../servizi/supporto_contabile_screen.dart';
 import '../servizi/educazione_finanziaria_credito_screen.dart';
 import '../servizi/lavoro_orientamento_screen.dart';
+import '../servizi/studiare_in_italia_screen.dart';
 import '../onboarding/first_access_screen.dart';
 import '../progetti/project_category_detail_screen.dart';
 import '../eventi/evento_detail_screen.dart';
@@ -1047,6 +1048,20 @@ class _ServicesSection extends StatelessWidget {
                         isLoggedIn
                             ? const EducazioneFinanziariaCreditoScreen()
                             : const FirstAccessScreen(),
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 12),
+        _ServiceButton(
+          title: l10n.translate('studiareItalia'),
+          imagePath: 'assets/images/home/orientamento.jpg',
+          onTap: () {
+            // Studiare in Italia è accessibile a tutti (lead generation)
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const StudiareInItaliaScreen(),
               ),
             );
           },

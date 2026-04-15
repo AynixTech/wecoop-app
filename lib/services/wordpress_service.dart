@@ -4,6 +4,7 @@ import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
 import '../models/post_model.dart';
 import '../models/partner_model.dart';
+import '../models/offerta_formativa_model.dart';
 import '../utils/html_utils.dart';
 
 class WordpressService {
@@ -55,6 +56,46 @@ class WordpressService {
     } catch (e) {
       debugPrint('getPartners error: $e');
       return [];
+    }
+  }
+
+  // Recupera le offerte formative attive dal plugin wecoop-offerta-formativa
+  Future<List<OffertaFormativa>> getOfferteFormative({int perPage = 20}) async {
+    final url = Uri.parse('$wecoopApiUrl/offerte-formative?per_page=$perPage');
+    try {
+      final response = await HttpClientService.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> rawData = json.decode(response.body);
+        return rawData
+            .map((json) => OffertaFormativa.fromJson(json as Map<String, dynamic>))
+            .toList();
+      } else {
+        throw Exception('Errore offerte formative: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('getOfferteFormative error: $e');
+      return [];
+    }
+  }
+
+  // Invia richiesta "Studiare in Italia" al plugin wecoop-offerta-formativa
+  Future<Map<String, dynamic>> submitStudiareItalia(Map<String, dynamic> data) async {
+    final url = Uri.parse('$wecoopApiUrl/studiare-italia');
+    try {
+      final response = await HttpClientService.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(data),
+      );
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        return json.decode(response.body) as Map<String, dynamic>;
+      } else {
+        debugPrint('submitStudiareItalia HTTP ${response.statusCode}: ${response.body}');
+        return {'success': false, 'message': 'Errore server (${response.statusCode})'};
+      }
+    } catch (e) {
+      debugPrint('submitStudiareItalia error: $e');
+      return {'success': false, 'message': e.toString()};
     }
   }
 }

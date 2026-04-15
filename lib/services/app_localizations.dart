@@ -324,7 +324,9 @@ class AppLocalizations {
       'freelanceProfessional': 'Libero professionista',
       'haveRentalOrSuitableHouse':
           'Hai un contratto di affitto o una casa idonea?',
-    'latestArticles': 'Aggiornamenti',
+    'latestArticles': 'Aggiornamenti utili',
+    'ourPartners': 'I Nostri Partner',
+    'visitWebsite': 'Visita il sito',
       'errorLoading': 'Errore',
       'noArticlesAvailable': 'Nessun articolo disponibile.',
       'myRequests': 'Le Mie Richieste',
@@ -1514,7 +1516,9 @@ class AppLocalizations {
       'startupFinancing': 'Startup financing',
       'workingCapital': 'Working capital and cash flow',
       'equipmentInvestment': 'Equipment investments',
-    'latestArticles': 'Updates',
+    'latestArticles': 'Useful Updates',
+    'ourPartners': 'Our Partners',
+    'visitWebsite': 'Visit website',
       'errorLoading': 'Error',
       'noArticlesAvailable': 'No articles available.',
       'myRequests': 'My Requests',
@@ -2715,7 +2719,9 @@ class AppLocalizations {
       'startupFinancing': 'Financiación de inicio de actividad',
       'workingCapital': 'Liquidez y capital de trabajo',
       'equipmentInvestment': 'Inversiones en equipamiento',
-    'latestArticles': 'Actualizaciones',
+    'latestArticles': 'Actualizaciones útiles',
+    'ourPartners': 'Nuestros Socios',
+    'visitWebsite': 'Visitar sitio web',
       'errorLoading': 'Error',
       'noArticlesAvailable': 'No hay artículos disponibles.',
       'myRequests': 'Mis Solicitudes',
@@ -3698,6 +3704,8 @@ class AppLocalizations {
   String get taxMediation => translate('taxMediation');
   String get accountingSupport => translate('accountingSupport');
   String get latestArticles => translate('latestArticles');
+  String get ourPartners => translate('ourPartners');
+  String get visitWebsite => translate('visitWebsite');
   String get errorLoading => translate('errorLoading');
   String get noArticlesAvailable => translate('noArticlesAvailable');
   String get myRequests => translate('myRequests');

@@ -4,6 +4,7 @@ import 'package:wecoop_app/services/app_localizations.dart';
 import '../../models/post_model.dart';
 import '../../models/evento_model.dart';
 import '../../models/documento.dart';
+import '../../models/partner_model.dart';
 import '../../models/project_opportunity_catalog.dart';
 import '../../services/wordpress_service.dart';
 import '../../services/eventi_service.dart';
@@ -250,6 +251,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 24),
 
                 const _LatestPostsSection(),
+                const SizedBox(height: 24),
+
+                const _PartnersSection(),
                 const SizedBox(height: 32),
               ],
             ),
@@ -1563,6 +1567,176 @@ class _DocumentiScadenzaSectionState extends State<_DocumentiScadenzaSection> {
           ),
         ],
       ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Sezione Partners
+// ─────────────────────────────────────────────────────────────
+
+class _PartnersSection extends StatefulWidget {
+  const _PartnersSection();
+
+  @override
+  State<_PartnersSection> createState() => _PartnersSectionState();
+}
+
+class _PartnersSectionState extends State<_PartnersSection> {
+  final WordpressService _wpService = WordpressService();
+  late Future<List<Partner>> _partnersFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _partnersFuture = _wpService.getPartners();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return FutureBuilder<List<Partner>>(
+      future: _partnersFuture,
+      builder: (context, snapshot) {
+        // Nascondi completamente se in caricamento o vuoto
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox.shrink();
+        }
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        final partners = snapshot.data!;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _SectionTitle(title: l10n.ourPartners),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 130,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: partners.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  return _PartnerCard(partner: partners[index]);
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _PartnerCard extends StatelessWidget {
+  final Partner partner;
+
+  const _PartnerCard({required this.partner});
+
+  Future<void> _openUrl() async {
+    if (partner.websiteUrl.isEmpty) return;
+    final uri = Uri.parse(partner.websiteUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final hasUrl = partner.websiteUrl.isNotEmpty;
+    final l10n = AppLocalizations.of(context)!;
+
+    return GestureDetector(
+      onTap: hasUrl ? _openUrl : null,
+      child: Container(
+        width: 120,
+        decoration: BoxDecoration(
+          color: scheme.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: scheme.outlineVariant.withOpacity(0.4),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: scheme.onSurface.withOpacity(0.06),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Logo
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: partner.logoUrl.isNotEmpty
+                      ? Image.network(
+                          partner.logoUrl,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) => Icon(
+                            Icons.business,
+                            size: 36,
+                            color: scheme.primary.withOpacity(0.5),
+                          ),
+                        )
+                      : Icon(
+                          Icons.business,
+                          size: 36,
+                          color: scheme.primary.withOpacity(0.5),
+                        ),
+                ),
+              ),
+              const SizedBox(height: 6),
+              // Nome azienda
+              Text(
+                partner.nome,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: scheme.onSurface,
+                    ),
+              ),
+              // URL
+              if (hasUrl) ...[
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.open_in_new,
+                      size: 10,
+                      color: scheme.primary,
+                    ),
+                    const SizedBox(width: 3),
+                    Flexible(
+                      child: Text(
+                        l10n.visitWebsite,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              fontSize: 9,
+                              color: scheme.primary,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

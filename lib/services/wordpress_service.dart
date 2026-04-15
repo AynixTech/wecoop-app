@@ -98,4 +98,25 @@ class WordpressService {
       return {'success': false, 'message': e.toString()};
     }
   }
+
+  // Invia richiesta generica (es. "Vivere in Italia") al plugin wecoop-leads
+  Future<Map<String, dynamic>> submitLeadGenerico(Map<String, dynamic> data) async {
+    final url = Uri.parse('$wecoopApiUrl/lead-generico');
+    try {
+      final response = await HttpClientService.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(data),
+      );
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        return json.decode(response.body) as Map<String, dynamic>;
+      } else {
+        debugPrint('submitLeadGenerico HTTP ${response.statusCode}: ${response.body}');
+        return {'success': false, 'message': 'Errore server (${response.statusCode})'};
+      }
+    } catch (e) {
+      debugPrint('submitLeadGenerico error: $e');
+      return {'success': false, 'message': e.toString()};
+    }
+  }
 }

@@ -1055,7 +1055,7 @@ class _ServicesSection extends StatelessWidget {
         const SizedBox(height: 12),
         _ServiceButton(
           title: l10n.translate('studiareItalia'),
-          imagePath: 'assets/images/home/orientamento.jpg',
+          imagePath: 'assets/images/home/studiare-in-italia.jpg',
           onTap: () {
             // Studiare in Italia è accessibile a tutti (lead generation)
             Navigator.push(
@@ -1066,6 +1066,7 @@ class _ServicesSection extends StatelessWidget {
             );
           },
         ),
+
       ],
     );
   }

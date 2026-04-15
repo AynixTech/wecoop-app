@@ -86,7 +86,6 @@ class _IntroTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final scheme = Theme.of(context).colorScheme;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -94,34 +93,59 @@ class _IntroTab extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Hero banner
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [scheme.primary, scheme.secondary],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Stack(
               children: [
-                const Icon(Icons.school, color: Colors.white, size: 40),
-                const SizedBox(height: 12),
-                Text(
-                  l10n.translate('studiareItalia'),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                SizedBox(
+                  width: double.infinity,
+                  height: 200,
+                  child: Image.asset(
+                    'assets/images/home/studiare-in-italia.jpg',
+                    fit: BoxFit.cover,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  l10n.translate('studiareItaliaSubtitle'),
-                  style: const TextStyle(color: Colors.white70, fontSize: 14),
+                Container(
+                  width: double.infinity,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.black.withOpacity(0.55),
+                        Colors.black.withOpacity(0.25),
+                      ],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 20,
+                  right: 20,
+                  bottom: 20,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.translate('studiareItalia'),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          shadows: [Shadow(blurRadius: 4, color: Colors.black45)],
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        l10n.translate('studiareItaliaSubtitle'),
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                          shadows: [Shadow(blurRadius: 4, color: Colors.black45)],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -310,23 +334,11 @@ class _OffertaCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (offerta.imageUrl.isNotEmpty) ...[
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      offerta.imageUrl,
-                      width: 56, height: 56,
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) =>
-                          Container(width: 56, height: 56,
-                              decoration: BoxDecoration(color: scheme.surfaceVariant,
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: Icon(Icons.school, color: scheme.onSurfaceVariant)),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                ],
+                // Partner logo (avatar) – shown when available
+                _PartnerAvatar(logoUrl: offerta.partnerLogoUrl, size: 52),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -340,6 +352,19 @@ class _OffertaCard extends StatelessWidget {
                     ],
                   ),
                 ),
+                // Course image (right side, smaller)
+                if (offerta.imageUrl.isNotEmpty) ...[
+                  const SizedBox(width: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.network(
+                      offerta.imageUrl,
+                      width: 44, height: 44,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                    ),
+                  ),
+                ],
               ],
             ),
             if (offerta.categoria.isNotEmpty || offerta.durata.isNotEmpty) ...[
@@ -382,6 +407,35 @@ class _OffertaCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _PartnerAvatar extends StatelessWidget {
+  final String logoUrl;
+  final double size;
+  const _PartnerAvatar({required this.logoUrl, this.size = 48});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: scheme.surfaceVariant,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: scheme.outlineVariant, width: 1),
+      ),
+      clipBehavior: Clip.hardEdge,
+      child: logoUrl.isNotEmpty
+          ? Image.network(
+              logoUrl,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) =>
+                  Icon(Icons.business_outlined, color: scheme.onSurfaceVariant, size: size * 0.5),
+            )
+          : Icon(Icons.business_outlined, color: scheme.onSurfaceVariant, size: size * 0.5),
     );
   }
 }

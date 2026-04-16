@@ -5,6 +5,15 @@ import 'package:image_picker/image_picker.dart';
 import '../../services/annunci_wecoop_service.dart';
 import '../../services/secure_storage_service.dart';
 
+/// Formatta una data yyyy-MM-dd in dd/MM/yyyy. Restituisce la stringa originale
+/// se il formato non corrisponde.
+String _fmtDate(String raw) {
+  if (raw.length == 10 && raw[4] == '-' && raw[7] == '-') {
+    return '${raw.substring(8, 10)}/${raw.substring(5, 7)}/${raw.substring(0, 4)}';
+  }
+  return raw;
+}
+
 class AnnunciScreen extends StatefulWidget {
   const AnnunciScreen({super.key});
 
@@ -436,7 +445,7 @@ class _AnnuncioCard extends StatelessWidget {
                             size: 13, color: Color(0xFF1282A8)),
                         const SizedBox(width: 4),
                         Text(
-                          '$dataInizio${ora.isNotEmpty ? '  $ora' : ''}',
+                          '${_fmtDate(dataInizio)}${ora.isNotEmpty ? '  $ora' : ''}',
                           style: const TextStyle(
                               fontSize: 12,
                               color: Color(0xFF1282A8)),
@@ -518,7 +527,7 @@ class _AnnuncioDetailSheetState
     if (_currentUserId == null || _data == null) return false;
     final autoreId = _data!['autore_id'];
     if (autoreId == null) return false;
-    return (autoreId as int) == _currentUserId;
+    return (autoreId as num).toInt() == _currentUserId;
   }
 
   Future<void> _confirmDelete(BuildContext context) async {
@@ -676,7 +685,7 @@ class _MetaRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dataInizio = data['data_inizio'] as String? ?? '';
+    final dataInizio = _fmtDate(data['data_inizio'] as String? ?? '');
     final oraInizio = data['ora_inizio'] as String? ?? '';
     final luogo = data['luogo'] as String? ?? '';
     final citta = data['citta'] as String? ?? '';

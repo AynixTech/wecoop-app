@@ -120,7 +120,8 @@ class _AnnunciScreenState extends State<AnnunciScreen> {
             categorie: _categorie,
             selected: _selectedCategoria,
             onSelect: (slug) {
-              setState(() => _selectedCategoria = slug);
+              setState(() => _selectedCategoria =
+                  slug == _selectedCategoria ? null : slug);
               _loadAnnunci(reset: true);
             },
           ),

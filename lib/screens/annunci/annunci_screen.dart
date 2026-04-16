@@ -1152,8 +1152,8 @@ class _CreaAnnuncioSheetState
           key: _formKey,
           child: ListView(
             controller: ctrl,
-            padding:
-                const EdgeInsets.fromLTRB(20, 10, 20, 40),
+            padding: EdgeInsets.fromLTRB(
+                20, 10, 20, 40 + MediaQuery.of(context).padding.bottom),
             children: [
               Center(
                 child: Container(

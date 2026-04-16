@@ -297,6 +297,8 @@ class _LoginScreenState extends State<LoginScreen> {
         // Salva sia socio_id (ID tabella soci) che user_id (ID WordPress)
         if (data['id'] != null) {
           await storage.write(key: 'socio_id', value: data['id'].toString());
+          // 'id' in /soci/me è il WordPress user ID (wp_get_current_user()->ID)
+          await storage.write(key: 'user_id', value: data['id'].toString());
         }
         if (data['user_id'] != null) {
           await storage.write(

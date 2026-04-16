@@ -1382,6 +1382,15 @@ class AppLocalizations {
       'annunciAiError': 'Errore AI',
       'annunciCreatedCoverError': '⚠️ Annuncio creato ma foto copertina non caricata: {msg}',
       'annunciPrenota': '📞 Prenota: {val}',
+      'catEvento': 'Evento',
+      'catConcerto': 'Concerto / Musica',
+      'catRistorante': 'Ristorante / Food',
+      'catServizio': 'Servizio',
+      'catVendita': 'Vendita',
+      'catSport': 'Sport / Fitness',
+      'catCultura': 'Cultura / Arte',
+      'catLavoro': 'Lavoro / Collaborazione',
+      'catAltro': 'Altro',
     },
     'en': {
       'appTitle': 'WECOOP',
@@ -2718,6 +2727,15 @@ class AppLocalizations {
       'annunciAiError': 'AI Error',
       'annunciCreatedCoverError': '⚠️ Listing created but cover photo not uploaded: {msg}',
       'annunciPrenota': '📞 Book: {val}',
+      'catEvento': 'Event',
+      'catConcerto': 'Concert / Music',
+      'catRistorante': 'Restaurant / Food',
+      'catServizio': 'Service',
+      'catVendita': 'Sale',
+      'catSport': 'Sport / Fitness',
+      'catCultura': 'Culture / Art',
+      'catLavoro': 'Work / Collaboration',
+      'catAltro': 'Other',
     },
     'es': {
       'appTitle': 'WECOOP',
@@ -4053,6 +4071,15 @@ class AppLocalizations {
       'annunciAiError': 'Error IA',
       'annunciCreatedCoverError': '⚠️ Anuncio creado pero foto de portada no cargada: {msg}',
       'annunciPrenota': '📞 Reservar: {val}',
+      'catEvento': 'Evento',
+      'catConcerto': 'Concierto / Música',
+      'catRistorante': 'Restaurante / Comida',
+      'catServizio': 'Servicio',
+      'catVendita': 'Venta',
+      'catSport': 'Deporte / Fitness',
+      'catCultura': 'Cultura / Arte',
+      'catLavoro': 'Trabajo / Colaboración',
+      'catAltro': 'Otro',
     },
   };
 
@@ -4863,6 +4890,25 @@ class AppLocalizations {
       translate('annunciCreatedCoverError').replaceAll('{msg}', msg);
   String annunciPrenota(String val) =>
       translate('annunciPrenota').replaceAll('{val}', val);
+
+  String translateCategoria(String slug, String fallback) {
+    const slugToKey = {
+      'evento': 'catEvento',
+      'concerto': 'catConcerto',
+      'ristorante': 'catRistorante',
+      'servizio': 'catServizio',
+      'vendita': 'catVendita',
+      'sport': 'catSport',
+      'cultura': 'catCultura',
+      'lavoro': 'catLavoro',
+      'altro': 'catAltro',
+      'concert': 'catConcerto',
+    };
+    final key = slugToKey[slug];
+    if (key == null) return fallback;
+    final val = translate(key);
+    return val == key ? fallback : val;
+  }
 }
 
 class _AppLocalizationsDelegate

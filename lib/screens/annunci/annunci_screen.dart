@@ -271,7 +271,8 @@ class _CategorieBar extends StatelessWidget {
               selected: selected == null,
               onTap: () => onSelect(null)),
           ...categorie.map((cat) => _Chip(
-                label: cat['name'] as String,
+                label: AppLocalizations.of(context)!.translateCategoria(
+                    cat['slug'] as String, cat['name'] as String),
                 selected: selected == cat['slug'],
                 onTap: () => onSelect(cat['slug'] as String),
               )),
@@ -1286,7 +1287,8 @@ class _CreaAnnuncioSheetState
                   ...widget.categorie.map((c) =>
                       DropdownMenuItem(
                         value: c['slug'] as String,
-                        child: Text(c['name'] as String),
+                        child: Text(l10n.translateCategoria(
+                            c['slug'] as String, c['name'] as String)),
                       )),
                 ],
                 onChanged: (v) =>

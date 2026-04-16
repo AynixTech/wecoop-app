@@ -1142,7 +1142,9 @@ class _CreaAnnuncioSheetState
       initialChildSize: 0.92,
       maxChildSize: 0.98,
       minChildSize: 0.5,
-      builder: (_, ctrl) => Container(
+      builder: (_, ctrl) => Padding(
+        padding: MediaQuery.of(context).viewInsets,
+        child: Container(
         decoration: BoxDecoration(
           color: scheme.surface,
           borderRadius:
@@ -1153,7 +1155,12 @@ class _CreaAnnuncioSheetState
           child: ListView(
             controller: ctrl,
             padding: EdgeInsets.fromLTRB(
-                20, 10, 20, 40 + MediaQuery.of(context).padding.bottom),
+                20,
+                10,
+                20,
+                40 +
+                    MediaQuery.of(context).padding.bottom +
+                    MediaQuery.of(context).viewInsets.bottom),
             children: [
               Center(
                 child: Container(
@@ -1400,6 +1407,7 @@ class _CreaAnnuncioSheetState
             ],
           ),
         ),
+      ),
       ),
     );
   }

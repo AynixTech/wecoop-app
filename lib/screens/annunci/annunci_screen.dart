@@ -647,6 +647,39 @@ class _AnnuncioDetailSheetState
                           errorBuilder: (_, __, ___) =>
                               const SizedBox.shrink(),
                         ),
+                      // Galleria foto
+                      if ((_data!['galleria_urls'] as List? ?? []).isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          height: 110,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            itemCount: (_data!['galleria_urls'] as List).length,
+                            separatorBuilder: (_, __) => const SizedBox(width: 8),
+                            itemBuilder: (ctx, i) {
+                              final url = (_data!['galleria_urls'] as List)[i] as String;
+                              return ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  url,
+                                  width: 110,
+                                  height: 110,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Container(
+                                    width: 110,
+                                    height: 110,
+                                    color: Colors.grey.shade200,
+                                    child: const Icon(Icons.broken_image_outlined,
+                                        color: Colors.grey),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
                       Padding(
                         padding: const EdgeInsets.all(20),
                         child: Column(

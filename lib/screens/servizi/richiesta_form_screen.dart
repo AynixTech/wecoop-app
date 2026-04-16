@@ -794,7 +794,6 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: scheme.outlineVariant),
         boxShadow: [
           BoxShadow(
             color: scheme.shadow.withOpacity(0.05),
@@ -2415,7 +2414,6 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: scheme.outlineVariant),
           boxShadow: [
             BoxShadow(
               color: scheme.shadow.withOpacity(0.05),

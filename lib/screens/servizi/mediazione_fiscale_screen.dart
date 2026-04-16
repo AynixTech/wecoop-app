@@ -400,7 +400,6 @@ class _ServiceCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: scheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: scheme.outlineVariant),
           boxShadow: [
             BoxShadow(
               color: scheme.onSurface.withOpacity(0.05),

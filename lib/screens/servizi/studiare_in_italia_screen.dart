@@ -336,7 +336,7 @@ class _OffertaCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Partner logo (avatar) – shown when available
+                // Partner logo (avatar)
                 _PartnerAvatar(logoUrl: offerta.partnerLogoUrl, size: 52),
                 const SizedBox(width: 12),
                 Expanded(
@@ -352,19 +352,6 @@ class _OffertaCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                // Course image (right side, smaller)
-                if (offerta.imageUrl.isNotEmpty) ...[
-                  const SizedBox(width: 8),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
-                    child: Image.network(
-                      offerta.imageUrl,
-                      width: 44, height: 44,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                    ),
-                  ),
-                ],
               ],
             ),
             if (offerta.categoria.isNotEmpty || offerta.durata.isNotEmpty) ...[
@@ -386,6 +373,20 @@ class _OffertaCard extends StatelessWidget {
               Text(offerta.descrizione,
                   style: TextStyle(fontSize: 13, color: scheme.onSurfaceVariant),
                   maxLines: 3, overflow: TextOverflow.ellipsis),
+            ],
+            // Course image – full width, below description
+            if (offerta.imageUrl.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  offerta.imageUrl,
+                  width: double.infinity,
+                  height: 140,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                ),
+              ),
             ],
             const SizedBox(height: 12),
             SizedBox(

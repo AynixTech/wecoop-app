@@ -820,10 +820,6 @@ class _InfoCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: scheme.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: scheme.outlineVariant.withOpacity(0.5),
-            width: 1,
-          ),
           boxShadow: [
             BoxShadow(
               color: scheme.onSurface.withOpacity(0.08),
@@ -966,6 +962,19 @@ class _ServicesSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _ServiceButton(
+          title: l10n.translate('studiareItalia'),
+          imagePath: 'assets/images/home/studiare-in-italia.jpg',
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const StudiareInItaliaScreen(),
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 12),
+        _ServiceButton(
           title: l10n.translate('fiscalServices'),
           imagePath: 'assets/images/home/mediazione.jpg',
           onTap: () async {
@@ -1048,20 +1057,6 @@ class _ServicesSection extends StatelessWidget {
                         isLoggedIn
                             ? const EducazioneFinanziariaCreditoScreen()
                             : const FirstAccessScreen(),
-              ),
-            );
-          },
-        ),
-        const SizedBox(height: 12),
-        _ServiceButton(
-          title: l10n.translate('studiareItalia'),
-          imagePath: 'assets/images/home/studiare-in-italia.jpg',
-          onTap: () {
-            // Studiare in Italia è accessibile a tutti (lead generation)
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const StudiareInItaliaScreen(),
               ),
             );
           },
@@ -1673,10 +1668,6 @@ class _PartnerCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: scheme.surface,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: scheme.outlineVariant.withOpacity(0.4),
-            width: 1,
-          ),
           boxShadow: [
             BoxShadow(
               color: scheme.onSurface.withOpacity(0.06),

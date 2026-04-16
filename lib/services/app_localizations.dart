@@ -1318,6 +1318,70 @@ class AppLocalizations {
       'documentLegallyBinding': 'Il documento è legalmente vincolante',
       'stepLabel': 'Step',
       'ofLabel': 'di',
+      // Annunci
+      'annunci': 'Annunci',
+      'annunciPublishTooltip': 'Pubblica annuncio',
+      'annunciPublishButton': 'Pubblica',
+      'annunciSearchHint': 'Cerca eventi, ristoranti, concerti...',
+      'annunciAll': 'Tutti',
+      'annunciFree': 'Gratuito',
+      'annunciIngressoGratuito': 'Ingresso gratuito',
+      'annunciDeleteTitle': 'Elimina annuncio',
+      'annunciDeleteConfirm': 'Sei sicuro di voler eliminare questo annuncio?',
+      'annunciDeleteCancel': 'Annulla',
+      'annunciDeleteBtn': 'Elimina',
+      'annunciDeleted': 'Annuncio eliminato',
+      'annunciDeleteError': 'Errore durante l\'eliminazione',
+      'annunciNotFound': 'Annuncio non trovato',
+      'annunciDeleting': 'Eliminazione...',
+      'annunciDeleteActionBtn': 'Elimina annuncio',
+      'annunciContatti': 'Contatti',
+      'annunciBuyTickets': '🎟 Acquista biglietti',
+      'annunciMenuGiorno': 'Menu del giorno',
+      'annunciOffertaSpeciale': 'Offerta speciale',
+      'annunciCopertiDisp': 'Coperti disponibili',
+      'annunciDisponibilita': 'Disponibilità',
+      'annunciTariffa': 'Tariffa',
+      'annunciEmptyTitle': 'Nessun annuncio trovato',
+      'annunciEmptySubtitle': 'Sii il primo a pubblicare!',
+      'annunciPublishTitle': 'Pubblica un annuncio',
+      'annunciPublishSubtitle': '✅ 3 giorni gratuiti · €1/giorno per estenderlo',
+      'annunciTitleLabel': 'Titolo *',
+      'annunciTitleHint': 'Es. Concerto di Soolking, Aperitivo speciale...',
+      'annunciTitleRequired': 'Campo obbligatorio',
+      'annunciCoverPhoto': '📷 Foto copertina',
+      'annunciGalleryPhotos': '🖼 Foto galleria (max 8)',
+      'annunciCategoryLabel': 'Categoria',
+      'annunciCategorySelect': '— Seleziona —',
+      'annunciDescLabel': 'Descrizione',
+      'annunciDescHint': 'Descrivi l\'annuncio...',
+      'annunciAiGenerating': 'Generazione in corso...',
+      'annunciAiImprove': 'Migliora descrizione con AI',
+      'annunciAiDescLabel': '✨ Descrizione AI (modificabile)',
+      'annunciEventDate': 'Data evento',
+      'annunciEventTime': 'Ora',
+      'annunciLuogoLabel': 'Luogo / Venue',
+      'annunciLuogoHint': 'Nome del posto',
+      'annunciCittaLabel': 'Città',
+      'annunciCittaHint': 'Milano',
+      'annunciPrezzoLabel': 'Prezzo ingresso (€)',
+      'annunciPrezzoHint': '0 = gratuito',
+      'annunciTelLabel': 'Telefono',
+      'annunciTelHint': '+39...',
+      'annunciEmailLabel': 'Email',
+      'annunciSitoLabel': 'Sito web / Link prenotazione',
+      'annunciPublishFree': 'Pubblica gratis (3 giorni)',
+      'annunciAddCoverPhoto': 'Aggiungi foto copertina',
+      'annunciCoverPhotoHint': 'JPG, PNG o WebP · max 5MB',
+      'annunciAddPhoto': 'Aggiungi',
+      'annunciRemoveTooltip': 'Rimuovi',
+      'annunciCreatedSuccess': '✅ Annuncio pubblicato! Visibile per 3 giorni gratis.',
+      'annunciAiMinChars': 'Scrivi almeno 12 caratteri di descrizione per usare l\'AI.',
+      'annunciAiGenerated': '✨ Descrizione AI generata. Puoi modificarla prima di inviare.',
+      'annunciAiTemplate': '✨ Descrizione migliorata (template). Puoi modificarla.',
+      'annunciAiError': 'Errore AI',
+      'annunciCreatedCoverError': '⚠️ Annuncio creato ma foto copertina non caricata: {msg}',
+      'annunciPrenota': '📞 Prenota: {val}',
     },
     'en': {
       'appTitle': 'WECOOP',
@@ -2590,6 +2654,70 @@ class AppLocalizations {
       'documentLegallyBinding': 'The document is legally binding',
       'stepLabel': 'Step',
       'ofLabel': 'of',
+      // Annunci
+      'annunci': 'Listings',
+      'annunciPublishTooltip': 'Publish listing',
+      'annunciPublishButton': 'Publish',
+      'annunciSearchHint': 'Search events, restaurants, concerts...',
+      'annunciAll': 'All',
+      'annunciFree': 'Free',
+      'annunciIngressoGratuito': 'Free entry',
+      'annunciDeleteTitle': 'Delete listing',
+      'annunciDeleteConfirm': 'Are you sure you want to delete this listing?',
+      'annunciDeleteCancel': 'Cancel',
+      'annunciDeleteBtn': 'Delete',
+      'annunciDeleted': 'Listing deleted',
+      'annunciDeleteError': 'Error deleting listing',
+      'annunciNotFound': 'Listing not found',
+      'annunciDeleting': 'Deleting...',
+      'annunciDeleteActionBtn': 'Delete listing',
+      'annunciContatti': 'Contacts',
+      'annunciBuyTickets': '🎟 Buy tickets',
+      'annunciMenuGiorno': 'Daily menu',
+      'annunciOffertaSpeciale': 'Special offer',
+      'annunciCopertiDisp': 'Available seats',
+      'annunciDisponibilita': 'Availability',
+      'annunciTariffa': 'Rate',
+      'annunciEmptyTitle': 'No listings found',
+      'annunciEmptySubtitle': 'Be the first to publish!',
+      'annunciPublishTitle': 'Publish a listing',
+      'annunciPublishSubtitle': '✅ 3 free days · €1/day to extend',
+      'annunciTitleLabel': 'Title *',
+      'annunciTitleHint': 'E.g. Concert, Special aperitif...',
+      'annunciTitleRequired': 'Required field',
+      'annunciCoverPhoto': '📷 Cover photo',
+      'annunciGalleryPhotos': '🖼 Gallery photos (max 8)',
+      'annunciCategoryLabel': 'Category',
+      'annunciCategorySelect': '— Select —',
+      'annunciDescLabel': 'Description',
+      'annunciDescHint': 'Describe the listing...',
+      'annunciAiGenerating': 'Generating...',
+      'annunciAiImprove': 'Improve description with AI',
+      'annunciAiDescLabel': '✨ AI Description (editable)',
+      'annunciEventDate': 'Event date',
+      'annunciEventTime': 'Time',
+      'annunciLuogoLabel': 'Venue',
+      'annunciLuogoHint': 'Place name',
+      'annunciCittaLabel': 'City',
+      'annunciCittaHint': 'Milan',
+      'annunciPrezzoLabel': 'Entry price (€)',
+      'annunciPrezzoHint': '0 = free',
+      'annunciTelLabel': 'Phone',
+      'annunciTelHint': '+39...',
+      'annunciEmailLabel': 'Email',
+      'annunciSitoLabel': 'Website / Booking link',
+      'annunciPublishFree': 'Publish free (3 days)',
+      'annunciAddCoverPhoto': 'Add cover photo',
+      'annunciCoverPhotoHint': 'JPG, PNG or WebP · max 5MB',
+      'annunciAddPhoto': 'Add',
+      'annunciRemoveTooltip': 'Remove',
+      'annunciCreatedSuccess': '✅ Listing published! Visible for 3 free days.',
+      'annunciAiMinChars': 'Write at least 12 characters to use AI.',
+      'annunciAiGenerated': '✨ AI description generated. You can edit it before sending.',
+      'annunciAiTemplate': '✨ Improved description (template). You can edit it.',
+      'annunciAiError': 'AI Error',
+      'annunciCreatedCoverError': '⚠️ Listing created but cover photo not uploaded: {msg}',
+      'annunciPrenota': '📞 Book: {val}',
     },
     'es': {
       'appTitle': 'WECOOP',
@@ -3861,6 +3989,70 @@ class AppLocalizations {
       'documentLegallyBinding': 'El documento es legalmente vinculante',
       'stepLabel': 'Paso',
       'ofLabel': 'de',
+      // Annunci
+      'annunci': 'Anuncios',
+      'annunciPublishTooltip': 'Publicar anuncio',
+      'annunciPublishButton': 'Publicar',
+      'annunciSearchHint': 'Busca eventos, restaurantes, conciertos...',
+      'annunciAll': 'Todos',
+      'annunciFree': 'Gratis',
+      'annunciIngressoGratuito': 'Entrada gratuita',
+      'annunciDeleteTitle': 'Eliminar anuncio',
+      'annunciDeleteConfirm': '¿Estás seguro de que quieres eliminar este anuncio?',
+      'annunciDeleteCancel': 'Cancelar',
+      'annunciDeleteBtn': 'Eliminar',
+      'annunciDeleted': 'Anuncio eliminado',
+      'annunciDeleteError': 'Error al eliminar el anuncio',
+      'annunciNotFound': 'Anuncio no encontrado',
+      'annunciDeleting': 'Eliminando...',
+      'annunciDeleteActionBtn': 'Eliminar anuncio',
+      'annunciContatti': 'Contactos',
+      'annunciBuyTickets': '🎟 Comprar entradas',
+      'annunciMenuGiorno': 'Menú del día',
+      'annunciOffertaSpeciale': 'Oferta especial',
+      'annunciCopertiDisp': 'Asientos disponibles',
+      'annunciDisponibilita': 'Disponibilidad',
+      'annunciTariffa': 'Tarifa',
+      'annunciEmptyTitle': 'No se encontraron anuncios',
+      'annunciEmptySubtitle': '¡Sé el primero en publicar!',
+      'annunciPublishTitle': 'Publicar un anuncio',
+      'annunciPublishSubtitle': '✅ 3 días gratis · €1/día para extender',
+      'annunciTitleLabel': 'Título *',
+      'annunciTitleHint': 'Ej. Concierto, Aperitivo especial...',
+      'annunciTitleRequired': 'Campo obligatorio',
+      'annunciCoverPhoto': '📷 Foto de portada',
+      'annunciGalleryPhotos': '🖼 Fotos de galería (máx 8)',
+      'annunciCategoryLabel': 'Categoría',
+      'annunciCategorySelect': '— Seleccionar —',
+      'annunciDescLabel': 'Descripción',
+      'annunciDescHint': 'Describe el anuncio...',
+      'annunciAiGenerating': 'Generando...',
+      'annunciAiImprove': 'Mejorar descripción con IA',
+      'annunciAiDescLabel': '✨ Descripción IA (editable)',
+      'annunciEventDate': 'Fecha del evento',
+      'annunciEventTime': 'Hora',
+      'annunciLuogoLabel': 'Lugar / Venue',
+      'annunciLuogoHint': 'Nombre del lugar',
+      'annunciCittaLabel': 'Ciudad',
+      'annunciCittaHint': 'Milán',
+      'annunciPrezzoLabel': 'Precio de entrada (€)',
+      'annunciPrezzoHint': '0 = gratis',
+      'annunciTelLabel': 'Teléfono',
+      'annunciTelHint': '+39...',
+      'annunciEmailLabel': 'Email',
+      'annunciSitoLabel': 'Sitio web / Enlace de reserva',
+      'annunciPublishFree': 'Publicar gratis (3 días)',
+      'annunciAddCoverPhoto': 'Agregar foto de portada',
+      'annunciCoverPhotoHint': 'JPG, PNG o WebP · máx 5MB',
+      'annunciAddPhoto': 'Agregar',
+      'annunciRemoveTooltip': 'Quitar',
+      'annunciCreatedSuccess': '✅ ¡Anuncio publicado! Visible 3 días gratis.',
+      'annunciAiMinChars': 'Escribe al menos 12 caracteres para usar la IA.',
+      'annunciAiGenerated': '✨ Descripción IA generada. Puedes editarla antes de enviar.',
+      'annunciAiTemplate': '✨ Descripción mejorada (plantilla). Puedes editarla.',
+      'annunciAiError': 'Error IA',
+      'annunciCreatedCoverError': '⚠️ Anuncio creado pero foto de portada no cargada: {msg}',
+      'annunciPrenota': '📞 Reservar: {val}',
     },
   };
 
@@ -4604,6 +4796,73 @@ class AppLocalizations {
   String get getDirections => translate('getDirections');
   String get callUs => translate('callUs');
   String get contactSendEmail => translate('contactSendEmail');
+
+  // Annunci
+  String get annunci => translate('annunci');
+  String get annunciPublishTooltip => translate('annunciPublishTooltip');
+  String get annunciPublishButton => translate('annunciPublishButton');
+  String get annunciSearchHint => translate('annunciSearchHint');
+  String get annunciAll => translate('annunciAll');
+  String get annunciFree => translate('annunciFree');
+  String get annunciIngressoGratuito => translate('annunciIngressoGratuito');
+  String get annunciDeleteTitle => translate('annunciDeleteTitle');
+  String get annunciDeleteConfirm => translate('annunciDeleteConfirm');
+  String get annunciDeleteCancel => translate('annunciDeleteCancel');
+  String get annunciDeleteBtn => translate('annunciDeleteBtn');
+  String get annunciDeleted => translate('annunciDeleted');
+  String get annunciDeleteError => translate('annunciDeleteError');
+  String get annunciNotFound => translate('annunciNotFound');
+  String get annunciDeleting => translate('annunciDeleting');
+  String get annunciDeleteActionBtn => translate('annunciDeleteActionBtn');
+  String get annunciContatti => translate('annunciContatti');
+  String get annunciBuyTickets => translate('annunciBuyTickets');
+  String get annunciMenuGiorno => translate('annunciMenuGiorno');
+  String get annunciOffertaSpeciale => translate('annunciOffertaSpeciale');
+  String get annunciCopertiDisp => translate('annunciCopertiDisp');
+  String get annunciDisponibilita => translate('annunciDisponibilita');
+  String get annunciTariffa => translate('annunciTariffa');
+  String get annunciEmptyTitle => translate('annunciEmptyTitle');
+  String get annunciEmptySubtitle => translate('annunciEmptySubtitle');
+  String get annunciPublishTitle => translate('annunciPublishTitle');
+  String get annunciPublishSubtitle => translate('annunciPublishSubtitle');
+  String get annunciTitleLabel => translate('annunciTitleLabel');
+  String get annunciTitleHint => translate('annunciTitleHint');
+  String get annunciTitleRequired => translate('annunciTitleRequired');
+  String get annunciCoverPhoto => translate('annunciCoverPhoto');
+  String get annunciGalleryPhotos => translate('annunciGalleryPhotos');
+  String get annunciCategoryLabel => translate('annunciCategoryLabel');
+  String get annunciCategorySelect => translate('annunciCategorySelect');
+  String get annunciDescLabel => translate('annunciDescLabel');
+  String get annunciDescHint => translate('annunciDescHint');
+  String get annunciAiGenerating => translate('annunciAiGenerating');
+  String get annunciAiImprove => translate('annunciAiImprove');
+  String get annunciAiDescLabel => translate('annunciAiDescLabel');
+  String get annunciEventDate => translate('annunciEventDate');
+  String get annunciEventTime => translate('annunciEventTime');
+  String get annunciLuogoLabel => translate('annunciLuogoLabel');
+  String get annunciLuogoHint => translate('annunciLuogoHint');
+  String get annunciCittaLabel => translate('annunciCittaLabel');
+  String get annunciCittaHint => translate('annunciCittaHint');
+  String get annunciPrezzoLabel => translate('annunciPrezzoLabel');
+  String get annunciPrezzoHint => translate('annunciPrezzoHint');
+  String get annunciTelLabel => translate('annunciTelLabel');
+  String get annunciTelHint => translate('annunciTelHint');
+  String get annunciEmailLabel => translate('annunciEmailLabel');
+  String get annunciSitoLabel => translate('annunciSitoLabel');
+  String get annunciPublishFree => translate('annunciPublishFree');
+  String get annunciAddCoverPhoto => translate('annunciAddCoverPhoto');
+  String get annunciCoverPhotoHint => translate('annunciCoverPhotoHint');
+  String get annunciAddPhoto => translate('annunciAddPhoto');
+  String get annunciRemoveTooltip => translate('annunciRemoveTooltip');
+  String get annunciCreatedSuccess => translate('annunciCreatedSuccess');
+  String get annunciAiMinChars => translate('annunciAiMinChars');
+  String get annunciAiGenerated => translate('annunciAiGenerated');
+  String get annunciAiTemplate => translate('annunciAiTemplate');
+  String get annunciAiError => translate('annunciAiError');
+  String annunciCreatedCoverError(String msg) =>
+      translate('annunciCreatedCoverError').replaceAll('{msg}', msg);
+  String annunciPrenota(String val) =>
+      translate('annunciPrenota').replaceAll('{val}', val);
 }
 
 class _AppLocalizationsDelegate

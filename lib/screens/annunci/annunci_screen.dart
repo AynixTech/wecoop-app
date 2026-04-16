@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/annunci_wecoop_service.dart';
 import '../../services/secure_storage_service.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 
 /// Formatta una data yyyy-MM-dd in dd/MM/yyyy. Restituisce la stringa originale
 /// se il formato non corrisponde.
@@ -93,19 +94,20 @@ class _AnnunciScreenState extends State<AnnunciScreen> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: scheme.surfaceContainerLowest,
       appBar: AppBar(
         backgroundColor: const Color(0xFF1282A8),
         foregroundColor: Colors.white,
-        title: const Text('Annunci',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+        title: Text(l10n.annunci,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
         actions: [
           if (_isLoggedIn)
             IconButton(
               icon: const Icon(Icons.add_circle_outline),
-              tooltip: 'Pubblica annuncio',
+              tooltip: l10n.annunciPublishTooltip,
               onPressed: () => _showCreaAnnuncio(context),
             ),
         ],
@@ -169,7 +171,7 @@ class _AnnunciScreenState extends State<AnnunciScreen> {
               backgroundColor: const Color(0xFF1282A8),
               foregroundColor: Colors.white,
               icon: const Icon(Icons.add),
-              label: const Text('Pubblica'),
+              label: Text(l10n.annunciPublishButton),
               onPressed: () => _showCreaAnnuncio(context),
             )
           : null,
@@ -219,7 +221,7 @@ class _SearchBar extends StatelessWidget {
         controller: controller,
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
-          hintText: 'Cerca eventi, ristoranti, concerti...',
+          hintText: AppLocalizations.of(context)!.annunciSearchHint,
           hintStyle:
               TextStyle(color: Colors.white.withOpacity(0.7)),
           prefixIcon:
@@ -265,7 +267,7 @@ class _CategorieBar extends StatelessWidget {
             const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         children: [
           _Chip(
-              label: 'Tutti',
+              label: AppLocalizations.of(context)!.annunciAll,
               selected: selected == null,
               onTap: () => onSelect(null)),
           ...categorie.map((cat) => _Chip(
@@ -425,7 +427,7 @@ class _AnnuncioCard extends StatelessWidget {
                       const Spacer(),
                       Text(
                         prezzo == 0
-                            ? 'Gratuito'
+                            ? AppLocalizations.of(context)!.annunciFree
                             : '€${prezzo.toStringAsFixed(0)}',
                         style: TextStyle(
                           fontSize: 13,
@@ -551,22 +553,22 @@ class _AnnuncioDetailSheetState
   }
 
   Future<void> _confirmDelete(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Elimina annuncio'),
-        content: const Text(
-            'Sei sicuro di voler eliminare questo annuncio? L\'operazione non può essere annullata.'),
+        title: Text(l10n.annunciDeleteTitle),
+        content: Text(l10n.annunciDeleteConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Annulla'),
+            child: Text(l10n.annunciDeleteCancel),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
                 backgroundColor: Colors.red),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Elimina'),
+            child: Text(l10n.annunciDeleteBtn),
           ),
         ],
       ),
@@ -578,16 +580,15 @@ class _AnnuncioDetailSheetState
     if (ok) {
       Navigator.pop(context); // chiude il bottom sheet
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Annuncio eliminato'),
+        SnackBar(
+          content: Text(l10n.annunciDeleted),
           backgroundColor: Colors.red,
         ),
       );
     } else {
       setState(() => _deleting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Errore durante l\'eliminazione')),
+        SnackBar(content: Text(l10n.annunciDeleteError)),
       );
     }
   }
@@ -610,7 +611,7 @@ class _AnnuncioDetailSheetState
                 child: CircularProgressIndicator(
                     color: Color(0xFF1282A8)))
             : _data == null
-                ? const Center(child: Text('Annuncio non trovato'))
+                ? Center(child: Text(AppLocalizations.of(context)!.annunciNotFound))
                 : ListView(
                     controller: ctrl,
                     children: [
@@ -729,8 +730,8 @@ class _AnnuncioDetailSheetState
                                                   strokeWidth: 2))
                                       : const Icon(Icons.delete_outline),
                                   label: Text(_deleting
-                                      ? 'Eliminazione...'
-                                      : 'Elimina annuncio'),
+                                      ? AppLocalizations.of(context)!.annunciDeleting
+                                      : AppLocalizations.of(context)!.annunciDeleteActionBtn),
                                 ),
                               ),
                             const SizedBox(height: 24),
@@ -777,7 +778,7 @@ class _MetaRow extends StatelessWidget {
         _MetaChip(
           icon: Icons.euro,
           label: prezzo == 0
-              ? 'Ingresso gratuito'
+              ? AppLocalizations.of(context)!.annunciIngressoGratuito
               : '€${prezzo.toStringAsFixed(0)}',
           color: prezzo == 0
               ? Colors.green
@@ -876,18 +877,18 @@ class _SpecificiSection extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 6),
               child: GestureDetector(
                 onTap: () => launchUrl(Uri.parse(linkBiglietti)),
-                child: const Text('🎟 Acquista biglietti',
-                    style: TextStyle(
+                child: Text(AppLocalizations.of(context)!.annunciBuyTickets,
+                    style: const TextStyle(
                         fontSize: 14,
                         color: Color(0xFF1282A8),
                         decoration:
                             TextDecoration.underline)),
               ),
             ),
-          _row('Menu del giorno', menu),
-          _row('Offerta speciale', offerta),
+          _row(AppLocalizations.of(context)!.annunciMenuGiorno, menu),
+          _row(AppLocalizations.of(context)!.annunciOffertaSpeciale, offerta),
           if (coperti > 0)
-            _row('Coperti disponibili', coperti.toString()),
+            _row(AppLocalizations.of(context)!.annunciCopertiDisp, coperti.toString()),
           if (prenota.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(bottom: 6),
@@ -898,7 +899,7 @@ class _SpecificiSection extends StatelessWidget {
                       : Uri.parse('tel:$prenota');
                   launchUrl(uri);
                 },
-                child: Text('📞 Prenota: $prenota',
+                child: Text(AppLocalizations.of(context)!.annunciPrenota(prenota),
                     style: const TextStyle(
                         fontSize: 14,
                         color: Color(0xFF1282A8),
@@ -906,9 +907,9 @@ class _SpecificiSection extends StatelessWidget {
                             TextDecoration.underline)),
               ),
             ),
-          _row('Disponibilità', disp),
+          _row(AppLocalizations.of(context)!.annunciDisponibilita, disp),
           if (tariffa > 0)
-            _row('Tariffa',
+            _row(AppLocalizations.of(context)!.annunciTariffa,
                 '€${tariffa.toStringAsFixed(2)}'),
         ],
       ),
@@ -936,8 +937,8 @@ class _ContattiSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Contatti',
-            style: TextStyle(
+        Text(AppLocalizations.of(context)!.annunciContatti,
+            style: const TextStyle(
                 fontSize: 16, fontWeight: FontWeight.bold)),
         const SizedBox(height: 10),
         if (indirizzo.isNotEmpty)
@@ -1109,7 +1110,7 @@ class _CreaAnnuncioSheetState
         final upRes = await widget.service.uploadCopertina(annuncioId, _copertina!);
         if (upRes['success'] != true && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('⚠️ Annuncio creato ma foto copertina non caricata: ${upRes['message']}'),
+            content: Text(AppLocalizations.of(context)!.annunciCreatedCoverError(upRes['message']?.toString() ?? '')),
           ));
         }
       }
@@ -1122,9 +1123,9 @@ class _CreaAnnuncioSheetState
     if (!mounted) return;
     Navigator.pop(context);
     widget.onCreated();
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('✅ Annuncio pubblicato! Visibile per 3 giorni gratis.'),
-      backgroundColor: Color(0xFF1282A8),
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(AppLocalizations.of(context)!.annunciCreatedSuccess),
+      backgroundColor: const Color(0xFF1282A8),
     ));
   }
 
@@ -1132,9 +1133,7 @@ class _CreaAnnuncioSheetState
     final base = _descCtrl.text.trim();
     if (base.length < 12) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text(
-                'Scrivi almeno 12 caratteri di descrizione per usare l\'AI.')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.annunciAiMinChars)),
       );
       return;
     }
@@ -1154,8 +1153,8 @@ class _CreaAnnuncioSheetState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(result['source'] == 'openai'
-              ? '✨ Descrizione AI generata. Puoi modificarla prima di inviare.'
-              : '✨ Descrizione migliorata (template). Puoi modificarla.'),
+              ? AppLocalizations.of(context)!.annunciAiGenerated
+              : AppLocalizations.of(context)!.annunciAiTemplate),
           backgroundColor: const Color(0xFF1282A8),
         ),
       );
@@ -1163,7 +1162,7 @@ class _CreaAnnuncioSheetState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(
-                result['message']?.toString() ?? 'Errore AI')),
+                result['message']?.toString() ?? AppLocalizations.of(context)!.annunciAiError)),
       );
     }
   }
@@ -1171,6 +1170,7 @@ class _CreaAnnuncioSheetState
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.92,
@@ -1206,13 +1206,13 @@ class _CreaAnnuncioSheetState
                       borderRadius: BorderRadius.circular(2)),
                 ),
               ),
-              const Text('Pubblica un annuncio',
-                  style: TextStyle(
+              Text(l10n.annunciPublishTitle,
+                  style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
               Text(
-                '✅ 3 giorni gratuiti · €1/giorno per estenderlo',
+                l10n.annunciPublishSubtitle,
                 style: TextStyle(
                     fontSize: 13,
                     color: Colors.green.shade700),
@@ -1221,18 +1221,17 @@ class _CreaAnnuncioSheetState
 
               _FormField(
                 controller: _titoloCtrl,
-                label: 'Titolo *',
-                hint:
-                    'Es. Concerto di Soolking, Aperitivo speciale...',
+                label: l10n.annunciTitleLabel,
+                hint: l10n.annunciTitleHint,
                 validator: (v) =>
                     (v == null || v.trim().isEmpty)
-                        ? 'Campo obbligatorio'
+                        ? l10n.annunciTitleRequired
                         : null,
               ),
               const SizedBox(height: 16),
 
               // --- Foto copertina ---
-              _SectionLabel(label: '📷 Foto copertina'),
+              _SectionLabel(label: l10n.annunciCoverPhoto),
               const SizedBox(height: 8),
               _CopertinaPickerTile(
                 file: _copertina,
@@ -1251,7 +1250,7 @@ class _CreaAnnuncioSheetState
               const SizedBox(height: 16),
 
               // --- Foto galleria ---
-              _SectionLabel(label: '🖼 Foto galleria (max 8)'),
+              _SectionLabel(label: l10n.annunciGalleryPhotos),
               const SizedBox(height: 8),
               _GalleriaPickerRow(
                 files: _fotoGalleria,
@@ -1275,15 +1274,15 @@ class _CreaAnnuncioSheetState
               DropdownButtonFormField<String>(
                 value: _selectedCategoria,
                 decoration: InputDecoration(
-                  labelText: 'Categoria',
+                  labelText: l10n.annunciCategoryLabel,
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
                   contentPadding: const EdgeInsets.symmetric(
                       horizontal: 14, vertical: 12),
                 ),
                 items: [
-                  const DropdownMenuItem(
-                      value: null, child: Text('— Seleziona —')),
+                  DropdownMenuItem(
+                      value: null, child: Text(l10n.annunciCategorySelect)),
                   ...widget.categorie.map((c) =>
                       DropdownMenuItem(
                         value: c['slug'] as String,
@@ -1297,8 +1296,8 @@ class _CreaAnnuncioSheetState
 
               _FormField(
                   controller: _descCtrl,
-                  label: 'Descrizione',
-                  hint: 'Descrivi l\'annuncio...',
+                  label: l10n.annunciDescLabel,
+                  hint: l10n.annunciDescHint,
                   maxLines: 4),
               const SizedBox(height: 8),
               SizedBox(
@@ -1317,15 +1316,15 @@ class _CreaAnnuncioSheetState
                               strokeWidth: 2, color: Color(0xFF1282A8)))
                       : const Icon(Icons.auto_awesome, size: 18),
                   label: Text(_isImprovingDesc
-                      ? 'Generazione in corso...'
-                      : 'Migliora descrizione con AI'),
+                      ? l10n.annunciAiGenerating
+                      : l10n.annunciAiImprove),
                 ),
               ),
               if (_descAiCtrl.text.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 _FormField(
                     controller: _descAiCtrl,
-                    label: '✨ Descrizione AI (modificabile)',
+                    label: l10n.annunciAiDescLabel,
                     hint: '',
                     maxLines: 5),
               ],
@@ -1337,7 +1336,7 @@ class _CreaAnnuncioSheetState
                     icon: const Icon(Icons.calendar_today,
                         size: 16),
                     label: Text(_dataInizio == null
-                        ? 'Data evento'
+                        ? l10n.annunciEventDate
                         : '${_dataInizio!.day}/${_dataInizio!.month}/${_dataInizio!.year}'),
                     onPressed: () async {
                       final d = await showDatePicker(
@@ -1359,7 +1358,7 @@ class _CreaAnnuncioSheetState
                     icon: const Icon(Icons.access_time,
                         size: 16),
                     label: Text(_oraInizio == null
-                        ? 'Ora'
+                        ? l10n.annunciEventTime
                         : _oraInizio!.format(context)),
                     onPressed: () async {
                       final t = await showTimePicker(
@@ -1378,40 +1377,40 @@ class _CreaAnnuncioSheetState
                 Expanded(
                     child: _FormField(
                         controller: _luogoCtrl,
-                        label: 'Luogo / Venue',
-                        hint: 'Nome del posto')),
+                        label: l10n.annunciLuogoLabel,
+                        hint: l10n.annunciLuogoHint)),
                 const SizedBox(width: 8),
                 Expanded(
                     child: _FormField(
                         controller: _cittaCtrl,
-                        label: 'Città',
-                        hint: 'Milano')),
+                        label: l10n.annunciCittaLabel,
+                        hint: l10n.annunciCittaHint)),
               ]),
               const SizedBox(height: 8),
 
               _FormField(
                   controller: _prezzoCtrl,
-                  label: 'Prezzo ingresso (€)',
-                  hint: '0 = gratuito',
+                  label: l10n.annunciPrezzoLabel,
+                  hint: l10n.annunciPrezzoHint,
                   keyboardType: TextInputType.number),
               const SizedBox(height: 8),
 
               _FormField(
                   controller: _telCtrl,
-                  label: 'Telefono',
-                  hint: '+39...',
+                  label: l10n.annunciTelLabel,
+                  hint: l10n.annunciTelHint,
                   keyboardType: TextInputType.phone),
               const SizedBox(height: 8),
 
               _FormField(
                   controller: _emailCtrl,
-                  label: 'Email',
+                  label: l10n.annunciEmailLabel,
                   keyboardType: TextInputType.emailAddress),
               const SizedBox(height: 8),
 
               _FormField(
                   controller: _sitoCtrl,
-                  label: 'Sito web / Link prenotazione',
+                  label: l10n.annunciSitoLabel,
                   hint: 'https://...',
                   keyboardType: TextInputType.url),
               const SizedBox(height: 24),
@@ -1431,9 +1430,9 @@ class _CreaAnnuncioSheetState
                   child: _submitting
                       ? const CircularProgressIndicator(
                           color: Colors.white)
-                      : const Text(
-                          'Pubblica gratis (3 giorni)',
-                          style: TextStyle(
+                      : Text(
+                          l10n.annunciPublishFree,
+                          style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold)),
                 ),
@@ -1499,11 +1498,11 @@ class _EmptyState extends StatelessWidget {
           Icon(Icons.campaign_outlined,
               size: 64, color: Colors.grey.shade300),
           const SizedBox(height: 16),
-          Text('Nessun annuncio trovato',
+          Text(AppLocalizations.of(context)!.annunciEmptyTitle,
               style: TextStyle(
                   fontSize: 16, color: Colors.grey.shade500)),
           const SizedBox(height: 8),
-          Text('Sii il primo a pubblicare!',
+          Text(AppLocalizations.of(context)!.annunciEmptySubtitle,
               style: TextStyle(
                   fontSize: 13, color: Colors.grey.shade400)),
         ],
@@ -1555,20 +1554,20 @@ class _CopertinaPickerTile extends StatelessWidget {
               style: BorderStyle.solid,
             ),
           ),
-          child: const Column(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.add_photo_alternate_outlined,
+              const Icon(Icons.add_photo_alternate_outlined,
                   size: 36, color: Color(0xFF1282A8)),
-              SizedBox(height: 8),
-              Text('Aggiungi foto copertina',
-                  style: TextStyle(
+              const SizedBox(height: 8),
+              Text(AppLocalizations.of(context)!.annunciAddCoverPhoto,
+                  style: const TextStyle(
                       color: Color(0xFF1282A8),
                       fontWeight: FontWeight.w500)),
-              SizedBox(height: 4),
-              Text('JPG, PNG o WebP · max 5MB',
+              const SizedBox(height: 4),
+              Text(AppLocalizations.of(context)!.annunciCoverPhotoHint,
                   style:
-                      TextStyle(fontSize: 11, color: Colors.grey)),
+                      const TextStyle(fontSize: 11, color: Colors.grey)),
             ],
           ),
         ),
@@ -1597,7 +1596,7 @@ class _CopertinaPickerTile extends StatelessWidget {
               _PhotoActionBtn(
                   icon: Icons.delete,
                   onTap: onRemove,
-                  tooltip: 'Rimuovi',
+                  tooltip: AppLocalizations.of(context)!.annunciRemoveTooltip,
                   color: Colors.red),
             ],
           ),
@@ -1640,14 +1639,14 @@ class _GalleriaPickerRow extends StatelessWidget {
                         const Color(0xFF1282A8).withOpacity(0.3),
                   ),
                 ),
-                child: const Column(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.add_photo_alternate_outlined,
+                    const Icon(Icons.add_photo_alternate_outlined,
                         size: 28, color: Color(0xFF1282A8)),
-                    SizedBox(height: 4),
-                    Text('Aggiungi',
-                        style: TextStyle(
+                    const SizedBox(height: 4),
+                    Text(AppLocalizations.of(context)!.annunciAddPhoto,
+                        style: const TextStyle(
                             fontSize: 11,
                             color: Color(0xFF1282A8))),
                   ],
@@ -1676,7 +1675,7 @@ class _GalleriaPickerRow extends StatelessWidget {
                   child: _PhotoActionBtn(
                     icon: Icons.close,
                     onTap: () => onRemove(i),
-                    tooltip: 'Rimuovi',
+                    tooltip: AppLocalizations.of(context)!.annunciRemoveTooltip,
                     color: Colors.red,
                     size: 20,
                   ),

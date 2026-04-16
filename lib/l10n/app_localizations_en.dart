@@ -919,4 +919,201 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginToAccess => 'Login to access all services';
+
+  @override
+  String get annunci => 'Listings';
+
+  @override
+  String get annunciPublishTooltip => 'Publish listing';
+
+  @override
+  String get annunciPublishButton => 'Publish';
+
+  @override
+  String get annunciSearchHint => 'Search events, restaurants, concerts...';
+
+  @override
+  String get annunciAll => 'All';
+
+  @override
+  String get annunciFree => 'Free';
+
+  @override
+  String get annunciIngressoGratuito => 'Free entry';
+
+  @override
+  String get annunciDeleteTitle => 'Delete listing';
+
+  @override
+  String get annunciDeleteConfirm =>
+      'Are you sure you want to delete this listing? This action cannot be undone.';
+
+  @override
+  String get annunciDeleteCancel => 'Cancel';
+
+  @override
+  String get annunciDeleteBtn => 'Delete';
+
+  @override
+  String get annunciDeleting => 'Deleting...';
+
+  @override
+  String get annunciDeleteActionBtn => 'Delete listing';
+
+  @override
+  String get annunciDeleted => 'Listing deleted';
+
+  @override
+  String get annunciDeleteError => 'Error deleting listing';
+
+  @override
+  String get annunciNotFound => 'Listing not found';
+
+  @override
+  String get annunciContatti => 'Contacts';
+
+  @override
+  String get annunciBuyTickets => '🎟 Buy tickets';
+
+  @override
+  String get annunciMenuGiorno => 'Daily menu';
+
+  @override
+  String get annunciOffertaSpeciale => 'Special offer';
+
+  @override
+  String get annunciCopertiDisp => 'Available seats';
+
+  @override
+  String annunciPrenota(String val) {
+    return '📞 Book: $val';
+  }
+
+  @override
+  String get annunciDisponibilita => 'Availability';
+
+  @override
+  String get annunciTariffa => 'Rate';
+
+  @override
+  String get annunciPublishTitle => 'Publish a listing';
+
+  @override
+  String get annunciPublishSubtitle => '✅ 3 free days · €1/day to extend';
+
+  @override
+  String get annunciTitleLabel => 'Title *';
+
+  @override
+  String get annunciTitleHint => 'E.g. Concert, Special aperitif...';
+
+  @override
+  String get annunciTitleRequired => 'Required field';
+
+  @override
+  String get annunciCoverPhoto => '📷 Cover photo';
+
+  @override
+  String get annunciGalleryPhotos => '🖼 Gallery photos (max 8)';
+
+  @override
+  String get annunciCategoryLabel => 'Category';
+
+  @override
+  String get annunciCategorySelect => '— Select —';
+
+  @override
+  String get annunciDescLabel => 'Description';
+
+  @override
+  String get annunciDescHint => 'Describe the listing...';
+
+  @override
+  String get annunciAiGenerating => 'Generating...';
+
+  @override
+  String get annunciAiImprove => 'Improve description with AI';
+
+  @override
+  String get annunciAiDescLabel => '✨ AI Description (editable)';
+
+  @override
+  String get annunciEventDate => 'Event date';
+
+  @override
+  String get annunciEventTime => 'Time';
+
+  @override
+  String get annunciLuogoLabel => 'Venue';
+
+  @override
+  String get annunciLuogoHint => 'Place name';
+
+  @override
+  String get annunciCittaLabel => 'City';
+
+  @override
+  String get annunciCittaHint => 'Milan';
+
+  @override
+  String get annunciPrezzoLabel => 'Entry price (€)';
+
+  @override
+  String get annunciPrezzoHint => '0 = free';
+
+  @override
+  String get annunciTelLabel => 'Phone';
+
+  @override
+  String get annunciTelHint => '+39...';
+
+  @override
+  String get annunciEmailLabel => 'Email';
+
+  @override
+  String get annunciSitoLabel => 'Website / Booking link';
+
+  @override
+  String get annunciPublishFree => 'Publish free (3 days)';
+
+  @override
+  String get annunciEmptyTitle => 'No listings found';
+
+  @override
+  String get annunciEmptySubtitle => 'Be the first to publish!';
+
+  @override
+  String get annunciAddCoverPhoto => 'Add cover photo';
+
+  @override
+  String get annunciCoverPhotoHint => 'JPG, PNG or WebP · max 5MB';
+
+  @override
+  String get annunciAddPhoto => 'Add';
+
+  @override
+  String get annunciRemoveTooltip => 'Remove';
+
+  @override
+  String get annunciCreatedSuccess =>
+      '✅ Listing published! Visible for 3 free days.';
+
+  @override
+  String annunciCreatedCoverError(String msg) {
+    return '⚠️ Listing created but cover photo not uploaded: $msg';
+  }
+
+  @override
+  String get annunciAiMinChars => 'Write at least 12 characters to use AI.';
+
+  @override
+  String get annunciAiGenerated =>
+      '✨ AI description generated. You can edit it before sending.';
+
+  @override
+  String get annunciAiTemplate =>
+      '✨ Improved description (template). You can edit it.';
+
+  @override
+  String get annunciAiError => 'AI Error';
 }

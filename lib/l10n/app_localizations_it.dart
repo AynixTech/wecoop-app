@@ -924,4 +924,204 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get loginToAccess => 'Accedi per utilizzare tutti i servizi';
+
+  @override
+  String get annunci => 'Annunci';
+
+  @override
+  String get annunciPublishTooltip => 'Pubblica annuncio';
+
+  @override
+  String get annunciPublishButton => 'Pubblica';
+
+  @override
+  String get annunciSearchHint => 'Cerca eventi, ristoranti, concerti...';
+
+  @override
+  String get annunciAll => 'Tutti';
+
+  @override
+  String get annunciFree => 'Gratuito';
+
+  @override
+  String get annunciIngressoGratuito => 'Ingresso gratuito';
+
+  @override
+  String get annunciDeleteTitle => 'Elimina annuncio';
+
+  @override
+  String get annunciDeleteConfirm =>
+      'Sei sicuro di voler eliminare questo annuncio? L\'operazione non può essere annullata.';
+
+  @override
+  String get annunciDeleteCancel => 'Annulla';
+
+  @override
+  String get annunciDeleteBtn => 'Elimina';
+
+  @override
+  String get annunciDeleting => 'Eliminazione...';
+
+  @override
+  String get annunciDeleteActionBtn => 'Elimina annuncio';
+
+  @override
+  String get annunciDeleted => 'Annuncio eliminato';
+
+  @override
+  String get annunciDeleteError => 'Errore durante l\'eliminazione';
+
+  @override
+  String get annunciNotFound => 'Annuncio non trovato';
+
+  @override
+  String get annunciContatti => 'Contatti';
+
+  @override
+  String get annunciBuyTickets => '🎟 Acquista biglietti';
+
+  @override
+  String get annunciMenuGiorno => 'Menu del giorno';
+
+  @override
+  String get annunciOffertaSpeciale => 'Offerta speciale';
+
+  @override
+  String get annunciCopertiDisp => 'Coperti disponibili';
+
+  @override
+  String annunciPrenota(String val) {
+    return '📞 Prenota: $val';
+  }
+
+  @override
+  String get annunciDisponibilita => 'Disponibilità';
+
+  @override
+  String get annunciTariffa => 'Tariffa';
+
+  @override
+  String get annunciPublishTitle => 'Pubblica un annuncio';
+
+  @override
+  String get annunciPublishSubtitle =>
+      '✅ 3 giorni gratuiti · €1/giorno per estenderlo';
+
+  @override
+  String get annunciTitleLabel => 'Titolo *';
+
+  @override
+  String get annunciTitleHint =>
+      'Es. Concerto di Soolking, Aperitivo speciale...';
+
+  @override
+  String get annunciTitleRequired => 'Campo obbligatorio';
+
+  @override
+  String get annunciCoverPhoto => '📷 Foto copertina';
+
+  @override
+  String get annunciGalleryPhotos => '🖼 Foto galleria (max 8)';
+
+  @override
+  String get annunciCategoryLabel => 'Categoria';
+
+  @override
+  String get annunciCategorySelect => '— Seleziona —';
+
+  @override
+  String get annunciDescLabel => 'Descrizione';
+
+  @override
+  String get annunciDescHint => 'Descrivi l\'annuncio...';
+
+  @override
+  String get annunciAiGenerating => 'Generazione in corso...';
+
+  @override
+  String get annunciAiImprove => 'Migliora descrizione con AI';
+
+  @override
+  String get annunciAiDescLabel => '✨ Descrizione AI (modificabile)';
+
+  @override
+  String get annunciEventDate => 'Data evento';
+
+  @override
+  String get annunciEventTime => 'Ora';
+
+  @override
+  String get annunciLuogoLabel => 'Luogo / Venue';
+
+  @override
+  String get annunciLuogoHint => 'Nome del posto';
+
+  @override
+  String get annunciCittaLabel => 'Città';
+
+  @override
+  String get annunciCittaHint => 'Milano';
+
+  @override
+  String get annunciPrezzoLabel => 'Prezzo ingresso (€)';
+
+  @override
+  String get annunciPrezzoHint => '0 = gratuito';
+
+  @override
+  String get annunciTelLabel => 'Telefono';
+
+  @override
+  String get annunciTelHint => '+39...';
+
+  @override
+  String get annunciEmailLabel => 'Email';
+
+  @override
+  String get annunciSitoLabel => 'Sito web / Link prenotazione';
+
+  @override
+  String get annunciPublishFree => 'Pubblica gratis (3 giorni)';
+
+  @override
+  String get annunciEmptyTitle => 'Nessun annuncio trovato';
+
+  @override
+  String get annunciEmptySubtitle => 'Sii il primo a pubblicare!';
+
+  @override
+  String get annunciAddCoverPhoto => 'Aggiungi foto copertina';
+
+  @override
+  String get annunciCoverPhotoHint => 'JPG, PNG o WebP · max 5MB';
+
+  @override
+  String get annunciAddPhoto => 'Aggiungi';
+
+  @override
+  String get annunciRemoveTooltip => 'Rimuovi';
+
+  @override
+  String get annunciCreatedSuccess =>
+      '✅ Annuncio pubblicato! Visibile per 3 giorni gratis.';
+
+  @override
+  String annunciCreatedCoverError(String msg) {
+    return '⚠️ Annuncio creato ma foto copertina non caricata: $msg';
+  }
+
+  @override
+  String get annunciAiMinChars =>
+      'Scrivi almeno 12 caratteri di descrizione per usare l\'AI.';
+
+  @override
+  String get annunciAiGenerated =>
+      '✨ Descrizione AI generata. Puoi modificarla prima di inviare.';
+
+  @override
+  String get annunciAiTemplate =>
+      '✨ Descrizione migliorata (template). Puoi modificarla.';
+
+  @override
+  String get annunciAiError => 'Errore AI';
 }

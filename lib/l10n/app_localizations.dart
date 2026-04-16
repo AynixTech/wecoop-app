@@ -1827,6 +1827,384 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Accedi per utilizzare tutti i servizi'**
   String get loginToAccess;
+
+  /// No description provided for @annunci.
+  ///
+  /// In it, this message translates to:
+  /// **'Annunci'**
+  String get annunci;
+
+  /// No description provided for @annunciPublishTooltip.
+  ///
+  /// In it, this message translates to:
+  /// **'Pubblica annuncio'**
+  String get annunciPublishTooltip;
+
+  /// No description provided for @annunciPublishButton.
+  ///
+  /// In it, this message translates to:
+  /// **'Pubblica'**
+  String get annunciPublishButton;
+
+  /// No description provided for @annunciSearchHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca eventi, ristoranti, concerti...'**
+  String get annunciSearchHint;
+
+  /// No description provided for @annunciAll.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutti'**
+  String get annunciAll;
+
+  /// No description provided for @annunciFree.
+  ///
+  /// In it, this message translates to:
+  /// **'Gratuito'**
+  String get annunciFree;
+
+  /// No description provided for @annunciIngressoGratuito.
+  ///
+  /// In it, this message translates to:
+  /// **'Ingresso gratuito'**
+  String get annunciIngressoGratuito;
+
+  /// No description provided for @annunciDeleteTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina annuncio'**
+  String get annunciDeleteTitle;
+
+  /// No description provided for @annunciDeleteConfirm.
+  ///
+  /// In it, this message translates to:
+  /// **'Sei sicuro di voler eliminare questo annuncio? L\'operazione non può essere annullata.'**
+  String get annunciDeleteConfirm;
+
+  /// No description provided for @annunciDeleteCancel.
+  ///
+  /// In it, this message translates to:
+  /// **'Annulla'**
+  String get annunciDeleteCancel;
+
+  /// No description provided for @annunciDeleteBtn.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina'**
+  String get annunciDeleteBtn;
+
+  /// No description provided for @annunciDeleting.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminazione...'**
+  String get annunciDeleting;
+
+  /// No description provided for @annunciDeleteActionBtn.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina annuncio'**
+  String get annunciDeleteActionBtn;
+
+  /// No description provided for @annunciDeleted.
+  ///
+  /// In it, this message translates to:
+  /// **'Annuncio eliminato'**
+  String get annunciDeleted;
+
+  /// No description provided for @annunciDeleteError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore durante l\'eliminazione'**
+  String get annunciDeleteError;
+
+  /// No description provided for @annunciNotFound.
+  ///
+  /// In it, this message translates to:
+  /// **'Annuncio non trovato'**
+  String get annunciNotFound;
+
+  /// No description provided for @annunciContatti.
+  ///
+  /// In it, this message translates to:
+  /// **'Contatti'**
+  String get annunciContatti;
+
+  /// No description provided for @annunciBuyTickets.
+  ///
+  /// In it, this message translates to:
+  /// **'🎟 Acquista biglietti'**
+  String get annunciBuyTickets;
+
+  /// No description provided for @annunciMenuGiorno.
+  ///
+  /// In it, this message translates to:
+  /// **'Menu del giorno'**
+  String get annunciMenuGiorno;
+
+  /// No description provided for @annunciOffertaSpeciale.
+  ///
+  /// In it, this message translates to:
+  /// **'Offerta speciale'**
+  String get annunciOffertaSpeciale;
+
+  /// No description provided for @annunciCopertiDisp.
+  ///
+  /// In it, this message translates to:
+  /// **'Coperti disponibili'**
+  String get annunciCopertiDisp;
+
+  /// No description provided for @annunciPrenota.
+  ///
+  /// In it, this message translates to:
+  /// **'📞 Prenota: {val}'**
+  String annunciPrenota(String val);
+
+  /// No description provided for @annunciDisponibilita.
+  ///
+  /// In it, this message translates to:
+  /// **'Disponibilità'**
+  String get annunciDisponibilita;
+
+  /// No description provided for @annunciTariffa.
+  ///
+  /// In it, this message translates to:
+  /// **'Tariffa'**
+  String get annunciTariffa;
+
+  /// No description provided for @annunciPublishTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Pubblica un annuncio'**
+  String get annunciPublishTitle;
+
+  /// No description provided for @annunciPublishSubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'✅ 3 giorni gratuiti · €1/giorno per estenderlo'**
+  String get annunciPublishSubtitle;
+
+  /// No description provided for @annunciTitleLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Titolo *'**
+  String get annunciTitleLabel;
+
+  /// No description provided for @annunciTitleHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Es. Concerto di Soolking, Aperitivo speciale...'**
+  String get annunciTitleHint;
+
+  /// No description provided for @annunciTitleRequired.
+  ///
+  /// In it, this message translates to:
+  /// **'Campo obbligatorio'**
+  String get annunciTitleRequired;
+
+  /// No description provided for @annunciCoverPhoto.
+  ///
+  /// In it, this message translates to:
+  /// **'📷 Foto copertina'**
+  String get annunciCoverPhoto;
+
+  /// No description provided for @annunciGalleryPhotos.
+  ///
+  /// In it, this message translates to:
+  /// **'🖼 Foto galleria (max 8)'**
+  String get annunciGalleryPhotos;
+
+  /// No description provided for @annunciCategoryLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Categoria'**
+  String get annunciCategoryLabel;
+
+  /// No description provided for @annunciCategorySelect.
+  ///
+  /// In it, this message translates to:
+  /// **'— Seleziona —'**
+  String get annunciCategorySelect;
+
+  /// No description provided for @annunciDescLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Descrizione'**
+  String get annunciDescLabel;
+
+  /// No description provided for @annunciDescHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Descrivi l\'annuncio...'**
+  String get annunciDescHint;
+
+  /// No description provided for @annunciAiGenerating.
+  ///
+  /// In it, this message translates to:
+  /// **'Generazione in corso...'**
+  String get annunciAiGenerating;
+
+  /// No description provided for @annunciAiImprove.
+  ///
+  /// In it, this message translates to:
+  /// **'Migliora descrizione con AI'**
+  String get annunciAiImprove;
+
+  /// No description provided for @annunciAiDescLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'✨ Descrizione AI (modificabile)'**
+  String get annunciAiDescLabel;
+
+  /// No description provided for @annunciEventDate.
+  ///
+  /// In it, this message translates to:
+  /// **'Data evento'**
+  String get annunciEventDate;
+
+  /// No description provided for @annunciEventTime.
+  ///
+  /// In it, this message translates to:
+  /// **'Ora'**
+  String get annunciEventTime;
+
+  /// No description provided for @annunciLuogoLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Luogo / Venue'**
+  String get annunciLuogoLabel;
+
+  /// No description provided for @annunciLuogoHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome del posto'**
+  String get annunciLuogoHint;
+
+  /// No description provided for @annunciCittaLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Città'**
+  String get annunciCittaLabel;
+
+  /// No description provided for @annunciCittaHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Milano'**
+  String get annunciCittaHint;
+
+  /// No description provided for @annunciPrezzoLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Prezzo ingresso (€)'**
+  String get annunciPrezzoLabel;
+
+  /// No description provided for @annunciPrezzoHint.
+  ///
+  /// In it, this message translates to:
+  /// **'0 = gratuito'**
+  String get annunciPrezzoHint;
+
+  /// No description provided for @annunciTelLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Telefono'**
+  String get annunciTelLabel;
+
+  /// No description provided for @annunciTelHint.
+  ///
+  /// In it, this message translates to:
+  /// **'+39...'**
+  String get annunciTelHint;
+
+  /// No description provided for @annunciEmailLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Email'**
+  String get annunciEmailLabel;
+
+  /// No description provided for @annunciSitoLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Sito web / Link prenotazione'**
+  String get annunciSitoLabel;
+
+  /// No description provided for @annunciPublishFree.
+  ///
+  /// In it, this message translates to:
+  /// **'Pubblica gratis (3 giorni)'**
+  String get annunciPublishFree;
+
+  /// No description provided for @annunciEmptyTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun annuncio trovato'**
+  String get annunciEmptyTitle;
+
+  /// No description provided for @annunciEmptySubtitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Sii il primo a pubblicare!'**
+  String get annunciEmptySubtitle;
+
+  /// No description provided for @annunciAddCoverPhoto.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi foto copertina'**
+  String get annunciAddCoverPhoto;
+
+  /// No description provided for @annunciCoverPhotoHint.
+  ///
+  /// In it, this message translates to:
+  /// **'JPG, PNG o WebP · max 5MB'**
+  String get annunciCoverPhotoHint;
+
+  /// No description provided for @annunciAddPhoto.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi'**
+  String get annunciAddPhoto;
+
+  /// No description provided for @annunciRemoveTooltip.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi'**
+  String get annunciRemoveTooltip;
+
+  /// No description provided for @annunciCreatedSuccess.
+  ///
+  /// In it, this message translates to:
+  /// **'✅ Annuncio pubblicato! Visibile per 3 giorni gratis.'**
+  String get annunciCreatedSuccess;
+
+  /// No description provided for @annunciCreatedCoverError.
+  ///
+  /// In it, this message translates to:
+  /// **'⚠️ Annuncio creato ma foto copertina non caricata: {msg}'**
+  String annunciCreatedCoverError(String msg);
+
+  /// No description provided for @annunciAiMinChars.
+  ///
+  /// In it, this message translates to:
+  /// **'Scrivi almeno 12 caratteri di descrizione per usare l\'AI.'**
+  String get annunciAiMinChars;
+
+  /// No description provided for @annunciAiGenerated.
+  ///
+  /// In it, this message translates to:
+  /// **'✨ Descrizione AI generata. Puoi modificarla prima di inviare.'**
+  String get annunciAiGenerated;
+
+  /// No description provided for @annunciAiTemplate.
+  ///
+  /// In it, this message translates to:
+  /// **'✨ Descrizione migliorata (template). Puoi modificarla.'**
+  String get annunciAiTemplate;
+
+  /// No description provided for @annunciAiError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore AI'**
+  String get annunciAiError;
 }
 
 class _AppLocalizationsDelegate

@@ -627,29 +627,26 @@ class _AnnuncioDetailSheetState
                       ),
                       if ((_data!['immagine_url'] as String? ?? '')
                           .isNotEmpty)
-                        ClipRect(
-                          child: AspectRatio(
-                            aspectRatio: 16 / 9,
-                            child: Image.network(
-                              _data!['immagine_url'] as String,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              loadingBuilder: (ctx, child, progress) {
-                                if (progress == null) return child;
-                                return Container(
-                                  color: Colors.grey.shade100,
-                                  child: const Center(
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Color(0xFF1282A8),
-                                    ),
-                                  ),
-                                );
-                              },
-                              errorBuilder: (_, __, ___) =>
-                                  const SizedBox.shrink(),
-                            ),
-                          ),
+                        Image.network(
+                          _data!['immagine_url'] as String,
+                          width: double.infinity,
+                          fit: BoxFit.contain,
+                          color: Colors.transparent,
+                          loadingBuilder: (ctx, child, progress) {
+                            if (progress == null) return child;
+                            return Container(
+                              height: 200,
+                              color: Colors.grey.shade100,
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Color(0xFF1282A8),
+                                ),
+                              ),
+                            );
+                          },
+                          errorBuilder: (_, __, ___) =>
+                              const SizedBox.shrink(),
                         ),
                       Padding(
                         padding: const EdgeInsets.all(20),

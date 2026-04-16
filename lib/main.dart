@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'services/locale_provider.dart';
 import 'services/secure_storage_service.dart';
@@ -58,6 +59,10 @@ Future<void> _initializeStripe() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // google_fonts: usa solo download da rete, non da asset bundle
+  // (evita crash "Unable to load AssetManifest.json" nelle isolate)
+  GoogleFonts.config.allowRuntimeFetching = true;
 
   // Verifica integrita' secure storage (pulisce se corrotto dopo reinstallazione)
   final storageService = SecureStorageService();

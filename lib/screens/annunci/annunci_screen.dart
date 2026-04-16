@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../services/annunci_wecoop_service.dart';
 import '../../services/secure_storage_service.dart';
 
@@ -880,6 +882,11 @@ class _CreaAnnuncioSheetState
   TimeOfDay? _oraInizio;
   bool _submitting = false;
 
+  // Foto
+  final _imagePicker = ImagePicker();
+  File? _copertina;
+  final List<File> _fotoGalleria = [];
+
   @override
   void dispose() {
     _titoloCtrl.dispose();
@@ -918,24 +925,36 @@ class _CreaAnnuncioSheetState
     };
 
     final result = await widget.service.creaAnnuncio(data);
-    setState(() => _submitting = false);
 
-    if (!mounted) return;
-    if (result['success'] == true) {
-      Navigator.pop(context);
-      widget.onCreated();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text(
-            '✅ Annuncio pubblicato! Visibile per 3 giorni gratis.'),
-        backgroundColor: Color(0xFF1282A8),
-      ));
-    } else {
+    if (result['success'] != true) {
+      setState(() => _submitting = false);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content:
-            Text(result['message'] as String? ?? 'Errore'),
+        content: Text(result['message'] as String? ?? 'Errore'),
         backgroundColor: Colors.red,
       ));
+      return;
     }
+
+    // Carica foto dopo aver creato l'annuncio
+    final annuncioId = (result['annuncio']?['id'] as int?) ?? 0;
+    if (annuncioId > 0) {
+      if (_copertina != null) {
+        await widget.service.uploadCopertina(annuncioId, _copertina!);
+      }
+      for (final foto in _fotoGalleria) {
+        await widget.service.uploadFoto(annuncioId, foto);
+      }
+    }
+
+    setState(() => _submitting = false);
+    if (!mounted) return;
+    Navigator.pop(context);
+    widget.onCreated();
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text('✅ Annuncio pubblicato! Visibile per 3 giorni gratis.'),
+      backgroundColor: Color(0xFF1282A8),
+    ));
   }
 
   @override
@@ -992,6 +1011,47 @@ class _CreaAnnuncioSheetState
                         ? 'Campo obbligatorio'
                         : null,
               ),
+              const SizedBox(height: 16),
+
+              // --- Foto copertina ---
+              _SectionLabel(label: '📷 Foto copertina'),
+              const SizedBox(height: 8),
+              _CopertinaPickerTile(
+                file: _copertina,
+                onPick: () async {
+                  final picked = await _imagePicker.pickImage(
+                    source: ImageSource.gallery,
+                    imageQuality: 85,
+                    maxWidth: 1400,
+                  );
+                  if (picked != null) {
+                    setState(() => _copertina = File(picked.path));
+                  }
+                },
+                onRemove: () => setState(() => _copertina = null),
+              ),
+              const SizedBox(height: 16),
+
+              // --- Foto galleria ---
+              _SectionLabel(label: '🖼 Foto galleria (max 8)'),
+              const SizedBox(height: 8),
+              _GalleriaPickerRow(
+                files: _fotoGalleria,
+                onAdd: () async {
+                  if (_fotoGalleria.length >= 8) return;
+                  final picked = await _imagePicker.pickImage(
+                    source: ImageSource.gallery,
+                    imageQuality: 80,
+                    maxWidth: 1200,
+                  );
+                  if (picked != null) {
+                    setState(() => _fotoGalleria.add(File(picked.path)));
+                  }
+                },
+                onRemove: (i) => setState(() => _fotoGalleria.removeAt(i)),
+              ),
+              const SizedBox(height: 16),
+              const Divider(),
               const SizedBox(height: 8),
 
               DropdownButtonFormField<String>(
@@ -1199,6 +1259,219 @@ class _EmptyState extends StatelessWidget {
               style: TextStyle(
                   fontSize: 13, color: Colors.grey.shade400)),
         ],
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// Foto helpers widgets
+// =============================================================================
+
+class _SectionLabel extends StatelessWidget {
+  final String label;
+  const _SectionLabel({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(label,
+        style: const TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w600));
+  }
+}
+
+/// Tile per la foto copertina — anteprima grande con bottone rimuovi
+class _CopertinaPickerTile extends StatelessWidget {
+  final File? file;
+  final VoidCallback onPick;
+  final VoidCallback onRemove;
+
+  const _CopertinaPickerTile(
+      {required this.file,
+      required this.onPick,
+      required this.onRemove});
+
+  @override
+  Widget build(BuildContext context) {
+    if (file == null) {
+      return GestureDetector(
+        onTap: onPick,
+        child: Container(
+          height: 150,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: const Color(0xFF1282A8).withOpacity(0.06),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: const Color(0xFF1282A8).withOpacity(0.3),
+              style: BorderStyle.solid,
+            ),
+          ),
+          child: const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.add_photo_alternate_outlined,
+                  size: 36, color: Color(0xFF1282A8)),
+              SizedBox(height: 8),
+              Text('Aggiungi foto copertina',
+                  style: TextStyle(
+                      color: Color(0xFF1282A8),
+                      fontWeight: FontWeight.w500)),
+              SizedBox(height: 4),
+              Text('JPG, PNG o WebP · max 5MB',
+                  style:
+                      TextStyle(fontSize: 11, color: Colors.grey)),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Image.file(
+            file!,
+            height: 150,
+            width: double.infinity,
+            fit: BoxFit.cover,
+          ),
+        ),
+        Positioned(
+          top: 8,
+          right: 8,
+          child: Row(
+            children: [
+              _PhotoActionBtn(
+                  icon: Icons.edit, onTap: onPick, tooltip: 'Cambia'),
+              const SizedBox(width: 6),
+              _PhotoActionBtn(
+                  icon: Icons.delete,
+                  onTap: onRemove,
+                  tooltip: 'Rimuovi',
+                  color: Colors.red),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Riga scrollabile con le foto della galleria + bottone aggiungi
+class _GalleriaPickerRow extends StatelessWidget {
+  final List<File> files;
+  final VoidCallback onAdd;
+  final ValueChanged<int> onRemove;
+
+  const _GalleriaPickerRow(
+      {required this.files,
+      required this.onAdd,
+      required this.onRemove});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 100,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          // Bottone aggiungi
+          if (files.length < 8)
+            GestureDetector(
+              onTap: onAdd,
+              child: Container(
+                width: 100,
+                margin: const EdgeInsets.only(right: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1282A8).withOpacity(0.06),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color:
+                        const Color(0xFF1282A8).withOpacity(0.3),
+                  ),
+                ),
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.add_photo_alternate_outlined,
+                        size: 28, color: Color(0xFF1282A8)),
+                    SizedBox(height: 4),
+                    Text('Aggiungi',
+                        style: TextStyle(
+                            fontSize: 11,
+                            color: Color(0xFF1282A8))),
+                  ],
+                ),
+              ),
+            ),
+          ...files.asMap().entries.map((e) {
+            final i = e.key;
+            final f = e.value;
+            return Stack(
+              children: [
+                Container(
+                  width: 100,
+                  margin: const EdgeInsets.only(right: 8),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(f,
+                        fit: BoxFit.cover,
+                        width: 100,
+                        height: 100),
+                  ),
+                ),
+                Positioned(
+                  top: 4,
+                  right: 12,
+                  child: _PhotoActionBtn(
+                    icon: Icons.close,
+                    onTap: () => onRemove(i),
+                    tooltip: 'Rimuovi',
+                    color: Colors.red,
+                    size: 20,
+                  ),
+                ),
+              ],
+            );
+          }),
+        ],
+      ),
+    );
+  }
+}
+
+class _PhotoActionBtn extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  final String tooltip;
+  final Color? color;
+  final double size;
+
+  const _PhotoActionBtn({
+    required this.icon,
+    required this.onTap,
+    required this.tooltip,
+    this.color,
+    this.size = 22,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Tooltip(
+        message: tooltip,
+        child: Container(
+          padding: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.55),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Icon(icon,
+              size: size, color: color ?? Colors.white),
+        ),
       ),
     );
   }

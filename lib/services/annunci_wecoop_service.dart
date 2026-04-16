@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'secure_storage_service.dart';
 
@@ -129,5 +130,69 @@ class AnnunciWecoopService {
       'success': false,
       'message': body['message'] ?? 'Errore.',
     };
+  }
+
+  // -------------------------------------------------------------------------
+  // POST upload foto copertina
+  // -------------------------------------------------------------------------
+  Future<Map<String, dynamic>> uploadCopertina(int id, File file) async {
+    final token = await _token;
+    if (token == null) {
+      return {'success': false, 'message': 'Devi effettuare il login.'};
+    }
+    final uri = Uri.parse('$_baseUrl/$id/upload-copertina');
+    final request = http.MultipartRequest('POST', uri)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..files.add(await http.MultipartFile.fromPath('file', file.path));
+
+    final streamed = await request.send().timeout(const Duration(seconds: 60));
+    final response = await http.Response.fromStream(streamed);
+    final body = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      return {'success': true, ...body};
+    }
+    return {
+      'success': false,
+      'message': body['message'] ?? 'Errore upload copertina.',
+    };
+  }
+
+  // -------------------------------------------------------------------------
+  // POST upload foto galleria
+  // -------------------------------------------------------------------------
+  Future<Map<String, dynamic>> uploadFoto(int id, File file) async {
+    final token = await _token;
+    if (token == null) {
+      return {'success': false, 'message': 'Devi effettuare il login.'};
+    }
+    final uri = Uri.parse('$_baseUrl/$id/upload-foto');
+    final request = http.MultipartRequest('POST', uri)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..files.add(await http.MultipartFile.fromPath('file', file.path));
+
+    final streamed = await request.send().timeout(const Duration(seconds: 60));
+    final response = await http.Response.fromStream(streamed);
+    final body = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      return {'success': true, ...body};
+    }
+    return {
+      'success': false,
+      'message': body['message'] ?? 'Errore upload foto.',
+    };
+  }
+
+  // -------------------------------------------------------------------------
+  // DELETE foto galleria
+  // -------------------------------------------------------------------------
+  Future<bool> deleteFoto(int annuncioId, int attachmentId) async {
+    final token = await _token;
+    if (token == null) return false;
+    final uri = Uri.parse('$_baseUrl/$annuncioId/foto/$attachmentId');
+    final response = await http.delete(
+      uri,
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    return response.statusCode == 200;
   }
 }

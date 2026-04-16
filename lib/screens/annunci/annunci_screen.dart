@@ -491,6 +491,8 @@ class _AnnuncioDetailSheetState
     extends State<_AnnuncioDetailSheet> {
   Map<String, dynamic>? _data;
   bool _loading = true;
+  int? _currentUserId;
+  bool _deleting = false;
 
   @override
   void initState() {
@@ -501,6 +503,64 @@ class _AnnuncioDetailSheetState
         _loading = false;
       });
     });
+    _loadCurrentUser();
+  }
+
+  Future<void> _loadCurrentUser() async {
+    final storage = SecureStorageService();
+    final raw = await storage.read(key: 'user_id');
+    if (raw != null) {
+      setState(() => _currentUserId = int.tryParse(raw));
+    }
+  }
+
+  bool get _isOwner {
+    if (_currentUserId == null || _data == null) return false;
+    final autoreId = _data!['autore_id'];
+    if (autoreId == null) return false;
+    return (autoreId as int) == _currentUserId;
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Elimina annuncio'),
+        content: const Text(
+            'Sei sicuro di voler eliminare questo annuncio? L\'operazione non può essere annullata.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Annulla'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+                backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Elimina'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    setState(() => _deleting = true);
+    final ok = await widget.service.eliminaAnnuncio(widget.id);
+    if (!mounted) return;
+    if (ok) {
+      Navigator.pop(context); // chiude il bottom sheet
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Annuncio eliminato'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      setState(() => _deleting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Errore durante l\'eliminazione')),
+      );
+    }
   }
 
   @override
@@ -575,6 +635,30 @@ class _AnnuncioDetailSheetState
                             _SpecificiSection(data: _data!),
                             const SizedBox(height: 16),
                             _ContattiSection(data: _data!),
+                            const SizedBox(height: 16),
+                            if (_isOwner)
+                              SizedBox(
+                                width: double.infinity,
+                                child: FilledButton.icon(
+                                  style: FilledButton.styleFrom(
+                                      backgroundColor: Colors.red),
+                                  onPressed: _deleting
+                                      ? null
+                                      : () => _confirmDelete(context),
+                                  icon: _deleting
+                                      ? const SizedBox(
+                                          width: 18,
+                                          height: 18,
+                                          child:
+                                              CircularProgressIndicator(
+                                                  color: Colors.white,
+                                                  strokeWidth: 2))
+                                      : const Icon(Icons.delete_outline),
+                                  label: Text(_deleting
+                                      ? 'Eliminazione...'
+                                      : 'Elimina annuncio'),
+                                ),
+                              ),
                             const SizedBox(height: 24),
                           ],
                         ),

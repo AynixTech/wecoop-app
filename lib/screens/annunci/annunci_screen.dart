@@ -371,13 +371,32 @@ class _AnnuncioCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(16)),
-                child: Image.network(
-                  imgUrl,
-                  width: double.infinity,
-                  height: 160,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) =>
-                      const SizedBox.shrink(),
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Image.network(
+                    imgUrl,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (ctx, child, progress) {
+                      if (progress == null) return child;
+                      return Container(
+                        color: Colors.grey.shade200,
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Color(0xFF1282A8),
+                          ),
+                        ),
+                      );
+                    },
+                    errorBuilder: (_, __, ___) => Container(
+                      color: Colors.grey.shade100,
+                      child: const Center(
+                        child: Icon(Icons.image_not_supported_outlined,
+                            size: 36, color: Colors.grey),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             Padding(
@@ -608,13 +627,29 @@ class _AnnuncioDetailSheetState
                       ),
                       if ((_data!['immagine_url'] as String? ?? '')
                           .isNotEmpty)
-                        Image.network(
-                          _data!['immagine_url'] as String,
-                          width: double.infinity,
-                          height: 220,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
-                              const SizedBox.shrink(),
+                        ClipRect(
+                          child: AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: Image.network(
+                              _data!['immagine_url'] as String,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (ctx, child, progress) {
+                                if (progress == null) return child;
+                                return Container(
+                                  color: Colors.grey.shade100,
+                                  child: const Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Color(0xFF1282A8),
+                                    ),
+                                  ),
+                                );
+                              },
+                              errorBuilder: (_, __, ___) =>
+                                  const SizedBox.shrink(),
+                            ),
+                          ),
                         ),
                       Padding(
                         padding: const EdgeInsets.all(20),

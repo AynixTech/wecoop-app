@@ -1035,10 +1035,18 @@ class _CreaAnnuncioSheetState
     }
 
     // Carica foto dopo aver creato l'annuncio
-    final annuncioId = (result['annuncio']?['id'] as int?) ?? 0;
+    final dynamic rawId = result['annuncio']?['id'];
+    final annuncioId = rawId is int
+        ? rawId
+        : (rawId is num ? rawId.toInt() : int.tryParse('$rawId') ?? 0);
     if (annuncioId > 0) {
       if (_copertina != null) {
-        await widget.service.uploadCopertina(annuncioId, _copertina!);
+        final upRes = await widget.service.uploadCopertina(annuncioId, _copertina!);
+        if (upRes['success'] != true && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('⚠️ Annuncio creato ma foto copertina non caricata: ${upRes['message']}'),
+          ));
+        }
       }
       for (final foto in _fotoGalleria) {
         await widget.service.uploadFoto(annuncioId, foto);

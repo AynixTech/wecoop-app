@@ -148,7 +148,7 @@ class AnnunciWecoopService {
     final streamed = await request.send().timeout(const Duration(seconds: 60));
     final response = await http.Response.fromStream(streamed);
     final body = jsonDecode(response.body);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return {'success': true, ...body};
     }
     return {
@@ -173,7 +173,7 @@ class AnnunciWecoopService {
     final streamed = await request.send().timeout(const Duration(seconds: 60));
     final response = await http.Response.fromStream(streamed);
     final body = jsonDecode(response.body);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return {'success': true, ...body};
     }
     return {

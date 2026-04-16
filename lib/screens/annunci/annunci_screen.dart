@@ -954,6 +954,8 @@ class _CreaAnnuncioSheetState
   final _formKey = GlobalKey<FormState>();
   final _titoloCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
+  final _descAiCtrl = TextEditingController();
+  bool _isImprovingDesc = false;
   final _luogoCtrl = TextEditingController();
   final _cittaCtrl = TextEditingController();
   final _telCtrl = TextEditingController();
@@ -975,6 +977,7 @@ class _CreaAnnuncioSheetState
   void dispose() {
     _titoloCtrl.dispose();
     _descCtrl.dispose();
+    _descAiCtrl.dispose();
     _luogoCtrl.dispose();
     _cittaCtrl.dispose();
     _telCtrl.dispose();
@@ -990,7 +993,9 @@ class _CreaAnnuncioSheetState
 
     final data = <String, dynamic>{
       'titolo': _titoloCtrl.text.trim(),
-      'descrizione': _descCtrl.text.trim(),
+      'descrizione': _descAiCtrl.text.trim().isNotEmpty
+          ? _descAiCtrl.text.trim()
+          : _descCtrl.text.trim(),
       if (_selectedCategoria != null) 'categoria': _selectedCategoria,
       if (_luogoCtrl.text.isNotEmpty) 'luogo': _luogoCtrl.text.trim(),
       if (_cittaCtrl.text.isNotEmpty) 'citta': _cittaCtrl.text.trim(),
@@ -1039,6 +1044,46 @@ class _CreaAnnuncioSheetState
       content: Text('✅ Annuncio pubblicato! Visibile per 3 giorni gratis.'),
       backgroundColor: Color(0xFF1282A8),
     ));
+  }
+
+  Future<void> _improveDescrizionWithAi() async {
+    final base = _descCtrl.text.trim();
+    if (base.length < 12) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text(
+                'Scrivi almeno 12 caratteri di descrizione per usare l\'AI.')),
+      );
+      return;
+    }
+    setState(() => _isImprovingDesc = true);
+    final result = await widget.service.improveDescrizione(
+      titolo: _titoloCtrl.text.trim(),
+      descrizione: base,
+      citta: _cittaCtrl.text.trim(),
+      categoria: _selectedCategoria ?? '',
+    );
+    if (!mounted) return;
+    setState(() => _isImprovingDesc = false);
+    if (result['success'] == true) {
+      _descAiCtrl.text =
+          (result['ai_description'] as String? ?? '').trim();
+      setState(() {});
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['source'] == 'openai'
+              ? '✨ Descrizione AI generata. Puoi modificarla prima di inviare.'
+              : '✨ Descrizione migliorata (template). Puoi modificarla.'),
+          backgroundColor: const Color(0xFF1282A8),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                result['message']?.toString() ?? 'Errore AI')),
+      );
+    }
   }
 
   @override
@@ -1166,6 +1211,35 @@ class _CreaAnnuncioSheetState
                   label: 'Descrizione',
                   hint: 'Descrivi l\'annuncio...',
                   maxLines: 4),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF1282A8),
+                    side: const BorderSide(color: Color(0xFF1282A8)),
+                  ),
+                  onPressed: _isImprovingDesc ? null : _improveDescrizionWithAi,
+                  icon: _isImprovingDesc
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Color(0xFF1282A8)))
+                      : const Icon(Icons.auto_awesome, size: 18),
+                  label: Text(_isImprovingDesc
+                      ? 'Generazione in corso...'
+                      : 'Migliora descrizione con AI'),
+                ),
+              ),
+              if (_descAiCtrl.text.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                _FormField(
+                    controller: _descAiCtrl,
+                    label: '✨ Descrizione AI (modificabile)',
+                    hint: '',
+                    maxLines: 5),
+              ],
               const SizedBox(height: 8),
 
               Row(children: [

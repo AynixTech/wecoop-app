@@ -195,4 +195,47 @@ class AnnunciWecoopService {
     );
     return response.statusCode == 200;
   }
+
+  // -------------------------------------------------------------------------
+  // AI: migliora descrizione annuncio
+  // -------------------------------------------------------------------------
+  Future<Map<String, dynamic>> improveDescrizione({
+    required String titolo,
+    required String descrizione,
+    String citta = '',
+    String categoria = '',
+  }) async {
+    final token = await _token;
+    if (token == null) {
+      return {'success': false, 'message': 'Devi essere loggato.'};
+    }
+    try {
+      final uri = Uri.parse('$_baseUrl/improve-description');
+      final response = await http.post(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'titolo': titolo,
+          'descrizione': descrizione,
+          'citta': citta,
+          'categoria': categoria,
+        }),
+      ).timeout(const Duration(seconds: 30));
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      if (response.statusCode == 200 && body['success'] == true) {
+        final data = body['data'] as Map<String, dynamic>? ?? {};
+        return {
+          'success': true,
+          'ai_description': (data['ai_description'] ?? '').toString(),
+          'source': (data['source'] ?? '').toString(),
+        };
+      }
+      return {'success': false, 'message': (body['message'] ?? 'Errore AI').toString()};
+    } catch (e) {
+      return {'success': false, 'message': 'Errore di connessione: $e'};
+    }
+  }
 }

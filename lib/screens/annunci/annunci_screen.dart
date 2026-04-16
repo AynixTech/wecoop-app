@@ -631,7 +631,6 @@ class _AnnuncioDetailSheetState
                           _data!['immagine_url'] as String,
                           width: double.infinity,
                           fit: BoxFit.contain,
-                          color: Colors.transparent,
                           loadingBuilder: (ctx, child, progress) {
                             if (progress == null) return child;
                             return Container(

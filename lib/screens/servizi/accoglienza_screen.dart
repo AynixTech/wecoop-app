@@ -5,6 +5,7 @@ import 'cittadinanza_screen.dart';
 import 'ricongiungimento_familiare_screen.dart';
 import 'asilo_politico_screen.dart';
 import 'visa_turismo_screen.dart';
+import 'mediazione_linguistica_screen.dart';
 
 class AccoglienzaScreen extends StatelessWidget {
   const AccoglienzaScreen({super.key});
@@ -34,6 +35,20 @@ class AccoglienzaScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 14, color: scheme.onSurfaceVariant),
               ),
               const SizedBox(height: 24),
+              _ServiceOptionCard(
+                icon: Icons.translate,
+                title: l10n.translate('mediazioneLinguistica'),
+                description: l10n.translate('mediazioneLinguisticaSubtitle'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MediazioneLinguisticaScreen(),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
               _ServiceOptionCard(
                 icon: Icons.badge,
                 title: l10n.residencePermit,

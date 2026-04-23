@@ -1242,6 +1242,14 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                         value: 'es',
                         child: Text(l10n.translate('languageSpanish')),
                       ),
+                      DropdownMenuItem(
+                        value: 'ar',
+                        child: Text(l10n.translate('languageArabic')),
+                      ),
+                      DropdownMenuItem(
+                        value: 'zh',
+                        child: Text(l10n.translate('languageChinese')),
+                      ),
                     ],
                     onChanged: (value) {
                       if (value != null) {

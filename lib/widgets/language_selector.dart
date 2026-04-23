@@ -19,6 +19,10 @@ class LanguageSelector extends StatelessWidget {
           return '🇬🇧';
         case 'es':
           return '🇪🇸';
+        case 'ar':
+          return '🇸🇦';
+        case 'zh':
+          return '🇨🇳';
         default:
           return '🌐';
       }
@@ -70,6 +74,34 @@ class LanguageSelector extends StatelessWidget {
               const SizedBox(width: 12),
               Text('Español'),
               if (currentLocale == 'es') ...[
+                const Spacer(),
+                const Icon(Icons.check, color: Color(0xFF2196F3)),
+              ],
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'ar',
+          child: Row(
+            children: [
+              Text('🇸🇦', style: TextStyle(fontSize: 20)),
+              const SizedBox(width: 12),
+              Text('العربية'),
+              if (currentLocale == 'ar') ...[
+                const Spacer(),
+                const Icon(Icons.check, color: Color(0xFF2196F3)),
+              ],
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'zh',
+          child: Row(
+            children: [
+              Text('🇨🇳', style: TextStyle(fontSize: 20)),
+              const SizedBox(width: 12),
+              Text('中文'),
+              if (currentLocale == 'zh') ...[
                 const Spacer(),
                 const Icon(Icons.check, color: Color(0xFF2196F3)),
               ],

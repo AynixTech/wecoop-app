@@ -106,6 +106,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get arabic => 'Arabic';
 
   @override
+  String get chinese => 'Chinese';
+
+  @override
   String get culture => 'Culture';
 
   @override

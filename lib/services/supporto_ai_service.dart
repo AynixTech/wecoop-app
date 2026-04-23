@@ -50,12 +50,12 @@ class SupportoAiService {
 
       return {
         'success': false,
-        'message': 'Risposta assistant non valida',
+        'message': 'Invalid assistant response',
       };
     } catch (e) {
       return {
         'success': false,
-        'message': 'Errore assistant: $e',
+        'message': 'Assistant error: $e',
       };
     }
   }

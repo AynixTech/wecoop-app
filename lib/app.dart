@@ -125,7 +125,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('it'), Locale('en'), Locale('es')],
+          supportedLocales: const [Locale('it'), Locale('en'), Locale('es'), Locale('ar'), Locale('zh')],
           theme: ThemeData(
             useMaterial3: true,
             colorScheme: const ColorScheme(

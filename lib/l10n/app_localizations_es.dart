@@ -105,6 +105,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get arabic => 'Árabe';
 
   @override
+  String get chinese => 'Chino';
+
+  @override
   String get culture => 'Cultura';
 
   @override

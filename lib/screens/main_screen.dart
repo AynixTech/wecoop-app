@@ -282,9 +282,19 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(index: _selectedIndex, children: _resolvedScreens),
-      bottomNavigationBar: _buildBottomNav(),
+    return PopScope(
+      canPop: _selectedIndex == 0,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && _selectedIndex != 0) {
+          setState(() {
+            _selectedIndex = 0;
+          });
+        }
+      },
+      child: Scaffold(
+        body: IndexedStack(index: _selectedIndex, children: _resolvedScreens),
+        bottomNavigationBar: _buildBottomNav(),
+      ),
     );
   }
 }

@@ -28,6 +28,14 @@ class AppLocalizations {
       'login': 'Accedi',
       'logout': 'Logout',
       'logoutConfirm': 'Logout effettuato',
+      'profileAppInfoTitle': 'Versione app e fatturazione',
+      'profileAppVersion': 'Versione app',
+      'profileKintiCompanyDetails':
+          'KINTI SRL\nSede legale: Via San Martino di Tours, 2 - 20900 Monza (MB)\nCF/P.IVA: 12201260960\nSDI: T9K4ZHO\nUfficio: Via Populonia, 8 - 20159 Milano (MI)\nTel: +39 331 393 5170\nEmail: info@kinti.it',
+      'profileKintiBillingNotice':
+          'Il pagamento e la fatturazione sono gestiti da KINTI SRL nell\'ambito del progetto WECOOP.',
+      'profileKintiInvoiceFlow':
+          'Dopo il pagamento riceverai la fattura in PDF via email. Tutti gli importi mostrati nell\'app sono IVA inclusa.',
       'email': 'Email',
       'password': 'Password',
       'memberCard': 'Tessera Socio WECOOP',
@@ -1885,6 +1893,14 @@ class AppLocalizations {
       'login': 'Login',
       'logout': 'Logout',
       'logoutConfirm': 'Logged out successfully',
+      'profileAppInfoTitle': 'App version and invoicing',
+      'profileAppVersion': 'App version',
+      'profileKintiCompanyDetails':
+          'KINTI SRL\nRegistered office: Via San Martino di Tours, 2 - 20900 Monza (MB)\nTax code/VAT: 12201260960\nSDI: T9K4ZHO\nOffice: Via Populonia, 8 - 20159 Milan (MI)\nTel: +39 331 393 5170\nEmail: info@kinti.it',
+      'profileKintiBillingNotice':
+          'Payments and invoicing are managed by KINTI SRL within the WECOOP project.',
+      'profileKintiInvoiceFlow':
+          'After payment you will receive the PDF invoice by email. All prices shown in the app include VAT.',
       'email': 'Email',
       'password': 'Password',
       'memberCard': 'WECOOP Member Card',
@@ -3273,6 +3289,14 @@ class AppLocalizations {
       'login': 'Iniciar sesión',
       'logout': 'Cerrar sesión',
       'logoutConfirm': 'Sesión cerrada',
+      'profileAppInfoTitle': 'Versión de la app y facturación',
+      'profileAppVersion': 'Versión de la app',
+      'profileKintiCompanyDetails':
+          'KINTI SRL\nSede legal: Via San Martino di Tours, 2 - 20900 Monza (MB)\nNIF/IVA: 12201260960\nSDI: T9K4ZHO\nOficina: Via Populonia, 8 - 20159 Milán (MI)\nTel: +39 331 393 5170\nEmail: info@kinti.it',
+      'profileKintiBillingNotice':
+          'Los pagos y la facturación son gestionados por KINTI SRL dentro del proyecto WECOOP.',
+      'profileKintiInvoiceFlow':
+          'Después del pago recibirás la factura en PDF por correo electrónico. Todos los importes mostrados en la app incluyen IVA.',
       'email': 'Correo',
       'password': 'Contraseña',
       'memberCard': 'Tarjeta de Socio WECOOP',

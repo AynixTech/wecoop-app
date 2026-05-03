@@ -32,6 +32,8 @@ class ProfiloScreen extends StatefulWidget {
 }
 
 class _ProfiloScreenState extends State<ProfiloScreen> {
+  static const String _appVersion = '1.3.3+10';
+
   String userName = '...';
   String userEmail = '...';
   String tesseraNumero = '...';
@@ -517,6 +519,14 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   bool get _hasTesseraNumero {
     final normalized = tesseraNumero.trim().toLowerCase();
     return normalized.isNotEmpty && normalized != '...';
+  }
+
+  String get _appVersionDisplay {
+    final parts = _appVersion.split('+');
+    if (parts.length == 2) {
+      return '${parts[0]} (${parts[1]})';
+    }
+    return _appVersion;
   }
 
   Widget _buildSectionCard({
@@ -1324,6 +1334,81 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                   );
                 }
               },
+            ),
+
+            const SizedBox(height: 20),
+
+            _buildSectionCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: scheme.primary.withOpacity(0.10),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Icon(
+                          Icons.info_outline_rounded,
+                          color: scheme.primary,
+                          size: 22,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          l10n.translate('profileAppInfoTitle'),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    '${l10n.translate('profileAppVersion')}: $_appVersionDisplay',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: scheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: scheme.surfaceContainerLowest,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Text(
+                      l10n.translate('profileKintiCompanyDetails'),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: scheme.onSurface,
+                        height: 1.45,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    l10n.translate('profileKintiBillingNotice'),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: scheme.onSurface.withOpacity(0.82),
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.translate('profileKintiInvoiceFlow'),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: scheme.onSurface.withOpacity(0.72),
+                      height: 1.4,
+                    ),
+                  ),
+                ],
+              ),
             ),
 
             const SizedBox(height: 28),

@@ -163,7 +163,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           paymentIntentClientSecret: clientSecret,
-          merchantDisplayName: 'WeCoop',
+          merchantDisplayName: 'KINTI SRL',
           style: ThemeMode.system,
           appearance: const PaymentSheetAppearance(
             colors: PaymentSheetAppearanceColors(
@@ -264,10 +264,26 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+              Text(
+                _localizedLegalText(
+                  it: 'Il pagamento e la fatturazione sono gestiti da KINTI SRL nell\'ambito del progetto WECOOP.',
+                  en: 'Payment and invoicing are managed by KINTI SRL within the WECOOP project.',
+                  es: 'El pago y la facturacion son gestionados por KINTI SRL en el marco del proyecto WECOOP.',
+                ),
+                style: const TextStyle(fontSize: 13),
+              ),
+              const SizedBox(height: 16),
               Text(l10n.bankCoordinates),
               const SizedBox(height: 8),
               _buildBankDetail('IBAN', 'IT60 X054 2811 1010 0000 0123 456'),
-              _buildBankDetail('Intestatario', 'WeCoop Cooperativa'),
+              _buildBankDetail(
+                _localizedLegalText(
+                  it: 'Intestatario',
+                  en: 'Account holder',
+                  es: 'Titular',
+                ),
+                'KINTI SRL',
+              ),
               _buildBankDetail('BIC/SWIFT', 'BPMOIT22XXX'),
               const SizedBox(height: 16),
               Text(
@@ -275,9 +291,13 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Dopo aver effettuato il bonifico, invia la ricevuta a pagamenti@wecoop.org',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
+              Text(
+                _localizedLegalText(
+                  it: 'Dopo aver effettuato il bonifico, segui le istruzioni amministrative condivise da KINTI SRL per l\'invio della ricevuta.',
+                  en: 'After completing the bank transfer, follow the administrative instructions shared by KINTI SRL to send the receipt.',
+                  es: 'Despues de realizar la transferencia, sigue las instrucciones administrativas compartidas por KINTI SRL para enviar el comprobante.',
+                ),
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
             ],
           ),
@@ -397,6 +417,24 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
     );
   }
 
+  String _localizedLegalText({
+    required String it,
+    required String en,
+    required String es,
+  }) {
+    final languageCode = AppLocalizations.of(context)?.locale.languageCode;
+
+    switch (languageCode) {
+      case 'en':
+        return en;
+      case 'es':
+        return es;
+      case 'it':
+      default:
+        return it;
+    }
+  }
+
   String _getServizioLabelTradotto(String servizio) {
     final l10n = AppLocalizations.of(context);
     if (l10n == null) return servizio;
@@ -487,6 +525,19 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 8),
+                                Text(
+                                  _localizedLegalText(
+                                    it: 'Prezzo finale IVA inclusa',
+                                    en: 'Final price VAT included',
+                                    es: 'Precio final IVA incluida',
+                                  ),
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 16,
@@ -549,6 +600,14 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                       AppLocalizations.of(context)!.paymentCreatedDate,
                                       _formatDate(_pagamento!.createdAt),
                                     ),
+                                    _buildDetailRow(
+                                      _localizedLegalText(
+                                        it: 'Gestione pagamento e fattura',
+                                        en: 'Payment and invoice entity',
+                                        es: 'Entidad de pago y factura',
+                                      ),
+                                      'KINTI SRL',
+                                    ),
                                     if (_pagamento!.paidAt != null)
                                       _buildDetailRow(
                                         AppLocalizations.of(context)!.paymentPaidDate,
@@ -569,6 +628,59 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                           if (_pagamento!.isPending)
                             Padding(
                               padding: const EdgeInsets.all(16.0),
+                              child: Card(
+                                color: const Color(0xFFF7F4EA),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        _localizedLegalText(
+                                          it: 'Nota legale pagamento',
+                                          en: 'Payment legal notice',
+                                          es: 'Aviso legal del pago',
+                                        ),
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        _localizedLegalText(
+                                          it: 'Il pagamento e la fatturazione sono gestiti da KINTI SRL nell\'ambito del progetto WECOOP.',
+                                          en: 'Payment and invoicing are managed by KINTI SRL within the WECOOP project.',
+                                          es: 'El pago y la facturacion son gestionados por KINTI SRL en el marco del proyecto WECOOP.',
+                                        ),
+                                        style: const TextStyle(height: 1.4),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            if (_pagamento!.isPending)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Text(
+                                  _localizedLegalText(
+                                    it: 'Procedendo al pagamento confermi un prezzo finale comprensivo di IVA.',
+                                    en: 'By proceeding with the payment you confirm a final price inclusive of VAT.',
+                                    es: 'Al continuar con el pago confirmas un precio final con IVA incluida.',
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.grey.shade700,
+                                  ),
+                                ),
+                              ),
+
+                            // Pulsanti pagamento (solo se pending)
+                            if (_pagamento!.isPending)
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
@@ -585,7 +697,11 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                   _buildPaymentButton(
                                     icon: Icons.credit_card,
                                     label: AppLocalizations.of(context)!.payWithCard,
-                                    subtitle: AppLocalizations.of(context)!.payWithCardDesc,
+                                    subtitle: _localizedLegalText(
+                                      it: 'Stripe collegato a KINTI SRL',
+                                      en: 'Stripe connected to KINTI SRL',
+                                      es: 'Stripe conectado a KINTI SRL',
+                                    ),
                                     color: const Color(0xFF635BFF),
                                     onTap: _handleStripePayment,
                                   ),
@@ -595,7 +711,11 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                   _buildPaymentButton(
                                     icon: Icons.account_balance_wallet,
                                     label: AppLocalizations.of(context)!.payPal,
-                                    subtitle: AppLocalizations.of(context)!.payPalDesc,
+                                    subtitle: _localizedLegalText(
+                                      it: 'Pagamento PayPal gestito da KINTI SRL',
+                                      en: 'PayPal payment managed by KINTI SRL',
+                                      es: 'Pago por PayPal gestionado por KINTI SRL',
+                                    ),
                                     color: const Color(0xFF0070BA),
                                     onTap: _handlePayPalPayment,
                                   ),
@@ -605,7 +725,11 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                   _buildPaymentButton(
                                     icon: Icons.account_balance,
                                     label: AppLocalizations.of(context)!.bankTransfer,
-                                    subtitle: AppLocalizations.of(context)!.bankTransferDesc,
+                                    subtitle: _localizedLegalText(
+                                      it: 'Bonifico intestato a KINTI SRL',
+                                      en: 'Bank transfer payable to KINTI SRL',
+                                      es: 'Transferencia a nombre de KINTI SRL',
+                                    ),
                                     color: Colors.green,
                                     onTap: _handleBankTransferPayment,
                                   ),

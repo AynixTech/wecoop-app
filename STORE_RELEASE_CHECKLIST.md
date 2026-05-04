@@ -5,7 +5,7 @@ Questa checklist copre i passaggi rimasti fuori dal codice per pubblicare WeCoop
 ## Gia' sistemato nel repo
 
 - Versione Flutter con build number: `1.3.2`
-- Bundle identifier iOS allineato a `com.wecoop.app`
+- Bundle identifier iOS allineato a `org.wecoop.app`
 - Stripe configurato via `--dart-define` invece di chiave test hardcoded
 - Avvio app tollerante se Firebase iOS non e' ancora configurato
 - Permessi Android legacy di storage rimossi
@@ -15,7 +15,7 @@ Questa checklist copre i passaggi rimasti fuori dal codice per pubblicare WeCoop
 
 ### Firebase iOS
 
-1. Crea l'app iOS `com.wecoop.app` nel progetto Firebase corretto.
+1. Crea l'app iOS `org.wecoop.app` nel progetto Firebase corretto.
 2. Scarica `GoogleService-Info.plist`.
 3. Aggiungilo in `ios/Runner/GoogleService-Info.plist` tramite Xcode con target `Runner`.
 4. Verifica che notifiche push/APNs siano configurate anche in Apple Developer.
@@ -56,7 +56,7 @@ flutter build ipa \
 
 #### iOS
 
-1. Verifica `com.wecoop.app` in Apple Developer
+1. Verifica `org.wecoop.app` in Apple Developer
 2. Associa certificati e provisioning profile corretti
 3. Verifica capability richieste: Push Notifications, Background Modes se usate
 

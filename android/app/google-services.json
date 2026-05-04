@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:845499195541:android:f72bb94ce2c89757873b9c",
         "android_client_info": {
-          "package_name": "com.wecoop.app"
+          "package_name": "org.wecoop.app"
         }
       },
       "oauth_client": [],

@@ -1,4 +1,4 @@
-package com.wecoop.app
+package org.wecoop.app
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

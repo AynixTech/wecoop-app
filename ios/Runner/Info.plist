@@ -11,7 +11,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<string>com.wecoop.app</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -45,8 +45,12 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Abbiamo bisogno di accedere alla fotocamera per scattare foto ai tuoi documenti</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Abbiamo bisogno del microfono per eventuali funzionalita multimediali che includono audio</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Usiamo Face ID per permetterti un accesso rapido e sicuro</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Usiamo la posizione per mostrare contenuti e servizi pertinenti nella tua area</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Abbiamo bisogno di salvare i documenti generati nella tua libreria quando lo richiedi</string>
 	<key>NSPhotoLibraryUsageDescription</key>

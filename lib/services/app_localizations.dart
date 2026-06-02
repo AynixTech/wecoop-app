@@ -349,6 +349,7 @@ class AppLocalizations {
     'studiareItaliaFormStep4': 'Documenti',
     'studiareItaliaNameSurname': 'Nome e cognome',
     'studiareItaliaCountryOrigin': 'Paese di origine',
+    'studiareItaliaCurrentlyLiveInItaly': 'Attualmente vivi in Italia?',
     'studiareItaliaWhatsapp': 'Numero di cellulare',
     'studiareItaliaAge': 'Età',
     'studiareItaliaEducation': 'Titolo di studio',
@@ -708,7 +709,7 @@ class AppLocalizations {
       'canCompletePaymentFromRequests':
           'Potrai completare il pagamento dalla sezione "Le Mie Richieste".',
       'willBeContactedByEmail':
-          'Sarai contattato via email per i prossimi passi.',
+          'Sarai contattato per i prossimi passi.',
       'requestSentPaymentRequired': 'Richiesta Inviata - Pagamento Richiesto',
       'payLater': 'Paga Dopo',
       'noRequestsThisDay': 'Nessuna richiesta per questo giorno',
@@ -758,7 +759,6 @@ class AppLocalizations {
       'birthPlace': 'Luogo di Nascita',
       'invalidPostalCode': 'CAP non valido',
       'provinceExample': 'Es: MI, RM, TO',
-      'invalidEmail': 'Email non valida',
       'accessToAllServices': 'Accesso a tutti i servizi di assistenza',
       'dedicatedSupport': 'Supporto dedicato per pratiche burocratiche',
       'fiscalConsultancy': 'Consulenza fiscale e contabile',
@@ -1462,6 +1462,7 @@ class AppLocalizations {
       'loading': 'جارٍ التحميل...',
       'noRequests': 'لم يتم العثور على طلبات',
       'myRequests': 'طلباتي',
+    'willBeContactedByEmail': 'سيتم التواصل معك بخصوص الخطوات التالية.',
       'close': 'إغلاق',
       'yes': 'نعم',
       'no': 'لا',
@@ -1690,6 +1691,7 @@ class AppLocalizations {
       'loading': '加载中...',
       'noRequests': '未找到申请',
       'myRequests': '我的申请',
+    'willBeContactedByEmail': '我们将就后续步骤与您联系。',
       'close': '关闭',
       'yes': '是',
       'no': '否',
@@ -2169,6 +2171,7 @@ class AppLocalizations {
     'studiareItaliaFormStep4': 'Documents',
     'studiareItaliaNameSurname': 'Full name',
     'studiareItaliaCountryOrigin': 'Country of origin',
+    'studiareItaliaCurrentlyLiveInItaly': 'Do you currently live in Italy?',
     'studiareItaliaWhatsapp': 'Cell number',
     'studiareItaliaAge': 'Age',
     'studiareItaliaEducation': 'Education level',
@@ -2502,7 +2505,7 @@ class AppLocalizations {
       'canCompletePaymentFromRequests':
           'You can complete the payment from the "My Requests" section.',
       'willBeContactedByEmail':
-          'You will be contacted via email for next steps.',
+          'You will be contacted for next steps.',
       'requestSentPaymentRequired': 'Request Sent - Payment Required',
       'payLater': 'Pay Later',
       'noRequestsThisDay': 'No requests for this day',
@@ -2567,7 +2570,6 @@ class AppLocalizations {
       'fiscalCodeMustBe16Chars': 'Tax ID must be 16 characters',
       'birthPlace': 'Place of Birth',
       'invalidPostalCode': 'Invalid postal code',
-      'invalidEmail': 'Invalid email',
       'fillFollowingFields': 'Fill in the following fields',
       'sendingError': 'Error during submission',
       'internationalProtectionRequest':
@@ -3252,7 +3254,6 @@ class AppLocalizations {
       'catAltro': 'Other',
       'clarificationsAndConsulting': 'Clarifications and Consulting',
       'clarificationsAndConsultingDesc': 'Tax consulting on deductions, VAT refunds and tax regimes',
-      'clarificationsConsulting': 'Clarifications and Consulting',
       'currentPermitNumber': 'Current permit number',
       'currentPermitType': 'Current permit type',
       'damaged': 'Damaged',
@@ -3272,7 +3273,6 @@ class AppLocalizations {
       'taxType': 'Tax / contribution type',
       'taxesAndContributions': 'Taxes and Contributions',
       'taxesAndContributionsDesc': 'Guidance on property taxes, income taxes and contributions',
-      'taxesContributions': 'Taxes and Contributions',
     },
     'es': {
       'appTitle': 'WECOOP',
@@ -3567,6 +3567,7 @@ class AppLocalizations {
     'studiareItaliaFormStep4': 'Documentos',
     'studiareItaliaNameSurname': 'Nombre y apellidos',
     'studiareItaliaCountryOrigin': 'País de origen',
+    'studiareItaliaCurrentlyLiveInItaly': '¿Actualmente vives en Italia?',
     'studiareItaliaWhatsapp': 'Número de celular',
     'studiareItaliaAge': 'Edad',
     'studiareItaliaEducation': 'Nivel educativo',
@@ -3893,7 +3894,7 @@ class AppLocalizations {
       'canCompletePaymentFromRequests':
           'Podrás completar el pago desde la sección "Mis Solicitudes".',
       'willBeContactedByEmail':
-          'Serás contactado por email para los próximos pasos.',
+          'Serás contactado para los próximos pasos.',
       'requestSentPaymentRequired': 'Solicitud Enviada - Pago Requerido',
       'payLater': 'Pagar Después',
       'noRequestsThisDay': 'No hay solicitudes para este día',
@@ -3959,7 +3960,6 @@ class AppLocalizations {
       'fiscalCodeMustBe16Chars': 'El código fiscal debe tener 16 caracteres',
       'birthPlace': 'Lugar de Nacimiento',
       'invalidPostalCode': 'Código postal no válido',
-      'invalidEmail': 'Email no válido',
       'fillFollowingFields': 'Completa los siguientes campos',
       'sendingError': 'Error durante el envío',
       'internationalProtectionRequest':

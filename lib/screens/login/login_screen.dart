@@ -7,6 +7,8 @@ import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/services/push_notification_service.dart';
+import 'package:wecoop_app/screens/onboarding/first_access_screen.dart';
+import 'package:wecoop_app/utils/phone_prefixes.dart';
 import '../../widgets/language_selector.dart';
 import '../../utils/html_utils.dart';
 
@@ -54,15 +56,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _loadBiometricState() async {
     final supportsBiometrics =
-        await _localAuth.canCheckBiometrics || await _localAuth.isDeviceSupported();
+        await _localAuth.canCheckBiometrics ||
+        await _localAuth.isDeviceSupported();
     final savedUser =
-      await storage.read(key: 'biometric_username') ??
-      await storage.read(key: 'auth_username');
+        await storage.read(key: 'biometric_username') ??
+        await storage.read(key: 'auth_username');
     final savedPass =
-      await storage.read(key: 'biometric_password') ??
-      await storage.read(key: 'auth_password');
+        await storage.read(key: 'biometric_password') ??
+        await storage.read(key: 'auth_password');
     final biometricSetting = await storage.read(key: 'biometric_login_enabled');
-    final biometricEnabled = biometricSetting == null || biometricSetting == 'true';
+    final biometricEnabled =
+        biometricSetting == null || biometricSetting == 'true';
 
     if (!mounted) return;
     setState(() {
@@ -111,14 +115,16 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     final savedPhone =
-      await storage.read(key: 'biometric_username') ??
-      await storage.read(key: 'auth_username');
+        await storage.read(key: 'biometric_username') ??
+        await storage.read(key: 'auth_username');
     final savedPassword =
-      await storage.read(key: 'biometric_password') ??
-      await storage.read(key: 'auth_password');
+        await storage.read(key: 'biometric_password') ??
+        await storage.read(key: 'auth_password');
 
-    if (savedPhone == null || savedPhone.isEmpty ||
-        savedPassword == null || savedPassword.isEmpty) {
+    if (savedPhone == null ||
+        savedPhone.isEmpty ||
+        savedPassword == null ||
+        savedPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.translate('biometricCredentialsMissing'))),
       );
@@ -136,10 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!authenticated) return;
 
-      await _loginWithCredentials(
-        phone: savedPhone,
-        password: savedPassword,
-      );
+      await _loginWithCredentials(phone: savedPhone, password: savedPassword);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.translate('biometricAuthFailed'))),
@@ -399,6 +402,53 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  void _goToRegistration() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const FirstAccessScreen()),
+    );
+  }
+
+  Widget _buildRegistrationCta() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black.withOpacity(0.08)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Non sei ancora registrato?',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: Colors.grey[800],
+            ),
+          ),
+          const SizedBox(height: 10),
+          OutlinedButton(
+            onPressed: _goToRegistration,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.primary,
+              side: BorderSide(color: Theme.of(context).colorScheme.primary),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              textStyle: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            child: const Text('Registrati'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -412,202 +462,233 @@ class _LoginScreenState extends State<LoginScreen> {
         title: Text(l10n.login),
         actions: const [LanguageSelector()],
       ),
-      body: showPasswordForm
-          ? SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  const SizedBox(height: 40),
-                  Image.asset('assets/images/wecoop_logo.png', height: 120),
-                  const SizedBox(height: 32),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 100,
-                    child: TextField(
-                      controller: prefixController,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        labelText: l10n.translate('prefix'),
-                        hintText: '+39',
-                        prefixIcon: const Icon(Icons.flag, size: 20),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextField(
-                      controller: phoneController,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        labelText: l10n.translate('phoneNumber'),
-                        hintText: '3891234567',
-                        helperStyle: const TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey,
-                        ),
-                        prefixIcon: const Icon(Icons.phone),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: passwordController,
-                obscureText: _obscurePassword,
-                decoration: InputDecoration(
-                  labelText: l10n.password,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Checkbox(
-                    value: rememberPassword,
-                    onChanged: (value) {
-                      setState(() {
-                        rememberPassword = value ?? false;
-                      });
-                    },
-                  ),
-                  Text(l10n.rememberPassword),
-                ],
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: isLoading ? null : _login,
-                child:
-                    isLoading
-                        ? Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
-                                ),
+      body:
+          showPasswordForm
+              ? SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 40),
+                    Image.asset('assets/images/wecoop_logo.png', height: 120),
+                    const SizedBox(height: 32),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        DropdownButtonFormField<String>(
+                          value: prefixController.text,
+                          isExpanded: true,
+                          items:
+                              PhonePrefixes.prefixes.map((prefix) {
+                                return DropdownMenuItem<String>(
+                                  value: prefix,
+                                  child: Text(prefix),
+                                );
+                              }).toList(),
+                          onChanged: (value) {
+                            if (value == null) return;
+                            setState(() {
+                              prefixController.text = value;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            labelText: l10n.translate('prefix'),
+                            hintText: '+39',
+                            prefixIcon: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Text(
+                                PhonePrefixes.flagFor(prefixController.text),
+                                style: const TextStyle(fontSize: 20),
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            Text(l10n.sending),
-                          ],
-                        )
-                        : Text(l10n.login),
-              ),
-              if (biometricsReady) ...[
-                const SizedBox(height: 8),
-                TextButton(
-                  onPressed: isLoading
-                      ? null
-                      : () {
-                          setState(() {
-                            _forceShowPasswordLogin = false;
-                          });
-                        },
-                  child: Text(l10n.translate('useBiometricsInstead')),
-                ),
-              ],
-                  const SizedBox(height: 16),
-
-                  // Password Dimenticata
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/forgot-password');
-                    },
-                    child: Text(
-                      l10n.translate('forgotPassword'),
-                      style: const TextStyle(fontSize: 14),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: phoneController,
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                            labelText: l10n.translate('phoneNumber'),
+                            hintText: '3891234567',
+                            helperStyle: const TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey,
+                            ),
+                            prefixIcon: const Icon(Icons.phone),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  TextButton.icon(
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/home');
-                    },
-                    icon: const Icon(Icons.home),
-                    label: Text(
-                      l10n.translate('continueWithoutLogin'),
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.grey[700],
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 360),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset('assets/images/wecoop_logo.png', height: 120),
-                      const SizedBox(height: 24),
-                      ElevatedButton.icon(
-                        onPressed: isLoading ? null : _loginWithBiometrics,
-                        icon: const Icon(Icons.fingerprint),
-                        label: Text(l10n.translate('loginWithBiometrics')),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: passwordController,
+                      obscureText: _obscurePassword,
+                      decoration: InputDecoration(
+                        labelText: l10n.password,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                        ),
                       ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: rememberPassword,
+                          onChanged: (value) {
+                            setState(() {
+                              rememberPassword = value ?? false;
+                            });
+                          },
+                        ),
+                        Text(l10n.rememberPassword),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: isLoading ? null : _login,
+                      child:
+                          isLoading
+                              ? Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(l10n.sending),
+                                ],
+                              )
+                              : Text(l10n.login),
+                    ),
+                    if (biometricsReady) ...[
                       const SizedBox(height: 8),
                       TextButton(
-                        onPressed: isLoading
-                            ? null
-                            : () {
-                                setState(() {
-                                  _forceShowPasswordLogin = true;
-                                });
-                              },
-                        child: Text(l10n.translate('usePasswordInstead')),
-                      ),
-                      const SizedBox(height: 16),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/forgot-password');
-                        },
-                        child: Text(
-                          l10n.translate('forgotPassword'),
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextButton.icon(
-                        onPressed: () {
-                          Navigator.pushReplacementNamed(context, '/home');
-                        },
-                        icon: const Icon(Icons.home),
-                        label: Text(
-                          l10n.translate('continueWithoutLogin'),
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.grey[700],
-                        ),
+                        onPressed:
+                            isLoading
+                                ? null
+                                : () {
+                                  setState(() {
+                                    _forceShowPasswordLogin = false;
+                                  });
+                                },
+                        child: Text(l10n.translate('useBiometricsInstead')),
                       ),
                     ],
+                    const SizedBox(height: 16),
+
+                    _buildRegistrationCta(),
+
+                    const SizedBox(height: 16),
+
+                    // Password Dimenticata
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/forgot-password');
+                      },
+                      child: Text(
+                        l10n.translate('forgotPassword'),
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    TextButton.icon(
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, '/home');
+                      },
+                      icon: const Icon(Icons.home),
+                      label: Text(
+                        l10n.translate('continueWithoutLogin'),
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.grey[700],
+                      ),
+                    ),
+                  ],
+                ),
+              )
+              : Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 360),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          'assets/images/wecoop_logo.png',
+                          height: 120,
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          onPressed: isLoading ? null : _loginWithBiometrics,
+                          icon: const Icon(Icons.fingerprint),
+                          label: Text(l10n.translate('loginWithBiometrics')),
+                        ),
+                        const SizedBox(height: 8),
+                        TextButton(
+                          onPressed:
+                              isLoading
+                                  ? null
+                                  : () {
+                                    setState(() {
+                                      _forceShowPasswordLogin = true;
+                                    });
+                                  },
+                          child: Text(l10n.translate('usePasswordInstead')),
+                        ),
+                        const SizedBox(height: 16),
+
+                        _buildRegistrationCta(),
+
+                        const SizedBox(height: 16),
+
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/forgot-password');
+                          },
+                          child: Text(
+                            l10n.translate('forgotPassword'),
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        TextButton.icon(
+                          onPressed: () {
+                            Navigator.pushReplacementNamed(context, '/home');
+                          },
+                          icon: const Icon(Icons.home),
+                          label: Text(
+                            l10n.translate('continueWithoutLogin'),
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.grey[700],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
     );
   }
 }

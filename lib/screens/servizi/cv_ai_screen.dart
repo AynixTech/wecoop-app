@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
+import 'package:wecoop_app/utils/phone_prefixes.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -59,6 +60,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
   final _dataNascitaController = TextEditingController();
   final _nazionalitaController = TextEditingController();
   final _indirizzoController = TextEditingController();
+  final _prefissoTelefonoController = TextEditingController(text: '+39');
   final _telefonoController = TextEditingController();
   final _emailController = TextEditingController();
 
@@ -125,6 +127,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
     _dataNascitaController.dispose();
     _nazionalitaController.dispose();
     _indirizzoController.dispose();
+    _prefissoTelefonoController.dispose();
     _telefonoController.dispose();
     _emailController.dispose();
     _eduTitoloController.dispose();
@@ -158,7 +161,14 @@ class _CvAiScreenState extends State<CvAiScreen> {
       _dataNascitaController.text = draft['data_nascita']?.toString() ?? '';
       _nazionalitaController.text = draft['nazionalita']?.toString() ?? '';
       _indirizzoController.text = draft['indirizzo']?.toString() ?? '';
-      _telefonoController.text = draft['telefono']?.toString() ?? '';
+      final draftPrefix = draft['telefono_prefix']?.toString();
+      final draftPhone = draft['telefono']?.toString() ?? '';
+      if (draftPrefix != null && draftPrefix.isNotEmpty) {
+        _prefissoTelefonoController.text = draftPrefix;
+        _telefonoController.text = draftPhone;
+      } else {
+        _applyStoredPhone(draftPhone);
+      }
       _emailController.text = draft['email']?.toString() ?? '';
       _photoPath = draft['photo_path']?.toString();
 
@@ -203,6 +213,30 @@ class _CvAiScreenState extends State<CvAiScreen> {
       if (!mounted) return;
       setState(() {});
     } catch (_) {}
+  }
+
+  void _applyStoredPhone(String phone) {
+    final normalizedPhone = phone.replaceAll(RegExp(r'[^\d]'), '');
+    if (normalizedPhone.isEmpty) {
+      _telefonoController.text = '';
+      return;
+    }
+
+    final prefixes = [...PhonePrefixes.prefixes]
+      ..sort((a, b) => b.length.compareTo(a.length));
+
+    for (final prefix in prefixes) {
+      final normalizedPrefix = prefix.replaceAll('+', '');
+      if (normalizedPhone.startsWith(normalizedPrefix)) {
+        _prefissoTelefonoController.text = prefix;
+        _telefonoController.text = normalizedPhone.substring(
+          normalizedPrefix.length,
+        );
+        return;
+      }
+    }
+
+    _telefonoController.text = normalizedPhone;
   }
 
   List<Map<String, String>> _toMapList(dynamic value) {
@@ -843,7 +877,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
     _nomeController.text = personalInfo['firstName']?.toString() ?? '';
     _cognomeController.text = personalInfo['lastName']?.toString() ?? '';
     _nazionalitaController.text = personalInfo['nationality']?.toString() ?? '';
-    _telefonoController.text = personalInfo['phone']?.toString() ?? '';
+    _applyStoredPhone(personalInfo['phone']?.toString() ?? '');
     _emailController.text = personalInfo['email']?.toString() ?? '';
     _indirizzoController.text = personalInfo['address']?.toString() ?? '';
 
@@ -1260,6 +1294,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
       'data_nascita': _dataNascitaController.text,
       'nazionalita': _nazionalitaController.text,
       'indirizzo': _indirizzoController.text,
+      'telefono_prefix': _prefissoTelefonoController.text,
       'telefono': _telefonoController.text,
       'email': _emailController.text,
       'photo_path': _photoPath,
@@ -1492,13 +1527,23 @@ class _CvAiScreenState extends State<CvAiScreen> {
       orElse: () => <String, dynamic>{},
     );
 
+    final cleanPhone = _telefonoController.text.trim().replaceAll(
+      RegExp(r'[^\d]'),
+      '',
+    );
+    final prefixDigits = _prefissoTelefonoController.text.replaceAll('+', '');
+    final fullPhone =
+        cleanPhone.startsWith(prefixDigits)
+            ? cleanPhone
+            : '$prefixDigits$cleanPhone';
+
     final personalInfo = {
       'firstName': _nomeController.text.trim(),
       'lastName': _cognomeController.text.trim(),
       if (_isoDateFromController(_dataNascitaController) != null)
         'birthDate': _isoDateFromController(_dataNascitaController),
       'nationality': _nazionalitaController.text.trim(),
-      'phone': _telefonoController.text.trim(),
+      'phone': fullPhone,
       'email': _emailController.text.trim(),
       'address': _indirizzoController.text.trim(),
       if (photoPayload != null) ...photoPayload,
@@ -2506,8 +2551,37 @@ class _CvAiScreenState extends State<CvAiScreen> {
           decoration: const InputDecoration(labelText: 'Indirizzo'),
         ),
         const SizedBox(height: 10),
+        DropdownButtonFormField<String>(
+          value: _prefissoTelefonoController.text,
+          isExpanded: true,
+          decoration: InputDecoration(
+            labelText: 'Prefisso',
+            prefixIcon: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                PhonePrefixes.flagFor(_prefissoTelefonoController.text),
+                style: const TextStyle(fontSize: 20),
+              ),
+            ),
+          ),
+          items:
+              PhonePrefixes.prefixes.map((prefix) {
+                return DropdownMenuItem<String>(
+                  value: prefix,
+                  child: Text(prefix),
+                );
+              }).toList(),
+          onChanged: (value) {
+            if (value == null) return;
+            setState(() {
+              _prefissoTelefonoController.text = value;
+            });
+          },
+        ),
+        const SizedBox(height: 10),
         TextField(
           controller: _telefonoController,
+          keyboardType: TextInputType.phone,
           decoration: const InputDecoration(labelText: 'Telefono'),
         ),
         const SizedBox(height: 10),

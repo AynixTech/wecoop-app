@@ -1722,11 +1722,6 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     if (widget.documentiRichiesti != null &&
         widget.documentiRichiesti!.isNotEmpty) {
       await _checkDocumenti();
-      if (_documentiMancanti.isNotEmpty ||
-          _documentiMancantiFamiliare.isNotEmpty) {
-        _showDocumentiMancantiDialog();
-        return;
-      }
     }
 
     // Non serve più save() perché usiamo onChanged
@@ -2140,6 +2135,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   }
 
   // Mostra dialog per documenti mancanti
+  // ignore: unused_element
   void _showDocumentiMancantiDialog() {
     showDialog(
       context: context,

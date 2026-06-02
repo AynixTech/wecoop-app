@@ -1,7 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:wecoop_app/screens/auth_gate.dart';
 import 'package:wecoop_app/screens/caf/compilazione_730_screen.dart';
@@ -127,6 +126,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
           ],
           supportedLocales: const [Locale('it'), Locale('en'), Locale('es'), Locale('ar'), Locale('zh')],
           theme: ThemeData(
+            fontFamily: 'Inter',
             useMaterial3: true,
             colorScheme: const ColorScheme(
               brightness: Brightness.light,
@@ -139,7 +139,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
               surface: Color(0xFFFFFFFF),
               onSurface: Color(0xFF1F2933),
             ),
-            textTheme: GoogleFonts.interTextTheme().apply(
+            textTheme: ThemeData.light().textTheme.apply(
               bodyColor: const Color(0xFF1F2933),
               displayColor: const Color(0xFF1F2933),
             ),
@@ -149,7 +149,8 @@ class _WECOOPAppState extends State<WECOOPApp> {
               centerTitle: false,
               backgroundColor: const Color(0xFF1282A8),
               foregroundColor: Colors.white,
-              titleTextStyle: GoogleFonts.inter(
+              titleTextStyle: const TextStyle(
+                fontFamily: 'Inter',
                 fontSize: 16,
                 height: 1.2,
                 fontWeight: FontWeight.w600,
@@ -181,7 +182,8 @@ class _WECOOPAppState extends State<WECOOPApp> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(999),
                 ),
-                textStyle: GoogleFonts.inter(
+                textStyle: const TextStyle(
+                  fontFamily: 'Inter',
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -199,7 +201,8 @@ class _WECOOPAppState extends State<WECOOPApp> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(999),
                 ),
-                textStyle: GoogleFonts.inter(
+                textStyle: const TextStyle(
+                  fontFamily: 'Inter',
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
@@ -208,7 +211,8 @@ class _WECOOPAppState extends State<WECOOPApp> {
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
                 foregroundColor: const Color(0xFF1282A8),
-                textStyle: GoogleFonts.inter(
+                textStyle: const TextStyle(
+                  fontFamily: 'Inter',
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
@@ -217,8 +221,8 @@ class _WECOOPAppState extends State<WECOOPApp> {
             inputDecorationTheme: InputDecorationTheme(
               filled: true,
               fillColor: Colors.white,
-              hintStyle: GoogleFonts.inter(color: const Color(0xFF6F7782)),
-              labelStyle: GoogleFonts.inter(color: const Color(0xFF4D4C4C)),
+              hintStyle: const TextStyle(fontFamily: 'Inter', color: Color(0xFF6F7782)),
+              labelStyle: const TextStyle(fontFamily: 'Inter', color: Color(0xFF4D4C4C)),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: Color(0x22000000)),
@@ -246,7 +250,8 @@ class _WECOOPAppState extends State<WECOOPApp> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
-              labelStyle: GoogleFonts.inter(
+              labelStyle: const TextStyle(
+                fontFamily: 'Inter',
                 fontWeight: FontWeight.w500,
                 color: const Color(0xFF1F2933),
               ),
@@ -259,10 +264,12 @@ class _WECOOPAppState extends State<WECOOPApp> {
               backgroundColor: Colors.white,
               selectedItemColor: const Color(0xFF1282A8),
               unselectedItemColor: const Color(0xFF6F7782),
-              selectedLabelStyle: GoogleFonts.inter(
+              selectedLabelStyle: const TextStyle(
+                fontFamily: 'Inter',
                 fontWeight: FontWeight.w600,
               ),
-              unselectedLabelStyle: GoogleFonts.inter(
+              unselectedLabelStyle: const TextStyle(
+                fontFamily: 'Inter',
                 fontWeight: FontWeight.w500,
               ),
               elevation: 10,

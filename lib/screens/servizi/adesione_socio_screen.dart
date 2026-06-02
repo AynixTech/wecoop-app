@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'package:wecoop_app/utils/phone_prefixes.dart';
 import '../../services/socio_service.dart';
 import '../login/login_screen.dart';
 
@@ -435,21 +436,39 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                         children: [
                           SizedBox(
                             width: 100,
-                            child: TextFormField(
-                              controller: _prefissoController,
+                            child: DropdownButtonFormField<String>(
+                              value: _prefissoController.text,
+                              isExpanded: true,
+                              items:
+                                  PhonePrefixes.prefixes.map((prefix) {
+                                    return DropdownMenuItem<String>(
+                                      value: prefix,
+                                      child: Text(prefix),
+                                    );
+                                  }).toList(),
+                              onChanged: (value) {
+                                if (value == null) return;
+                                setState(() {
+                                  _prefissoController.text = value;
+                                });
+                              },
                               decoration: InputDecoration(
                                 labelText: '${l10n.translate('prefix')} *',
                                 border: const OutlineInputBorder(),
                                 hintText: '+39',
-                                prefixIcon: const Icon(Icons.public),
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.all(12),
+                                  child: Text(
+                                    PhonePrefixes.flagFor(
+                                      _prefissoController.text,
+                                    ),
+                                    style: const TextStyle(fontSize: 20),
+                                  ),
+                                ),
                               ),
-                              keyboardType: TextInputType.phone,
                               validator: (value) {
                                 if (value == null || value.trim().isEmpty) {
                                   return l10n.translate('required');
-                                }
-                                if (!value.startsWith('+')) {
-                                  return '+?';
                                 }
                                 return null;
                               },

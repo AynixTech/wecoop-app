@@ -206,174 +206,74 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
         final scheme = Theme.of(dialogContext).colorScheme;
 
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          titlePadding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+          contentPadding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+          actionsPadding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
           title: Row(
             children: [
-              Icon(Icons.upload_file, color: scheme.primary),
+              Container(
+                padding: const EdgeInsets.all(9),
+                decoration: BoxDecoration(
+                  color: scheme.primary,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: scheme.primary.withOpacity(0.28),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.upload_file,
+                  color: scheme.onPrimary,
+                  size: 20,
+                ),
+              ),
               const SizedBox(width: 12),
-              Expanded(child: Text(l10n.uploadDocumentHow)),
+              Expanded(
+                child: Text(
+                  l10n.uploadDocumentHow,
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+              ),
             ],
           ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                InkWell(
+                _buildSourceOptionCard(
                   onTap: () => Navigator.pop(context, 'camera'),
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: scheme.primary),
-                      borderRadius: BorderRadius.circular(12),
-                      color: scheme.primaryContainer,
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: scheme.primary,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.camera_alt,
-                            color: scheme.onPrimary,
-                            size: 28,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                l10n.takePhoto,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                l10n.takePhotoHint,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: scheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const Icon(Icons.arrow_forward_ios, size: 16),
-                      ],
-                    ),
-                  ),
+                  icon: Icons.camera_alt,
+                  title: l10n.takePhoto,
+                  subtitle: l10n.takePhotoHint,
+                  backgroundColor: scheme.primaryContainer,
+                  accentColor: scheme.primary,
+                  contentColor: scheme.onPrimaryContainer,
                 ),
                 const SizedBox(height: 12),
-                InkWell(
+                _buildSourceOptionCard(
                   onTap: () => Navigator.pop(context, 'gallery'),
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: scheme.tertiary),
-                      borderRadius: BorderRadius.circular(12),
-                      color: scheme.tertiaryContainer,
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: scheme.tertiary,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.photo_library,
-                            color: scheme.onTertiary,
-                            size: 28,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                l10n.chooseGallery,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                l10n.chooseGalleryHint,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: scheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const Icon(Icons.arrow_forward_ios, size: 16),
-                      ],
-                    ),
-                  ),
+                  icon: Icons.photo_library,
+                  title: l10n.chooseGallery,
+                  subtitle: l10n.chooseGalleryHint,
+                  backgroundColor: scheme.tertiaryContainer,
+                  accentColor: scheme.tertiary,
+                  contentColor: scheme.onTertiaryContainer,
                 ),
                 const SizedBox(height: 12),
-                InkWell(
+                _buildSourceOptionCard(
                   onTap: () => Navigator.pop(context, 'file'),
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: scheme.secondary),
-                      borderRadius: BorderRadius.circular(12),
-                      color: scheme.secondaryContainer,
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: scheme.secondary,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.insert_drive_file,
-                            color: scheme.onSecondary,
-                            size: 28,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                l10n.uploadFileLabel,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                l10n.uploadFileHint,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: scheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const Icon(Icons.arrow_forward_ios, size: 16),
-                      ],
-                    ),
-                  ),
+                  icon: Icons.insert_drive_file,
+                  title: l10n.uploadFileLabel,
+                  subtitle: l10n.uploadFileHint,
+                  backgroundColor: scheme.secondaryContainer,
+                  accentColor: scheme.secondary,
+                  contentColor: scheme.onSecondaryContainer,
                 ),
               ],
             ),
@@ -386,6 +286,82 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildSourceOptionCard({
+    required VoidCallback onTap,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    Color? backgroundColor,
+    Color? accentColor,
+    Color? contentColor,
+    List<Color>? gradientColors,
+  }) {
+    final scheme = Theme.of(context).colorScheme;
+    final resolvedBackground =
+        backgroundColor ?? gradientColors?.first ?? scheme.surfaceContainerHighest;
+    final resolvedAccent =
+        accentColor ?? gradientColors?.last ?? scheme.primary;
+    final resolvedContent = contentColor ?? scheme.onSurface;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Ink(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: resolvedBackground,
+          border: Border.all(color: resolvedAccent.withOpacity(0.65), width: 1.2),
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: resolvedAccent.withOpacity(0.12),
+              blurRadius: 9,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: resolvedAccent,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: Colors.white, size: 24),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: resolvedContent,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      height: 1.25,
+                      color: resolvedContent.withOpacity(0.82),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios, size: 15, color: resolvedAccent),
+          ],
+        ),
+      ),
     );
   }
 
@@ -530,8 +506,18 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: scheme.secondaryContainer,
-                        border: Border.all(color: scheme.secondary, width: 1.5),
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF24A34A), Color(0xFF15803D)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x3324A34A),
+                            blurRadius: 14,
+                            offset: Offset(0, 6),
+                          ),
+                        ],
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -539,14 +525,10 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: scheme.secondary,
+                              color: const Color(0x33FFFFFF),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Icon(
-                              Icons.chat,
-                              color: scheme.onSecondary,
-                              size: 24,
-                            ),
+                            child: const Icon(Icons.chat, color: Colors.white, size: 24),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -554,17 +536,17 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
                               AppLocalizations.of(
                                 context,
                               )!.whatsappDocumentSupport,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: scheme.secondary,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
                               ),
                             ),
                           ),
-                          Icon(
+                          const Icon(
                             Icons.arrow_forward_ios,
                             size: 16,
-                            color: scheme.secondary,
+                            color: Colors.white,
                           ),
                         ],
                       ),
@@ -682,7 +664,7 @@ class _DocumentoCard extends StatelessWidget {
     final staPerScadere = documento?.staPerScadere ?? false;
 
     Color borderColor = scheme.outlineVariant;
-    Color? backgroundColor;
+    Color backgroundColor = scheme.surface;
 
     if (isScaduto) {
       borderColor = scheme.error;
@@ -692,7 +674,7 @@ class _DocumentoCard extends StatelessWidget {
       backgroundColor = scheme.tertiaryContainer;
     } else if (hasDocumento) {
       borderColor = scheme.secondary;
-      backgroundColor = scheme.secondaryContainer;
+      backgroundColor = scheme.surface;
     }
 
     return Container(
@@ -734,70 +716,111 @@ class _DocumentoCard extends StatelessWidget {
                       ),
                       if (hasDocumento) ...[
                         const SizedBox(height: 4),
-                        if (documento!.filePathRetro != null)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color: scheme.primaryContainer,
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(color: scheme.primary),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.flip,
-                                  size: 13,
-                                  color: scheme.primary,
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: scheme.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: scheme.outlineVariant),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (!isScaduto && !staPerScadere)
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 6),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 3,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: scheme.secondary,
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(
+                                      color: scheme.secondary,
+                                      width: 1.2,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    AppLocalizations.of(context)!.alreadyUploaded,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: scheme.onSecondary,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
                                 ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  AppLocalizations.of(context)!.frontAndBack,
-                                  style: TextStyle(
-                                    fontSize: 11,
+                              if (documento!.filePathRetro != null)
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 6),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 3,
+                                  ),
+                                  decoration: BoxDecoration(
                                     color: scheme.primary,
-                                    fontWeight: FontWeight.w600,
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(
+                                      color: scheme.primary,
+                                      width: 1.2,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.flip,
+                                        size: 13,
+                                        color: scheme.onPrimary,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        AppLocalizations.of(context)!.frontAndBack,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: scheme.onPrimary,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              Text(
+                                documento!.fileName,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: scheme.onSurface,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              if (documento!.dataScadenza != null) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  AppLocalizations.of(context)!.expiryDateLabel(
+                                    DateFormat(
+                                      'dd/MM/yyyy',
+                                    ).format(documento!.dataScadenza!),
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color:
+                                        isScaduto
+                                            ? scheme.error
+                                            : staPerScadere
+                                            ? scheme.tertiary
+                                            : scheme.onSurface,
+                                    fontWeight:
+                                        isScaduto || staPerScadere
+                                            ? FontWeight.bold
+                                            : FontWeight.w600,
                                   ),
                                 ),
                               ],
-                            ),
-                          )
-                        else
-                          Text(
-                            documento!.fileName,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: scheme.onSurfaceVariant,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                            ],
                           ),
-                        if (documento!.dataScadenza != null) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            AppLocalizations.of(context)!.expiryDateLabel(
-                              DateFormat(
-                                'dd/MM/yyyy',
-                              ).format(documento!.dataScadenza!),
-                            ),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color:
-                                  isScaduto
-                                      ? scheme.error
-                                      : staPerScadere
-                                      ? scheme.tertiary
-                                      : scheme.onSurfaceVariant,
-                              fontWeight:
-                                  isScaduto || staPerScadere
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                            ),
-                          ),
-                        ],
+                        ),
                       ],
                     ],
                   ),

@@ -6,6 +6,7 @@ import 'package:wecoop_app/services/push_notification_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/screens/main_screen.dart';
+import 'package:wecoop_app/utils/phone_prefixes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Schermata di primo accesso con registrazione semplificata
@@ -26,20 +27,6 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
   final _storage = SecureStorageService();
 
   bool _isLoading = false;
-
-  // Lista prefissi comuni
-  final List<String> _prefissi = [
-    '+39', // Italia
-    '+1', // USA/Canada
-    '+44', // UK
-    '+33', // Francia
-    '+49', // Germania
-    '+34', // Spagna
-    '+351', // Portogallo
-    '+41', // Svizzera
-    '+43', // Austria
-    '+30', // Grecia
-  ];
 
   @override
   void initState() {
@@ -64,6 +51,10 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
     _prefixController.dispose();
     _telefonoController.dispose();
     super.dispose();
+  }
+
+  String _flagForPrefix(String prefix) {
+    return PhonePrefixes.flagFor(prefix);
   }
 
   @override
@@ -153,7 +144,8 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                           controller: _nomeController,
                           decoration: _buildFieldDecoration(
                             context,
-                            labelText: AppLocalizations.of(context)!.nameRequired,
+                            labelText:
+                                AppLocalizations.of(context)!.nameRequired,
                             hintText: 'Mario',
                             icon: Icons.person,
                           ),
@@ -175,7 +167,8 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                           controller: _cognomeController,
                           decoration: _buildFieldDecoration(
                             context,
-                            labelText: AppLocalizations.of(context)!.surnameRequired,
+                            labelText:
+                                AppLocalizations.of(context)!.surnameRequired,
                             hintText: 'Rossi',
                             icon: Icons.person_outline,
                           ),
@@ -193,89 +186,71 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        LayoutBuilder(
-                          builder: (context, constraints) {
-                            final useVerticalLayout = constraints.maxWidth < 360;
-                            final prefixField = SizedBox(
-                              width: useVerticalLayout ? double.infinity : 108,
-                              child: DropdownButtonFormField<String>(
-                                value: _prefixController.text,
-                                isExpanded: true,
-                                decoration: _buildFieldDecoration(
-                                  context,
-                                  labelText: AppLocalizations.of(context)!.prefixRequired,
-                                  icon: Icons.public,
-                                ),
-                                items:
-                                    _prefissi.map((String prefix) {
-                                      return DropdownMenuItem<String>(
-                                        value: prefix,
-                                        child: Text(prefix),
-                                      );
-                                    }).toList(),
-                                onChanged: (String? newValue) {
-                                  if (newValue != null) {
-                                    setState(() {
-                                      _prefixController.text = newValue;
-                                    });
-                                  }
-                                },
+                        DropdownButtonFormField<String>(
+                          value: _prefixController.text,
+                          isExpanded: true,
+                          decoration: _buildFieldDecoration(
+                            context,
+                            labelText:
+                                AppLocalizations.of(context)!.prefixRequired,
+                            icon: Icons.phone,
+                          ).copyWith(
+                            prefixIcon: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Text(
+                                _flagForPrefix(_prefixController.text),
+                                style: const TextStyle(fontSize: 20),
                               ),
-                            );
-
-                            final phoneField = TextFormField(
-                              controller: _telefonoController,
-                              decoration: _buildFieldDecoration(
-                                context,
-                                labelText: AppLocalizations.of(context)!.phoneRequired,
-                                hintText: '3331234567',
-                                icon: Icons.phone,
-                              ),
-                              keyboardType: TextInputType.phone,
-                              validator: (value) {
-                                final l10n = AppLocalizations.of(context)!;
-                                if (value == null || value.trim().isEmpty) {
-                                  return l10n.phoneIsMandatory;
-                                }
-
-                                final cleanPhone = value.replaceAll(
-                                  RegExp(r'[^\d]'),
-                                  '',
+                            ),
+                          ),
+                          items:
+                              PhonePrefixes.prefixes.map((String prefix) {
+                                return DropdownMenuItem<String>(
+                                  value: prefix,
+                                  child: Text(prefix),
                                 );
-
-                                if (_prefixController.text == '+39') {
-                                  if (cleanPhone.length != 10) {
-                                    return l10n.phoneMust10Digits;
-                                  }
-                                } else {
-                                  if (cleanPhone.length < 8) {
-                                    return l10n.phoneInvalid;
-                                  }
-                                }
-
-                                return null;
-                              },
-                            );
-
-                            if (useVerticalLayout) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  prefixField,
-                                  const SizedBox(height: 12),
-                                  phoneField,
-                                ],
-                              );
+                              }).toList(),
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              setState(() {
+                                _prefixController.text = newValue;
+                              });
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _telefonoController,
+                          decoration: _buildFieldDecoration(
+                            context,
+                            labelText:
+                                AppLocalizations.of(context)!.phoneRequired,
+                            hintText: '3331234567',
+                            icon: Icons.phone,
+                          ),
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            final l10n = AppLocalizations.of(context)!;
+                            if (value == null || value.trim().isEmpty) {
+                              return l10n.phoneIsMandatory;
                             }
 
-                            return Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                prefixField,
-                                const SizedBox(width: 12),
-                                Expanded(child: phoneField),
-                              ],
+                            final cleanPhone = value.replaceAll(
+                              RegExp(r'[^\d]'),
+                              '',
                             );
+
+                            if (_prefixController.text == '+39') {
+                              if (cleanPhone.length != 10) {
+                                return l10n.phoneMust10Digits;
+                              }
+                            } else {
+                              if (cleanPhone.length < 8) {
+                                return l10n.phoneInvalid;
+                              }
+                            }
+
+                            return null;
                           },
                         ),
 
@@ -346,7 +321,9 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  AppLocalizations.of(context)!.afterRegistrationInfo,
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.afterRegistrationInfo,
                                   style: TextStyle(
                                     fontSize: 13,
                                     height: 1.45,
@@ -438,9 +415,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
             decoration: BoxDecoration(
               color: scheme.onPrimary.withOpacity(0.15),
               shape: BoxShape.circle,
-              border: Border.all(
-                color: scheme.onPrimary.withOpacity(0.25),
-              ),
+              border: Border.all(color: scheme.onPrimary.withOpacity(0.25)),
             ),
             child: Icon(Icons.info_outline, color: scheme.onPrimary, size: 22),
           ),
@@ -758,16 +733,15 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
 
       if (!mounted) return;
 
-      _showDuplicatePhoneDialog(
-        message ?? 'Questo numero è già registrato.',
-      );
+      _showDuplicatePhoneDialog(message ?? 'Questo numero è già registrato.');
       return;
     }
 
     if (!mounted) return;
 
     _showErrorDialog(
-      message ?? 'Errore del server (${response.statusCode}). Riprova più tardi.',
+      message ??
+          'Errore del server (${response.statusCode}). Riprova più tardi.',
     );
   }
 
@@ -1282,84 +1256,77 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
 
     showDialog(
       context: context,
-      builder:
-          (context) {
-            final scheme = Theme.of(context).colorScheme;
+      builder: (context) {
+        final scheme = Theme.of(context).colorScheme;
 
-            return AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            scrollable: true,
-            actionsOverflowDirection: VerticalDirection.down,
-            actionsOverflowButtonSpacing: 8,
-            title: Row(
-              children: [
-                Icon(
-                  Icons.info_outline,
-                  color: scheme.primary,
-                  size: 32,
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          scrollable: true,
+          actionsOverflowDirection: VerticalDirection.down,
+          actionsOverflowButtonSpacing: 8,
+          title: Row(
+            children: [
+              Icon(Icons.info_outline, color: scheme.primary, size: 32),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  AppLocalizations.of(context)!.phoneAlreadyRegistered,
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    AppLocalizations.of(context)!.phoneAlreadyRegistered,
-                  ),
-                ),
-              ],
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(message),
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Color.alphaBlend(
-                      scheme.primary.withOpacity(0.08),
-                      Colors.white,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.lightbulb_outline,
-                        color: scheme.primary,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          AppLocalizations.of(context)!.alreadyHaveAccount,
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(AppLocalizations.of(context)!.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pushReplacementNamed('/login');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: scheme.primary,
-                ),
-                child: Text(AppLocalizations.of(context)!.goToLogin),
               ),
             ],
-          );
-          },
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(message),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Color.alphaBlend(
+                    scheme.primary.withOpacity(0.08),
+                    Colors.white,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.lightbulb_outline,
+                      color: scheme.primary,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        AppLocalizations.of(context)!.alreadyHaveAccount,
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(AppLocalizations.of(context)!.cancel),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pushReplacementNamed('/login');
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: scheme.primary),
+              child: Text(AppLocalizations.of(context)!.goToLogin),
+            ),
+          ],
+        );
+      },
     );
   }
 }

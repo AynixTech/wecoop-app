@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:wecoop_app/utils/phone_prefixes.dart';
 import '../../services/annunci_wecoop_service.dart';
 import '../../services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
@@ -1034,6 +1035,7 @@ class _CreaAnnuncioSheetState
   bool _isImprovingDesc = false;
   final _luogoCtrl = TextEditingController();
   final _cittaCtrl = TextEditingController();
+  final _prefixCtrl = TextEditingController(text: '+39');
   final _telCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _sitoCtrl = TextEditingController();
@@ -1056,6 +1058,7 @@ class _CreaAnnuncioSheetState
     _descAiCtrl.dispose();
     _luogoCtrl.dispose();
     _cittaCtrl.dispose();
+    _prefixCtrl.dispose();
     _telCtrl.dispose();
     _emailCtrl.dispose();
     _sitoCtrl.dispose();
@@ -1067,6 +1070,13 @@ class _CreaAnnuncioSheetState
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
 
+    final cleanPhone = _telCtrl.text.trim().replaceAll(RegExp(r'[^\d]'), '');
+    final prefixDigits = _prefixCtrl.text.replaceAll('+', '');
+    final fullPhone =
+      cleanPhone.startsWith(prefixDigits)
+        ? cleanPhone
+        : '$prefixDigits$cleanPhone';
+
     final data = <String, dynamic>{
       'titolo': _titoloCtrl.text.trim(),
       'descrizione': _descAiCtrl.text.trim().isNotEmpty
@@ -1075,7 +1085,7 @@ class _CreaAnnuncioSheetState
       if (_selectedCategoria != null) 'categoria': _selectedCategoria,
       if (_luogoCtrl.text.isNotEmpty) 'luogo': _luogoCtrl.text.trim(),
       if (_cittaCtrl.text.isNotEmpty) 'citta': _cittaCtrl.text.trim(),
-      if (_telCtrl.text.isNotEmpty) 'telefono': _telCtrl.text.trim(),
+      if (_telCtrl.text.isNotEmpty) 'telefono': fullPhone,
       if (_emailCtrl.text.isNotEmpty) 'email': _emailCtrl.text.trim(),
       if (_sitoCtrl.text.isNotEmpty) 'sito_web': _sitoCtrl.text.trim(),
       if (_prezzoCtrl.text.isNotEmpty)
@@ -1395,6 +1405,36 @@ class _CreaAnnuncioSheetState
                   label: l10n.annunciPrezzoLabel,
                   hint: l10n.annunciPrezzoHint,
                   keyboardType: TextInputType.number),
+              const SizedBox(height: 8),
+
+              DropdownButtonFormField<String>(
+                value: _prefixCtrl.text,
+                isExpanded: true,
+                decoration: InputDecoration(
+                  labelText: l10n.translate('prefix'),
+                  border: const OutlineInputBorder(),
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Text(
+                      PhonePrefixes.flagFor(_prefixCtrl.text),
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  ),
+                ),
+                items:
+                    PhonePrefixes.prefixes.map((prefix) {
+                      return DropdownMenuItem<String>(
+                        value: prefix,
+                        child: Text(prefix),
+                      );
+                    }).toList(),
+                onChanged: (value) {
+                  if (value == null) return;
+                  setState(() {
+                    _prefixCtrl.text = value;
+                  });
+                },
+              ),
               const SizedBox(height: 8),
 
               _FormField(

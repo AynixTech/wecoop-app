@@ -9,6 +9,7 @@ import 'package:wecoop_app/screens/servizi/lavoro_orientamento_screen.dart';
 import 'package:wecoop_app/services/offerte_lavoro_service.dart';
 import 'package:wecoop_app/services/annunci_submission_service.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
+import 'package:wecoop_app/utils/phone_prefixes.dart';
 
 class _OfferteLavoroText {
   static const Map<String, Map<String, String>> _values = {
@@ -4713,6 +4714,7 @@ class _FullScreenImageViewer extends StatelessWidget {
 class _CandidaturaSheetState extends State<_CandidaturaSheet> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
+  final _prefixCtrl = TextEditingController(text: '+39');
   final _phoneCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _cityCtrl = TextEditingController();
@@ -4724,6 +4726,7 @@ class _CandidaturaSheetState extends State<_CandidaturaSheet> {
   @override
   void dispose() {
     _nameCtrl.dispose();
+    _prefixCtrl.dispose();
     _phoneCtrl.dispose();
     _emailCtrl.dispose();
     _cityCtrl.dispose();
@@ -4744,10 +4747,17 @@ class _CandidaturaSheetState extends State<_CandidaturaSheet> {
 
     setState(() => _sending = true);
 
+    final cleanPhone = _phoneCtrl.text.trim().replaceAll(RegExp(r'[^\d]'), '');
+    final prefixDigits = _prefixCtrl.text.replaceAll('+', '');
+    final fullPhone =
+        cleanPhone.startsWith(prefixDigits)
+            ? cleanPhone
+            : '$prefixDigits$cleanPhone';
+
     final result = await OfferteLavoroService.inviaCandidatura(
       offerId: widget.offerta.id,
       name: _nameCtrl.text,
-      phone: _phoneCtrl.text,
+      phone: fullPhone,
       email: _emailCtrl.text,
       city: _cityCtrl.text,
       note: _noteCtrl.text,
@@ -4790,6 +4800,36 @@ class _CandidaturaSheetState extends State<_CandidaturaSheet> {
                         (v == null || v.trim().isEmpty)
                             ? _OfferteLavoroText.tr(context, 'requiredField')
                             : null,
+              ),
+              TextFormField(
+                controller: _prefixCtrl,
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: 'Prefisso',
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Text(
+                      PhonePrefixes.flagFor(_prefixCtrl.text),
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  ),
+                ),
+              ),
+              DropdownButtonFormField<String>(
+                value: _prefixCtrl.text,
+                isExpanded: true,
+                decoration: const InputDecoration(),
+                items:
+                    PhonePrefixes.prefixes.map((prefix) {
+                      return DropdownMenuItem<String>(
+                        value: prefix,
+                        child: Text(prefix),
+                      );
+                    }).toList(),
+                onChanged: (value) {
+                  if (value == null) return;
+                  setState(() => _prefixCtrl.text = value);
+                },
               ),
               TextFormField(
                 controller: _phoneCtrl,

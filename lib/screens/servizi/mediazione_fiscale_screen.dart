@@ -40,7 +40,6 @@ class MediazioneFiscaleScreen extends StatelessWidget {
                             categoria: '730',
                             documentiRichiesti: const [
                               TipoDocumento.permessoSoggiorno,
-                              TipoDocumento.passaporto,
                               TipoDocumento.codiceFiscale,
                               TipoDocumento.cartaIdentita,
                             ],
@@ -95,12 +94,6 @@ class MediazioneFiscaleScreen extends StatelessWidget {
                                 'required': true,
                               },
                               {
-                                'label': l10n.fiscalYear,
-                                'type': 'select',
-                                'options': ['2024', '2023', '2022'],
-                                'required': true,
-                              },
-                              {
                                 'label': l10n.notesAndAdditionalInfo,
                                 'type': 'textarea',
                                 'required': false,
@@ -131,7 +124,6 @@ class MediazioneFiscaleScreen extends StatelessWidget {
                             categoria: l10n.individualPerson,
                             documentiRichiesti: const [
                               TipoDocumento.permessoSoggiorno,
-                              TipoDocumento.passaporto,
                               TipoDocumento.codiceFiscale,
                               TipoDocumento.cartaIdentita,
                             ],
@@ -183,12 +175,6 @@ class MediazioneFiscaleScreen extends StatelessWidget {
                                 'label': l10n.homeMortgage,
                                 'type': 'select',
                                 'options': [l10n.yes, l10n.no],
-                                'required': true,
-                              },
-                              {
-                                'label': l10n.fiscalYear,
-                                'type': 'select',
-                                'options': ['2024', '2023', '2022'],
                                 'required': true,
                               },
                               {

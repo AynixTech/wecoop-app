@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/app_localizations.dart';
 import '../../services/socio_service.dart';
+import 'package:wecoop_app/utils/phone_prefixes.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -229,14 +230,35 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         final useVerticalLayout = constraints.maxWidth < 360;
                         final prefixField = SizedBox(
                           width: useVerticalLayout ? double.infinity : 108,
-                          child: TextFormField(
-                            controller: _prefixController,
-                            keyboardType: TextInputType.phone,
+                          child: DropdownButtonFormField<String>(
+                            value: _prefixController.text,
+                            isExpanded: true,
+                            items:
+                                PhonePrefixes.prefixes.map((prefix) {
+                                  return DropdownMenuItem<String>(
+                                    value: prefix,
+                                    child: Text(prefix),
+                                  );
+                                }).toList(),
+                            onChanged: (value) {
+                              if (value == null) return;
+                              setState(() {
+                                _prefixController.text = value;
+                              });
+                            },
                             decoration: _buildFieldDecoration(
                               context,
                               labelText: l10n.translate('prefix'),
                               hintText: '+39',
-                              icon: Icons.flag,
+                              icon: Icons.phone,
+                            ).copyWith(
+                              prefixIcon: Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: Text(
+                                  PhonePrefixes.flagFor(_prefixController.text),
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                              ),
                             ),
                           ),
                         );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:wecoop_app/utils/phone_prefixes.dart';
 import '../../services/app_localizations.dart';
 import '../../services/secure_storage_service.dart';
 import '../../services/wordpress_service.dart';
@@ -477,6 +478,8 @@ class _StudiareItaliaFormScreenState extends State<_StudiareItaliaFormScreen> {
   final _paeseOrigineCtrl = TextEditingController();
   final _emailCtrl        = TextEditingController();
   final _cellCtrl         = TextEditingController();
+  String _selectedPhonePrefix = '+39';
+  bool? _viveInItalia;
 
   final _storage = SecureStorageService();
 
@@ -495,8 +498,29 @@ class _StudiareItaliaFormScreenState extends State<_StudiareItaliaFormScreen> {
         _nomeCognomeCtrl.text = displayName;
       }
       if (email != null && email.isNotEmpty) _emailCtrl.text = email;
-      if (phone != null && phone.isNotEmpty) _cellCtrl.text = phone;
+      if (phone != null && phone.isNotEmpty) {
+        _applyStoredPhone(phone);
+      }
     });
+  }
+
+  void _applyStoredPhone(String phone) {
+    final normalizedPhone = phone.replaceAll(RegExp(r'[^\d]'), '');
+    if (normalizedPhone.isEmpty) return;
+
+    final prefixes = [...PhonePrefixes.prefixes]
+      ..sort((a, b) => b.length.compareTo(a.length));
+
+    for (final prefix in prefixes) {
+      final normalizedPrefix = prefix.replaceAll('+', '');
+      if (normalizedPhone.startsWith(normalizedPrefix)) {
+        _selectedPhonePrefix = prefix;
+        _cellCtrl.text = normalizedPhone.substring(normalizedPrefix.length);
+        return;
+      }
+    }
+
+    _cellCtrl.text = normalizedPhone;
   }
 
   // Step 2 – Profilo
@@ -559,11 +583,19 @@ class _StudiareItaliaFormScreenState extends State<_StudiareItaliaFormScreen> {
     if (_helpIscrizione) aiutoList.add('Iscrizione');
     if (_helpOrientamento) aiutoList.add('Orientamento');
 
+    final cleanPhone = _cellCtrl.text.trim().replaceAll(RegExp(r'[^\d]'), '');
+    final prefixDigits = _selectedPhonePrefix.replaceAll('+', '');
+    final fullPhone =
+        cleanPhone.startsWith(prefixDigits)
+            ? cleanPhone
+            : '$prefixDigits$cleanPhone';
+
     final data = {
       'nome_cognome':     _nomeCognomeCtrl.text.trim(),
       'paese_origine':    _paeseOrigineCtrl.text.trim(),
+      'vive_attualmente_in_italia': _viveInItalia == true ? 'Sì' : (_viveInItalia == false ? 'No' : ''),
       'email':            _emailCtrl.text.trim(),
-      'telefono':         _cellCtrl.text.trim(),
+      'telefono':         fullPhone,
       'eta':              _etaCtrl.text.trim(),
       'titolo_studio':    _titoloStudio ?? '',
       'livello_italiano': _livelloItaliano ?? '',
@@ -718,6 +750,12 @@ class _StudiareItaliaFormScreenState extends State<_StudiareItaliaFormScreen> {
           icon: Icons.flag_outlined,
         ),
         const SizedBox(height: 16),
+        _YesNoField(
+          label: l10n.translate('studiareItaliaCurrentlyLiveInItaly'),
+          value: _viveInItalia,
+          onChanged: (v) => setState(() => _viveInItalia = v),
+        ),
+        const SizedBox(height: 16),
         _FormField(
           controller: _emailCtrl,
           label: l10n.translate('email'),
@@ -728,6 +766,34 @@ class _StudiareItaliaFormScreenState extends State<_StudiareItaliaFormScreen> {
             if (v == null || v.trim().isEmpty) return l10n.translate('fieldRequired');
             if (!v.contains('@')) return l10n.translate('invalidEmail');
             return null;
+          },
+        ),
+        const SizedBox(height: 16),
+        DropdownButtonFormField<String>(
+          value: _selectedPhonePrefix,
+          isExpanded: true,
+          decoration: InputDecoration(
+            labelText: l10n.translate('prefix'),
+            prefixIcon: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                PhonePrefixes.flagFor(_selectedPhonePrefix),
+                style: const TextStyle(fontSize: 20),
+              ),
+            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            filled: true,
+          ),
+          items:
+              PhonePrefixes.prefixes.map((prefix) {
+                return DropdownMenuItem<String>(
+                  value: prefix,
+                  child: Text(prefix),
+                );
+              }).toList(),
+          onChanged: (value) {
+            if (value == null) return;
+            setState(() => _selectedPhonePrefix = value);
           },
         ),
         const SizedBox(height: 16),
@@ -1024,6 +1090,7 @@ class _YesNoField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1033,14 +1100,14 @@ class _YesNoField extends StatelessWidget {
         Row(
           children: [
             _ToggleChip(
-              label: 'Sì',
+              label: l10n.translate('yes'),
               selected: value == true,
               color: scheme.primary,
               onTap: () => onChanged(true),
             ),
             const SizedBox(width: 10),
             _ToggleChip(
-              label: 'No',
+              label: l10n.translate('no'),
               selected: value == false,
               color: scheme.primary,
               onTap: () => onChanged(false),

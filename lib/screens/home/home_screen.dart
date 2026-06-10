@@ -224,6 +224,7 @@ class _ActiveProjectsSection extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final categories = buildProjectOpportunityCatalog(context);
     final isCompact = MediaQuery.sizeOf(context).width < 390;
+    final isTablet = MediaQuery.sizeOf(context).shortestSide >= 600;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -245,7 +246,10 @@ class _ActiveProjectsSection extends StatelessWidget {
           crossAxisCount: 2,
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
-          childAspectRatio: isCompact ? 0.76 : 0.86,
+            childAspectRatio:
+              isTablet
+                ? 1.18
+                : (isCompact ? 0.76 : 0.86),
           padding: const EdgeInsets.symmetric(horizontal: 16),
           children: [
             for (var index = 0; index < categories.length; index++)
@@ -286,19 +290,19 @@ class _ActiveProjectsSection extends StatelessWidget {
                     ],
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(isTablet ? 12 : 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(8),
+                          padding: EdgeInsets.all(isTablet ? 7 : 8),
                           decoration: BoxDecoration(
                             color: scheme.onPrimary.withOpacity(0.22),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             categories[index].icon,
-                            size: 24,
+                            size: isTablet ? 22 : 24,
                             color: scheme.onPrimary,
                           ),
                         ),
@@ -310,20 +314,26 @@ class _ActiveProjectsSection extends StatelessWidget {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                fontSize: isCompact ? 14 : 16,
+                                fontSize:
+                                    isTablet
+                                        ? 15
+                                        : (isCompact ? 14 : 16),
                                 fontWeight: FontWeight.w700,
                                 color: scheme.onPrimary,
                               ),
                             ),
-                            const SizedBox(height: 6),
+                            SizedBox(height: isTablet ? 4 : 6),
                             Text(
                               categories[index].summary,
                               style: TextStyle(
-                                fontSize: isCompact ? 11 : 12,
+                                fontSize:
+                                    isTablet
+                                        ? 11
+                                        : (isCompact ? 11 : 12),
                                 height: 1.35,
                                 color: scheme.onPrimary.withOpacity(0.9),
                               ),
-                              maxLines: isCompact ? 2 : 3,
+                              maxLines: isTablet ? 2 : (isCompact ? 2 : 3),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ],

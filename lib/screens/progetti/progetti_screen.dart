@@ -10,6 +10,7 @@ class ProgettiScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final categories = _getCategories(context);
+    final isTablet = MediaQuery.of(context).size.shortestSide >= 600;
 
     return Scaffold(
       appBar: AppBar(
@@ -47,56 +48,63 @@ class ProgettiScreen extends StatelessWidget {
                     colors: [category.color.withOpacity(0.75), category.color],
                   ),
                 ),
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.symmetric(
+                  horizontal: isTablet ? 16 : 20,
+                  vertical: isTablet ? 14 : 20,
+                ),
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(isTablet ? 10 : 12),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.3),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Icon(category.icon, size: 32, color: Colors.white),
+                      child: Icon(
+                        category.icon,
+                        size: isTablet ? 28 : 32,
+                        color: Colors.white,
+                      ),
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: isTablet ? 12 : 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             category.title,
-                            style: const TextStyle(
-                              fontSize: 20,
+                            style: TextStyle(
+                              fontSize: isTablet ? 18 : 20,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          SizedBox(height: isTablet ? 2 : 4),
                           Text(
                             '${category.items.length} ${l10n.translate('availableOpportunitiesLabel')}',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: isTablet ? 13 : 14,
                               color: Colors.white.withOpacity(0.9),
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: isTablet ? 6 : 8),
                           Text(
                             category.summary,
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: isTablet ? 12 : 13,
                               height: 1.35,
                               color: Colors.white.withOpacity(0.92),
                             ),
-                            maxLines: 3,
+                            maxLines: isTablet ? 2 : 3,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
                     ),
-                    const Icon(
+                    Icon(
                       Icons.arrow_forward_ios,
                       color: Colors.white,
-                      size: 20,
+                      size: isTablet ? 18 : 20,
                     ),
                   ],
                 ),

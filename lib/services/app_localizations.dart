@@ -652,6 +652,17 @@ class AppLocalizations {
       'paymentStatusAwaitingPayment': 'In attesa di pagamento',
       'paymentStatusPaid': 'Pagato',
       'paymentStatusAwaitingSignature': 'Da Firmare',
+      'documentIntegrationStatus': 'Integrazione documentale',
+      'documentIntegrationTitle': 'Documenti da integrare',
+      'documentIntegrationInfo': 'L\'operatore ha richiesto alcuni documenti aggiuntivi per completare la tua pratica. Carica i file richiesti qui sotto.',
+      'documentsToUpload': 'Documenti da caricare',
+      'uploadDocument': 'Carica documento',
+      'documentUploaded': 'Caricato',
+      'documentPending': 'Da caricare',
+      'allDocumentsUploaded': 'Tutti i documenti sono stati caricati. La pratica e\' di nuovo in lavorazione.',
+      'documentUploadedSuccess': 'Documento caricato con successo',
+      'documentUploadError': 'Errore durante il caricamento del documento',
+      'operatorNote': 'Nota dell\'operatore',
       'paymentStatusCompleted': 'Completato',
       'paymentStatusFailed': 'Fallito',
       'paymentStatusCancelled': 'Annullato',
@@ -1559,6 +1570,17 @@ class AppLocalizations {
       'paymentStatusAwaitingPayment': 'في انتظار الدفع',
       'paymentStatusPaid': 'مدفوع',
       'paymentStatusAwaitingSignature': 'في انتظار التوقيع',
+      'documentIntegrationStatus': 'استكمال المستندات',
+      'documentIntegrationTitle': 'مستندات مطلوبة',
+      'documentIntegrationInfo': 'طلب الموظف بعض المستندات الإضافية لإكمال طلبك. قم بتحميل الملفات المطلوبة أدناه.',
+      'documentsToUpload': 'مستندات للتحميل',
+      'uploadDocument': 'تحميل مستند',
+      'documentUploaded': 'تم التحميل',
+      'documentPending': 'بانتظار التحميل',
+      'allDocumentsUploaded': 'تم تحميل جميع المستندات. تتم معالجة طلبك من جديد.',
+      'documentUploadedSuccess': 'تم تحميل المستند بنجاح',
+      'documentUploadError': 'حدث خطأ أثناء تحميل المستند',
+      'operatorNote': 'ملاحظة الموظف',
       'paymentStatusCompleted': 'مكتمل',
       'paymentStatusFailed': 'فشل',
       'paymentStatusCancelled': 'ملغي',
@@ -1788,6 +1810,17 @@ class AppLocalizations {
       'paymentStatusAwaitingPayment': '等待付款',
       'paymentStatusPaid': '已付款',
       'paymentStatusAwaitingSignature': '等待签名',
+      'documentIntegrationStatus': '文件补充',
+      'documentIntegrationTitle': '需补充的文件',
+      'documentIntegrationInfo': '工作人员要求提供一些额外文件以完成您的申请。请在下方上传所需文件。',
+      'documentsToUpload': '待上传文件',
+      'uploadDocument': '上传文件',
+      'documentUploaded': '已上传',
+      'documentPending': '待上传',
+      'allDocumentsUploaded': '所有文件均已上传。您的申请正在重新处理。',
+      'documentUploadedSuccess': '文件上传成功',
+      'documentUploadError': '上传文件时出错',
+      'operatorNote': '工作人员备注',
       'paymentStatusCompleted': '已完成',
       'paymentStatusFailed': '失败',
       'paymentStatusCancelled': '已取消',
@@ -2448,6 +2481,17 @@ class AppLocalizations {
       'paymentStatusAwaitingPayment': 'Awaiting payment',
       'paymentStatusPaid': 'Paid',
       'paymentStatusAwaitingSignature': 'Awaiting Signature',
+      'documentIntegrationStatus': 'Document integration',
+      'documentIntegrationTitle': 'Documents to provide',
+      'documentIntegrationInfo': 'The operator requested some additional documents to complete your request. Upload the required files below.',
+      'documentsToUpload': 'Documents to upload',
+      'uploadDocument': 'Upload document',
+      'documentUploaded': 'Uploaded',
+      'documentPending': 'To upload',
+      'allDocumentsUploaded': 'All documents have been uploaded. Your request is being processed again.',
+      'documentUploadedSuccess': 'Document uploaded successfully',
+      'documentUploadError': 'Error uploading the document',
+      'operatorNote': 'Operator note',
       'paymentStatusCompleted': 'Completed',
       'paymentStatusFailed': 'Failed',
       'paymentStatusCancelled': 'Cancelled',
@@ -3844,6 +3888,17 @@ class AppLocalizations {
       'paymentStatusAwaitingPayment': 'En espera de pago',
       'paymentStatusPaid': 'Pagado',
       'paymentStatusAwaitingSignature': 'Pendiente de Firma',
+      'documentIntegrationStatus': 'Integración documental',
+      'documentIntegrationTitle': 'Documentos a aportar',
+      'documentIntegrationInfo': 'El operador ha solicitado algunos documentos adicionales para completar tu solicitud. Sube los archivos requeridos a continuación.',
+      'documentsToUpload': 'Documentos a subir',
+      'uploadDocument': 'Subir documento',
+      'documentUploaded': 'Subido',
+      'documentPending': 'Por subir',
+      'allDocumentsUploaded': 'Todos los documentos han sido subidos. Tu solicitud vuelve a estar en proceso.',
+      'documentUploadedSuccess': 'Documento subido correctamente',
+      'documentUploadError': 'Error al subir el documento',
+      'operatorNote': 'Nota del operador',
       'paymentStatusCompleted': 'Completado',
       'paymentStatusFailed': 'Fallido',
       'paymentStatusCancelled': 'Cancelado',
@@ -4812,6 +4867,17 @@ class AppLocalizations {
   String get paymentStatusCompleted => translate('paymentStatusCompleted');
   String get paymentStatusFailed => translate('paymentStatusFailed');
   String get paymentStatusCancelled => translate('paymentStatusCancelled');
+  String get documentIntegrationStatus => translate('documentIntegrationStatus');
+  String get documentIntegrationTitle => translate('documentIntegrationTitle');
+  String get documentIntegrationInfo => translate('documentIntegrationInfo');
+  String get documentsToUpload => translate('documentsToUpload');
+  String get uploadDocument => translate('uploadDocument');
+  String get documentUploaded => translate('documentUploaded');
+  String get documentPending => translate('documentPending');
+  String get allDocumentsUploaded => translate('allDocumentsUploaded');
+  String get documentUploadedSuccess => translate('documentUploadedSuccess');
+  String get documentUploadError => translate('documentUploadError');
+  String get operatorNote => translate('operatorNote');
   String get processing => translate('processing');
   String get paymentDetails => translate('paymentDetails');
   String get paymentService => translate('paymentService');

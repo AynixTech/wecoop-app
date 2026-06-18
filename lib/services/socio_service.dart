@@ -1066,6 +1066,58 @@ class SocioService {
     }
   }
 
+  /// Upload documenti per integrazione documentale richiesta dall'operatore
+  /// POST /richiesta-servizio/{id}/integrazione-documenti
+  static Future<Map<String, dynamic>> uploadDocumentoIntegrazione({
+    required int richiestaId,
+    required String tipo,
+    required File file,
+  }) async {
+    try {
+      final headers = await _getHeaders(includeAuth: true);
+      headers.remove('Content-Type'); // MultipartRequest gestisce il Content-Type
+
+      final url = '$baseUrl/richiesta-servizio/$richiestaId/integrazione-documenti';
+      final request = http.MultipartRequest('POST', Uri.parse(url));
+
+      headers.forEach((key, value) {
+        request.headers[key] = value;
+      });
+
+      // Il backend riconosce i file con prefisso 'documento_'
+      request.files.add(
+        await http.MultipartFile.fromPath('documento_$tipo', file.path),
+      );
+
+      print('📤 Upload integrazione documento: ${file.path.split('/').last}');
+      print('📝 Richiesta: $richiestaId | Tipo: $tipo');
+
+      final streamedResponse = await request.send().timeout(
+        const Duration(seconds: 60),
+      );
+      final response = await http.Response.fromStream(streamedResponse);
+
+      print('📥 Response status: ${response.statusCode}');
+
+      final body = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return body is Map<String, dynamic>
+            ? body
+            : {'success': true};
+      } else {
+        return {
+          'success': false,
+          'message': (body is Map && body['message'] != null)
+              ? body['message']
+              : 'Errore upload: ${response.statusCode}',
+        };
+      }
+    } catch (e) {
+      print('❌ Errore upload integrazione documento: $e');
+      return {'success': false, 'message': 'Errore di connessione: $e'};
+    }
+  }
+
   /// Upload avatar profilo
   /// POST /soci/me/avatar
   static Future<Map<String, dynamic>> uploadAvatar({required File file}) async {

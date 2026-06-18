@@ -16,6 +16,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:file_picker/file_picker.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -258,6 +259,13 @@ class _CalendarScreenState extends State<CalendarScreen>
       return 'cancelled';
     }
 
+    if (normalized == 'integrazione_documentale' ||
+        normalized == 'document_integration' ||
+        normalized == 'integracion_documental' ||
+        (normalized.contains('integ') && normalized.contains('document'))) {
+      return 'integrazione_documentale';
+    }
+
     if (normalized == 'processing' || normalized == 'in_lavorazione') {
       return 'processing';
     }
@@ -281,6 +289,8 @@ class _CalendarScreenState extends State<CalendarScreen>
         return const Color(0xFF673ab7); // Viola scuro
       case 'awaiting_signature':
         return const Color(0xFFff6f00); // Arancione scuro
+      case 'integrazione_documentale':
+        return const Color(0xFFe91e63); // Rosa
       case 'processing':
         return Colors.blue;
       case 'completed':
@@ -302,6 +312,8 @@ class _CalendarScreenState extends State<CalendarScreen>
         return Icons.paid;
       case 'awaiting_signature':
         return Icons.edit_document;
+      case 'integrazione_documentale':
+        return Icons.upload_file;
       case 'processing':
         return Icons.hourglass_empty;
       case 'completed':
@@ -328,6 +340,8 @@ class _CalendarScreenState extends State<CalendarScreen>
         return l10n.paymentStatusPaid;
       case 'awaiting_signature':
         return l10n.paymentStatusAwaitingSignature;
+      case 'integrazione_documentale':
+        return l10n.documentIntegrationStatus;
       case 'completed':
         return l10n.paymentStatusCompleted;
       case 'failed':
@@ -1937,6 +1951,297 @@ class _CalendarScreenState extends State<CalendarScreen>
     }
   }
 
+  /// Sezione integrazione documentale: mostra i documenti richiesti dall'operatore
+  /// e permette al cliente di caricarli.
+  List<Widget> _buildIntegrazioneDocumentaleSection(
+    Map<String, dynamic> richiesta,
+    int richiestaId,
+  ) {
+    final initial = richiesta['integrazione_documentale'];
+    if (initial is! Map || initial['attiva'] != true) {
+      return const [];
+    }
+
+    String? uploadingTipo;
+
+    return [
+      const Divider(height: 32),
+      StatefulBuilder(
+        builder: (context, setSectionState) {
+          final l10n = AppLocalizations.of(context)!;
+          final integ = (richiesta['integrazione_documentale'] as Map)
+              .cast<String, dynamic>();
+          final note = (integ['note'] ?? '').toString();
+          final documenti = (integ['documenti'] is List)
+              ? List<Map<String, dynamic>>.from(
+                  (integ['documenti'] as List).map(
+                    (e) => Map<String, dynamic>.from(e as Map),
+                  ),
+                )
+              : <Map<String, dynamic>>[];
+          final tuttiCaricati = integ['tutti_caricati'] == true;
+
+          Future<void> aggiornaSezione() async {
+            try {
+              final fresh = await SocioService.getDettaglioRichiesta(richiestaId);
+              if (fresh != null) {
+                if (fresh['integrazione_documentale'] != null) {
+                  richiesta['integrazione_documentale'] =
+                      fresh['integrazione_documentale'];
+                }
+                if (fresh['stato'] != null) {
+                  richiesta['stato'] = fresh['stato'];
+                }
+              }
+            } catch (e) {
+              print('⚠️ [Integrazione] errore aggiornamento sezione: $e');
+            }
+            if (mounted) setSectionState(() {});
+          }
+
+          Future<void> uploadDoc(String tipo) async {
+            try {
+              final result = await FilePicker.platform.pickFiles(
+                type: FileType.custom,
+                allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
+              );
+              if (result == null || result.files.single.path == null) {
+                return;
+              }
+              final file = File(result.files.single.path!);
+
+              setSectionState(() => uploadingTipo = tipo);
+
+              final res = await SocioService.uploadDocumentoIntegrazione(
+                richiestaId: richiestaId,
+                tipo: tipo,
+                file: file,
+              );
+
+              if (!mounted) return;
+              setSectionState(() => uploadingTipo = null);
+
+              if (res['success'] == true) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(l10n.documentUploadedSuccess),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                await aggiornaSezione();
+                _caricaRichieste();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      (res['message'] ?? l10n.documentUploadError).toString(),
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            } catch (e) {
+              if (mounted) {
+                setSectionState(() => uploadingTipo = null);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(l10n.documentUploadError),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            }
+          }
+
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFe91e63).withOpacity(0.06),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFe91e63).withOpacity(0.4)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.folder_open, color: Color(0xFFe91e63)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        l10n.documentIntegrationTitle,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFc2185b),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.documentIntegrationInfo,
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade800),
+                ),
+                if (note.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.operatorNote,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(note, style: const TextStyle(fontSize: 13)),
+                      ],
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 12),
+                Text(
+                  l10n.documentsToUpload,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ...documenti.map((doc) {
+                  final tipo = (doc['tipo'] ?? '').toString();
+                  final label = (doc['label'] ?? tipo).toString();
+                  final motivo = (doc['motivo'] ?? '').toString();
+                  final caricato = (doc['stato'] ?? '') == 'caricato';
+                  final isUploadingThis = uploadingTipo == tipo;
+
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: caricato
+                            ? Colors.green.shade300
+                            : Colors.grey.shade300,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          caricato
+                              ? Icons.check_circle
+                              : Icons.description_outlined,
+                          color: caricato
+                              ? Colors.green
+                              : const Color(0xFFe91e63),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                label,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              if (motivo.isNotEmpty) ...[
+                                const SizedBox(height: 2),
+                                Text(
+                                  motivo,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
+                              ],
+                              const SizedBox(height: 2),
+                              Text(
+                                caricato
+                                    ? l10n.documentUploaded
+                                    : l10n.documentPending,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: caricato
+                                      ? Colors.green.shade700
+                                      : Colors.orange.shade800,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (!caricato)
+                          isUploadingThis
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : IconButton(
+                                  onPressed: uploadingTipo != null
+                                      ? null
+                                      : () => uploadDoc(tipo),
+                                  icon: const Icon(Icons.upload_file),
+                                  color: const Color(0xFFe91e63),
+                                  tooltip: l10n.uploadDocument,
+                                ),
+                      ],
+                    ),
+                  );
+                }),
+                if (tuttiCaricati) ...[
+                  const SizedBox(height: 4),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.green.shade300),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.check_circle, color: Colors.green.shade700),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            l10n.allDocumentsUploaded,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.green.shade900,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          );
+        },
+      ),
+    ];
+  }
+
   Widget _buildDettaglioSheet(Map<String, dynamic> richiesta) {
     final stato = richiesta['stato'] ?? '';
     final statoLabel = _getStatoLabelTradotto(stato);
@@ -2059,6 +2364,10 @@ class _CalendarScreenState extends State<CalendarScreen>
                         _formatData(richiesta['data_richiesta']),
                         Icons.calendar_today,
                       ),
+
+                      // Sezione integrazione documentale
+                      if (richiestaId != null)
+                        ..._buildIntegrazioneDocumentaleSection(richiesta, richiestaId),
 
                       if (richiesta['prezzo_formattato'] != null) ...[
                         const Divider(height: 32),

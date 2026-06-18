@@ -1,4 +1,5 @@
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart' show MediaType;
 import 'dart:convert';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
@@ -1084,9 +1085,24 @@ class SocioService {
         request.headers[key] = value;
       });
 
+      // Determina il content-type corretto in base all'estensione
+      final ext = file.path.split('.').last.toLowerCase();
+      MediaType? contentType;
+      if (ext == 'jpg' || ext == 'jpeg') {
+        contentType = MediaType('image', 'jpeg');
+      } else if (ext == 'png') {
+        contentType = MediaType('image', 'png');
+      } else if (ext == 'pdf') {
+        contentType = MediaType('application', 'pdf');
+      }
+
       // Il backend riconosce i file con prefisso 'documento_'
       request.files.add(
-        await http.MultipartFile.fromPath('documento_$tipo', file.path),
+        await http.MultipartFile.fromPath(
+          'documento_$tipo',
+          file.path,
+          contentType: contentType,
+        ),
       );
 
       print('📤 Upload integrazione documento: ${file.path.split('/').last}');

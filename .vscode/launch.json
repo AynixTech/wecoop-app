@@ -1,0 +1,28 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "wecoop-app (debug + Stripe)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "toolArgs": ["--dart-define-from-file=stripe.env.json"]
+    },
+    {
+      "name": "wecoop-app (profile + Stripe)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile",
+      "program": "lib/main.dart",
+      "toolArgs": ["--dart-define-from-file=stripe.env.json"]
+    },
+    {
+      "name": "wecoop-app (release + Stripe)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release",
+      "program": "lib/main.dart",
+      "toolArgs": ["--dart-define-from-file=stripe.env.json"]
+    }
+  ]
+}

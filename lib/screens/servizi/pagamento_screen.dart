@@ -94,6 +94,28 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
     }
   }
 
+  Future<void> _ensureStripeReady() async {
+    // Se gia' configurato (via dart-define o fetch precedente), non fare nulla.
+    if (StripeConfig.isConfigured) return;
+
+    final key = await PagamentoService.getStripePublishableKey();
+    if (key == null || key.isEmpty) {
+      print('⚠️ [PagamentoScreen] Publishable key non disponibile dal backend');
+      return;
+    }
+
+    StripeConfig.runtimePublishableKey = key;
+    try {
+      Stripe.publishableKey = key;
+      Stripe.merchantIdentifier = StripeConfig.merchantIdentifier;
+      Stripe.urlScheme = StripeConfig.urlScheme;
+      await Stripe.instance.applySettings();
+      print('✅ [PagamentoScreen] Stripe inizializzato da backend (${StripeConfig.isTestMode ? "TEST" : "LIVE"})');
+    } catch (e) {
+      print('❌ [PagamentoScreen] Errore applySettings Stripe: $e');
+    }
+  }
+
   Future<void> _handleStripePayment() async {
     print('💳 [PagamentoScreen] Inizio processo pagamento Stripe');
     
@@ -103,6 +125,9 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
     }
 
     print('💳 [PagamentoScreen] Pagamento: ID ${_pagamento!.id}, Importo €${_pagamento!.importo}, Stato: ${_pagamento!.stato}');
+
+    // Assicura che Stripe sia inizializzato usando la chiave del backend (wp-config-stripe.php)
+    await _ensureStripeReady();
 
     // Verifica se Stripe è configurato
     if (!StripeConfig.isConfigured) {
@@ -232,120 +257,6 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
     }
   }
 
-  Future<void> _handlePayPalPayment() async {
-    if (_pagamento == null) return;
-
-    // TODO: Integra PayPal
-    _showInfoDialog(
-      'Integrazione PayPal',
-      'PayPal non ancora integrato.\n\nImporto: €${_pagamento!.importo.toStringAsFixed(2)}\n\nIntegra react-native-paypal o simile.',
-    );
-  }
-
-  Future<void> _handleBankTransferPayment() async {
-    if (_pagamento == null) return;
-
-    final l10n = AppLocalizations.of(context)!;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.bankTransferTitle),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Importo: €${_pagamento!.importo.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                _localizedLegalText(
-                  it: 'Il pagamento e la fatturazione sono gestiti da KINTI SRL nell\'ambito del progetto WECOOP.',
-                  en: 'Payment and invoicing are managed by KINTI SRL within the WECOOP project.',
-                  es: 'El pago y la facturacion son gestionados por KINTI SRL en el marco del proyecto WECOOP.',
-                ),
-                style: const TextStyle(fontSize: 13),
-              ),
-              const SizedBox(height: 16),
-              Text(l10n.bankCoordinates),
-              const SizedBox(height: 8),
-              _buildBankDetail('IBAN', 'IT60 X054 2811 1010 0000 0123 456'),
-              _buildBankDetail(
-                _localizedLegalText(
-                  it: 'Intestatario',
-                  en: 'Account holder',
-                  es: 'Titular',
-                ),
-                'KINTI SRL',
-              ),
-              _buildBankDetail('BIC/SWIFT', 'BPMOIT22XXX'),
-              const SizedBox(height: 16),
-              Text(
-                'Causale: ${_pagamento!.numeroPratica ?? 'Pagamento #${_pagamento!.id}'}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                _localizedLegalText(
-                  it: 'Dopo aver effettuato il bonifico, segui le istruzioni amministrative condivise da KINTI SRL per l\'invio della ricevuta.',
-                  en: 'After completing the bank transfer, follow the administrative instructions shared by KINTI SRL to send the receipt.',
-                  es: 'Despues de realizar la transferencia, sigue las instrucciones administrativas compartidas por KINTI SRL para enviar el comprobante.',
-                ),
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _showSuccessDialog(
-                l10n.instructionsSent,
-                l10n.instructionsSentMessage,
-              );
-            },
-            child: Text(l10n.sendEmail),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBankDetail(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              '$label:',
-              style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
-          ),
-          Expanded(
-            child: SelectableText(
-              value,
-              style: const TextStyle(fontFamily: 'monospace'),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _showErrorDialog(String message) {
     final l10n = AppLocalizations.of(context)!;
     showDialog(
@@ -356,29 +267,6 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
             const Icon(Icons.error, color: Colors.red),
             const SizedBox(width: 8),
             Text(l10n.error),
-          ],
-        ),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.ok),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showInfoDialog(String title, String message) {
-    final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            const Icon(Icons.info, color: Colors.blue),
-            const SizedBox(width: 8),
-            Text(title),
           ],
         ),
         content: Text(message),
@@ -704,34 +592,6 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                     ),
                                     color: const Color(0xFF635BFF),
                                     onTap: _handleStripePayment,
-                                  ),
-                                  const SizedBox(height: 12),
-
-                                  // PayPal
-                                  _buildPaymentButton(
-                                    icon: Icons.account_balance_wallet,
-                                    label: AppLocalizations.of(context)!.payPal,
-                                    subtitle: _localizedLegalText(
-                                      it: 'Pagamento PayPal gestito da KINTI SRL',
-                                      en: 'PayPal payment managed by KINTI SRL',
-                                      es: 'Pago por PayPal gestionado por KINTI SRL',
-                                    ),
-                                    color: const Color(0xFF0070BA),
-                                    onTap: _handlePayPalPayment,
-                                  ),
-                                  const SizedBox(height: 12),
-
-                                  // Bonifico
-                                  _buildPaymentButton(
-                                    icon: Icons.account_balance,
-                                    label: AppLocalizations.of(context)!.bankTransfer,
-                                    subtitle: _localizedLegalText(
-                                      it: 'Bonifico intestato a KINTI SRL',
-                                      en: 'Bank transfer payable to KINTI SRL',
-                                      es: 'Transferencia a nombre de KINTI SRL',
-                                    ),
-                                    color: Colors.green,
-                                    onTap: _handleBankTransferPayment,
                                   ),
                                 ],
                               ),

@@ -50,3 +50,6 @@ app.*.map.json
 android/key.properties
 keystore.jks
 *.jks
+
+# Stripe / dart-define secrets (local only)
+stripe.env.json

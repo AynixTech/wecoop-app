@@ -10,6 +10,16 @@ class StripeConfig {
     defaultValue: '',
   );
 
+  /// Publishable key recuperata a runtime dal backend (wp-config-stripe.php).
+  /// Ha priorita' sulla chiave passata via dart-define.
+  static String? runtimePublishableKey;
+
+  /// Chiave effettivamente usata: prima il backend, poi il dart-define.
+  static String get effectivePublishableKey =>
+      (runtimePublishableKey != null && runtimePublishableKey!.isNotEmpty)
+          ? runtimePublishableKey!
+          : publishableKey;
+
   // Merchant Display Name
   static const String merchantDisplayName = 'WeCoop';
 
@@ -29,7 +39,7 @@ class StripeConfig {
   static const int primaryColor = 0xFF00A86B; // Verde WeCoop
 
   /// Indica se siamo in modalità test
-  static bool get isTestMode => publishableKey.startsWith('pk_test_');
+  static bool get isTestMode => effectivePublishableKey.startsWith('pk_test_');
 
   /// Consente eccezioni esplicite per build release interne.
   static const bool allowTestKeyInRelease = bool.fromEnvironment(
@@ -39,11 +49,11 @@ class StripeConfig {
 
   /// Verifica se Stripe è configurato correttamente
   static bool get isConfigured =>
-      publishableKey.startsWith('pk_test_') ||
-      publishableKey.startsWith('pk_live_');
+      effectivePublishableKey.startsWith('pk_test_') ||
+      effectivePublishableKey.startsWith('pk_live_');
 
   static bool get canEnablePaymentsInRelease =>
-      publishableKey.startsWith('pk_live_') || allowTestKeyInRelease;
+      effectivePublishableKey.startsWith('pk_live_') || allowTestKeyInRelease;
 
   /// Backend URL per creare Payment Intent
   static const String backendUrl = String.fromEnvironment(

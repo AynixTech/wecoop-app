@@ -245,4 +245,30 @@ class PagamentoService {
       return null;
     }
   }
+
+  /// Recupera la publishable key Stripe dal backend (wp-config-stripe.php)
+  /// GET /stripe-config
+  static Future<String?> getStripePublishableKey() async {
+    try {
+      final url = Uri.parse('$baseUrl/stripe-config');
+      final headers = await _getHeaders();
+      final response = await HttpClientService.get(url, headers: headers);
+
+      print('📥 GET /stripe-config status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final data = ResponseUtils.decodeJson(response) as Map<String, dynamic>;
+        final key = data['publishable_key'] as String?;
+        if (key != null && key.isNotEmpty) {
+          return key;
+        }
+        print('⚠️ publishable_key non presente nella risposta');
+      }
+
+      return null;
+    } catch (e) {
+      print('❌ Errore durante GET /stripe-config: $e');
+      return null;
+    }
+  }
 }

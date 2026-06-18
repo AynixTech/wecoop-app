@@ -1879,13 +1879,49 @@ class _CalendarScreenState extends State<CalendarScreen>
 
     final parsedUserId = userIdRaw != null ? int.tryParse(userIdRaw) : null;
     final parsedSocioId = socioIdRaw != null ? int.tryParse(socioIdRaw) : null;
-    final userId = parsedUserId ?? parsedSocioId;
-    final telefono = telefonoRaw?.trim();
+    int? userId = parsedUserId ?? parsedSocioId;
+    String? telefono = telefonoRaw?.trim();
 
     print('🔐 [FirmaFlow] Storage user_id raw: $userIdRaw');
     print('🔐 [FirmaFlow] Storage socio_id raw: $socioIdRaw');
     print('🔐 [FirmaFlow] Storage telefono presente: ${telefono != null && telefono.isNotEmpty}');
     print('🔐 [FirmaFlow] userId parse: $userId');
+
+    // Fallback: se i dati non sono in storage (es. login biometrico o sessione
+    // ripristinata), li recuperiamo da /soci/me e li salviamo.
+    if (userId == null || telefono == null || telefono.isEmpty) {
+      print('🔄 [FirmaFlow] Dati utente mancanti in storage, recupero da /soci/me');
+      try {
+        final meData = await SocioService.getMe();
+        if (meData != null) {
+          final meUserIdRaw =
+              (meData['user_id'] ?? meData['id'])?.toString();
+          final meUserId =
+              meUserIdRaw != null ? int.tryParse(meUserIdRaw) : null;
+          final meTelefono = (meData['telefono'] ?? '').toString().trim();
+
+          if (meUserId != null) {
+            userId = meUserId;
+            await storage.write(key: 'user_id', value: meUserId.toString());
+            if ((meData['id'] ?? '').toString().isNotEmpty) {
+              await storage.write(
+                key: 'socio_id',
+                value: meData['id'].toString(),
+              );
+            }
+          }
+          if (meTelefono.isNotEmpty) {
+            telefono = meTelefono;
+            await storage.write(key: 'telefono', value: meTelefono);
+          }
+          print('🔄 [FirmaFlow] Dopo /soci/me userId=$userId telefonoPresente=${telefono != null && telefono.isNotEmpty}');
+        } else {
+          print('⚠️ [FirmaFlow] /soci/me ha restituito null');
+        }
+      } catch (e) {
+        print('❌ [FirmaFlow] Errore recupero dati da /soci/me: $e');
+      }
+    }
 
     if (!mounted) return;
 
@@ -1902,6 +1938,9 @@ class _CalendarScreenState extends State<CalendarScreen>
       return;
     }
 
+    final telefonoFinal = telefono;
+    final userIdFinal = userId;
+
     Navigator.pop(context);
     print('🔐 [FirmaFlow] Bottom sheet chiuso, apro FirmaDocumentoScreen');
 
@@ -1910,8 +1949,8 @@ class _CalendarScreenState extends State<CalendarScreen>
       MaterialPageRoute(
         builder: (context) => FirmaDocumentoScreen(
           richiestaId: firmaRichiestaId,
-          userId: userId,
-          telefono: telefono,
+          userId: userIdFinal,
+          telefono: telefonoFinal,
         ),
       ),
     );

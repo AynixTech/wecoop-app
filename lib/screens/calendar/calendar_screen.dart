@@ -15,7 +15,6 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -1086,84 +1085,6 @@ class _CalendarScreenState extends State<CalendarScreen>
     return textTail.contains('%%EOF') || textTail.contains('startxref');
   }
 
-  Future<void> _apriUrlInAppWebView(
-    Uri uri, {
-    String? title,
-    Map<String, String>? headers,
-    String? traceId,
-  }) async {
-    if (!mounted) return;
-    print('🌐 [${traceId ?? 'WEBVIEW'}] open uri=$uri title=$title headers=${headers?.keys.toList()}');
-
-    final controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onNavigationRequest: (request) {
-            print('🌐 [${traceId ?? 'WEBVIEW'}] onNavigationRequest: ${request.url} isMainFrame=${request.isMainFrame}');
-            return NavigationDecision.navigate;
-          },
-          onPageStarted: (startedUrl) {
-            print('🌐 [${traceId ?? 'WEBVIEW'}] onPageStarted: $startedUrl');
-          },
-          onPageFinished: (finishedUrl) {
-            print('✅ [${traceId ?? 'WEBVIEW'}] onPageFinished: $finishedUrl');
-          },
-          onWebResourceError: (error) {
-            print('❌ [${traceId ?? 'WEBVIEW'}] webview error code=${error.errorCode} type=${error.errorType} description=${error.description} isMainFrame=${error.isForMainFrame}');
-          },
-        ),
-      )
-      ..loadRequest(uri, headers: headers ?? const <String, String>{});
-
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Scaffold(
-          appBar: AppBar(
-            title: Text(title ?? 'Visualizza documento'),
-          ),
-          body: WebViewWidget(controller: controller),
-        ),
-      ),
-    );
-  }
-
-  Future<bool> _apriConGoogleGs(
-    String sourceUrl, {
-    String title = 'Documento (Google GS)',
-    String? traceId,
-  }) async {
-    final googleViewer = Uri.parse(
-      'https://docs.google.com/gview?embedded=1&url=${Uri.encodeComponent(sourceUrl)}',
-    );
-
-    final openedExternal = await launchUrl(
-      googleViewer,
-      mode: LaunchMode.externalApplication,
-    );
-    print('🌐 [${traceId ?? 'GoogleGS'}] tentativo esterno opened=$openedExternal url=$googleViewer');
-    if (openedExternal) {
-      print('✅ [${traceId ?? 'GoogleGS'}] aperto esterno: $googleViewer');
-      return true;
-    }
-
-    try {
-      await _apriUrlInAppWebView(
-        googleViewer,
-        title: title,
-        traceId: traceId ?? 'GoogleGS',
-      );
-      print('✅ [${traceId ?? 'GoogleGS'}] aperto in-app: $googleViewer');
-      return true;
-    } catch (e) {
-      print('❌ [${traceId ?? 'GoogleGS'}] in-app fallito: $e');
-    }
-
-    print('❌ [${traceId ?? 'GoogleGS'}] apertura fallita: $googleViewer');
-    return false;
-  }
-
   Future<bool> _apriPdfFallbackWeb(String url) async {
     final openedAuthPdf = await _apriPdfFallbackAutenticato(url);
     if (openedAuthPdf) {
@@ -1232,35 +1153,24 @@ class _CalendarScreenState extends State<CalendarScreen>
     String? receiptFilename,
     String? traceId,
   }) async {
-    print('🧾 [${traceId ?? 'RicevutaFallback'}] start paymentId=$paymentId receiptUrl=$receiptUrl');
+    final tag = traceId ?? 'RicevutaFallback';
+    print('🧾 [$tag] start paymentId=$paymentId receiptUrl=$receiptUrl');
     final token = await storage.read(key: 'jwt_token');
-    print('🧾 [${traceId ?? 'RicevutaFallback'}] tokenPresent=${token != null && token.isNotEmpty}');
+    print('🧾 [$tag] tokenPresent=${token != null && token.isNotEmpty}');
 
+    // 1) Se abbiamo un URL diretto della ricevuta, scarichiamolo in modo
+    //    autenticato e apriamolo con il viewer PDF locale. Evitiamo Google Docs
+    //    Viewer perché su URL protette mostra "Anteprima non disponibile".
     if (receiptUrl != null && _isValidWebUrl(receiptUrl)) {
-      final openedGoogleGs = await _apriConGoogleGs(
-        receiptUrl,
-        title: 'Ricevuta (Google GS)',
-        traceId: traceId ?? 'RicevutaFallback',
-      );
-      print('🧾 [${traceId ?? 'RicevutaFallback'}] GoogleGS su receiptUrl opened=$openedGoogleGs');
-      if (openedGoogleGs) {
-        print('✅ [${traceId ?? 'RicevutaFallback'}] aperto receipt_url con Google GS');
+      final openedAuth = await _apriPdfFallbackAutenticato(receiptUrl);
+      print('🧾 [$tag] download autenticato receiptUrl opened=$openedAuth');
+      if (openedAuth) {
         return true;
-      }
-
-      try {
-        await _apriUrlInAppWebView(
-          Uri.parse(receiptUrl),
-          title: 'Ricevuta',
-          traceId: traceId ?? 'RicevutaFallback',
-        );
-        print('✅ [${traceId ?? 'RicevutaFallback'}] aperto receipt_url in-app: $receiptUrl');
-        return true;
-      } catch (e) {
-        print('❌ [${traceId ?? 'RicevutaFallback'}] receipt_url in-app fallito: $e');
       }
     }
 
+    // 2) Prova a costruire l'URL pubblico della ricevuta a partire dal nome file
+    //    e scaricalo in modo autenticato.
     if (receiptFilename != null && receiptFilename.trim().isNotEmpty) {
       final fileNameEncoded = Uri.encodeComponent(receiptFilename.trim());
       final candidates = [
@@ -1269,25 +1179,17 @@ class _CalendarScreenState extends State<CalendarScreen>
         'https://www.wecoop.org/wp-content/uploads/wecoop-documenti-ricevute/$fileNameEncoded',
       ];
 
-      print('🧾 [${traceId ?? 'RicevutaFallback'}] provo candidati Google GS da filename=$receiptFilename');
+      print('🧾 [$tag] provo candidati download autenticato da filename=$receiptFilename');
       for (final candidate in candidates) {
-        final openedGoogleGs = await _apriConGoogleGs(
-          candidate,
-          title: 'Ricevuta (Google GS)',
-          traceId: traceId ?? 'RicevutaFallback',
-        );
-        print('🧾 [${traceId ?? 'RicevutaFallback'}] candidate=$candidate opened=$openedGoogleGs');
-        if (openedGoogleGs) {
-          print('✅ [${traceId ?? 'RicevutaFallback'}] aperto candidato receipt via Google GS');
+        final openedAuth = await _apriPdfFallbackAutenticato(candidate);
+        print('🧾 [$tag] candidate=$candidate opened=$openedAuth');
+        if (openedAuth) {
           return true;
         }
       }
     }
 
-    print('🧾 [${traceId ?? 'RicevutaFallback'}] receiptUrl non disponibile: evito endpoint /pagamento/{id}/ricevuta in web fallback per prevenire 401 no_auth');
-    print('🧾 [${traceId ?? 'RicevutaFallback'}] tokenPresentForEndpoint=${token != null && token.isNotEmpty} (usato solo da API service, non da launch esterno)');
-
-    print('❌ [${traceId ?? 'RicevutaFallback'}] fallback fallito paymentId=$paymentId');
+    print('❌ [$tag] fallback fallito paymentId=$paymentId');
     return false;
   }
 
@@ -1323,12 +1225,12 @@ class _CalendarScreenState extends State<CalendarScreen>
   }
 
   Future<void> _apriRicevutaWeb(String url) async {
-    final openedGoogleGs = await _apriConGoogleGs(
-      url,
-      title: 'Ricevuta (Google GS)',
-    );
+    // Scarica il PDF in modo autenticato e aprilo con il viewer locale.
+    // Evitiamo Google Docs Viewer perché su URL protette mostra
+    // "Anteprima non disponibile".
+    final opened = await _apriPdfFallbackAutenticato(url);
 
-    if (!openedGoogleGs && mounted) {
+    if (!opened && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!.cannotOpenFile),

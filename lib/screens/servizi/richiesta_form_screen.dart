@@ -2071,6 +2071,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                           (context) => DocumentiScreen(
                             showFamilyDocuments: true,
                             initialSoggetto: DocumentoSoggetto.familiare,
+                            showContinueButton: true,
                           ),
                     ),
                   );
@@ -2108,6 +2109,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                           (context) => DocumentiScreen(
                             showFamilyDocuments: _isMotiviFamiliariFlow(),
                             initialSoggetto: _getInitialDocumentSoggetto(),
+                            showContinueButton: true,
                           ),
                     ),
                   );
@@ -2263,6 +2265,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                           (context) => DocumentiScreen(
                             showFamilyDocuments: _isMotiviFamiliariFlow(),
                             initialSoggetto: _getInitialDocumentSoggetto(),
+                            showContinueButton: true,
                           ),
                     ),
                   );

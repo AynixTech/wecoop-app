@@ -9,11 +9,13 @@ import '../../services/documento_service.dart';
 class DocumentiScreen extends StatefulWidget {
   final bool showFamilyDocuments;
   final String initialSoggetto;
+  final bool showContinueButton;
 
   const DocumentiScreen({
     super.key,
     this.showFamilyDocuments = false,
     this.initialSoggetto = DocumentoSoggetto.richiedente,
+    this.showContinueButton = false,
   });
 
   @override
@@ -499,6 +501,23 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
                           )!.documentsPersonalSubtitle,
                     ),
                   const SizedBox(height: 16),
+                  if (widget.showContinueButton && Navigator.canPop(context)) ...[
+                    ElevatedButton.icon(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.arrow_forward),
+                      label: Text(AppLocalizations.of(context)!.next),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: scheme.primary,
+                        foregroundColor: scheme.onPrimary,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        minimumSize: const Size(double.infinity, 0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                   // WhatsApp Support Card
                   InkWell(
                     onTap: _openWhatsAppSupport,

@@ -1990,6 +1990,156 @@ class _CalendarScreenState extends State<CalendarScreen>
     }
   }
 
+  /// Apre/scarica un documento risultato (caricato dall'operatore) tramite il browser/visualizzatore esterno.
+  Future<void> _apriDocumentoRisultato(String url) async {
+    final l10n = AppLocalizations.of(context)!;
+    final uri = Uri.tryParse(url);
+    if (uri == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.translate('cannotOpenDocument')),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+
+    bool opened = false;
+    try {
+      opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      opened = false;
+    }
+
+    if (!opened && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.translate('cannotOpenDocument')),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  /// Sezione documenti risultato: mostra i documenti caricati dall'operatore
+  /// (esito del lavoro) e permette al cliente di scaricarli/visualizzarli.
+  List<Widget> _buildDocumentiRisultatoSection(Map<String, dynamic> richiesta) {
+    final raw = richiesta['documenti_risultato'];
+    if (raw is! List || raw.isEmpty) {
+      return const [];
+    }
+
+    final documenti = raw
+        .whereType<Map>()
+        .map((e) => Map<String, dynamic>.from(e))
+        .where((d) => (d['url'] ?? '').toString().isNotEmpty)
+        .toList();
+
+    if (documenti.isEmpty) {
+      return const [];
+    }
+
+    final l10n = AppLocalizations.of(context)!;
+
+    return [
+      const Divider(height: 32),
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.green.withOpacity(0.06),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.green.withOpacity(0.4)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.cloud_done, color: Colors.green.shade700),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.translate('resultDocumentsTitle'),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green.shade800,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.translate('resultDocumentsInfo'),
+              style: TextStyle(fontSize: 13, color: Colors.grey.shade800),
+            ),
+            const SizedBox(height: 12),
+            ...documenti.map((doc) {
+              final fileName = (doc['file_name'] ?? '').toString();
+              final descrizione = (doc['descrizione'] ?? '').toString();
+              final url = (doc['url'] ?? '').toString();
+              final isPdf = fileName.toLowerCase().endsWith('.pdf');
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.green.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      isPdf ? Icons.picture_as_pdf : Icons.image_outlined,
+                      color: Colors.green.shade700,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            fileName.isNotEmpty ? fileName : url,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (descrizione.isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              descrizione,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => _apriDocumentoRisultato(url),
+                      icon: const Icon(Icons.download),
+                      color: Colors.green.shade700,
+                      tooltip: l10n.translate('downloadDocument'),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
+    ];
+  }
+
   /// Sezione integrazione documentale: mostra i documenti richiesti dall'operatore
   /// e permette al cliente di caricarli.
   List<Widget> _buildIntegrazioneDocumentaleSection(
@@ -2407,6 +2557,9 @@ class _CalendarScreenState extends State<CalendarScreen>
                       // Sezione integrazione documentale
                       if (richiestaId != null)
                         ..._buildIntegrazioneDocumentaleSection(richiesta, richiestaId),
+
+                      // Sezione documenti risultato (caricati dall'operatore)
+                      ..._buildDocumentiRisultatoSection(richiesta),
 
                       if (richiesta['prezzo_formattato'] != null) ...[
                         const Divider(height: 32),

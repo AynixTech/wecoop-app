@@ -12,6 +12,9 @@
 .swiftpm/
 migrate_working_dir/
 
+# Release artifacts (build outputs, non versionare)
+/releases/
+
 # IntelliJ related
 *.iml
 *.ipr

@@ -19,6 +19,7 @@ import '../../models/evento_model.dart';
 import '../eventi/evento_detail_screen.dart';
 import 'completa_profilo_screen.dart';
 import 'documenti_screen.dart';
+import 'storico_pratiche_screen.dart';
 
 final storage = SecureStorageService();
 
@@ -1010,6 +1011,24 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const DocumentiScreen(),
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 20),
+
+            _buildActionCard(
+              context: context,
+              icon: Icons.history_edu_outlined,
+              accentColor: scheme.primary,
+              title: l10n.translate('storicoPraticheTitle'),
+              subtitle: l10n.translate('storicoPraticheSubtitle'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const StoricoPraticheScreen(),
                   ),
                 );
               },

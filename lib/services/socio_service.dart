@@ -7,6 +7,7 @@ import 'package:wecoop_app/utils/response_utils.dart';
 import 'dart:async';
 import 'dart:io';
 import '../utils/html_utils.dart';
+import '../models/pratica_documento.dart';
 
 class SocioService {
   static const String baseUrl = 'https://www.wecoop.org/wp-json/wecoop/v1';
@@ -731,6 +732,129 @@ class SocioService {
       return {'success': false, 'message': 'Nessuna connessione internet'};
     } catch (e) {
       print('❌ Errore durante GET /pagamento/$paymentId/ricevuta: $e');
+      return {'success': false, 'message': 'Errore: ${e.toString()}'};
+    }
+  }
+
+  /// ===========================================================
+  /// STORICO PRATICHE (730, ISEE, ...)
+  /// ===========================================================
+
+  /// Elenco dei documenti dello storico pratiche del cliente loggato.
+  /// GET /pratiche/me  -> { success: true, data: [ {...}, ... ] }
+  static Future<List<PraticaDocumento>> getStoricoPratiche({String? tipo}) async {
+    try {
+      final token = await storage.read(key: 'jwt_token');
+      if (token == null) {
+        print('Token JWT mancante');
+        return [];
+      }
+
+      var url = '$baseUrl/pratiche/me';
+      if (tipo != null && tipo.isNotEmpty) {
+        url += '?tipo=${Uri.encodeComponent(tipo)}';
+      }
+      print('🔄 Chiamata GET /pratiche/me...');
+
+      final headers = await _getHeaders();
+      final response = await HttpClientService.get(
+        Uri.parse(url),
+        headers: headers,
+      );
+
+      print('📥 GET /pratiche/me status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final rawData = jsonDecode(response.body);
+        final responseData = decodeHtmlInMap(rawData);
+        if (responseData['success'] == true && responseData['data'] != null) {
+          final List<dynamic> list = responseData['data'] as List<dynamic>;
+          return list
+              .whereType<Map<String, dynamic>>()
+              .map((e) => PraticaDocumento.fromJson(e))
+              .toList();
+        }
+      }
+
+      return [];
+    } catch (e) {
+      print('❌ Errore durante GET /pratiche/me: $e');
+      return [];
+    }
+  }
+
+  /// Scarica il file binario di un documento dello storico pratiche.
+  /// GET /pratiche/me/documento/{id}/download
+  /// Ritorna { success, bytes, filename, mime } oppure { success:false, message }.
+  static Future<Map<String, dynamic>> downloadDocumentoPratica(
+    PraticaDocumento doc,
+  ) async {
+    try {
+      final token = await storage.read(key: 'jwt_token');
+      if (token == null) {
+        return {'success': false, 'message': 'Utente non autenticato'};
+      }
+
+      final url = doc.downloadUrl.isNotEmpty
+          ? doc.downloadUrl
+          : '$baseUrl/pratiche/me/documento/${doc.id}/download';
+
+      print('🔄 Download documento pratica: $url');
+
+      final headers = {
+        'Accept': 'application/pdf,application/octet-stream,*/*',
+        'Authorization': 'Bearer $token',
+      };
+
+      final response = await HttpClientService.get(
+        Uri.parse(url),
+        headers: headers,
+      );
+
+      print('📥 Download status: ${response.statusCode} (${response.bodyBytes.length} bytes)');
+
+      if (response.statusCode == 200) {
+        final contentDisposition =
+            response.headers['content-disposition'] ?? '';
+        String filename = doc.fileName.isNotEmpty
+            ? doc.fileName
+            : 'documento_${doc.id}.pdf';
+        final match =
+            RegExp(r'filename="(.+?)"').firstMatch(contentDisposition);
+        if (match != null) {
+          filename = match.group(1) ?? filename;
+        }
+
+        final mime = response.headers['content-type'] ??
+            (doc.mimeType ?? 'application/octet-stream');
+
+        return {
+          'success': true,
+          'bytes': response.bodyBytes,
+          'filename': filename,
+          'mime': mime,
+        };
+      } else if (response.statusCode == 401) {
+        return {'success': false, 'message': 'Utente non autenticato'};
+      } else if (response.statusCode == 403) {
+        return {
+          'success': false,
+          'message': 'Non hai accesso a questo documento',
+        };
+      } else if (response.statusCode == 404) {
+        return {'success': false, 'message': 'Documento non trovato'};
+      }
+
+      return {
+        'success': false,
+        'message': 'Errore durante il download del documento',
+      };
+    } on TimeoutException {
+      return {'success': false, 'message': 'Timeout: il server non risponde'};
+    } on SocketException {
+      return {'success': false, 'message': 'Nessuna connessione internet'};
+    } catch (e) {
+      print('❌ Errore download documento pratica: $e');
       return {'success': false, 'message': 'Errore: ${e.toString()}'};
     }
   }

@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +13,7 @@ import 'package:wecoop_app/services/push_notification_service.dart';
 import 'package:wecoop_app/services/deep_link_service.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/services/update_handler.dart';
+import 'package:wecoop_app/services/in_app_update_service.dart';
 import 'package:wecoop_app/utils/deep_link_handler.dart';
 import 'screens/main_screen.dart';
 import 'screens/login/login_screen.dart';
@@ -44,8 +46,15 @@ class _WECOOPAppState extends State<WECOOPApp> {
   void _checkForAppUpdate() {
     // Aspetta che il primo frame sia renderizzato così il Navigator e le
     // Localizations sono pronti prima di mostrare l'eventuale dialogo.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      UpdateHandler.checkAndPrompt();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+        // Android: usa il flusso nativo di Google Play (In-App Updates).
+        // Rileva automaticamente la nuova versione pubblicata, senza backend.
+        await InAppUpdateService.checkAndForceUpdate();
+      } else {
+        // iOS e altre piattaforme: usa il controllo versione via backend.
+        await UpdateHandler.checkAndPrompt();
+      }
     });
   }
 

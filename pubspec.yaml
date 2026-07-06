@@ -53,6 +53,9 @@ dependencies:
   
   # Deep Links
   app_links: ^3.5.0
+
+  # In-App Updates (Google Play) - aggiornamento forzato Android
+  in_app_update: ^4.2.3
   
   # Firma Digitale
   webview_flutter: ^4.4.2

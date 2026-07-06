@@ -2,7 +2,7 @@ name: wecoop_app
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.3.9+16
+version: 1.4.0+17
 
 # iOS Bundle ID (Apple Developer Program)
 # Deve corrispondere al Bundle ID registrato su Apple Developer.
@@ -24,6 +24,7 @@ dependencies:
   flutter_secure_storage: ^8.0.0
   cached_network_image: ^3.2.3
   provider: ^6.0.5
+  package_info_plus: ^8.0.0
   shared_preferences: ^2.1.1
   url_launcher: ^6.1.10
   flutter_dotenv: ^5.0.2

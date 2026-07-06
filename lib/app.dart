@@ -11,6 +11,7 @@ import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/push_notification_service.dart';
 import 'package:wecoop_app/services/deep_link_service.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
+import 'package:wecoop_app/services/update_handler.dart';
 import 'package:wecoop_app/utils/deep_link_handler.dart';
 import 'screens/main_screen.dart';
 import 'screens/login/login_screen.dart';
@@ -34,8 +35,18 @@ class _WECOOPAppState extends State<WECOOPApp> {
   void initState() {
     super.initState();
     MaintenanceHandler.bindNavigatorKey(_navigatorKey);
+    UpdateHandler.bindNavigatorKey(_navigatorKey);
     _initializePushNotifications();
     _initializeDeepLinks();
+    _checkForAppUpdate();
+  }
+
+  void _checkForAppUpdate() {
+    // Aspetta che il primo frame sia renderizzato così il Navigator e le
+    // Localizations sono pronti prima di mostrare l'eventuale dialogo.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      UpdateHandler.checkAndPrompt();
+    });
   }
 
   Future<void> _initializePushNotifications() async {

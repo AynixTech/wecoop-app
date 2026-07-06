@@ -5,6 +5,7 @@ import 'package:crop_your_image/crop_your_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
@@ -33,7 +34,7 @@ class ProfiloScreen extends StatefulWidget {
 }
 
 class _ProfiloScreenState extends State<ProfiloScreen> {
-  static const String _appVersion = '1.3.3+10';
+  String _appVersion = '';
 
   String userName = '...';
   String userEmail = '...';
@@ -58,6 +59,20 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     _loadUserData();
     _loadMieiEventi();
     _checkProfiloCompleto();
+    _loadAppVersion();
+  }
+
+  Future<void> _loadAppVersion() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      if (mounted) {
+        setState(() {
+          _appVersion = '${info.version}+${info.buildNumber}';
+        });
+      }
+    } catch (e) {
+      print('Errore lettura versione app: $e');
+    }
   }
 
   Future<void> _checkProfiloCompleto() async {
@@ -523,6 +538,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   }
 
   String get _appVersionDisplay {
+    if (_appVersion.isEmpty) return '...';
     final parts = _appVersion.split('+');
     if (parts.length == 2) {
       return '${parts[0]} (${parts[1]})';

@@ -70,14 +70,6 @@ class AppLocalizations {
       'maintenanceTitle': 'Manutenzione in corso',
       'maintenanceMessage':
           'Il sito al momento è in manutenzione. Riprova più tardi.',
-      'updateRequiredTitle': 'Aggiornamento richiesto',
-      'updateRequiredMessage':
-          'È disponibile una nuova versione dell\'app. Per continuare a usarla devi aggiornare.',
-      'updateAvailableTitle': 'Aggiornamento disponibile',
-      'updateAvailableMessage':
-          'È disponibile una nuova versione dell\'app con miglioramenti e correzioni.',
-      'updateNow': 'Aggiorna ora',
-      'updateLater': 'Più tardi',
       'cvAiServiceName': 'Curriculum CV',
       'cvAiServiceSubtitle':
           'Crea un CV professionale in pochi minuti con l\'aiuto dell\'AI.',
@@ -1467,14 +1459,6 @@ class AppLocalizations {
       'login': 'تسجيل الدخول',
       'logout': 'تسجيل الخروج',
       'logoutConfirm': 'تم تسجيل الخروج',
-      'updateRequiredTitle': 'التحديث مطلوب',
-      'updateRequiredMessage':
-          'يتوفر إصدار جديد من التطبيق. يجب عليك التحديث للاستمرار في استخدامه.',
-      'updateAvailableTitle': 'يتوفر تحديث',
-      'updateAvailableMessage':
-          'يتوفر إصدار جديد من التطبيق يتضمن تحسينات وإصلاحات.',
-      'updateNow': 'حدّث الآن',
-      'updateLater': 'لاحقًا',
       'email': 'البريد الإلكتروني',
       'password': 'كلمة المرور',
       'cardNumber': 'رقم البطاقة',
@@ -1707,12 +1691,6 @@ class AppLocalizations {
     },
     'zh': {
       'appTitle': 'WECOOP',
-      'updateRequiredTitle': '需要更新',
-      'updateRequiredMessage': '应用有新版本可用。您必须更新才能继续使用。',
-      'updateAvailableTitle': '有可用更新',
-      'updateAvailableMessage': '应用有新版本可用，包含改进和修复。',
-      'updateNow': '立即更新',
-      'updateLater': '稍后',
       'hello': '你好',
       'welcome': '欢迎来到WECOOP！探索附近的活动、服务和项目。',
       'user': '用户',
@@ -2012,14 +1990,6 @@ class AppLocalizations {
       'maintenanceTitle': 'Maintenance in progress',
       'maintenanceMessage':
           'The site is currently under maintenance. Please try again later.',
-      'updateRequiredTitle': 'Update required',
-      'updateRequiredMessage':
-          'A new version of the app is available. You must update to continue using it.',
-      'updateAvailableTitle': 'Update available',
-      'updateAvailableMessage':
-          'A new version of the app is available with improvements and fixes.',
-      'updateNow': 'Update now',
-      'updateLater': 'Later',
       'cvAiServiceName': 'Curriculum CV',
       'cvAiServiceSubtitle':
           'Create a professional CV in minutes with AI assistance.',
@@ -3438,14 +3408,6 @@ class AppLocalizations {
       'maintenanceTitle': 'Mantenimiento en curso',
       'maintenanceMessage':
           'El sitio está actualmente en mantenimiento. Inténtalo de nuevo más tarde.',
-      'updateRequiredTitle': 'Actualización requerida',
-      'updateRequiredMessage':
-          'Hay una nueva versión de la app disponible. Debes actualizar para seguir usándola.',
-      'updateAvailableTitle': 'Actualización disponible',
-      'updateAvailableMessage':
-          'Hay una nueva versión de la app con mejoras y correcciones.',
-      'updateNow': 'Actualizar ahora',
-      'updateLater': 'Más tarde',
       'cvAiServiceName': 'Curriculum CV',
       'cvAiServiceSubtitle':
           'Crea un CV profesional en pocos minutos con ayuda de la IA.',

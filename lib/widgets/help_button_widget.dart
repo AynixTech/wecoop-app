@@ -4,7 +4,6 @@ import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 /// Bubble button fisso in basso a destra che apre la modale di supporto al click
 class HelpButtonWidget extends StatefulWidget {
@@ -305,8 +304,8 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
               ],
             ),
             child: const Center(
-              child: FaIcon(
-                FontAwesomeIcons.whatsapp,
+              child: Icon(
+                Icons.chat,
                 color: Colors.white,
                 size: 28,
               ),

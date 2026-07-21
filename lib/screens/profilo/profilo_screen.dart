@@ -1,3 +1,55 @@
+import 'package:url_launcher/url_launcher.dart';
+import '../../services/account_service.dart';
+  Future<void> _launchPrivacyPolicy() async {
+    final url = "https://www.wecoop.org/privacy-policy";
+    if (await canLaunch(url)) {
+      await launch(url);
+    }
+  }
+
+  Future<void> _deleteAccountFlow() async {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = theme.colorScheme;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.translate('deleteAccountTitle') ?? 'Elimina account'),
+        content: Text(l10n.translate('deleteAccountConfirmMsg') ??
+            'Eliminando l’account perderai l’accesso e tutti i tuoi dati saranno rimossi. Confermi?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: scheme.error),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    final success = await AccountService.deleteCurrentUser();
+    if (!mounted) return;
+    if (success) {
+      // logout e mutex
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          title: Text('Account eliminato'),
+          content: Text('Il tuo account è stato eliminato definitivamente. Sarai disconnesso.'),
+        ),
+      );
+      await Future.delayed(const Duration(seconds: 2));
+      if (mounted) _logout(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Errore nell’eliminazione account. Riprova o contatta supporto.'), backgroundColor: scheme.error),
+      );
+    }
+  }
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -615,6 +667,23 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
             ),
             Icon(Icons.arrow_forward_ios_rounded, color: accentColor, size: 18),
           ],
+            const SizedBox(height: 24),
+            OutlinedButton.icon(
+              onPressed: _launchPrivacyPolicy,
+              icon: const Icon(Icons.privacy_tip_outlined),
+              label: const Text('Privacy Policy'),
+            ),
+            const SizedBox(height: 13),
+            ElevatedButton.icon(
+              onPressed: _deleteAccountFlow,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              ),
+              icon: const Icon(Icons.delete_forever_rounded),
+              label: const Text('Elimina definitivamente account'),
+            ),
         ),
       ),
     );

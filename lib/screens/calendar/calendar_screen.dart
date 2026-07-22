@@ -11,6 +11,7 @@ import '../../services/socio_service.dart';
 import '../../services/http_client_service.dart';
 import '../servizi/pagamento_screen.dart';
 import '../firma_digitale/firma_documento_screen.dart';
+import '../prenota_appuntamento/seleziona_slot_screen.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
@@ -273,11 +274,40 @@ class _CalendarScreenState extends State<CalendarScreen>
       return 'paid';
     }
 
+    if (normalized == 'awaiting_appointment' ||
+        normalized == 'in_attesa_appuntamento' ||
+        normalized == 'in_attesa_di_appuntamento' ||
+        (normalized.contains('appunt') && normalized.contains('attesa')) ||
+        (normalized.contains('appoint') && normalized.contains('await'))) {
+      return 'awaiting_appointment';
+    }
+
+    if (normalized == 'appointment_confirmed' ||
+        normalized == 'appuntamento_confermato' ||
+        (normalized.contains('appunt') && normalized.contains('conferm')) ||
+        (normalized.contains('appoint') && normalized.contains('confirm'))) {
+      return 'appointment_confirmed';
+    }
+
     return normalized;
   }
 
   bool _isAwaitingPaymentStatus(String stato) {
     return _canonicalStato(stato) == 'awaiting_payment';
+  }
+
+  bool _isAwaitingAppointmentStatus(String stato) {
+    return _canonicalStato(stato) == 'awaiting_appointment';
+  }
+
+  bool _isAppointmentConfirmedStatus(String stato) {
+    return _canonicalStato(stato) == 'appointment_confirmed';
+  }
+
+  /// Traduce [key] con fallback se la chiave non e' presente nel dizionario.
+  String _trFallback(AppLocalizations l10n, String key, String fallback) {
+    final v = l10n.translate(key);
+    return v == key ? fallback : v;
   }
 
   Color _getStatoColor(String stato) {
@@ -290,6 +320,10 @@ class _CalendarScreenState extends State<CalendarScreen>
         return const Color(0xFFff6f00); // Arancione scuro
       case 'integrazione_documentale':
         return const Color(0xFFe91e63); // Rosa
+      case 'awaiting_appointment':
+        return const Color(0xFF00897b); // Teal
+      case 'appointment_confirmed':
+        return const Color(0xFF2e7d32); // Verde scuro
       case 'processing':
         return Colors.blue;
       case 'completed':
@@ -313,6 +347,10 @@ class _CalendarScreenState extends State<CalendarScreen>
         return Icons.edit_document;
       case 'integrazione_documentale':
         return Icons.upload_file;
+      case 'awaiting_appointment':
+        return Icons.event_available;
+      case 'appointment_confirmed':
+        return Icons.event_available;
       case 'processing':
         return Icons.hourglass_empty;
       case 'completed':
@@ -329,7 +367,6 @@ class _CalendarScreenState extends State<CalendarScreen>
   String _getStatoLabelTradotto(String stato) {
     final l10n = AppLocalizations.of(context);
     if (l10n == null) return stato;
-    
     switch (_canonicalStato(stato)) {
       case 'pending':
         return l10n.paymentStatusPending;
@@ -341,6 +378,10 @@ class _CalendarScreenState extends State<CalendarScreen>
         return l10n.paymentStatusAwaitingSignature;
       case 'integrazione_documentale':
         return l10n.documentIntegrationStatus;
+      case 'awaiting_appointment':
+        return _trFallback(l10n, 'statusAwaitingAppointment', 'In attesa di appuntamento');
+      case 'appointment_confirmed':
+        return _trFallback(l10n, 'statusAppointmentConfirmed', 'Appuntamento confermato');
       case 'completed':
         return l10n.paymentStatusCompleted;
       case 'failed':
@@ -2603,6 +2644,37 @@ class _CalendarScreenState extends State<CalendarScreen>
                           ),
                         ),
                       ],
+
+                      // CTA appuntamento fisico (stile Calendly)
+                      if (richiestaId != null &&
+                          (_isAwaitingAppointmentStatus(stato) ||
+                              _isAppointmentConfirmedStatus(stato))) ...[
+                        const SizedBox(height: 12),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.pop(context); // Chiudi bottom sheet
+                            _apriPrenotazioneAppuntamento(richiesta);
+                          },
+                          icon: Icon(
+                            _isAppointmentConfirmedStatus(stato)
+                                ? Icons.event_available
+                                : Icons.event,
+                          ),
+                          label: Text(
+                            _isAppointmentConfirmedStatus(stato)
+                                ? _trFallback(AppLocalizations.of(context)!,
+                                    'manageAppointment', 'Gestisci appuntamento')
+                                : _trFallback(AppLocalizations.of(context)!,
+                                    'bookAppointment', 'Prenota appuntamento'),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _getStatoColor(stato),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            minimumSize: const Size(double.infinity, 0),
+                          ),
+                        ),
+                      ],
                       
                       // Pulsante Elimina - Solo per richieste pending
                       if (stato == 'pending' && richiestaId != null) ...[
@@ -3137,6 +3209,48 @@ class _CalendarScreenState extends State<CalendarScreen>
     );
   }
 
+  /// Apre la pagina di selezione slot per una richiesta e ricarica al ritorno.
+  void _apriPrenotazioneAppuntamento(Map<String, dynamic> richiesta) {
+    final id = richiesta['id'];
+    final richiestaId = id is int ? id : int.tryParse('${id ?? ''}');
+    if (richiestaId == null) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SelezionaSlotScreen(
+          richiestaId: richiestaId,
+          servizioLabel: _getServizioLabelTradotto(richiesta['servizio'] ?? ''),
+        ),
+      ),
+    ).then((_) => _caricaRichieste());
+  }
+
+  /// CTA per la prenotazione/gestione dell'appuntamento fisico.
+  Widget _buildAppuntamentoCta(Map<String, dynamic> richiesta, String stato) {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = _isAppointmentConfirmedStatus(stato);
+    final color = _getStatoColor(stato);
+
+    final label = confirmed
+        ? _trFallback(l10n, 'manageAppointment', 'Gestisci appuntamento')
+        : _trFallback(l10n, 'bookAppointment', 'Prenota appuntamento');
+
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: () => _apriPrenotazioneAppuntamento(richiesta),
+        icon: Icon(confirmed ? Icons.event_available : Icons.event, size: 18),
+        label: Text(label),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 10),
+        ),
+      ),
+    );
+  }
+
   Widget _buildRichiestaCard(Map<String, dynamic> richiesta) {
     final stato = richiesta['stato'] ?? '';
     final statoLabel = _getStatoLabelTradotto(stato);
@@ -3398,6 +3512,14 @@ class _CalendarScreenState extends State<CalendarScreen>
                     ),
                   ),
                 ),
+              ],
+
+              // CTA appuntamento fisico (stile Calendly)
+              if (richiesta['id'] != null &&
+                  (_isAwaitingAppointmentStatus(stato) ||
+                      _isAppointmentConfirmedStatus(stato))) ...[
+                const SizedBox(height: 12),
+                _buildAppuntamentoCta(richiesta, stato),
               ],
             ],
           ),

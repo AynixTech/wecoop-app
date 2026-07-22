@@ -118,6 +118,18 @@ class _WECOOPAppState extends State<WECOOPApp> {
         _navigatorKey.currentState?.pushNamed('/home');
         break;
 
+      case 'AppointmentDetail':
+        print('🔄 Navigazione a AppointmentDetail (richiesta $id)');
+        if (id != null) {
+          _navigatorKey.currentState?.pushNamed(
+            '/calendar',
+            arguments: {'richiesta_id': id},
+          );
+        } else {
+          _navigatorKey.currentState?.pushNamed('/calendar');
+        }
+        break;
+
       default:
         print('🔄 Schermata sconosciuta: $screen');
     }

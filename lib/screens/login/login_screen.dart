@@ -160,25 +160,25 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     final url = Uri.parse('https://www.wecoop.org/wp-json/jwt-auth/v1/token');
-
-    print('Invio richiesta login a $url');
-    print('Username (telefono): $phone');
+    final l10n = AppLocalizations.of(context)!;
 
     try {
       final response = await HttpClientService.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'User-Agent': 'WeCoop/1.5.3',
+        },
         body: jsonEncode({'username': phone, 'password': password}),
       );
 
-      print('Status code: ${response.statusCode}');
-      print('Body: ${response.body}');
-
-      final data = jsonDecode(response.body);
+      final decodedData = HttpClientService.decodeJsonResponse(response);
+      final data = decodedData is Map<String, dynamic>
+          ? decodedData
+          : <String, dynamic>{};
 
       if (response.statusCode == 200 && data['token'] != null) {
-        print('Login riuscito. Token ricevuto: ${data['token']}');
-
         await storage.write(key: 'jwt_token', value: data['token']);
         await storage.write(key: 'auth_username', value: phone);
         await storage.write(key: 'auth_password', value: password);
@@ -200,7 +200,6 @@ class _LoginScreenState extends State<LoginScreen> {
             key: 'user_id',
             value: data['user_id'].toString(),
           );
-          print('💾 Salvato user_id: ${data['user_id']}');
         }
 
         // Salva sempre l'ultimo telefono usato (username)
@@ -223,9 +222,7 @@ class _LoginScreenState extends State<LoginScreen> {
         // Inizializza push notifications (salverà FCM token automaticamente)
         try {
           await PushNotificationService().initialize();
-          print('✅ Push notifications inizializzate');
         } catch (e) {
-          print('⚠️ Errore inizializzazione push notifications: $e');
           // Non blocchiamo il login se fallisce l'inizializzazione delle notifiche
         }
 
@@ -241,9 +238,8 @@ class _LoginScreenState extends State<LoginScreen> {
             isLoading = false;
           });
         }
-        final message = data['message'] ?? 'Login fallito';
+        final message = data['message'] ?? l10n.networkError;
         final decodedMessage = decodeHtmlEntities(message);
-        print('Login fallito: $decodedMessage');
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(decodedMessage)));
@@ -255,7 +251,6 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       }
       print('Eccezione durante il login: $e');
-      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l10n.networkError)));

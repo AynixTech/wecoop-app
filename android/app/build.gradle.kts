@@ -9,14 +9,17 @@ plugins {
 import java.util.Properties
 import java.io.FileInputStream
 
-val keystorePropertiesFile = rootProject.file("key.properties")
+val appRootDir = rootProject.projectDir.parentFile
+val keystorePropertiesFile = System.getenv("WECOOP_KEY_PROPERTIES")
+    ?.takeIf { it.isNotBlank() }
+    ?.let(::File)
+    ?: rootProject.file("key.properties")
 val keystoreProperties = Properties()
 val isReleaseBuildRequested = gradle.startParameter.taskNames.any {
     it.contains("release", ignoreCase = true) ||
         it.contains("bundle", ignoreCase = true)
 }
 var hasReleaseSigning = false
-val appRootDir = rootProject.projectDir.parentFile
 
 fun resolveKeystoreFile(path: String?): File? {
     val configuredPath = path?.trim()?.takeIf { it.isNotEmpty() } ?: return null
@@ -28,6 +31,7 @@ fun resolveKeystoreFile(path: String?): File? {
         }
         add(rootProject.file(configuredPath))
         add(appRootDir.resolve(configuredPath))
+        add(keystorePropertiesFile.parentFile.resolve(configuredPath))
         add(appRootDir.resolve(rawFile.name))
     }
 

@@ -55,8 +55,6 @@
 	<string>Abbiamo bisogno di salvare i documenti generati nella tua libreria quando lo richiedi</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Abbiamo bisogno di accedere alla galleria per selezionare i tuoi documenti</string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>Utilizziamo questi dati per offrirti contenuti ed esperienze piu pertinenti.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

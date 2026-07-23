@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'services/locale_provider.dart';
 import 'services/secure_storage_service.dart';
 import 'services/firma_digitale_provider.dart';
-import 'services/app_tracking_service.dart';
 import 'config/stripe_config.dart';
 import 'app.dart';
 
@@ -75,9 +74,6 @@ void main() async {
   }
 
   await _initializeStripe();
-
-  // Richiesta tracking ATT (iOS)
-  await AppTrackingService.requestTrackingIfNeeded();
 
   runApp(
     MultiProvider(

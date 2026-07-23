@@ -14,6 +14,7 @@ import 'package:wecoop_app/services/deep_link_service.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/services/in_app_update_service.dart';
 import 'package:wecoop_app/utils/deep_link_handler.dart';
+import 'package:wecoop_app/widgets/mandatory_update_gate.dart';
 import 'screens/main_screen.dart';
 import 'screens/login/login_screen.dart';
 import 'screens/login/forgot_password_screen.dart';
@@ -43,8 +44,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
 
   void _checkForAppUpdate() {
     // Android: usa il flusso nativo di Google Play (In-App Updates).
-    // Rileva automaticamente la nuova versione pubblicata, senza backend.
-    // Su iOS non c'è un equivalente nativo, quindi non facciamo nulla.
+    // Per iOS MandatoryUpdateGate verifica automaticamente App Store.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
         await InAppUpdateService.checkAndForceUpdate();
@@ -150,7 +150,16 @@ class _WECOOPAppState extends State<WECOOPApp> {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('it'), Locale('en'), Locale('es'), Locale('ar'), Locale('zh')],
+          builder:
+              (context, child) =>
+                  MandatoryUpdateGate(child: child ?? const SizedBox.shrink()),
+          supportedLocales: const [
+            Locale('it'),
+            Locale('en'),
+            Locale('es'),
+            Locale('ar'),
+            Locale('zh'),
+          ],
           theme: ThemeData(
             fontFamily: 'Inter',
             useMaterial3: true,
@@ -247,8 +256,14 @@ class _WECOOPAppState extends State<WECOOPApp> {
             inputDecorationTheme: InputDecorationTheme(
               filled: true,
               fillColor: Colors.white,
-              hintStyle: const TextStyle(fontFamily: 'Inter', color: Color(0xFF6F7782)),
-              labelStyle: const TextStyle(fontFamily: 'Inter', color: Color(0xFF4D4C4C)),
+              hintStyle: const TextStyle(
+                fontFamily: 'Inter',
+                color: Color(0xFF6F7782),
+              ),
+              labelStyle: const TextStyle(
+                fontFamily: 'Inter',
+                color: Color(0xFF4D4C4C),
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: Color(0x22000000)),

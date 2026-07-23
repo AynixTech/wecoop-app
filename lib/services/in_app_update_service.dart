@@ -26,25 +26,12 @@ class InAppUpdateService {
         // immediateUpdateAllowed indica che Google consente il flusso bloccante.
         if (info.immediateUpdateAllowed) {
           await InAppUpdate.performImmediateUpdate();
-        } else if (info.flexibleUpdateAllowed) {
-          // Fallback: se l'immediate non è permesso, usa il flexible
-          // (download in background, poi completa l'installazione).
-          await _performFlexibleUpdate();
         }
       }
     } catch (e) {
       // Errori tipici: app non installata dal Play Store (debug/sideload),
       // nessuna connessione, Play Services assenti. Non blocchiamo l'utente.
       debugPrint('InAppUpdateService: aggiornamento non disponibile: $e');
-    }
-  }
-
-  static Future<void> _performFlexibleUpdate() async {
-    try {
-      await InAppUpdate.startFlexibleUpdate();
-      await InAppUpdate.completeFlexibleUpdate();
-    } catch (e) {
-      debugPrint('InAppUpdateService: flexible update fallito: $e');
     }
   }
 }

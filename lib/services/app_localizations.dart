@@ -50,6 +50,10 @@ class AppLocalizations {
       'login': 'Accedi',
       'logout': 'Logout',
       'logoutConfirm': 'Logout effettuato',
+      'mandatoryUpdateTitle': 'Aggiornamento richiesto',
+      'mandatoryUpdateMessage':
+          'Per continuare devi aggiornare WECOOP alla versione {version}.',
+      'mandatoryUpdateAction': 'Aggiorna ora',
       'deleteAccountButton': 'Elimina definitivamente l\'account',
       'deleteAccountSubtitle':
           'Elimina il tuo account e tutti i dati associati',
@@ -1542,6 +1546,10 @@ class AppLocalizations {
       'login': 'تسجيل الدخول',
       'logout': 'تسجيل الخروج',
       'logoutConfirm': 'تم تسجيل الخروج',
+      'mandatoryUpdateTitle': 'التحديث مطلوب',
+      'mandatoryUpdateMessage':
+          'للمتابعة، حدّث تطبيق WECOOP إلى الإصدار {version}.',
+      'mandatoryUpdateAction': 'حدّث الآن',
       'deleteAccountButton': 'حذف الحساب نهائياً',
       'deleteAccountSubtitle': 'احذف حسابك وجميع البيانات المرتبطة به',
       'deleteAccountTitle': 'حذف الحساب',
@@ -1841,6 +1849,9 @@ class AppLocalizations {
       'login': '登录',
       'logout': '退出',
       'logoutConfirm': '已退出登录',
+      'mandatoryUpdateTitle': '需要更新',
+      'mandatoryUpdateMessage': '请将 WECOOP 更新到版本 {version} 后继续。',
+      'mandatoryUpdateAction': '立即更新',
       'deleteAccountButton': '永久删除账户',
       'deleteAccountSubtitle': '删除您的账户及所有关联数据',
       'deleteAccountTitle': '删除账户',
@@ -2117,6 +2128,10 @@ class AppLocalizations {
       'login': 'Login',
       'logout': 'Logout',
       'logoutConfirm': 'Logged out successfully',
+      'mandatoryUpdateTitle': 'Update required',
+      'mandatoryUpdateMessage':
+          'To continue, update WECOOP to version {version}.',
+      'mandatoryUpdateAction': 'Update now',
       'deleteAccountButton': 'Permanently delete account',
       'deleteAccountSubtitle': 'Delete your account and all associated data',
       'deleteAccountTitle': 'Delete account',
@@ -3588,6 +3603,10 @@ class AppLocalizations {
       'login': 'Iniciar sesión',
       'logout': 'Cerrar sesión',
       'logoutConfirm': 'Sesión cerrada',
+      'mandatoryUpdateTitle': 'Actualización obligatoria',
+      'mandatoryUpdateMessage':
+          'Para continuar, actualiza WECOOP a la versión {version}.',
+      'mandatoryUpdateAction': 'Actualizar ahora',
       'deleteAccountButton': 'Eliminar la cuenta definitivamente',
       'deleteAccountSubtitle': 'Elimina tu cuenta y todos los datos asociados',
       'deleteAccountTitle': 'Eliminar cuenta',

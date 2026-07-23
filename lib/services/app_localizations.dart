@@ -50,6 +50,18 @@ class AppLocalizations {
       'login': 'Accedi',
       'logout': 'Logout',
       'logoutConfirm': 'Logout effettuato',
+      'deleteAccountButton': 'Elimina definitivamente l\'account',
+      'deleteAccountSubtitle':
+          'Elimina il tuo account e tutti i dati associati',
+      'deleteAccountTitle': 'Elimina account',
+      'deleteAccountConfirmMsg':
+          'Eliminando l’account perderai l’accesso e tutti i tuoi dati saranno rimossi. Confermi?',
+      'deleteAccountAction': 'Elimina',
+      'accountDeletedTitle': 'Account eliminato',
+      'accountDeletedMessage':
+          'Il tuo account è stato eliminato definitivamente. Sarai disconnesso.',
+      'deleteAccountError':
+          'Impossibile eliminare l\'account. Riprova o contatta l\'assistenza.',
       'profileAppInfoTitle': 'Versione app e fatturazione',
       'profileAppVersion': 'Versione app',
       'profileKintiCompanyDetails':
@@ -1530,6 +1542,15 @@ class AppLocalizations {
       'login': 'تسجيل الدخول',
       'logout': 'تسجيل الخروج',
       'logoutConfirm': 'تم تسجيل الخروج',
+      'deleteAccountButton': 'حذف الحساب نهائياً',
+      'deleteAccountSubtitle': 'احذف حسابك وجميع البيانات المرتبطة به',
+      'deleteAccountTitle': 'حذف الحساب',
+      'deleteAccountConfirmMsg':
+          'سيؤدي حذف الحساب إلى فقدان الوصول وإزالة جميع بياناتك. هل تريد المتابعة؟',
+      'deleteAccountAction': 'حذف',
+      'accountDeletedTitle': 'تم حذف الحساب',
+      'accountDeletedMessage': 'تم حذف حسابك نهائياً. سيتم تسجيل خروجك.',
+      'deleteAccountError': 'تعذر حذف الحساب. حاول مرة أخرى أو تواصل مع الدعم.',
       'email': 'البريد الإلكتروني',
       'password': 'كلمة المرور',
       'cardNumber': 'رقم البطاقة',
@@ -1820,6 +1841,14 @@ class AppLocalizations {
       'login': '登录',
       'logout': '退出',
       'logoutConfirm': '已退出登录',
+      'deleteAccountButton': '永久删除账户',
+      'deleteAccountSubtitle': '删除您的账户及所有关联数据',
+      'deleteAccountTitle': '删除账户',
+      'deleteAccountConfirmMsg': '删除账户后，您将无法再访问账户，所有数据也将被删除。确认继续吗？',
+      'deleteAccountAction': '删除',
+      'accountDeletedTitle': '账户已删除',
+      'accountDeletedMessage': '您的账户已被永久删除。您将被登出。',
+      'deleteAccountError': '无法删除账户。请重试或联系支持团队。',
       'email': '电子邮件',
       'password': '密码',
       'cardNumber': '卡号',
@@ -2088,6 +2117,17 @@ class AppLocalizations {
       'login': 'Login',
       'logout': 'Logout',
       'logoutConfirm': 'Logged out successfully',
+      'deleteAccountButton': 'Permanently delete account',
+      'deleteAccountSubtitle': 'Delete your account and all associated data',
+      'deleteAccountTitle': 'Delete account',
+      'deleteAccountConfirmMsg':
+          'Deleting your account will remove your access and all your data. Do you want to continue?',
+      'deleteAccountAction': 'Delete',
+      'accountDeletedTitle': 'Account deleted',
+      'accountDeletedMessage':
+          'Your account has been permanently deleted. You will be signed out.',
+      'deleteAccountError':
+          'Unable to delete the account. Please try again or contact support.',
       'profileAppInfoTitle': 'App version and invoicing',
       'profileAppVersion': 'App version',
       'profileKintiCompanyDetails':
@@ -3548,6 +3588,17 @@ class AppLocalizations {
       'login': 'Iniciar sesión',
       'logout': 'Cerrar sesión',
       'logoutConfirm': 'Sesión cerrada',
+      'deleteAccountButton': 'Eliminar la cuenta definitivamente',
+      'deleteAccountSubtitle': 'Elimina tu cuenta y todos los datos asociados',
+      'deleteAccountTitle': 'Eliminar cuenta',
+      'deleteAccountConfirmMsg':
+          'Al eliminar la cuenta perderás el acceso y se eliminarán todos tus datos. ¿Confirmas?',
+      'deleteAccountAction': 'Eliminar',
+      'accountDeletedTitle': 'Cuenta eliminada',
+      'accountDeletedMessage':
+          'Tu cuenta se ha eliminado definitivamente. Se cerrará tu sesión.',
+      'deleteAccountError':
+          'No se puede eliminar la cuenta. Inténtalo de nuevo o contacta con soporte.',
       'profileAppInfoTitle': 'Versión de la app y facturación',
       'profileAppVersion': 'Versión de la app',
       'profileKintiCompanyDetails':

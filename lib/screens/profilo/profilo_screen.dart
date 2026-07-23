@@ -91,19 +91,22 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
 
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.translate('deleteAccountTitle') ?? 'Elimina account'),
-        content: Text(l10n.translate('deleteAccountConfirmMsg') ??
-            'Eliminando l’account perderai l’accesso e tutti i tuoi dati saranno rimossi. Confermi?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: scheme.error),
-            child: Text(l10n.translate('delete') ?? 'Elimina'),
+      builder:
+          (context) => AlertDialog(
+            title: Text(l10n.translate('deleteAccountTitle')),
+            content: Text(l10n.translate('deleteAccountConfirmMsg')),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: ElevatedButton.styleFrom(backgroundColor: scheme.error),
+                child: Text(l10n.translate('deleteAccountAction')),
+              ),
+            ],
           ),
-        ],
-      ),
     );
     if (confirmed != true) return;
 
@@ -114,16 +117,20 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => AlertDialog(
-          title: Text('Account eliminato'),
-          content: Text('Il tuo account è stato eliminato definitivamente. Sarai disconnesso.'),
-        ),
+        builder:
+            (context) => AlertDialog(
+              title: Text(l10n.translate('accountDeletedTitle')),
+              content: Text(l10n.translate('accountDeletedMessage')),
+            ),
       );
       await Future.delayed(const Duration(seconds: 2));
       if (mounted) _logout(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Errore nell’eliminazione account. Riprova o contatta supporto.'), backgroundColor: scheme.error),
+        SnackBar(
+          content: Text(l10n.translate('deleteAccountError')),
+          backgroundColor: scheme.error,
+        ),
       );
     }
   }
@@ -1426,6 +1433,17 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
 
             const SizedBox(height: 20),
 
+            _buildActionCard(
+              context: context,
+              icon: Icons.delete_forever_rounded,
+              accentColor: scheme.error,
+              title: l10n.translate('deleteAccountButton'),
+              subtitle: l10n.translate('deleteAccountSubtitle'),
+              onTap: _deleteAccountFlow,
+            ),
+
+            const SizedBox(height: 20),
+
             _buildSectionCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1504,17 +1522,6 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
               onPressed: _launchPrivacyPolicy,
               icon: const Icon(Icons.privacy_tip_outlined),
               label: const Text('Privacy Policy'),
-            ),
-            const SizedBox(height: 13),
-            ElevatedButton.icon(
-              onPressed: _deleteAccountFlow,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              ),
-              icon: const Icon(Icons.delete_forever_rounded),
-              label: const Text('Elimina definitivamente account'),
             ),
             const SizedBox(height: 28),
             Center(

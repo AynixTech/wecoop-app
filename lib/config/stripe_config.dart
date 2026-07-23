@@ -2,6 +2,7 @@
 ///
 /// IMPORTANTE: Non committare mai chiavi segrete (Secret Key) in questo file!
 /// Solo la Publishable Key può essere inclusa nell'app mobile.
+library;
 
 class StripeConfig {
   // Configurazione tramite dart-define per evitare chiavi di test hardcoded.

@@ -73,7 +73,7 @@ class HttpClientService {
       print('🔄 === INIZIO TOKEN REFRESH ===');
       print('📱 Username: $authUsername');
 
-      final response = await http
+      final response = await processResponse(await http
           .post(
             Uri.parse(authUrl),
             headers: {'Content-Type': 'application/json'},
@@ -82,7 +82,7 @@ class HttpClientService {
               'password': authPassword,
             }),
           )
-          .timeout(const Duration(seconds: 30));
+          .timeout(const Duration(seconds: 30)));
 
       print('📥 Refresh Response Status: ${response.statusCode}');
 
@@ -184,15 +184,31 @@ class HttpClientService {
     );
   }
 
+  /// Mostra l'avviso di manutenzione e non espone mai il dettaglio tecnico
+  /// restituito da un backend che risponde con HTTP 500.
+  static Future<http.Response> processResponse(http.Response response) async {
+    await MaintenanceHandler.handleHttpStatusCode(response.statusCode);
+
+    if (!MaintenanceHandler.isPlatformUpdateStatusCode(response.statusCode)) {
+      return response;
+    }
+
+    return http.Response(
+      jsonEncode({'message': MaintenanceHandler.platformUpdateMessage}),
+      response.statusCode,
+      headers: response.headers,
+      request: response.request,
+      reasonPhrase: response.reasonPhrase,
+    );
+  }
+
   /// Wrapper HTTP che gestisce il refresh token automatico
   static Future<http.Response> _makeRequestWithRefresh(
     Future<http.Response> Function() request,
     String requestUrl,
   ) async {
     try {
-      var response = await request();
-
-      await MaintenanceHandler.handleHttpStatusCode(response.statusCode);
+      var response = await processResponse(await request());
 
       // Se il token è scaduto, tenta il refresh
       if (response.statusCode == 403) {
@@ -207,7 +223,7 @@ class HttpClientService {
 
             if (refreshSuccess) {
               print('✅ Refresh completato - Ritentativo della richiesta...');
-              response = await request();
+              response = await processResponse(await request());
 
               if (response.statusCode == 200) {
                 print('✅ Richiesta riuscita dopo refresh!');

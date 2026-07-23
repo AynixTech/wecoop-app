@@ -425,7 +425,7 @@ class _PartnerAvatar extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: scheme.surfaceVariant,
+        color: scheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: scheme.outlineVariant, width: 1),
       ),
@@ -669,7 +669,7 @@ class _StudiareItaliaFormScreenState extends State<_StudiareItaliaFormScreen> {
                   child: LinearProgressIndicator(
                     value: (_currentStep + 1) / _totalSteps,
                     minHeight: 6,
-                    backgroundColor: scheme.surfaceVariant,
+                    backgroundColor: scheme.surfaceContainerHighest,
                   ),
                 ),
               ],
@@ -770,7 +770,7 @@ class _StudiareItaliaFormScreenState extends State<_StudiareItaliaFormScreen> {
         ),
         const SizedBox(height: 16),
         DropdownButtonFormField<String>(
-          value: _selectedPhonePrefix,
+          initialValue: _selectedPhonePrefix,
           isExpanded: true,
           decoration: InputDecoration(
             labelText: l10n.translate('prefix'),
@@ -1063,7 +1063,7 @@ class _DropdownField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon),

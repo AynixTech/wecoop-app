@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/push_notification_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/screens/main_screen.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
@@ -187,7 +188,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                         const SizedBox(height: 16),
 
                         DropdownButtonFormField<String>(
-                          value: _prefixController.text,
+                          initialValue: _prefixController.text,
                           isExpanded: true,
                           decoration: _buildFieldDecoration(
                             context,
@@ -477,12 +478,15 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
       print('🌐 URL: $url');
       print('📤 Request Body: ${jsonEncode(requestBody)}');
 
-      final response = await http.post(
+      final response = await HttpClientService.post(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
-      await MaintenanceHandler.handleHttpStatusCode(response.statusCode);
+
+      if (MaintenanceHandler.isPlatformUpdateStatusCode(response.statusCode)) {
+        return;
+      }
 
       print('\n📥 RISPOSTA RICEVUTA:');
       print('   - Status Code: ${response.statusCode}');
@@ -765,12 +769,15 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
       print('🌐 Chiamata a: $url');
       print('📤 Body request:');
       print('   {"username": "$username", "password": "$password"}');
-      final response = await http.post(
+      final response = await HttpClientService.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'username': username, 'password': password}),
       );
-      await MaintenanceHandler.handleHttpStatusCode(response.statusCode);
+
+      if (MaintenanceHandler.isPlatformUpdateStatusCode(response.statusCode)) {
+        return;
+      }
 
       print('\n📥 RISPOSTA LOGIN:');
       print('   Status: ${response.statusCode}');
@@ -899,14 +906,17 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
       print('🔍 Recupero metadati utente...');
 
       final url = Uri.parse('https://www.wecoop.org/wp-json/wecoop/v1/soci/me');
-      final response = await http.get(
+      final response = await HttpClientService.get(
         url,
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
       );
-      await MaintenanceHandler.handleHttpStatusCode(response.statusCode);
+
+      if (MaintenanceHandler.isPlatformUpdateStatusCode(response.statusCode)) {
+        return;
+      }
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

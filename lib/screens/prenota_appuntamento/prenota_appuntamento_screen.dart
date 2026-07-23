@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
 
 class PrenotaAppuntamentoScreen extends StatefulWidget {
+  const PrenotaAppuntamentoScreen({super.key});
+
   @override
   _PrenotaAppuntamentoScreenState createState() =>
       _PrenotaAppuntamentoScreenState();
@@ -36,10 +38,9 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
   }
 
   Future<void> fetchAppuntamenti() async {
-    final response = await http.get(
+    final response = await HttpClientService.get(
       Uri.parse('https://www.wecoop.org/wp-json/wecoop/v1/appuntamenti'),
     );
-    await MaintenanceHandler.handleHttpStatusCode(response.statusCode);
     if (response.statusCode == 200) {
       final dati = json.decode(response.body);
       dati.sort((a, b) {
@@ -85,7 +86,7 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
       return;
     }
 
-    final response = await http.post(
+    final response = await HttpClientService.post(
       Uri.parse('https://www.wecoop.org/wp-json/wecoop/v1/prenota'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
@@ -94,7 +95,9 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
         'orario': selectedOrario,
       }),
     );
-    await MaintenanceHandler.handleHttpStatusCode(response.statusCode);
+    if (MaintenanceHandler.isPlatformUpdateStatusCode(response.statusCode)) {
+      return;
+    }
 
     final result = json.decode(response.body);
     if (response.statusCode == 200 && result['success'] == true) {
@@ -203,7 +206,7 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
                                             final isDisabled = posti == 0;
                                             return ListTile(
                                               title: Text(
-                                                '$orario (${posti} posti)',
+                                                '$orario ($posti posti)',
                                               ),
                                               trailing: Radio<String>(
                                                 value: orario,
@@ -229,10 +232,10 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
                                         ],
                                       ),
                                     );
-                                  }).toList(),
+                                  }),
                                 ],
                               );
-                            }).toList(),
+                            }),
                           ],
                         );
                       }).toList(),

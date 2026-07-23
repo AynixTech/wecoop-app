@@ -789,7 +789,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
     final hh = dateTime.hour.toString().padLeft(2, '0');
     final mm = dateTime.minute.toString().padLeft(2, '0');
     final ss = dateTime.second.toString().padLeft(2, '0');
-    return '${y}${m}${d}_${hh}${mm}${ss}';
+    return '$y$m${d}_$hh$mm$ss';
   }
 
   String _entryDisplayName(Map<String, dynamic> entry) {
@@ -2552,7 +2552,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
         ),
         const SizedBox(height: 10),
         DropdownButtonFormField<String>(
-          value: _prefissoTelefonoController.text,
+          initialValue: _prefissoTelefonoController.text,
           isExpanded: true,
           decoration: InputDecoration(
             labelText: 'Prefisso',
@@ -2761,7 +2761,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
         ),
         const SizedBox(height: 12),
         DropdownButtonFormField<String>(
-          value: _normalizedSpokenLanguage(_selectedLanguage),
+          initialValue: _normalizedSpokenLanguage(_selectedLanguage),
           items:
               _spokenLanguageOptions
                   .map((e) => DropdownMenuItem(value: e, child: Text(e)))
@@ -2776,7 +2776,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
         ),
         const SizedBox(height: 10),
         DropdownButtonFormField<String>(
-          value: _normalizedLanguageLevel(_livelloLingua),
+          initialValue: _normalizedLanguageLevel(_livelloLingua),
           items:
               _languageLevelOptions
                   .map((e) => DropdownMenuItem(value: e, child: Text(e)))
@@ -2922,7 +2922,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
         const Text('Seleziona la lingua finale del curriculum.'),
         const SizedBox(height: 12),
         DropdownButtonFormField<String>(
-          value: _normalizedCvLanguage(_cvLanguage),
+          initialValue: _normalizedCvLanguage(_cvLanguage),
           items: const [
             DropdownMenuItem(value: 'it', child: Text('Italiano')),
             DropdownMenuItem(value: 'es', child: Text('Espanol')),

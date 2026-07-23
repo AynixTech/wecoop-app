@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:local_auth/local_auth.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
@@ -272,11 +271,14 @@ class _LoginScreenState extends State<LoginScreen> {
     print('Token: ${token.substring(0, 20)}...');
 
     try {
-      final response = await http.get(
+      final response = await HttpClientService.get(
         url,
         headers: {'Authorization': 'Bearer $token'},
       );
-      await MaintenanceHandler.handleHttpStatusCode(response.statusCode);
+
+      if (MaintenanceHandler.isPlatformUpdateStatusCode(response.statusCode)) {
+        return;
+      }
 
       print('📥 GET /soci/me status: ${response.statusCode}');
       print('📥 GET /soci/me body: ${response.body}');
@@ -309,44 +311,57 @@ class _LoginScreenState extends State<LoginScreen> {
             value: data['user_id'].toString(),
           );
         }
-        if (data['nome'] != null)
+        if (data['nome'] != null) {
           await storage.write(key: 'first_name', value: data['nome']);
-        if (data['cognome'] != null)
+        }
+        if (data['cognome'] != null) {
           await storage.write(key: 'last_name', value: data['cognome']);
+        }
         if (data['codice_fiscale'] != null) {
           await storage.write(
             key: 'codice_fiscale',
             value: data['codice_fiscale'],
           );
         }
-        if (data['data_nascita'] != null)
+        if (data['data_nascita'] != null) {
           await storage.write(key: 'data_nascita', value: data['data_nascita']);
-        if (data['luogo_nascita'] != null)
+        }
+        if (data['luogo_nascita'] != null) {
           await storage.write(
             key: 'luogo_nascita',
             value: data['luogo_nascita'],
           );
-        if (data['indirizzo'] != null)
+        }
+        if (data['indirizzo'] != null) {
           await storage.write(key: 'indirizzo', value: data['indirizzo']);
-        if (data['citta'] != null)
+        }
+        if (data['citta'] != null) {
           await storage.write(key: 'citta', value: data['citta']);
-        if (data['cap'] != null)
+        }
+        if (data['cap'] != null) {
           await storage.write(key: 'cap', value: data['cap']);
-        if (data['provincia'] != null)
+        }
+        if (data['provincia'] != null) {
           await storage.write(key: 'provincia', value: data['provincia']);
-        if (data['telefono'] != null)
+        }
+        if (data['telefono'] != null) {
           await storage.write(key: 'telefono', value: data['telefono']);
-        if (data['professione'] != null)
+        }
+        if (data['professione'] != null) {
           await storage.write(key: 'professione', value: data['professione']);
-        if (data['paese_origine'] != null)
+        }
+        if (data['paese_origine'] != null) {
           await storage.write(
             key: 'paese_origine',
             value: data['paese_origine'],
           );
-        if (data['nazionalita'] != null)
+        }
+        if (data['nazionalita'] != null) {
           await storage.write(key: 'nazionalita', value: data['nazionalita']);
-        if (data['status_socio'] != null)
+        }
+        if (data['status_socio'] != null) {
           await storage.write(key: 'stato_socio', value: data['status_socio']);
+        }
         if (data['data_adesione'] != null) {
           await storage.write(
             key: 'data_iscrizione',
@@ -359,8 +374,9 @@ class _LoginScreenState extends State<LoginScreen> {
             value: data['numero_tessera'],
           );
         }
-        if (data['tessera_url'] != null)
+        if (data['tessera_url'] != null) {
           await storage.write(key: 'tessera_url', value: data['tessera_url']);
+        }
         if (data['quota_pagata'] != null) {
           await storage.write(
             key: 'quota_pagata',
@@ -475,7 +491,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         DropdownButtonFormField<String>(
-                          value: prefixController.text,
+                          initialValue: prefixController.text,
                           isExpanded: true,
                           items:
                               PhonePrefixes.prefixes.map((prefix) {

@@ -3,6 +3,7 @@ import 'package:http_parser/http_parser.dart' show MediaType;
 import 'dart:convert';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
+import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/utils/response_utils.dart';
 import 'dart:async';
 import 'dart:io';
@@ -162,20 +163,26 @@ class SocioService {
       };
 
       // Aggiungi campi opzionali solo se valorizzati
-      if (codiceFiscale != null && codiceFiscale.isNotEmpty)
+      if (codiceFiscale != null && codiceFiscale.isNotEmpty) {
         bodyData['codice_fiscale'] = codiceFiscale;
-      if (dataNascita != null && dataNascita.isNotEmpty)
+      }
+      if (dataNascita != null && dataNascita.isNotEmpty) {
         bodyData['data_nascita'] = dataNascita;
-      if (luogoNascita != null && luogoNascita.isNotEmpty)
+      }
+      if (luogoNascita != null && luogoNascita.isNotEmpty) {
         bodyData['luogo_nascita'] = luogoNascita;
-      if (indirizzo != null && indirizzo.isNotEmpty)
+      }
+      if (indirizzo != null && indirizzo.isNotEmpty) {
         bodyData['indirizzo'] = indirizzo;
+      }
       if (citta != null && citta.isNotEmpty) bodyData['citta'] = citta;
       if (cap != null && cap.isNotEmpty) bodyData['cap'] = cap;
-      if (provincia != null && provincia.isNotEmpty)
+      if (provincia != null && provincia.isNotEmpty) {
         bodyData['provincia'] = provincia;
-      if (professione != null && professione.isNotEmpty)
+      }
+      if (professione != null && professione.isNotEmpty) {
         bodyData['professione'] = professione;
+      }
 
       final body = jsonEncode(bodyData);
       print('Body: $body');
@@ -991,7 +998,7 @@ class SocioService {
         }
         return {
           'success': false,
-          'message': 'Errore tecnico durante il merge PDF',
+          'message': MaintenanceHandler.platformUpdateMessage,
         };
       }
 
@@ -1057,8 +1064,9 @@ class SocioService {
       if (cap != null) body['cap'] = cap;
       if (provincia != null) body['provincia'] = provincia;
       if (professione != null) body['professione'] = professione;
-      if (paeseProvenienza != null)
+      if (paeseProvenienza != null) {
         body['paese_provenienza'] = paeseProvenienza;
+      }
       if (nazionalita != null) body['nazionalita'] = nazionalita;
 
       print('📤 Completamento profilo su: $url');
@@ -1082,26 +1090,35 @@ class SocioService {
           );
         }
         if (email != null) await storage.write(key: 'user_email', value: email);
-        if (telefono != null)
+        if (telefono != null) {
           await storage.write(key: 'telefono', value: telefono);
+        }
         if (citta != null) await storage.write(key: 'citta', value: citta);
-        if (indirizzo != null)
+        if (indirizzo != null) {
           await storage.write(key: 'indirizzo', value: indirizzo);
+        }
         if (cap != null) await storage.write(key: 'cap', value: cap);
-        if (provincia != null)
+        if (provincia != null) {
           await storage.write(key: 'provincia', value: provincia);
-        if (codiceFiscale != null)
+        }
+        if (codiceFiscale != null) {
           await storage.write(key: 'codice_fiscale', value: codiceFiscale);
-        if (dataNascita != null)
+        }
+        if (dataNascita != null) {
           await storage.write(key: 'data_nascita', value: dataNascita);
-        if (luogoNascita != null)
+        }
+        if (luogoNascita != null) {
           await storage.write(key: 'luogo_nascita', value: luogoNascita);
-        if (professione != null)
+        }
+        if (professione != null) {
           await storage.write(key: 'professione', value: professione);
-        if (paeseProvenienza != null)
+        }
+        if (paeseProvenienza != null) {
           await storage.write(key: 'paese_origine', value: paeseProvenienza);
-        if (nazionalita != null)
+        }
+        if (nazionalita != null) {
           await storage.write(key: 'nazionalita', value: nazionalita);
+        }
       }
 
       return responseData;
@@ -1173,7 +1190,9 @@ class SocioService {
       final streamedResponse = await request.send().timeout(
         const Duration(seconds: 60),
       );
-      final response = await http.Response.fromStream(streamedResponse);
+      final response = await HttpClientService.processResponse(
+        await http.Response.fromStream(streamedResponse),
+      );
 
       print('📥 Response status: ${response.statusCode}');
 
@@ -1235,7 +1254,9 @@ class SocioService {
       final streamedResponse = await request.send().timeout(
         const Duration(seconds: 60),
       );
-      final response = await http.Response.fromStream(streamedResponse);
+      final response = await HttpClientService.processResponse(
+        await http.Response.fromStream(streamedResponse),
+      );
 
       print('📥 Response status: ${response.statusCode}');
 
@@ -1277,7 +1298,9 @@ class SocioService {
       final streamedResponse = await request.send().timeout(
         const Duration(seconds: 60),
       );
-      final response = await http.Response.fromStream(streamedResponse);
+      final response = await HttpClientService.processResponse(
+        await http.Response.fromStream(streamedResponse),
+      );
 
       if (response.statusCode == 200) {
         return jsonDecode(response.body) as Map<String, dynamic>;

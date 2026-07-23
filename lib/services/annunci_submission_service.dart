@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:wecoop_app/services/http_client_service.dart';
+import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 
 /// Servizio per gestire l'invio di annunci di lavoro proposti dagli utenti
@@ -131,15 +132,9 @@ class AnnunciSubmissionService {
       }
 
       if (response.statusCode == 500) {
-        final data = body['data'];
-        final details =
-            data is Map<String, dynamic> ? (data['details'] ?? '').toString() : '';
         return {
           'success': false,
-          'message': details.isNotEmpty
-              ? 'Errore server: $details'
-              : (body['message'] ?? 'Servizio annunci temporaneamente non disponibile')
-                    .toString(),
+          'message': MaintenanceHandler.platformUpdateMessage,
         };
       }
 

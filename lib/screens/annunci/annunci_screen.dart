@@ -1283,7 +1283,7 @@ class _CreaAnnuncioSheetState
               const SizedBox(height: 8),
 
               DropdownButtonFormField<String>(
-                value: _selectedCategoria,
+                initialValue: _selectedCategoria,
                 decoration: InputDecoration(
                   labelText: l10n.annunciCategoryLabel,
                   border: OutlineInputBorder(
@@ -1359,8 +1359,9 @@ class _CreaAnnuncioSheetState
                         lastDate: DateTime.now()
                             .add(const Duration(days: 365)),
                       );
-                      if (d != null)
+                      if (d != null) {
                         setState(() => _dataInizio = d);
+                      }
                     },
                   ),
                 ),
@@ -1377,8 +1378,9 @@ class _CreaAnnuncioSheetState
                         context: context,
                         initialTime: TimeOfDay.now(),
                       );
-                      if (t != null)
+                      if (t != null) {
                         setState(() => _oraInizio = t);
+                      }
                     },
                   ),
                 ),
@@ -1408,7 +1410,7 @@ class _CreaAnnuncioSheetState
               const SizedBox(height: 8),
 
               DropdownButtonFormField<String>(
-                value: _prefixCtrl.text,
+                initialValue: _prefixCtrl.text,
                 isExpanded: true,
                 decoration: InputDecoration(
                   labelText: l10n.translate('prefix'),

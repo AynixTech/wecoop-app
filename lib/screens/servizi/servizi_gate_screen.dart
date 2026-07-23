@@ -121,7 +121,7 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
               ),
               const SizedBox(height: 24),
               Text(
-                '${l10n.requestSent}',
+                l10n.requestSent,
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -193,7 +193,7 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
               Icon(Icons.pending_actions, size: 80, color: scheme.tertiary),
               const SizedBox(height: 24),
               Text(
-                '${l10n.pending}',
+                l10n.pending,
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,

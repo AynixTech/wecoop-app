@@ -437,7 +437,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                           SizedBox(
                             width: 100,
                             child: DropdownButtonFormField<String>(
-                              value: _prefissoController.text,
+                              initialValue: _prefissoController.text,
                               isExpanded: true,
                               items:
                                   PhonePrefixes.prefixes.map((prefix) {
@@ -503,7 +503,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                       const SizedBox(height: 12),
 
                       DropdownButtonFormField<String>(
-                        value: _selectedNazionalita,
+                        initialValue: _selectedNazionalita,
                         decoration: InputDecoration(
                           labelText: '${l10n.translate('nationality')} *',
                           border: const OutlineInputBorder(),

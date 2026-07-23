@@ -1326,7 +1326,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                       labelText: l10n.language,
                       border: const OutlineInputBorder(),
                     ),
-                    value: selectedLanguageCode,
+                    initialValue: selectedLanguageCode,
                     items: [
                       DropdownMenuItem(
                         value: 'it',

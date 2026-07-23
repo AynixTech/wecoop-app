@@ -144,7 +144,7 @@ class ProgettoDettaglioScreen extends StatelessWidget {
                   ),
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),

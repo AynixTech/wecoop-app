@@ -279,7 +279,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
               labelStyle: const TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w500,
-                color: const Color(0xFF1F2933),
+                color: Color(0xFF1F2933),
               ),
             ),
             floatingActionButtonTheme: const FloatingActionButtonThemeData(

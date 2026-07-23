@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 /// Bubble button fisso in basso a destra che apre la modale di supporto al click
@@ -146,7 +146,7 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
       print('   Body:');
       print(jsonEncode(body));
 
-      final response = await http.post(
+      final response = await HttpClientService.post(
         url,
         headers: {
           'Content-Type': 'application/json',
@@ -154,11 +154,13 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
         },
         body: jsonEncode(body),
       );
-      await MaintenanceHandler.handleHttpStatusCode(response.statusCode);
-
       print('\n📥 RISPOSTA SUPPORTO:');
       print('   Status: ${response.statusCode}');
       print('   Body: ${response.body}');
+
+      if (MaintenanceHandler.isPlatformUpdateStatusCode(response.statusCode)) {
+        return;
+      }
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);

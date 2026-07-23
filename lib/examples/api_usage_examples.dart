@@ -288,6 +288,8 @@ Future<void> getListaSoci() async {
 // 🔟 WIDGET COMPLETO - STATO SOCIO
 // ============================================
 class SocioStatusWidget extends StatefulWidget {
+  const SocioStatusWidget({super.key});
+
   @override
   _SocioStatusWidgetState createState() => _SocioStatusWidgetState();
 }

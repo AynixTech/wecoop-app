@@ -2,14 +2,44 @@ import 'package:flutter/material.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 
 class MaintenanceHandler {
+  static const String _platformUpdateFallback =
+      'La piattaforma è in aggiornamento. Riprova tra un\'ora.';
   static GlobalKey<NavigatorState>? _navigatorKey;
   static bool _isDialogVisible = false;
+
+  static String get platformUpdateMessage =>
+      _platformUpdateMessageFor(_navigatorKey?.currentContext);
 
   static void bindNavigatorKey(GlobalKey<NavigatorState> navigatorKey) {
     _navigatorKey = navigatorKey;
   }
 
   static Future<void> showMaintenanceModal() async {
+    await _showModal(
+      message:
+          (context) =>
+              AppLocalizations.of(context)!.translate('maintenanceMessage'),
+    );
+  }
+
+  static Future<void> showPlatformUpdateModal() async {
+    await _showModal(message: _platformUpdateMessageFor);
+  }
+
+  static String _platformUpdateMessageFor(BuildContext? context) {
+    final activeContext = context ?? _navigatorKey?.currentContext;
+    if (activeContext == null) {
+      return _platformUpdateFallback;
+    }
+    return AppLocalizations.of(
+          activeContext,
+        )?.translate('platformUpdateMessage') ??
+        _platformUpdateFallback;
+  }
+
+  static Future<void> _showModal({
+    required String Function(BuildContext context) message,
+  }) async {
     if (_isDialogVisible) return;
 
     final context = _navigatorKey?.currentContext;
@@ -24,24 +54,29 @@ class MaintenanceHandler {
       await showDialog<void>(
         context: context,
         barrierDismissible: true,
-        builder: (dialogContext) => AlertDialog(
-          title: Text(l10n.translate('maintenanceTitle')),
-          content: Text(l10n.translate('maintenanceMessage')),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(l10n.translate('close')),
+        builder:
+            (dialogContext) => AlertDialog(
+              title: Text(l10n.translate('maintenanceTitle')),
+              content: Text(message(dialogContext)),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: Text(l10n.translate('close')),
+                ),
+              ],
             ),
-          ],
-        ),
       );
     } finally {
       _isDialogVisible = false;
     }
   }
 
+  static bool isPlatformUpdateStatusCode(int statusCode) => statusCode == 500;
+
   static Future<void> handleHttpStatusCode(int statusCode) async {
-    if (statusCode == 503) {
+    if (isPlatformUpdateStatusCode(statusCode)) {
+      await showPlatformUpdateModal();
+    } else if (statusCode == 503) {
       await showMaintenanceModal();
     }
   }

@@ -1440,8 +1440,7 @@ class _CategoryExplorerSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n =
-        (String key, {Map<String, String>? params}) =>
+    String l10n(String key, {Map<String, String>? params}) =>
             _OfferteLavoroText.tr(context, key, params: params);
     final macroNames = _CategoriaMenuHelper.sortMacroNames(
       categoriesByMacro.keys,
@@ -1965,8 +1964,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (sheetContext) {
-        final t =
-            (String key, {Map<String, String>? params}) =>
+        String t(String key, {Map<String, String>? params}) =>
                 _OfferteLavoroText.tr(sheetContext, key, params: params);
         return SafeArea(
           child: Padding(
@@ -2059,8 +2057,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
 
   @override
   Widget build(BuildContext context) {
-    final t =
-        (String key, {Map<String, String>? params}) =>
+    String t(String key, {Map<String, String>? params}) =>
             _OfferteLavoroText.tr(context, key, params: params);
     return Scaffold(
       appBar: AppBar(
@@ -2181,8 +2178,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
         borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
       ),
       builder: (sheetContext) {
-        final t =
-            (String key, {Map<String, String>? params}) =>
+        String t(String key, {Map<String, String>? params}) =>
                 _OfferteLavoroText.tr(sheetContext, key, params: params);
         return StatefulBuilder(
           builder: (context, setModalState) {
@@ -2335,8 +2331,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
   }
 
   Widget _buildSearchBody() {
-    final t =
-        (String key, {Map<String, String>? params}) =>
+    String t(String key, {Map<String, String>? params}) =>
             _OfferteLavoroText.tr(context, key, params: params);
     if (_errorMessage != null) {
       return Column(
@@ -4017,7 +4012,7 @@ class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
   final _contattoCtrl = TextEditingController();
   final _descrizioneCtrl = TextEditingController();
   bool _privacy = false;
-  String _tipo = 'Lavoro';
+  final String _tipo = 'Lavoro';
   bool _isSending = false;
 
   @override
@@ -4816,7 +4811,7 @@ class _CandidaturaSheetState extends State<_CandidaturaSheet> {
                 ),
               ),
               DropdownButtonFormField<String>(
-                value: _prefixCtrl.text,
+                initialValue: _prefixCtrl.text,
                 isExpanded: true,
                 decoration: const InputDecoration(),
                 items:

@@ -231,7 +231,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         final prefixField = SizedBox(
                           width: useVerticalLayout ? double.infinity : 108,
                           child: DropdownButtonFormField<String>(
-                            value: _prefixController.text,
+                            initialValue: _prefixController.text,
                             isExpanded: true,
                             items:
                                 PhonePrefixes.prefixes.map((prefix) {

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'http_client_service.dart';
 import 'secure_storage_service.dart';
 
 class AnnunciWecoopService {
@@ -30,7 +31,7 @@ class AnnunciWecoopService {
       if (search != null && search.isNotEmpty) 'search': search,
     };
     final uri = Uri.parse(_baseUrl).replace(queryParameters: params);
-    final response = await http.get(uri);
+    final response = await HttpClientService.get(uri);
     if (response.statusCode == 200) {
       final list = jsonDecode(response.body) as List;
       return list.cast<Map<String, dynamic>>();
@@ -43,7 +44,7 @@ class AnnunciWecoopService {
   // -------------------------------------------------------------------------
   Future<Map<String, dynamic>?> getAnnuncio(int id) async {
     final uri = Uri.parse('$_baseUrl/$id');
-    final response = await http.get(uri);
+    final response = await HttpClientService.get(uri);
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as Map<String, dynamic>;
     }
@@ -55,7 +56,7 @@ class AnnunciWecoopService {
   // -------------------------------------------------------------------------
   Future<List<Map<String, dynamic>>> getCategorie() async {
     final uri = Uri.parse('$_baseUrl/categorie');
-    final response = await http.get(uri);
+    final response = await HttpClientService.get(uri);
     if (response.statusCode == 200) {
       return (jsonDecode(response.body) as List).cast<Map<String, dynamic>>();
     }
@@ -72,7 +73,7 @@ class AnnunciWecoopService {
       return {'success': false, 'message': 'Devi effettuare il login.'};
     }
     final uri = Uri.parse(_baseUrl);
-    final response = await http.post(
+    final response = await HttpClientService.post(
       uri,
       headers: {
         'Content-Type': 'application/json',
@@ -97,7 +98,7 @@ class AnnunciWecoopService {
     final token = await _token;
     if (token == null) return false;
     final uri = Uri.parse('$_baseUrl/$id');
-    final response = await http.delete(
+    final response = await HttpClientService.delete(
       uri,
       headers: {'Authorization': 'Bearer $token'},
     );
@@ -114,7 +115,7 @@ class AnnunciWecoopService {
       return {'success': false, 'message': 'Devi effettuare il login.'};
     }
     final uri = Uri.parse('$_baseUrl/$id/estendi');
-    final response = await http.post(
+    final response = await HttpClientService.post(
       uri,
       headers: {
         'Content-Type': 'application/json',
@@ -146,7 +147,9 @@ class AnnunciWecoopService {
       ..files.add(await http.MultipartFile.fromPath('file', file.path));
 
     final streamed = await request.send().timeout(const Duration(seconds: 60));
-    final response = await http.Response.fromStream(streamed);
+    final response = await HttpClientService.processResponse(
+      await http.Response.fromStream(streamed),
+    );
     final body = jsonDecode(response.body);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return {'success': true, ...body};
@@ -171,7 +174,9 @@ class AnnunciWecoopService {
       ..files.add(await http.MultipartFile.fromPath('file', file.path));
 
     final streamed = await request.send().timeout(const Duration(seconds: 60));
-    final response = await http.Response.fromStream(streamed);
+    final response = await HttpClientService.processResponse(
+      await http.Response.fromStream(streamed),
+    );
     final body = jsonDecode(response.body);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return {'success': true, ...body};
@@ -189,7 +194,7 @@ class AnnunciWecoopService {
     final token = await _token;
     if (token == null) return false;
     final uri = Uri.parse('$_baseUrl/$annuncioId/foto/$attachmentId');
-    final response = await http.delete(
+    final response = await HttpClientService.delete(
       uri,
       headers: {'Authorization': 'Bearer $token'},
     );
@@ -211,7 +216,7 @@ class AnnunciWecoopService {
     }
     try {
       final uri = Uri.parse('$_baseUrl/improve-description');
-      final response = await http.post(
+      final response = await HttpClientService.post(
         uri,
         headers: {
           'Authorization': 'Bearer $token',
@@ -223,7 +228,7 @@ class AnnunciWecoopService {
           'citta': citta,
           'categoria': categoria,
         }),
-      ).timeout(const Duration(seconds: 30));
+      );
       final body = jsonDecode(response.body) as Map<String, dynamic>;
       if (response.statusCode == 200 && body['success'] == true) {
         final data = body['data'] as Map<String, dynamic>? ?? {};

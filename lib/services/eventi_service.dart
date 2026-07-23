@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
-import 'package:wecoop_app/utils/response_utils.dart';
+import 'package:wecoop_app/services/maintenance_handler.dart';
 import '../models/evento_model.dart';
 import '../utils/html_utils.dart';
 
@@ -315,8 +315,7 @@ class EventiService {
         print('❌ Errore server 500: ${response.body}');
         return {
           'success': false,
-          'message':
-              'Errore del server. L\'endpoint /miei-eventi non è configurato correttamente.',
+          'message': MaintenanceHandler.platformUpdateMessage,
         };
       } else if (response.statusCode == 401) {
         return {

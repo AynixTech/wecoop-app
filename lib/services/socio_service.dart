@@ -12,6 +12,15 @@ import '../models/pratica_documento.dart';
 
 class SocioService {
   static const String baseUrl = 'https://www.wecoop.org/wp-json/wecoop/v1';
+
+  /// Nuovo backend WeCoop (Node/Express) per la gestione delle richieste servizi.
+  static const String platformBaseUrl =
+      String.fromEnvironment('WECOOP_API_URL', defaultValue: 'https://wecoop-backend-s9gl.onrender.com/api');
+
+  /// API key condivisa per autorizzare l'app verso il nuovo backend.
+  static const String platformApiKey =
+      String.fromEnvironment('WECOOP_API_KEY', defaultValue: 'wecoop-app-dev-key');
+
   static final storage = SecureStorageService();
 
   /// Ottiene gli headers comuni per tutte le richieste
@@ -260,14 +269,13 @@ class SocioService {
     required Map<String, dynamic> dati,
   }) async {
     try {
-      final token = await storage.read(key: 'jwt_token');
-      final url = '$baseUrl/richiesta-servizio';
+      // Invio verso il nuovo backend WeCoop (Node/Express).
+      final url = '$platformBaseUrl/service-requests';
 
       print(
         '\n🎯 ==================== RICHIESTA SERVIZIO ====================',
       );
       print('🚀 URL: $url');
-      print('🔑 Token presente: ${token != null}');
       print('📋 Servizio: $servizio');
       print('📁 Categoria: $categoria');
       print('📦 Dati completi: ${jsonEncode(dati)}');
@@ -280,11 +288,10 @@ class SocioService {
 
       print('Body: $body');
 
-      final headers = <String, String>{'Content-Type': 'application/json'};
-
-      if (token != null) {
-        headers['Authorization'] = 'Bearer $token';
-      }
+      final headers = <String, String>{
+        'Content-Type': 'application/json',
+        'x-api-key': platformApiKey,
+      };
 
       final response = await HttpClientService.post(
         Uri.parse(url),

@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
+import '../config/api_config.dart';
 
 class InteressatiService {
-  static const String _baseUrl =
-      'https://www.wecoop.org/wp-json/wecoop/v1/interessati';
+  static const String _baseUrl = '${ApiConfig.baseUrl}/interessati';
 
   static final SecureStorageService _storage = SecureStorageService();
 

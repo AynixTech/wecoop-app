@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'http_client_service.dart';
 import 'secure_storage_service.dart';
+import '../config/api_config.dart';
 
 class AnnunciWecoopService {
-  static const String _baseUrl =
-      'https://www.wecoop.org/wp-json/wecoop/v1/annunci';
+  static const String _baseUrl = '${ApiConfig.baseUrl}/annunci';
 
   final _storage = SecureStorageService();
 

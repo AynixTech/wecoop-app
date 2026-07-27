@@ -6,10 +6,11 @@ import '../models/post_model.dart';
 import '../models/partner_model.dart';
 import '../models/offerta_formativa_model.dart';
 import '../utils/html_utils.dart';
+import '../config/api_config.dart';
 
 class WordpressService {
-  static const String baseUrl = 'https://www.wecoop.org/wp-json/wp/v2';
-  static const String wecoopApiUrl = 'https://www.wecoop.org/wp-json/wecoop/v1';
+  static const String baseUrl = ApiConfig.baseUrl;
+  static const String wecoopApiUrl = ApiConfig.baseUrl;
   static final storage = SecureStorageService();
 
   // Recupera gli ultimi post con immagini

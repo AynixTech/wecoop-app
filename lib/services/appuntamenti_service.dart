@@ -5,14 +5,15 @@ import 'dart:io';
 import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import '../models/appuntamento_model.dart';
+import '../config/api_config.dart';
 
 /// Service per la prenotazione di appuntamenti fisici (stile Calendly).
 ///
-/// Comunica con il plugin WordPress `wecoop-appuntamenti` sotto il namespace
-/// REST `wecoop/v1`, usando lo stesso pattern degli altri service:
-/// bearer JWT via [HttpClientService], risposte `{success, ...}`.
+/// Comunica con il backend Node/Express di WeCoop, usando lo stesso pattern
+/// degli altri service: bearer JWT via [HttpClientService],
+/// risposte `{success, ...}`.
 class AppuntamentiService {
-  static const String baseUrl = 'https://www.wecoop.org/wp-json/wecoop/v1';
+  static const String baseUrl = ApiConfig.baseUrl;
   static final storage = SecureStorageService();
 
   static Future<Map<String, String>> _getHeaders({bool includeAuth = true}) async {

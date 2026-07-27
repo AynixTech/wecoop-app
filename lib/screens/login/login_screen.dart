@@ -10,6 +10,7 @@ import 'package:wecoop_app/screens/onboarding/first_access_screen.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
 import '../../widgets/language_selector.dart';
 import '../../utils/html_utils.dart';
+import '../../config/api_config.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -159,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     }
 
-    final url = Uri.parse('https://www.wecoop.org/wp-json/jwt-auth/v1/token');
+    final url = Uri.parse(ApiConfig.loginUrl);
     final l10n = AppLocalizations.of(context)!;
 
     try {
@@ -259,7 +260,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _fetchUserMeta(String token, String nicename) async {
     // Usa il nuovo endpoint /soci/me per ottenere tutti i dati dell'utente
-    final url = Uri.parse('https://www.wecoop.org/wp-json/wecoop/v1/soci/me');
+    final url = Uri.parse('${ApiConfig.baseUrl}/soci/me');
 
     print('🔄 Chiamata a /soci/me...');
     print('URL: $url');

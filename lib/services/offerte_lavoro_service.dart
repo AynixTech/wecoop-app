@@ -4,9 +4,10 @@ import 'package:wecoop_app/models/offerta_lavoro_model.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/utils/html_utils.dart';
+import '../config/api_config.dart';
 
 class OfferteLavoroService {
-  static const String baseUrl = 'https://www.wecoop.org/wp-json/wecoop/v1/lavoro';
+  static const String baseUrl = '${ApiConfig.baseUrl}/lavoro';
   static final SecureStorageService _storage = SecureStorageService();
 
   static Future<Map<String, String>> _getHeaders() async {

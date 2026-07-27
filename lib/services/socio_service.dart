@@ -9,9 +9,10 @@ import 'dart:async';
 import 'dart:io';
 import '../utils/html_utils.dart';
 import '../models/pratica_documento.dart';
+import '../config/api_config.dart';
 
 class SocioService {
-  static const String baseUrl = 'https://www.wecoop.org/wp-json/wecoop/v1';
+  static const String baseUrl = ApiConfig.baseUrl;
 
   /// Nuovo backend WeCoop (Node/Express) per la gestione delle richieste servizi.
   static const String platformBaseUrl =
@@ -1328,9 +1329,9 @@ class SocioService {
   static Future<Map<String, dynamic>> checkUsername(String username) async {
     try {
       final cleanUsername = username.trim().replaceAll(RegExp(r'[^\d]'), '');
-      final url = '$baseUrl/soci/check-username?username=$cleanUsername';
+      final url = '$baseUrl/auth/check-username?username=$cleanUsername';
 
-      print('📤 GET /soci/check-username?username=$cleanUsername');
+      print('📤 GET /auth/check-username?username=$cleanUsername');
 
       final response = await HttpClientService.get(Uri.parse(url));
 
@@ -1366,7 +1367,7 @@ class SocioService {
         };
       }
 
-      final url = '$baseUrl/soci/reset-password';
+      final url = '$baseUrl/auth/reset-password';
       final headers = await _getHeaders(includeAuth: false);
 
       final body = <String, dynamic>{};
@@ -1420,7 +1421,7 @@ class SocioService {
     required String newPassword,
   }) async {
     try {
-      final url = '$baseUrl/soci/me/change-password';
+      final url = '$baseUrl/auth/change-password';
       final headers = await _getHeaders(includeAuth: true);
 
       final body = {'old_password': oldPassword, 'new_password': newPassword};
@@ -1463,7 +1464,7 @@ class SocioService {
     required String newPassword,
   }) async {
     try {
-      final url = '$baseUrl/soci/reset-password/confirm';
+      final url = '$baseUrl/auth/reset-password/confirm';
       final headers = await _getHeaders(includeAuth: false);
 
       final body = {'token': token, 'new_password': newPassword};

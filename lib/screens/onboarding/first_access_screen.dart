@@ -9,6 +9,7 @@ import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/screens/main_screen.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../config/api_config.dart';
 
 /// Schermata di primo accesso con registrazione semplificata
 /// Solo 4 campi obbligatori: nome, cognome, prefisso, telefono
@@ -465,9 +466,8 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
       print('   - Telefono completo: $telefonoCompleto');
       print('\n🔄 Invio richiesta HTTP a backend...');
 
-      // Chiamata al backend WordPress
-      final url =
-          'https://www.wecoop.org/wp-json/wecoop/v1/utenti/primo-accesso';
+      // Chiamata al backend Node
+      final url = '${ApiConfig.baseUrl}/auth/primo-accesso';
       final requestBody = {
         'nome': _nomeController.text.trim(),
         'cognome': _cognomeController.text.trim(),
@@ -763,7 +763,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
       return;
     }
 
-    final url = Uri.parse('https://www.wecoop.org/wp-json/jwt-auth/v1/token');
+    final url = Uri.parse(ApiConfig.loginUrl);
 
     try {
       print('🌐 Chiamata a: $url');
@@ -905,7 +905,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
     try {
       print('🔍 Recupero metadati utente...');
 
-      final url = Uri.parse('https://www.wecoop.org/wp-json/wecoop/v1/soci/me');
+      final url = Uri.parse('${ApiConfig.baseUrl}/soci/me');
       final response = await HttpClientService.get(
         url,
         headers: {

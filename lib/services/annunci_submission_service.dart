@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
+import '../config/api_config.dart';
 
 /// Servizio per gestire l'invio di annunci di lavoro proposti dagli utenti
 class AnnunciSubmissionService {
-  static const String baseUrl = 'https://www.wecoop.org/wp-json/wecoop/v1/lavoro';
+  static const String baseUrl = '${ApiConfig.baseUrl}/lavoro';
   static final SecureStorageService _storage = SecureStorageService();
 
   static Future<Map<String, String>> _getHeaders() async {
@@ -152,7 +153,7 @@ class AnnunciSubmissionService {
     String status = 'generated',
   }) async {
     try {
-      final uri = Uri.parse('https://www.wecoop.org/wp-json/wecoop/v1/lavoro/cv')
+      final uri = Uri.parse('$baseUrl/cv')
           .replace(
         queryParameters: {
           'limit': limit.toString(),

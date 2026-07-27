@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
 import '../models/firma_digitale_models.dart';
+import '../config/api_config.dart';
 import 'dart:io';
 
 class FirmaDigitaleService {
-  static const String baseUrl = 'https://www.wecoop.org/wp-json/wecoop/v1';
+  static const String baseUrl = ApiConfig.baseUrl;
   static final storage = SecureStorageService();
 
   /// Ottiene gli headers comuni per tutte le richieste

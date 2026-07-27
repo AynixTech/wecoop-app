@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
+import '../config/api_config.dart';
 
 /// Servizio HTTP centralizzato con gestione automatica del refresh token
 class HttpClientService {
-  static const String authUrl =
-      'https://www.wecoop.org/wp-json/jwt-auth/v1/token';
+  static const String authUrl = ApiConfig.loginUrl;
   static final storage = SecureStorageService();
   static bool _isRefreshing = false;
 

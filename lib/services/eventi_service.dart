@@ -4,9 +4,10 @@ import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
 import '../models/evento_model.dart';
 import '../utils/html_utils.dart';
+import '../config/api_config.dart';
 
 class EventiService {
-  static const String baseUrl = 'https://www.wecoop.org/wp-json/wecoop/v1';
+  static const String baseUrl = ApiConfig.baseUrl;
   static final storage = SecureStorageService();
 
   /// Ottiene gli headers comuni per tutte le richieste
@@ -345,7 +346,7 @@ class EventiService {
 
       print('\n=== GET USER ID ===');
 
-      final uri = Uri.parse('https://www.wecoop.org/wp-json/wecoop/v1/soci/me');
+      final uri = Uri.parse('$baseUrl/soci/me');
       print('📍 URL: $uri');
 
       final headers = await _getHeaders();
@@ -377,7 +378,7 @@ class EventiService {
       print('\n=== DEBUG EVENTI ===');
 
       final uri = Uri.parse(
-        'https://www.wecoop.org/wp-json/wecoop/v1/eventi/debug',
+        '$baseUrl/eventi/debug',
       );
       print('📍 URL: $uri');
 

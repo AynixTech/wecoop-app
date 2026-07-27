@@ -4,6 +4,8 @@
 /// Solo la Publishable Key può essere inclusa nell'app mobile.
 library;
 
+import 'api_config.dart';
+
 class StripeConfig {
   // Configurazione tramite dart-define per evitare chiavi di test hardcoded.
   static const String publishableKey = String.fromEnvironment(
@@ -59,6 +61,6 @@ class StripeConfig {
   /// Backend URL per creare Payment Intent
   static const String backendUrl = String.fromEnvironment(
     'STRIPE_BACKEND_URL',
-    defaultValue: 'https://www.wecoop.org/wp-json/wecoop/v1',
+    defaultValue: ApiConfig.baseUrl,
   );
 }

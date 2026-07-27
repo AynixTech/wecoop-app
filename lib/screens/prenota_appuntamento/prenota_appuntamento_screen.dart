@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
+import '../../config/api_config.dart';
 
 class PrenotaAppuntamentoScreen extends StatefulWidget {
   const PrenotaAppuntamentoScreen({super.key});
@@ -39,7 +40,7 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
 
   Future<void> fetchAppuntamenti() async {
     final response = await HttpClientService.get(
-      Uri.parse('https://www.wecoop.org/wp-json/wecoop/v1/appuntamenti'),
+      Uri.parse('${ApiConfig.baseUrl}/appuntamenti'),
     );
     if (response.statusCode == 200) {
       final dati = json.decode(response.body);
@@ -87,7 +88,7 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
     }
 
     final response = await HttpClientService.post(
-      Uri.parse('https://www.wecoop.org/wp-json/wecoop/v1/prenota'),
+      Uri.parse('${ApiConfig.baseUrl}/prenota'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'email': email,

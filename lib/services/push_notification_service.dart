@@ -5,6 +5,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/foundation.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
+import '../config/api_config.dart';
 
 /// Servizio per gestire le notifiche push Firebase
 class PushNotificationService {
@@ -21,8 +22,8 @@ class PushNotificationService {
   // Callback per navigazione
   Function(RemoteMessage)? onMessageTap;
 
-  // URL API WordPress
-  static const String apiUrl = 'https://www.wecoop.org/wp-json';
+  // URL API backend Node
+  static const String apiUrl = ApiConfig.baseUrl;
 
   /// Inizializza il servizio push
   Future<void> initialize() async {
@@ -125,7 +126,7 @@ class PushNotificationService {
       // Ottieni info dispositivo
       final deviceInfo = await _getDeviceInfo();
 
-      final url = Uri.parse('$apiUrl/push/v1/token');
+      final url = Uri.parse('$apiUrl/push/token');
       print('📡 POST $url');
       print(
         '📝 Headers: Authorization: Bearer ${jwtToken.substring(0, 20)}...',
@@ -153,7 +154,7 @@ class PushNotificationService {
         print('❌ Errore 401: JWT token non valido o scaduto');
         print('💡 L\'utente deve rifare il login');
       } else if (response.statusCode == 404) {
-        print('❌ Errore 404: Endpoint /push/v1/token non trovato');
+        print('❌ Errore 404: Endpoint /push/token non trovato');
         print('💡 Verifica che il plugin WordPress sia attivo');
       } else {
         print('❌ Errore salvataggio token: ${response.statusCode}');
@@ -295,7 +296,7 @@ class PushNotificationService {
       if (jwtToken == null) return;
 
       final response = await HttpClientService.delete(
-        Uri.parse('$apiUrl/push/v1/token'),
+        Uri.parse('$apiUrl/push/token'),
         headers: {'Authorization': 'Bearer $jwtToken'},
       );
 

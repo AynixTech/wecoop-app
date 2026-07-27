@@ -11,6 +11,7 @@ import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../config/api_config.dart';
 
 class CvAiScreen extends StatefulWidget {
   const CvAiScreen({super.key});
@@ -23,12 +24,9 @@ class _CvAiScreenState extends State<CvAiScreen> {
   static const int _totalSteps = 9;
   static const String _draftKey = 'cv_ai_draft_v1';
   static const String _localCvsKey = 'cv_ai_local_cvs_v1';
-  static const String _cvApiBase =
-      'https://www.wecoop.org/wp-json/wecoop/v1/cv';
-  static const String _cvTemplatesEndpoint =
-      'https://www.wecoop.org/wp-json/wecoop/v1/cv/templates';
-  static const String _cvPreviewEndpoint =
-      'https://www.wecoop.org/wp-json/wecoop/v1/cv/preview';
+  static const String _cvApiBase = '${ApiConfig.baseUrl}/cv';
+  static const String _cvTemplatesEndpoint = '${ApiConfig.baseUrl}/cv/templates';
+  static const String _cvPreviewEndpoint = '${ApiConfig.baseUrl}/cv/preview';
   static const List<Map<String, dynamic>> _fallbackCvTemplates = [
     {
       'id': 'formal',

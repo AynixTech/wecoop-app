@@ -3,9 +3,10 @@ import 'package:wecoop_app/utils/response_utils.dart';
 import 'secure_storage_service.dart';
 import 'http_client_service.dart';
 import '../models/pagamento_model.dart';
+import '../config/api_config.dart';
 
 class PagamentoService {
-  static const String baseUrl = 'https://www.wecoop.org/wp-json/wecoop/v1';
+  static const String baseUrl = ApiConfig.baseUrl;
   static final storage = SecureStorageService();
 
   /// Headers comuni per le richieste
@@ -201,7 +202,7 @@ class PagamentoService {
     try {
       // Nota: questo endpoint deve essere creato sul backend WordPress
       final url = Uri.parse(
-        'https://www.wecoop.org/wp-json/wecoop/v1/create-payment-intent',
+        '$baseUrl/create-payment-intent',
       );
       print(
         '🔄 Chiamata POST /create-payment-intent (importo: €$importo, paymentId: $paymentId)...',

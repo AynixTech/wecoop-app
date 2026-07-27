@@ -20,7 +20,7 @@ class SocioService {
 
   /// API key condivisa per autorizzare l'app verso il nuovo backend.
   static const String platformApiKey =
-      String.fromEnvironment('WECOOP_API_KEY', defaultValue: 'wecoop-app-dev-key');
+      String.fromEnvironment('WECOOP_API_KEY', defaultValue: 'af9a4cfa37958761a464c06a837d6860');
 
   static final storage = SecureStorageService();
 

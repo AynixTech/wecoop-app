@@ -13,7 +13,7 @@ class ApiConfig {
   /// API key compartida para endpoints llamados sin login (ej. service-requests).
   static const String apiKey = String.fromEnvironment(
     'WECOOP_API_KEY',
-    defaultValue: 'wecoop-app-dev-key',
+    defaultValue: 'af9a4cfa37958761a464c06a837d6860',
   );
 
   /// Endpoint de login (antes jwt-auth/v1/token de WordPress).

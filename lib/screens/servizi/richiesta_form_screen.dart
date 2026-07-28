@@ -1763,17 +1763,22 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       // Converti i dati dal formato form al formato API
       final apiData = _convertToApiFormat(_formData);
 
-      // Aggiungi l'ID del socio/user per collegare la richiesta all'utente WordPress
+      // Aggiungi l'ID dell'utente per collegare la richiesta all'account.
       final socioId = await _storage.read(key: 'socio_id');
       final userId = await _storage.read(key: 'user_id');
+      final telefonoUtente = await _storage.read(key: 'telefono');
 
-      // Usa socio_id se disponibile, altrimenti user_id
-      if (socioId != null && socioId.isNotEmpty) {
-        apiData['socio_id'] = socioId;
-        print('📋 Aggiunto socio_id: $socioId');
-      } else if (userId != null && userId.isNotEmpty) {
+      // Priorità a user_id (ID reale nel backend Node); socio_id come fallback.
+      if (userId != null && userId.isNotEmpty) {
         apiData['user_id'] = userId;
         print('📋 Aggiunto user_id: $userId');
+      } else if (socioId != null && socioId.isNotEmpty) {
+        apiData['socio_id'] = socioId;
+        print('📋 Aggiunto socio_id: $socioId');
+      }
+      // Invia sempre il telefono per collegare in modo affidabile la richiesta.
+      if (telefonoUtente != null && telefonoUtente.isNotEmpty) {
+        apiData['telefono_utente'] = telefonoUtente;
       }
 
       print('=== DATI FORM ORIGINALI ===');

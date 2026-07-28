@@ -99,8 +99,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _loginWithBiometrics() async {
     final l10n = AppLocalizations.of(context)!;
+    print('');
+    print('👆 ==================== LOGIN BIOMETRICO ====================');
+    print('👆 _biometricLoginEnabled=$_biometricLoginEnabled _canUseBiometrics=$_canUseBiometrics');
 
     if (!_biometricLoginEnabled) {
+      print('👆 Biometria disabilitata nelle impostazioni');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.translate('biometricDisabledInSettings'))),
       );
@@ -108,6 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     if (!_canUseBiometrics) {
+      print('👆 Biometria non disponibile sul dispositivo');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.translate('biometricNotAvailable'))),
       );
@@ -121,10 +126,14 @@ class _LoginScreenState extends State<LoginScreen> {
         await storage.read(key: 'biometric_password') ??
         await storage.read(key: 'auth_password');
 
+    print('👆 savedPhone="$savedPhone" (null=${savedPhone == null})');
+    print('👆 savedPassword length=${savedPassword?.length ?? 0} (null=${savedPassword == null})');
+
     if (savedPhone == null ||
         savedPhone.isEmpty ||
         savedPassword == null ||
         savedPassword.isEmpty) {
+      print('👆 Credenziali biometriche mancanti/vuote');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.translate('biometricCredentialsMissing'))),
       );
@@ -132,6 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     try {
+      print('👆 Avvio autenticazione biometrica...');
       final authenticated = await _localAuth.authenticate(
         localizedReason: l10n.translate('biometricAuthReason'),
         options: const AuthenticationOptions(
@@ -139,11 +149,13 @@ class _LoginScreenState extends State<LoginScreen> {
           stickyAuth: true,
         ),
       );
+      print('👆 Biometria autenticata: $authenticated');
 
       if (!authenticated) return;
 
       await _loginWithCredentials(phone: savedPhone, password: savedPassword, fromBiometrics: true);
     } catch (e) {
+      print('👆 Eccezione biometria: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.translate('biometricAuthFailed'))),
       );
@@ -155,6 +167,12 @@ class _LoginScreenState extends State<LoginScreen> {
     required String password,
     bool fromBiometrics = false,
   }) async {
+    print('');
+    print('🔐 ==================== LOGIN ====================');
+    print('🔐 Tipo: ${fromBiometrics ? "BIOMETRICO" : "MANUALE"}');
+    print('🔐 phone (username): "$phone"');
+    print('🔐 password length: ${password.length} (vuota=${password.isEmpty})');
+
     if (mounted) {
       setState(() {
         isLoading = true;
@@ -164,6 +182,10 @@ class _LoginScreenState extends State<LoginScreen> {
     final url = Uri.parse(ApiConfig.loginUrl);
     final l10n = AppLocalizations.of(context)!;
 
+    final requestBody = jsonEncode({'username': phone, 'password': password});
+    print('🔐 URL: $url');
+    print('🔐 Payload: $requestBody');
+
     try {
       final response = await HttpClientService.post(
         url,
@@ -172,39 +194,48 @@ class _LoginScreenState extends State<LoginScreen> {
           'Content-Type': 'application/json',
           'User-Agent': 'WeCoop/1.5.3',
         },
-        body: jsonEncode({'username': phone, 'password': password}),
+        body: requestBody,
       );
 
+      print('📡 Response status: ${response.statusCode}');
+      print('📡 Response body: ${response.body}');
+
       final decodedData = HttpClientService.decodeJsonResponse(response);
+      print('📦 Decoded type: ${decodedData.runtimeType}');
       final data = decodedData is Map<String, dynamic>
           ? decodedData
           : <String, dynamic>{};
+      print('📦 token presente: ${data['token'] != null}');
+      print('📦 user_email=${data['user_email']} display=${data['user_display_name']} nicename=${data['user_nicename']} user_id=${data['user_id']}');
 
       if (response.statusCode == 200 && data['token'] != null) {
+        print('✅ Login riuscito, salvataggio dati...');
         await storage.write(key: 'jwt_token', value: data['token']);
+        print('   ✓ jwt_token');
         await storage.write(key: 'auth_username', value: phone);
         await storage.write(key: 'auth_password', value: password);
+        print('   ✓ auth credentials');
 
-        // Salva SEMPRE le credenziali biometriche dopo un login riuscito,
-        // così restano valide anche dopo un logout (che non le cancella).
+        // Salva SEMPRE le credenziali biometriche dopo un login riuscito.
         await storage.write(key: 'biometric_username', value: phone);
         await storage.write(key: 'biometric_password', value: password);
+        print('   ✓ biometric credentials');
         await storage.write(key: 'user_email', value: data['user_email'] ?? '');
         await storage.write(
           key: 'user_display_name',
           value: data['user_display_name'] ?? '',
         );
         await storage.write(key: 'user_nicename', value: data['user_nicename'] ?? '');
+        print('   ✓ user_* fields');
 
-        // Salva anche user_id se presente nella risposta JWT
         if (data['user_id'] != null) {
           await storage.write(
             key: 'user_id',
             value: data['user_id'].toString(),
           );
         }
+        print('   ✓ user_id');
 
-        // Salva sempre l'ultimo telefono usato (username)
         await storage.write(key: 'last_login_phone', value: phone);
 
         if (rememberPassword) {
@@ -214,20 +245,20 @@ class _LoginScreenState extends State<LoginScreen> {
           await storage.delete(key: 'saved_phone');
           await storage.delete(key: 'saved_password');
         }
+        print('   ✓ preferenze; chiamo _fetchUserMeta...');
 
-        // Recupera metadati utente
-        await _fetchUserMeta(data['token'], data['user_nicename']);
+        await _fetchUserMeta(data['token'], data['user_nicename'] ?? '');
+        print('   ✓ _fetchUserMeta OK');
 
-        // Aggiorna stato biometria (credenziali ora disponibili)
         await _loadBiometricState();
 
-        // Inizializza push notifications (salverà FCM token automaticamente)
         try {
           await PushNotificationService().initialize();
         } catch (e) {
-          // Non blocchiamo il login se fallisce l'inizializzazione delle notifiche
+          print('⚠️ Push init fallita (non bloccante): $e');
         }
 
+        print('🎉 Navigazione a /home');
         if (mounted) {
           setState(() {
             isLoading = false;
@@ -235,15 +266,14 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushReplacementNamed(context, '/home');
         }
       } else {
+        print('⚠️ Login NON riuscito (status ${response.statusCode}, token=${data['token'] != null})');
         if (mounted) {
           setState(() {
             isLoading = false;
           });
         }
-        // Se il login biometrico fallisce con credenziali non valide,
-        // le credenziali salvate sono obsolete: le rimuoviamo così l'utente
-        // può rifare il login manuale invece di restare bloccato.
         if (fromBiometrics && response.statusCode == 401) {
+          print('🧹 Credenziali biometriche obsolete, le rimuovo');
           await storage.delete(key: 'biometric_username');
           await storage.delete(key: 'biometric_password');
           if (mounted) {
@@ -257,17 +287,20 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         final message = data['message'] ?? l10n.networkError;
         final decodedMessage = decodeHtmlEntities(message);
+        print('⚠️ Messaggio mostrato: $decodedMessage');
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(decodedMessage)));
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (mounted) {
         setState(() {
           isLoading = false;
         });
       }
-      print('Eccezione durante il login: $e');
+      print('❌❌❌ ECCEZIONE durante il login: $e');
+      print('❌ Tipo eccezione: ${e.runtimeType}');
+      print('❌ StackTrace:\n$stackTrace');
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l10n.networkError)));
@@ -298,9 +331,11 @@ class _LoginScreenState extends State<LoginScreen> {
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
 
-        // L'endpoint restituisce {success: true, data: {...}}
-        // I dati del socio sono dentro responseData['data']
-        final data = responseData['data'] as Map<String, dynamic>;
+        // L'endpoint può restituire {success, data:{...}} oppure i campi in radice.
+        final data = (responseData is Map<String, dynamic> &&
+                responseData['data'] is Map<String, dynamic>)
+            ? responseData['data'] as Map<String, dynamic>
+            : (responseData as Map<String, dynamic>);
 
         print('📦 Dati ricevuti:');
         print('  - id: ${data['id']}');

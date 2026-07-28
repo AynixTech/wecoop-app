@@ -142,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!authenticated) return;
 
-      await _loginWithCredentials(phone: savedPhone, password: savedPassword);
+      await _loginWithCredentials(phone: savedPhone, password: savedPassword, fromBiometrics: true);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.translate('biometricAuthFailed'))),
@@ -153,6 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _loginWithCredentials({
     required String phone,
     required String password,
+    bool fromBiometrics = false,
   }) async {
     if (mounted) {
       setState(() {
@@ -184,16 +185,16 @@ class _LoginScreenState extends State<LoginScreen> {
         await storage.write(key: 'auth_username', value: phone);
         await storage.write(key: 'auth_password', value: password);
 
-        if (_biometricLoginEnabled) {
-          await storage.write(key: 'biometric_username', value: phone);
-          await storage.write(key: 'biometric_password', value: password);
-        }
-        await storage.write(key: 'user_email', value: data['user_email']);
+        // Salva SEMPRE le credenziali biometriche dopo un login riuscito,
+        // così restano valide anche dopo un logout (che non le cancella).
+        await storage.write(key: 'biometric_username', value: phone);
+        await storage.write(key: 'biometric_password', value: password);
+        await storage.write(key: 'user_email', value: data['user_email'] ?? '');
         await storage.write(
           key: 'user_display_name',
-          value: data['user_display_name'],
+          value: data['user_display_name'] ?? '',
         );
-        await storage.write(key: 'user_nicename', value: data['user_nicename']);
+        await storage.write(key: 'user_nicename', value: data['user_nicename'] ?? '');
 
         // Salva anche user_id se presente nella risposta JWT
         if (data['user_id'] != null) {
@@ -238,6 +239,21 @@ class _LoginScreenState extends State<LoginScreen> {
           setState(() {
             isLoading = false;
           });
+        }
+        // Se il login biometrico fallisce con credenziali non valide,
+        // le credenziali salvate sono obsolete: le rimuoviamo così l'utente
+        // può rifare il login manuale invece di restare bloccato.
+        if (fromBiometrics && response.statusCode == 401) {
+          await storage.delete(key: 'biometric_username');
+          await storage.delete(key: 'biometric_password');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(l10n.translate('biometricCredentialsMissing')),
+              ),
+            );
+          }
+          return;
         }
         final message = data['message'] ?? l10n.networkError;
         final decodedMessage = decodeHtmlEntities(message);

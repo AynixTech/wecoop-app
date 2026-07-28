@@ -77,6 +77,14 @@ class Evento {
       return false;
     }
 
+    double parseDouble(dynamic value) {
+      if (value == null) return 0.0;
+      if (value is double) return value;
+      if (value is int) return value.toDouble();
+      if (value is String) return double.tryParse(value) ?? 0.0;
+      return 0.0;
+    }
+
     return Evento(
       id: parseInt(json['id']),
       titolo: json['titolo'] ?? '',
@@ -95,7 +103,7 @@ class Evento {
       partecipantiCount: parseInt(json['partecipanti_count']),
       postiDisponibili: parseInt(json['posti_disponibili']),
       richiedeIscrizione: parseBool(json['richiede_iscrizione']),
-      prezzo: (json['prezzo'] ?? 0.0).toDouble(),
+      prezzo: parseDouble(json['prezzo']),
       prezzoFormattato: json['prezzo_formattato'] ?? '€ 0,00',
       organizzatore: json['organizzatore'],
       emailOrganizzatore: json['email_organizzatore'],

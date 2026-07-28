@@ -229,10 +229,18 @@ class HttpClientService {
     try {
       var response = await processResponse(await request());
 
+      // Non tentare il refresh sugli endpoint di autenticazione:
+      // un 401 sul login significa "credenziali errate", non "token scaduto".
+      final isAuthEndpoint =
+          requestUrl.contains('/auth/login') ||
+          requestUrl.contains('/auth/primo-accesso') ||
+          requestUrl.contains('/auth/refresh') ||
+          requestUrl.contains('jwt-auth/v1/token');
+
       // Se il token è scaduto, tenta il refresh.
       // WordPress restituisce 403 con code 'jwt_auth_invalid_token';
       // il nuovo backend Node restituisce 401 con "Invalid or expired token".
-      if (response.statusCode == 403 || response.statusCode == 401) {
+      if (!isAuthEndpoint && (response.statusCode == 403 || response.statusCode == 401)) {
         try {
           final body = decodeJsonResponse(response);
           final message = (body['message'] ?? '').toString().toLowerCase();

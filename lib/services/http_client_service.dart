@@ -8,7 +8,6 @@ import '../config/api_config.dart';
 class HttpClientService {
   static const String authUrl = ApiConfig.loginUrl;
   static final storage = SecureStorageService();
-  static bool _isRefreshing = false;
 
   /// Decodifica JSON dalla risposta HTTP mantenendo l'encoding UTF-8 corretto
   ///
@@ -43,17 +42,24 @@ class HttpClientService {
     }
   }
 
-  /// Rinfresca il JWT token usando le credenziali salvate
-  static Future<bool> refreshToken() async {
-    // Evita refresh multipli simultanei
-    if (_isRefreshing) {
-      print('⏳ Refresh già in corso...');
-      return false;
+  /// Rinfresca il JWT token usando le credenziali salvate.
+  /// Le chiamate concorrenti condividono lo stesso Future (nessun doppio refresh).
+  static Future<bool>? _refreshFuture;
+
+  static Future<bool> refreshToken() {
+    // Se un refresh è già in corso, attendi lo stesso risultato.
+    if (_refreshFuture != null) {
+      print('⏳ Refresh già in corso, attendo il risultato condiviso...');
+      return _refreshFuture!;
     }
+    _refreshFuture = _doRefreshToken().whenComplete(() {
+      _refreshFuture = null;
+    });
+    return _refreshFuture!;
+  }
 
+  static Future<bool> _doRefreshToken() async {
     try {
-      _isRefreshing = true;
-
       final authUsername =
           await storage.read(key: 'auth_username') ??
           await storage.read(key: 'username') ??
@@ -95,19 +101,14 @@ class HttpClientService {
 
           print('✅ Token rinfresco con successo!');
           print('🔑 Nuovo token salvato');
-
-          _isRefreshing = false;
           return true;
         }
       }
 
       print('❌ Refresh fallito - Status: ${response.statusCode}');
-
-      _isRefreshing = false;
       return false;
     } catch (e) {
       print('❌ Errore durante il refresh: $e');
-      _isRefreshing = false;
       return false;
     }
   }
@@ -118,8 +119,9 @@ class HttpClientService {
     Map<String, String>? headers,
   }) async {
     return _makeRequestWithRefresh(
-      () =>
-          http.get(url, headers: headers).timeout(const Duration(seconds: 30)),
+      () async => http
+          .get(url, headers: await _withFreshToken(headers))
+          .timeout(const Duration(seconds: 30)),
       url.toString(),
     );
   }
@@ -132,8 +134,8 @@ class HttpClientService {
     Encoding? encoding,
   }) async {
     return _makeRequestWithRefresh(
-      () => http
-          .post(url, headers: headers, body: body, encoding: encoding)
+      () async => http
+          .post(url, headers: await _withFreshToken(headers), body: body, encoding: encoding)
           .timeout(const Duration(seconds: 30)),
       url.toString(),
     );
@@ -147,8 +149,8 @@ class HttpClientService {
     Encoding? encoding,
   }) async {
     return _makeRequestWithRefresh(
-      () => http
-          .put(url, headers: headers, body: body, encoding: encoding)
+      () async => http
+          .put(url, headers: await _withFreshToken(headers), body: body, encoding: encoding)
           .timeout(const Duration(seconds: 30)),
       url.toString(),
     );
@@ -162,8 +164,8 @@ class HttpClientService {
     Encoding? encoding,
   }) async {
     return _makeRequestWithRefresh(
-      () => http
-          .patch(url, headers: headers, body: body, encoding: encoding)
+      () async => http
+          .patch(url, headers: await _withFreshToken(headers), body: body, encoding: encoding)
           .timeout(const Duration(seconds: 30)),
       url.toString(),
     );
@@ -177,11 +179,28 @@ class HttpClientService {
     Encoding? encoding,
   }) async {
     return _makeRequestWithRefresh(
-      () => http
-          .delete(url, headers: headers, body: body, encoding: encoding)
+      () async => http
+          .delete(url, headers: await _withFreshToken(headers), body: body, encoding: encoding)
           .timeout(const Duration(seconds: 30)),
       url.toString(),
     );
+  }
+
+  /// Se gli headers contengono un Authorization Bearer, lo rimpiazza con il
+  /// token JWT attuale dallo storage (così i retry dopo il refresh usano il
+  /// token nuovo invece di quello scaduto).
+  static Future<Map<String, String>?> _withFreshToken(
+    Map<String, String>? headers,
+  ) async {
+    if (headers == null) return null;
+    final hasAuth = headers.keys.any((k) => k.toLowerCase() == 'authorization');
+    if (!hasAuth) return headers;
+    final token = await storage.read(key: 'jwt_token');
+    if (token == null) return headers;
+    final updated = Map<String, String>.from(headers);
+    updated.removeWhere((k, v) => k.toLowerCase() == 'authorization');
+    updated['Authorization'] = 'Bearer $token';
+    return updated;
   }
 
   /// Mostra l'avviso di manutenzione e non espone mai il dettaglio tecnico

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../services/user_avatar_store.dart';
+import '../services/socio_service.dart';
 import 'annunci/annunci_screen.dart';
 import 'home/home_screen.dart';
 import 'calendar/calendar_screen.dart';
 import 'lavoro/offerte_lavoro_screen.dart';
 import 'sportello/sportello_screen.dart';
 import 'profilo/profilo_screen.dart';
+import 'profilo/completa_profilo_screen.dart';
 import 'eventi/eventi_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -24,12 +26,72 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   late int _selectedIndex;
   int _profileScreenVersion = 0;
+  bool _profileCheckDone = false;
 
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
     UserAvatarStore.hydrate();
+    // Controlla se il profilo è completo e, se no, invita a completarlo.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkProfiloCompleto());
+  }
+
+  Future<void> _checkProfiloCompleto() async {
+    if (_profileCheckDone) return;
+    _profileCheckDone = true;
+    try {
+      final res = await SocioService.getProfiloCompleto();
+      if (res['success'] != true) return;
+      final data = (res['data'] as Map?)?.cast<String, dynamic>() ?? {};
+      final completo = data['profilo_completo'] == true;
+      if (completo || !mounted) return;
+      _showCompletaProfiloDialog();
+    } catch (_) {
+      // Silenzioso: non bloccare l'app se la verifica fallisce.
+    }
+  }
+
+  void _showCompletaProfiloDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: const [
+            Icon(Icons.account_circle_rounded, color: Color(0xFF1282A8), size: 28),
+            SizedBox(width: 10),
+            Expanded(child: Text('Completa il tuo profilo')),
+          ],
+        ),
+        content: const Text(
+          'Il tuo profilo non è ancora completo. Completa i tuoi dati per accedere a '
+          'tutti i servizi WeCoop e ricevere aggiornamenti via email.',
+          style: TextStyle(height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Più tardi'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF1282A8),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const CompletaProfiloScreen()),
+              );
+            },
+            child: const Text('Completa ora'),
+          ),
+        ],
+      ),
+    );
   }
 
   List<Widget> get _screens => const [

@@ -12,6 +12,7 @@ import '../../services/http_client_service.dart';
 import '../servizi/pagamento_screen.dart';
 import '../firma_digitale/firma_documento_screen.dart';
 import '../prenota_appuntamento/seleziona_slot_screen.dart';
+import '../profilo/completa_profilo_screen.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
@@ -40,6 +41,7 @@ class _CalendarScreenState extends State<CalendarScreen>
   String? _richiestaIdToOpen;
   final Map<int, FirmaStatus> _firmaStatusByRichiesta = {};
   bool _isOpeningDettaglioRichiesta = false;
+  bool _emailSuggestShown = false;
   Timer? _autoRefreshTimer;
   DateTime? _lastAutoRefreshAt;
 
@@ -480,6 +482,63 @@ class _CalendarScreenState extends State<CalendarScreen>
     }
   }
 
+  /// Se il profilo non ha email, suggerisce (una volta) di completarlo per
+  /// ricevere le notifiche via email. Non blocca l'apertura del dettaglio.
+  Future<void> _maybeSuggestCompletaProfilo() async {
+    if (_emailSuggestShown) return;
+    try {
+      final res = await SocioService.getProfiloCompleto();
+      if (res['success'] != true) return;
+      final data = (res['data'] as Map?)?.cast<String, dynamic>() ?? {};
+      final email = (data['email'] ?? '').toString().trim();
+      final completo = data['profilo_completo'] == true;
+      if (email.isNotEmpty && completo) return; // tutto ok, niente avviso
+      if (!mounted) return;
+      _emailSuggestShown = true;
+      await showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (ctx) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Row(
+            children: const [
+              Icon(Icons.mark_email_unread_rounded, color: Color(0xFF1282A8), size: 26),
+              SizedBox(width: 10),
+              Expanded(child: Text('Vuoi ricevere le email?')),
+            ],
+          ),
+          content: const Text(
+            'Completa il tuo profilo con un indirizzo email per ricevere aggiornamenti '
+            'e notifiche sulle tue richieste di servizio.',
+            style: TextStyle(height: 1.4),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('No, grazie'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF1282A8),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const CompletaProfiloScreen()),
+                );
+              },
+              child: const Text('Completa profilo'),
+            ),
+          ],
+        ),
+      );
+    } catch (_) {
+      // Silenzioso.
+    }
+  }
+
   Future<void> _mostraDettaglioRichiesta(Map<String, dynamic> richiesta) async {
     if (_isOpeningDettaglioRichiesta) {
       print('ℹ️ [Dettaglio] apertura già in corso, ignoro tap duplicato');
@@ -487,6 +546,10 @@ class _CalendarScreenState extends State<CalendarScreen>
     }
 
     _isOpeningDettaglioRichiesta = true;
+
+    // Se il profilo non ha un'email, invita a completarlo (una volta a sessione)
+    // così può ricevere le notifiche via email sulle sue pratiche.
+    await _maybeSuggestCompletaProfilo();
 
     try {
     final richiestaDettaglio = Map<String, dynamic>.from(richiesta);

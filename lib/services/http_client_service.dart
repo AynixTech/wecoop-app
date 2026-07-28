@@ -210,13 +210,23 @@ class HttpClientService {
     try {
       var response = await processResponse(await request());
 
-      // Se il token è scaduto, tenta il refresh
-      if (response.statusCode == 403) {
+      // Se il token è scaduto, tenta il refresh.
+      // WordPress restituisce 403 con code 'jwt_auth_invalid_token';
+      // il nuovo backend Node restituisce 401 con "Invalid or expired token".
+      if (response.statusCode == 403 || response.statusCode == 401) {
         try {
           final body = decodeJsonResponse(response);
-          if (body['code'] == 'jwt_auth_invalid_token' ||
-              body['message']?.contains('Expired') == true) {
-            print('⚠️ Token scaduto rilevato in: $requestUrl');
+          final message = (body['message'] ?? '').toString().toLowerCase();
+          final isTokenError =
+              body['code'] == 'jwt_auth_invalid_token' ||
+              message.contains('expired') ||
+              message.contains('invalid') ||
+              message.contains('token') ||
+              message.contains('authorization') ||
+              response.statusCode == 401;
+
+          if (isTokenError) {
+            print('⚠️ Token scaduto rilevato in: $requestUrl (status ${response.statusCode})');
             print('🔄 Tentativo di refresh...');
 
             final refreshSuccess = await refreshToken();
@@ -229,11 +239,11 @@ class HttpClientService {
                 print('✅ Richiesta riuscita dopo refresh!');
               }
             } else {
-              print('❌ Refresh fallito - Mantengo la risposta 403 originale');
+              print('❌ Refresh fallito - Mantengo la risposta originale');
             }
           }
         } catch (e) {
-          print('⚠️ Errore nel parsing della risposta 403: $e');
+          print('⚠️ Errore nel parsing della risposta ${response.statusCode}: $e');
         }
       }
 

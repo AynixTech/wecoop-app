@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import '../../theme/theme.dart';
+import '../../widgets/design_system/design_system.dart';
 import 'permesso_soggiorno_screen.dart';
 import 'cittadinanza_screen.dart';
 import 'ricongiungimento_familiare_screen.dart';
@@ -13,193 +15,72 @@ class AccoglienzaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final scheme = Theme.of(context).colorScheme;
+
+    void go(Widget screen) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => screen),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(title: Text(l10n.welcomeOrientation)),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                l10n.selectServiceYouNeed,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
+              Text(l10n.selectServiceYouNeed, style: AppTypography.headingS),
+              const SizedBox(height: AppSpacing.sm),
               Text(
                 l10n.guideStepByStep,
-                style: TextStyle(fontSize: 14, color: scheme.onSurfaceVariant),
+                style: AppTypography.bodyM.copyWith(color: AppColors.textMuted),
               ),
-              const SizedBox(height: 24),
-              _ServiceOptionCard(
+              const SizedBox(height: AppSpacing.xxl),
+              SelectionCard(
                 icon: Icons.translate,
                 title: l10n.translate('mediazioneLinguistica'),
-                description: l10n.translate('mediazioneLinguisticaSubtitle'),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MediazioneLinguisticaScreen(),
-                    ),
-                  );
-                },
+                subtitle: l10n.translate('mediazioneLinguisticaSubtitle'),
+                onTap: () => go(const MediazioneLinguisticaScreen()),
               ),
-              const SizedBox(height: 12),
-              _ServiceOptionCard(
+              const SizedBox(height: AppSpacing.md),
+              SelectionCard(
                 icon: Icons.badge,
                 title: l10n.residencePermit,
-                description: l10n.residencePermitDesc,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PermessoSoggiornoScreen(),
-                    ),
-                  );
-                },
+                subtitle: l10n.residencePermitDesc,
+                onTap: () => go(const PermessoSoggiornoScreen()),
               ),
-              const SizedBox(height: 12),
-              _ServiceOptionCard(
+              const SizedBox(height: AppSpacing.md),
+              SelectionCard(
                 icon: Icons.flag,
                 title: l10n.citizenship,
-                description: l10n.citizenshipDesc,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CittadinanzaScreen(),
-                    ),
-                  );
-                },
+                subtitle: l10n.citizenshipDesc,
+                onTap: () => go(const CittadinanzaScreen()),
               ),
-              const SizedBox(height: 12),
-              _ServiceOptionCard(
+              const SizedBox(height: AppSpacing.md),
+              SelectionCard(
                 icon: Icons.family_restroom,
                 title: l10n.translate('familyReunification'),
-                description: l10n.translate('familyReunificationDesc'),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => const RicongiungimentoFamiliareScreen(),
-                    ),
-                  );
-                },
+                subtitle: l10n.translate('familyReunificationDesc'),
+                onTap: () => go(const RicongiungimentoFamiliareScreen()),
               ),
-              const SizedBox(height: 12),
-              _ServiceOptionCard(
+              const SizedBox(height: AppSpacing.md),
+              SelectionCard(
                 icon: Icons.verified_user,
                 title: l10n.politicalAsylum,
-                description: l10n.politicalAsylumDesc,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AsiloPoliticoScreen(),
-                    ),
-                  );
-                },
+                subtitle: l10n.politicalAsylumDesc,
+                onTap: () => go(const AsiloPoliticoScreen()),
               ),
-              const SizedBox(height: 12),
-              _ServiceOptionCard(
+              const SizedBox(height: AppSpacing.md),
+              SelectionCard(
                 icon: Icons.flight,
                 title: l10n.touristVisa,
-                description: l10n.touristVisaDesc,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const VisaTurismoScreen(),
-                    ),
-                  );
-                },
+                subtitle: l10n.touristVisaDesc,
+                onTap: () => go(const VisaTurismoScreen()),
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ServiceOptionCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String description;
-  final VoidCallback onTap;
-
-  const _ServiceOptionCard({
-    required this.icon,
-    required this.title,
-    required this.description,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: scheme.surface,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: scheme.onSurface.withOpacity(0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: scheme.primaryContainer,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: scheme.onPrimaryContainer, size: 28),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    description,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: scheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              color: scheme.onSurfaceVariant,
-              size: 20,
-            ),
-          ],
         ),
       ),
     );

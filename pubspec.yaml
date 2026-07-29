@@ -2,7 +2,7 @@ name: wecoop_app
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.5.3+23
+version: 1.5.4+24
 
 # iOS Bundle ID (Apple Developer Program)
 # Deve corrispondere al Bundle ID registrato su Apple Developer.

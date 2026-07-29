@@ -10,6 +10,7 @@ import 'package:wecoop_app/screens/onboarding/first_access_screen.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
 import '../../widgets/language_selector.dart';
 import '../../utils/html_utils.dart';
+import '../../widgets/design_system/design_system.dart';
 import '../../config/api_config.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -616,28 +617,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                     const SizedBox(height: 24),
-                    ElevatedButton(
+                    AppButton(
+                      label: isLoading ? l10n.sending : l10n.login,
+                      loading: isLoading,
                       onPressed: isLoading ? null : _login,
-                      child:
-                          isLoading
-                              ? Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(l10n.sending),
-                                ],
-                              )
-                              : Text(l10n.login),
                     ),
                     if (biometricsReady) ...[
                       const SizedBox(height: 8),

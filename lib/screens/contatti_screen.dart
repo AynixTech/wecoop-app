@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/app_localizations.dart';
+import '../theme/theme.dart';
 
 class ContattiScreen extends StatelessWidget {
   const ContattiScreen({super.key});
@@ -19,7 +20,6 @@ class ContattiScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.contacts),
-        backgroundColor: Colors.amber,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -28,12 +28,8 @@ class ContattiScreen extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(32),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.amber.shade400, Colors.amber.shade600],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+              decoration: const BoxDecoration(
+                gradient: AppColors.heroGradient,
               ),
               child: Column(
                 children: [

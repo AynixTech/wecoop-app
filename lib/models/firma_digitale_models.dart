@@ -1,3 +1,19 @@
+// Helper di parsing difensivo: il backend Node/Postgres può restituire
+// numeri come stringhe (BIGINT/NUMERIC) o campi mancanti. Evitano i crash
+// tipo "type 'String' is not a subtype of type 'int'".
+int _fdParseInt(dynamic value) {
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value) ?? 0;
+  return 0;
+}
+
+DateTime _fdParseDate(dynamic value) {
+  if (value is DateTime) return value;
+  if (value is String) return DateTime.tryParse(value) ?? DateTime.now();
+  return DateTime.now();
+}
+
 // Modello per il documento unico scaricato
 class DocumentoUnico {
   final String url;
@@ -67,10 +83,10 @@ class OTPGenerateResponse {
 
   factory OTPGenerateResponse.fromJson(Map<String, dynamic> json) {
     return OTPGenerateResponse(
-      id: json['id'] as String,
-      scadenza: DateTime.parse(json['scadenza'] as String),
-      tentativiRimasti: json['tentativi_rimasti'] as int,
-      metodoInvio: json['metodo_invio'] as String,
+      id: (json['id'] ?? '').toString(),
+      scadenza: _fdParseDate(json['scadenza']),
+      tentativiRimasti: _fdParseInt(json['tentativi_rimasti']),
+      metodoInvio: (json['metodo_invio'] ?? '').toString(),
     );
   }
 
@@ -98,9 +114,9 @@ class OTPVerifyResponse {
 
   factory OTPVerifyResponse.fromJson(Map<String, dynamic> json) {
     return OTPVerifyResponse(
-      id: json['id'] as String,
-      verified: json['verified'] as bool,
-      verifiedAt: DateTime.parse(json['verified_at'] as String),
+      id: (json['id'] ?? '').toString(),
+      verified: json['verified'] == true,
+      verifiedAt: _fdParseDate(json['verified_at']),
     );
   }
 
@@ -133,12 +149,12 @@ class FirmaDigitale {
 
   factory FirmaDigitale.fromJson(Map<String, dynamic> json) {
     return FirmaDigitale(
-      id: json['id'] as String,
-      richiestaId: json['richiesta_id'] as int,
-      firmaTimestamp: DateTime.parse(json['firma_timestamp'] as String),
-      metodoFirma: json['metodo_firma'] as String,
-      status: json['status'] as String,
-      hashVerificato: json['hash_verificato'] as bool,
+      id: (json['id'] ?? '').toString(),
+      richiestaId: _fdParseInt(json['richiesta_id']),
+      firmaTimestamp: _fdParseDate(json['firma_timestamp']),
+      metodoFirma: (json['metodo_firma'] ?? 'FES').toString(),
+      status: (json['status'] ?? '').toString(),
+      hashVerificato: json['hash_verificato'] == true,
     );
   }
 

@@ -9,6 +9,7 @@ import '../../services/firma_digitale_service.dart';
 import '../../models/firma_digitale_models.dart';
 import '../../services/socio_service.dart';
 import '../../services/http_client_service.dart';
+import '../../config/api_config.dart';
 import '../servizi/pagamento_screen.dart';
 import '../firma_digitale/firma_documento_screen.dart';
 import '../prenota_appuntamento/seleziona_slot_screen.dart';
@@ -1273,24 +1274,20 @@ class _CalendarScreenState extends State<CalendarScreen>
       }
     }
 
-    // 2) Prova a costruire l'URL pubblico della ricevuta a partire dal nome file
-    //    e scaricalo in modo autenticato.
-    if (receiptFilename != null && receiptFilename.trim().isNotEmpty) {
-      final fileNameEncoded = Uri.encodeComponent(receiptFilename.trim());
-      final candidates = [
-        'https://www.wecoop.org/wp-content/uploads/ricevute/$fileNameEncoded',
-        'https://www.wecoop.org/wp-content/uploads/wecoop-ricevute/$fileNameEncoded',
-        'https://www.wecoop.org/wp-content/uploads/wecoop-documenti-ricevute/$fileNameEncoded',
-      ];
-
-      print('🧾 [$tag] provo candidati download autenticato da filename=$receiptFilename');
-      for (final candidate in candidates) {
-        final openedAuth = await _apriPdfFallbackAutenticato(candidate);
-        print('🧾 [$tag] candidate=$candidate opened=$openedAuth');
-        if (openedAuth) {
-          return true;
-        }
-      }
+    // 2) Fallback: genera/scarica la ricevuta dal backend Node usando il
+    //    paymentId. L'endpoint autenticato GET /api/pagamento/:id/ricevuta
+    //    ritorna direttamente il PDF (rigenerandolo se necessario) e, se lo
+    //    storage DigitalOcean Spaces è configurato, lo archivia lì.
+    //    NB: le vecchie URL pubbliche WordPress (wp-content/uploads/...) non
+    //    sono più valide dopo la migrazione a DigitalOcean Spaces, dove le key
+    //    sono randomiche (fatture/<timestamp>-<random>.pdf) e non ricostruibili
+    //    dal solo nome file.
+    final ricevutaUrl = '${ApiConfig.baseUrl}/pagamento/$paymentId/ricevuta';
+    print('🧾 [$tag] provo fallback backend ricevuta url=$ricevutaUrl (filename=$receiptFilename)');
+    final openedBackend = await _apriPdfFallbackAutenticato(ricevutaUrl);
+    print('🧾 [$tag] fallback backend opened=$openedBackend');
+    if (openedBackend) {
+      return true;
     }
 
     print('❌ [$tag] fallback fallito paymentId=$paymentId');

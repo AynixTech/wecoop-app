@@ -36,28 +36,38 @@ class Pagamento {
     // Parse importo gestendo sia String che num
     double parseImporto(dynamic value) {
       if (value is num) return value.toDouble();
-      if (value is String) return double.parse(value);
+      if (value is String) return double.tryParse(value) ?? 0.0;
       return 0.0;
     }
-    
+
+    // Il backend Node/Postgres può restituire gli id come stringa (BIGINT).
+    int parseInt(dynamic value) {
+      if (value is int) return value;
+      if (value is num) return value.toInt();
+      if (value is String) return int.tryParse(value) ?? 0;
+      return 0;
+    }
+
+    DateTime? parseDate(dynamic value) {
+      if (value == null) return null;
+      if (value is DateTime) return value;
+      return DateTime.tryParse(value.toString());
+    }
+
     return Pagamento(
-      id: json['id'] as int,
-      richiestaId: json['richiesta_id'] as int,
-      userId: json['user_id'] as int,
+      id: parseInt(json['id']),
+      richiestaId: parseInt(json['richiesta_id']),
+      userId: parseInt(json['user_id']),
       importo: parseImporto(json['importo']),
-      stato: json['stato'] as String,
-      metodoPagamento: json['metodo_pagamento'] as String?,
-      transactionId: json['transaction_id'] as String?,
-      note: json['note'] as String?,
-      servizio: json['servizio'] as String?,
-      numeroPratica: json['numero_pratica'] as String?,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: json['updated_at'] != null 
-          ? DateTime.parse(json['updated_at'] as String) 
-          : null,
-      paidAt: json['paid_at'] != null 
-          ? DateTime.parse(json['paid_at'] as String) 
-          : null,
+      stato: (json['stato'] ?? 'pending').toString(),
+      metodoPagamento: json['metodo_pagamento']?.toString(),
+      transactionId: json['transaction_id']?.toString(),
+      note: json['note']?.toString(),
+      servizio: json['servizio']?.toString(),
+      numeroPratica: json['numero_pratica']?.toString(),
+      createdAt: parseDate(json['created_at']) ?? DateTime.now(),
+      updatedAt: parseDate(json['updated_at']),
+      paidAt: parseDate(json['paid_at']),
     );
   }
 

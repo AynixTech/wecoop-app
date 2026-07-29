@@ -288,7 +288,14 @@ class FirmaDigitaleService {
           );
           return OTPVerifyResponse.fromJson(otpVerifyFallbackPayload);
         } else {
-          final tentativiRimasti = data['tentativi_rimasti'] as int?;
+          final rawTentativi = data['tentativi_rimasti'];
+          final tentativiRimasti = rawTentativi is int
+              ? rawTentativi
+              : (rawTentativi is num
+                  ? rawTentativi.toInt()
+                  : (rawTentativi is String
+                      ? int.tryParse(rawTentativi)
+                      : null));
           throw FirmaDigitaleException(
             message: data['error'] ?? 'OTP non valido',
             code: data['code'] ?? 'INVALID_OTP',

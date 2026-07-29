@@ -21,15 +21,19 @@ class Post {
     String rawExcerpt = _rendered(json['excerpt']);
     String cleanExcerpt = parse(rawExcerpt).body?.text ?? '';
 
-    // Recupera l'immagine in evidenza, se esiste
-    String featuredImage = '';
-    final embedded = json['_embedded'];
-    if (embedded is Map) {
-      final media = embedded['wp:featuredmedia'];
-      if (media is List && media.isNotEmpty) {
-        final first = media.first;
-        if (first is Map && first['source_url'] != null) {
-          featuredImage = first['source_url'].toString();
+    // Recupera l'immagine in evidenza.
+    // Backend Node -> campo piatto "image_url".
+    // Legacy WordPress -> _embedded['wp:featuredmedia'][0]['source_url'].
+    String featuredImage = (json['image_url'] ?? '').toString();
+    if (featuredImage.isEmpty) {
+      final embedded = json['_embedded'];
+      if (embedded is Map) {
+        final media = embedded['wp:featuredmedia'];
+        if (media is List && media.isNotEmpty) {
+          final first = media.first;
+          if (first is Map && first['source_url'] != null) {
+            featuredImage = first['source_url'].toString();
+          }
         }
       }
     }

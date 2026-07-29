@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
-import 'package:wecoop_app/services/http_client_service.dart';
-import 'package:wecoop_app/services/maintenance_handler.dart';
-import 'dart:convert';
+import 'package:wecoop_app/services/supporto_service.dart';
 
 /// Bubble button fisso in basso a destra che apre la modale di supporto al click
 class HelpButtonWidget extends StatefulWidget {
@@ -33,7 +30,6 @@ class HelpButtonWidget extends StatefulWidget {
 
 class _HelpButtonWidgetState extends State<HelpButtonWidget> {
   bool _isSubmitting = false;
-  final _storage = SecureStorageService();
 
   /// Mostra il dialog "Hai bisogno di aiuto?" quando l'utente clicca il bubble
   void _showHelpDialog() {
@@ -101,82 +97,37 @@ class _HelpButtonWidgetState extends State<HelpButtonWidget> {
     );
   }
 
-  /// Crea una richiesta di supporto chiamando l'API backend
+  /// Crea una richiesta di supporto chiamando il backend Node via SupportoService.
   Future<void> _creaRichiestaSupporto() async {
     final localizations = AppLocalizations.of(context);
     if (localizations == null) return;
-    
+
     setState(() {
       _isSubmitting = true;
     });
 
     try {
-      // Recupera dati utente
-      final token = await _storage.read(key: 'jwt_token');
-      final userId = await _storage.read(key: 'user_id');
-      final userEmail = await _storage.read(key: 'user_email');
-      final userName = await _storage.read(key: 'user_display_name');
-      final userPhone = await _storage.read(key: 'last_login_phone');
-
-      if (token == null || userId == null) {
-        _showErrorSnackbar(localizations.errorNotAuthenticated);
-        return;
-      }
-
-      final url = Uri.parse('https://www.wecoop.org/wp-json/wecoop/v1/supporto/richiesta');
-      
-      final body = {
-        'user_id': userId,
-        'service_name': widget.serviceName,
-        'service_category': widget.serviceCategory ?? 'non_specificato',
-        'current_screen': widget.currentScreen ?? 'non_specificato',
-        'user_email': userEmail ?? '',
-        'user_name': userName ?? '',
-        'user_phone': userPhone ?? '',
-        'tipo_richiesta': 'aiuto_manuale',
-        'priorita': 'media',
-        'messaggio': 'L\'utente ha richiesto aiuto cliccando il bubble WhatsApp nel servizio ${widget.serviceName}',
-        'timestamp': DateTime.now().toIso8601String(),
-      };
-
-      print('\n📤 RICHIESTA SUPPORTO:');
-      print('   URL: $url');
-      print('   Headers: Content-Type: application/json');
-      print('   Authorization: Bearer ${token.substring(0, 20)}...');
-      print('   Body:');
-      print(jsonEncode(body));
-
-      final response = await HttpClientService.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(body),
+      final result = await SupportoService.creaRichiesta(
+        serviceName: widget.serviceName,
+        serviceCategory: widget.serviceCategory ?? 'non_specificato',
+        currentScreen: widget.currentScreen ?? 'non_specificato',
+        tipoRichiesta: 'aiuto_manuale',
+        priorita: 'media',
+        messaggio:
+            'L\'utente ha richiesto aiuto cliccando il bubble WhatsApp nel servizio ${widget.serviceName}',
       );
-      print('\n📥 RISPOSTA SUPPORTO:');
-      print('   Status: ${response.statusCode}');
-      print('   Body: ${response.body}');
 
-      if (MaintenanceHandler.isPlatformUpdateStatusCode(response.statusCode)) {
-        return;
-      }
+      if (!mounted) return;
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = jsonDecode(response.body);
-        print('✅ Richiesta supporto creata!');
-        print('   ID: ${data['data']?['id'] ?? 'N/A'}');
-        print('   Numero Ticket: ${data['data']?['numero_ticket'] ?? 'N/A'}');
-        print('   Status: ${data['data']?['status'] ?? 'N/A'}');
-        
-        _showSuccessDialog(data['data']?['numero_ticket']);
+      if (result['success'] == true) {
+        _showSuccessDialog(result['numero_ticket']?.toString());
       } else {
-        print('❌ Errore nella risposta: ${response.statusCode}');
-        _showErrorSnackbar(localizations.errorSendingRequest);
+        _showErrorSnackbar(
+          (result['message'] as String?) ?? localizations.errorSendingRequest,
+        );
       }
     } catch (e) {
-      print('❌ Errore richiesta supporto: $e');
-      _showErrorSnackbar(localizations.connectionError);
+      if (mounted) _showErrorSnackbar(localizations.connectionError);
     } finally {
       if (mounted) {
         setState(() {

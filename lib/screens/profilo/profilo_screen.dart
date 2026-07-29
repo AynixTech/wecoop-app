@@ -22,6 +22,7 @@ import '../../models/evento_model.dart';
 import '../eventi/evento_detail_screen.dart';
 import 'completa_profilo_screen.dart';
 import 'documenti_screen.dart';
+import 'mie_richieste_screen.dart';
 import 'storico_pratiche_screen.dart';
 
 final storage = SecureStorageService();
@@ -1105,6 +1106,24 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const StoricoPraticheScreen(),
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 20),
+
+            _buildActionCard(
+              context: context,
+              icon: Icons.support_agent_outlined,
+              accentColor: const Color(0xFF25D366),
+              title: 'Le mie richieste',
+              subtitle: 'Consulta le tue richieste di supporto',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MieRichiesteScreen(),
                   ),
                 );
               },

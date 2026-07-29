@@ -16,25 +16,45 @@ class Post {
   });
 
   factory Post.fromJson(Map<String, dynamic> json) {
-    // Pulisce l'excerpt dai tag HTML
-    String rawExcerpt = json['excerpt']['rendered'] ?? '';
+    // Alcuni endpoint WP restituiscono i campi come {rendered: ...},
+    // altri come stringa diretta. Gestiamo entrambi i casi.
+    String rawExcerpt = _rendered(json['excerpt']);
     String cleanExcerpt = parse(rawExcerpt).body?.text ?? '';
 
     // Recupera l'immagine in evidenza, se esiste
     String featuredImage = '';
-    if (json['_embedded'] != null &&
-        json['_embedded']['wp:featuredmedia'] != null &&
-        (json['_embedded']['wp:featuredmedia'] as List).isNotEmpty) {
-      featuredImage =
-          json['_embedded']['wp:featuredmedia'][0]['source_url'] ?? '';
+    final embedded = json['_embedded'];
+    if (embedded is Map) {
+      final media = embedded['wp:featuredmedia'];
+      if (media is List && media.isNotEmpty) {
+        final first = media.first;
+        if (first is Map && first['source_url'] != null) {
+          featuredImage = first['source_url'].toString();
+        }
+      }
     }
 
     return Post(
-      id: json['id'],
-      title: json['title']['rendered'] ?? '',
+      id: _parseInt(json['id']),
+      title: _rendered(json['title']),
       excerpt: cleanExcerpt,
       imageUrl: featuredImage,
-      link: json['link'] ?? '',
+      link: json['link']?.toString() ?? '',
     );
+  }
+
+  /// Estrae il valore testuale da un campo WP che può essere
+  /// una Map {rendered: "..."} oppure direttamente una stringa.
+  static String _rendered(dynamic value) {
+    if (value == null) return '';
+    if (value is Map) return (value['rendered'] ?? '').toString();
+    return value.toString();
+  }
+
+  static int _parseInt(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
   }
 }

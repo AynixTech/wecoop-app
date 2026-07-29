@@ -133,6 +133,8 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
   }
 
   Future<void> _completaProfilo() async {
+    // Evita doppio invio (doppio tap sul bottone).
+    if (_isSubmitting) return;
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -194,8 +196,13 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
         // Upload documenti se presenti
         await _uploadDocumenti();
 
-        // Aggiorna flag profilo_completo in storage
-        if (result['data']['profilo_completo'] == true) {
+        // Aggiorna flag profilo_completo in storage.
+        // `data` può essere assente/null nella response: accesso null-safe.
+        final data = result['data'];
+        final profiloCompleto = data is Map ? data['profilo_completo'] : null;
+        if (profiloCompleto == true || profiloCompleto == null) {
+          // Se il server non specifica il flag ma la chiamata ha avuto successo,
+          // consideriamo il profilo completato.
           await _storage.write(key: 'profilo_completo', value: 'true');
         }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import '../../models/evento_model.dart';
 import '../../services/eventi_service.dart';
 import '../../services/app_localizations.dart';
@@ -222,8 +223,8 @@ class _EventoCard extends StatelessWidget {
                         print('   Error: $error');
                         return Container(
                           height: 180,
-                          color: const Color(0xFFE3F2FD),
-                          child: const Icon(Icons.event, size: 64, color: Color(0xFF2196F3)),
+                          color: AppColors.infoBg,
+                          child: const Icon(Icons.event, size: 64, color: AppColors.info),
                         );
                       },
                     ),
@@ -281,7 +282,7 @@ class _EventoCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE3F2FD),
+                        color: AppColors.infoBg,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -289,7 +290,7 @@ class _EventoCard extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF2196F3),
+                          color: AppColors.info,
                         ),
                       ),
                     ),
@@ -299,13 +300,13 @@ class _EventoCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A1A1A),
+                      color: AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      const Icon(Icons.calendar_today, size: 16, color: Color(0xFF2196F3)),
+                      const Icon(Icons.calendar_today, size: 16, color: AppColors.info),
                       const SizedBox(width: 8),
                       Text(
                         _formatData(evento.dataInizio, evento.oraInizio),
@@ -319,7 +320,7 @@ class _EventoCard extends StatelessWidget {
                       Icon(
                         evento.online ? Icons.videocam : Icons.location_on,
                         size: 16,
-                        color: const Color(0xFF2196F3),
+                        color: AppColors.info,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
@@ -338,7 +339,7 @@ class _EventoCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(Icons.people, size: 16, color: Color(0xFF2196F3)),
+                        const Icon(Icons.people, size: 16, color: AppColors.info),
                         const SizedBox(width: 8),
                         Text(
                           '${evento.partecipantiCount}/${evento.maxPartecipanti > 0 ? evento.maxPartecipanti : '∞'} ${l10n.participants}',
@@ -349,7 +350,7 @@ class _EventoCard extends StatelessWidget {
                             padding: const EdgeInsets.only(left: 8),
                             child: Text(
                               '(${evento.postiDisponibili} ${l10n.spotsRemaining})',
-                              style: const TextStyle(fontSize: 12, color: Colors.orange, fontWeight: FontWeight.bold),
+                              style: const TextStyle(fontSize: 12, color: AppColors.warning, fontWeight: FontWeight.bold),
                             ),
                           ),
                       ],
@@ -359,7 +360,7 @@ class _EventoCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(Icons.euro, size: 16, color: Color(0xFF2196F3)),
+                        const Icon(Icons.euro, size: 16, color: AppColors.info),
                         const SizedBox(width: 8),
                         Text(
                           evento.prezzoFormattato,

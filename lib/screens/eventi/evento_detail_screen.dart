@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/evento_model.dart';
 import '../../services/eventi_service.dart';
@@ -155,8 +156,8 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                           _evento!.immagineCopertina!,
                           fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) => Container(
-                            color: const Color(0xFFE3F2FD),
-                            child: const Icon(Icons.event, size: 100, color: Color(0xFF2196F3)),
+                            color: AppColors.infoBg,
+                            child: const Icon(Icons.event, size: 100, color: AppColors.info),
                           ),
                         ),
                         Container(
@@ -174,8 +175,8 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                       ],
                     )
                   : Container(
-                      color: const Color(0xFFE3F2FD),
-                      child: const Icon(Icons.event, size: 100, color: Color(0xFF2196F3)),
+                      color: AppColors.infoBg,
+                      child: const Icon(Icons.event, size: 100, color: AppColors.info),
                     ),
               title: Text(
                 _evento!.titolo,
@@ -204,7 +205,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE3F2FD),
+                        color: AppColors.infoBg,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -212,7 +213,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF2196F3),
+                          color: AppColors.info,
                         ),
                       ),
                     ),
@@ -390,7 +391,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                             ? null
                             : _iscriviEvento,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2196F3),
+                          backgroundColor: AppColors.info,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           disabledBackgroundColor: Colors.grey,
@@ -418,7 +419,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 24, color: const Color(0xFF2196F3)),
+          Icon(icon, size: 24, color: AppColors.info),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -438,14 +439,14 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF1A1A1A),
+                    color: AppColors.textPrimary,
                   ),
                 ),
               ],
             ),
           ),
           if (onTap != null)
-            const Icon(Icons.open_in_new, size: 20, color: Color(0xFF2196F3)),
+            const Icon(Icons.open_in_new, size: 20, color: AppColors.info),
         ],
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wecoop_app/models/project_opportunity_catalog.dart';
 import 'package:wecoop_app/services/interessati_service.dart';
+import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/screens/servizi/lavoro_orientamento_screen.dart';
 import 'package:wecoop_app/screens/servizi/accoglienza_screen.dart';
 import 'package:wecoop_app/screens/servizi/educazione_finanziaria_credito_screen.dart';
@@ -76,13 +77,11 @@ class ProjectCategoryDetailScreen extends StatelessWidget {
         showDialog<void>(
           context: context,
           builder: (context) => AlertDialog(
-            content: const Text(
-              'Grazie per il tuo interessamento, appena sara disponibile ti manderemo un messaggio.',
-            ),
+            content: Text(AppLocalizations.of(context)!.interestThankYou),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
+                child: Text(AppLocalizations.of(context)!.ok),
               ),
             ],
           ),
@@ -111,13 +110,11 @@ class ProjectCategoryDetailScreen extends StatelessWidget {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        content: const Text(
-          'Grazie per il tuo interessamento, appena sara disponibile ti manderemo un messaggio.',
-        ),
+        content: Text(AppLocalizations.of(context)!.interestThankYou),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+            child: Text(AppLocalizations.of(context)!.ok),
           ),
         ],
       ),

@@ -1110,4 +1110,40 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get annunciAiError => 'خطأ في الذكاء الاصطناعي';
+
+  @override
+  String get statusOpen => 'مفتوحة';
+
+  @override
+  String get statusInProgress => 'قيد المعالجة';
+
+  @override
+  String get statusResolved => 'تم الحل';
+
+  @override
+  String get statusClosed => 'مغلقة';
+
+  @override
+  String get statusToPay => 'بانتظار الدفع';
+
+  @override
+  String get statusToSign => 'بانتظار التوقيع';
+
+  @override
+  String get statusWaitingAppointment => 'بانتظار الموعد';
+
+  @override
+  String get statusPending => 'قيد الانتظار';
+
+  @override
+  String get statusCompleted => 'مكتملة';
+
+  @override
+  String get priorityHigh => 'عالية';
+
+  @override
+  String get priorityMedium => 'متوسطة';
+
+  @override
+  String get priorityLow => 'منخفضة';
 }

@@ -377,5 +377,18 @@
   "annunciAiMinChars": "请至少输入12个字符以使用AI。",
   "annunciAiGenerated": "✨ AI描述已生成。您可以在发送前修改它。",
   "annunciAiTemplate": "✨ 改进的描述（模板）。您可以修改它。",
-  "annunciAiError": "AI错误"
+  "annunciAiError": "AI错误",
+
+  "statusOpen": "待处理",
+  "statusInProgress": "处理中",
+  "statusResolved": "已解决",
+  "statusClosed": "已关闭",
+  "statusToPay": "待付款",
+  "statusToSign": "待签署",
+  "statusWaitingAppointment": "等待预约",
+  "statusPending": "等待中",
+  "statusCompleted": "已完成",
+  "priorityHigh": "高",
+  "priorityMedium": "中",
+  "priorityLow": "低"
 }

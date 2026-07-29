@@ -377,5 +377,18 @@
   "annunciAiMinChars": "اكتب 12 حرفاً على الأقل لاستخدام الذكاء الاصطناعي.",
   "annunciAiGenerated": "✨ تم توليد الوصف بالذكاء الاصطناعي. يمكنك تعديله قبل الإرسال.",
   "annunciAiTemplate": "✨ وصف محسّن (قالب). يمكنك تعديله.",
-  "annunciAiError": "خطأ في الذكاء الاصطناعي"
+  "annunciAiError": "خطأ في الذكاء الاصطناعي",
+
+  "statusOpen": "مفتوحة",
+  "statusInProgress": "قيد المعالجة",
+  "statusResolved": "تم الحل",
+  "statusClosed": "مغلقة",
+  "statusToPay": "بانتظار الدفع",
+  "statusToSign": "بانتظار التوقيع",
+  "statusWaitingAppointment": "بانتظار الموعد",
+  "statusPending": "قيد الانتظار",
+  "statusCompleted": "مكتملة",
+  "priorityHigh": "عالية",
+  "priorityMedium": "متوسطة",
+  "priorityLow": "منخفضة"
 }

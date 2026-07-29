@@ -377,5 +377,18 @@
   "annunciAiMinChars": "Scrivi almeno 12 caratteri di descrizione per usare l'AI.",
   "annunciAiGenerated": "✨ Descrizione AI generata. Puoi modificarla prima di inviare.",
   "annunciAiTemplate": "✨ Descrizione migliorata (template). Puoi modificarla.",
-  "annunciAiError": "Errore AI"
+  "annunciAiError": "Errore AI",
+
+  "statusOpen": "Aperta",
+  "statusInProgress": "In Lavorazione",
+  "statusResolved": "Risolta",
+  "statusClosed": "Chiusa",
+  "statusToPay": "Da Pagare",
+  "statusToSign": "Da Firmare",
+  "statusWaitingAppointment": "In Attesa App.",
+  "statusPending": "In Attesa",
+  "statusCompleted": "Completata",
+  "priorityHigh": "Alta",
+  "priorityMedium": "Media",
+  "priorityLow": "Bassa"
 }

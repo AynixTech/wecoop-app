@@ -377,5 +377,18 @@
   "vatRefund": "VAT refund",
   "fiscalRegime": "Tax regime",
   "taxDeclaration": "Tax return",
-  "questionDetail": "Question detail"
+  "questionDetail": "Question detail",
+
+  "statusOpen": "Open",
+  "statusInProgress": "In Progress",
+  "statusResolved": "Resolved",
+  "statusClosed": "Closed",
+  "statusToPay": "To Pay",
+  "statusToSign": "To Sign",
+  "statusWaitingAppointment": "Awaiting Appt.",
+  "statusPending": "Pending",
+  "statusCompleted": "Completed",
+  "priorityHigh": "High",
+  "priorityMedium": "Medium",
+  "priorityLow": "Low"
 }

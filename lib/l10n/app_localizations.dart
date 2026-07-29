@@ -2215,6 +2215,78 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Errore AI'**
   String get annunciAiError;
+
+  /// No description provided for @statusOpen.
+  ///
+  /// In it, this message translates to:
+  /// **'Aperta'**
+  String get statusOpen;
+
+  /// No description provided for @statusInProgress.
+  ///
+  /// In it, this message translates to:
+  /// **'In Lavorazione'**
+  String get statusInProgress;
+
+  /// No description provided for @statusResolved.
+  ///
+  /// In it, this message translates to:
+  /// **'Risolta'**
+  String get statusResolved;
+
+  /// No description provided for @statusClosed.
+  ///
+  /// In it, this message translates to:
+  /// **'Chiusa'**
+  String get statusClosed;
+
+  /// No description provided for @statusToPay.
+  ///
+  /// In it, this message translates to:
+  /// **'Da Pagare'**
+  String get statusToPay;
+
+  /// No description provided for @statusToSign.
+  ///
+  /// In it, this message translates to:
+  /// **'Da Firmare'**
+  String get statusToSign;
+
+  /// No description provided for @statusWaitingAppointment.
+  ///
+  /// In it, this message translates to:
+  /// **'In Attesa App.'**
+  String get statusWaitingAppointment;
+
+  /// No description provided for @statusPending.
+  ///
+  /// In it, this message translates to:
+  /// **'In Attesa'**
+  String get statusPending;
+
+  /// No description provided for @statusCompleted.
+  ///
+  /// In it, this message translates to:
+  /// **'Completata'**
+  String get statusCompleted;
+
+  /// No description provided for @priorityHigh.
+  ///
+  /// In it, this message translates to:
+  /// **'Alta'**
+  String get priorityHigh;
+
+  /// No description provided for @priorityMedium.
+  ///
+  /// In it, this message translates to:
+  /// **'Media'**
+  String get priorityMedium;
+
+  /// No description provided for @priorityLow.
+  ///
+  /// In it, this message translates to:
+  /// **'Bassa'**
+  String get priorityLow;
 }
 
 class _AppLocalizationsDelegate

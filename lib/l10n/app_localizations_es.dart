@@ -1123,4 +1123,40 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get annunciAiError => 'Error IA';
+
+  @override
+  String get statusOpen => 'Abierta';
+
+  @override
+  String get statusInProgress => 'En Proceso';
+
+  @override
+  String get statusResolved => 'Resuelta';
+
+  @override
+  String get statusClosed => 'Cerrada';
+
+  @override
+  String get statusToPay => 'Por Pagar';
+
+  @override
+  String get statusToSign => 'Por Firmar';
+
+  @override
+  String get statusWaitingAppointment => 'Esperando Cita';
+
+  @override
+  String get statusPending => 'En Espera';
+
+  @override
+  String get statusCompleted => 'Completada';
+
+  @override
+  String get priorityHigh => 'Alta';
+
+  @override
+  String get priorityMedium => 'Media';
+
+  @override
+  String get priorityLow => 'Baja';
 }

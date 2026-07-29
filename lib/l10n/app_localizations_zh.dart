@@ -1076,4 +1076,40 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get annunciAiError => 'AI错误';
+
+  @override
+  String get statusOpen => '待处理';
+
+  @override
+  String get statusInProgress => '处理中';
+
+  @override
+  String get statusResolved => '已解决';
+
+  @override
+  String get statusClosed => '已关闭';
+
+  @override
+  String get statusToPay => '待付款';
+
+  @override
+  String get statusToSign => '待签署';
+
+  @override
+  String get statusWaitingAppointment => '等待预约';
+
+  @override
+  String get statusPending => '等待中';
+
+  @override
+  String get statusCompleted => '已完成';
+
+  @override
+  String get priorityHigh => '高';
+
+  @override
+  String get priorityMedium => '中';
+
+  @override
+  String get priorityLow => '低';
 }

@@ -376,5 +376,18 @@
   "vatRefund": "Devolución de IVA",
   "fiscalRegime": "Régimen fiscal",
   "taxDeclaration": "Declaración de impuestos",
-  "questionDetail": "Detalle de la pregunta"
+  "questionDetail": "Detalle de la pregunta",
+
+  "statusOpen": "Abierta",
+  "statusInProgress": "En Proceso",
+  "statusResolved": "Resuelta",
+  "statusClosed": "Cerrada",
+  "statusToPay": "Por Pagar",
+  "statusToSign": "Por Firmar",
+  "statusWaitingAppointment": "Esperando Cita",
+  "statusPending": "En Espera",
+  "statusCompleted": "Completada",
+  "priorityHigh": "Alta",
+  "priorityMedium": "Media",
+  "priorityLow": "Baja"
 }

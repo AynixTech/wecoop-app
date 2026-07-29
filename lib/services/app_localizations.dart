@@ -513,6 +513,7 @@ class AppLocalizations {
           'Abbiamo ricevuto la tua richiesta di adesione. Ti contatteremo presto per completare il processo.',
       'ok': 'OK',
       'interestThankYou': 'Grazie per il tuo interesse: appena sarà disponibile ti invieremo un messaggio.',
+      'searchAddress': 'Cerca indirizzo...',
       'error': 'Errore',
       'emailAlreadyRegistered': 'Email già registrata',
       'emailExistsMessage':
@@ -2120,6 +2121,7 @@ class AppLocalizations {
       'requestReceived': 'لقد تلقينا طلب انضمامك. سنتواصل معك قريبًا لإكمال العملية.',
       'ok': 'موافق',
       'interestThankYou': 'شكراً لاهتمامك: سنرسل لك رسالة بمجرد توفره.',
+      'searchAddress': 'ابحث عن العنوان...',
       'error': 'خطأ',
       'emailAlreadyRegistered': 'البريد الإلكتروني مسجّل بالفعل',
       'emailExistsMessage': 'يبدو أن هذا البريد الإلكتروني مسجّل بالفعل في نظامنا. هل تريد تسجيل الدخول ببيانات اعتمادك؟',
@@ -3464,6 +3466,7 @@ class AppLocalizations {
       'requestReceived': '我们已收到您的入会申请。我们将尽快联系您以完成流程。',
       'ok': '确定',
       'interestThankYou': '感谢您的关注：一旦可用，我们会向您发送消息。',
+      'searchAddress': '搜索地址...',
       'error': '错误',
       'emailAlreadyRegistered': '邮箱已注册',
       'emailExistsMessage': '该邮箱在我们的系统中已注册。您想用您的凭据登录吗？',
@@ -4701,6 +4704,7 @@ class AppLocalizations {
           'We have received your membership request. We will contact you soon to complete the process.',
       'ok': 'OK',
       'interestThankYou': 'Thank you for your interest: we will message you as soon as it is available.',
+      'searchAddress': 'Search address...',
       'error': 'Error',
       'emailAlreadyRegistered': 'Email already registered',
       'emailExistsMessage':
@@ -6202,6 +6206,7 @@ class AppLocalizations {
           'Hemos recibido tu solicitud de membresía. Nos pondremos en contacto contigo pronto para completar el proceso.',
       'ok': 'OK',
       'interestThankYou': 'Gracias por tu interés: te enviaremos un mensaje en cuanto esté disponible.',
+      'searchAddress': 'Buscar dirección...',
       'error': 'Error',
       'emailAlreadyRegistered': 'Email ya registrado',
       'emailExistsMessage':
@@ -7285,6 +7290,7 @@ class AppLocalizations {
   String get noSupportRequests => translate('noSupportRequests');
   String get priority => translate('priority');
   String get interestThankYou => translate('interestThankYou');
+  String get searchAddress => translate('searchAddress');
   String get welcome => translate('welcome');
   String get user => translate('user');
   String get profile => translate('profile');

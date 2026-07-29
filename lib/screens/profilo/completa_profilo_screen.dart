@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import '../../services/app_localizations.dart';
 import '../../services/socio_service.dart';
+import '../../services/address_autocomplete_service.dart';
+import '../../widgets/design_system/design_system.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 
@@ -280,176 +282,256 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
 
     return Scaffold(
       backgroundColor: scheme.surface,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(l10n.completeProfile),
         elevation: 0,
-        backgroundColor: scheme.primary,
-        foregroundColor: scheme.onPrimary,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
-      body:
-          _isLoading
-              ? const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              scheme.surfaceContainerLowest,
+              Color.alphaBlend(scheme.primary.withOpacity(0.06), scheme.surface),
+            ],
+          ),
+        ),
+        child:
+            _isLoading
+                ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(color: scheme.primary),
+                      const SizedBox(height: 16),
+                      Text(
+                        l10n.translate('loadingData'),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: scheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+                : Column(
                   children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 16),
-                    Text('Caricamento dati...'),
+                    _buildHeader(theme, scheme, l10n),
+
+                    // Content
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+                        child: Form(
+                          key: _formKey,
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            transitionBuilder: (child, animation) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: SlideTransition(
+                                  position: Tween<Offset>(
+                                    begin: const Offset(0.06, 0),
+                                    end: Offset.zero,
+                                  ).animate(animation),
+                                  child: child,
+                                ),
+                              );
+                            },
+                            child: _buildStepContent(_currentStep, l10n),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    _buildNavigationBar(theme, scheme, l10n),
                   ],
                 ),
-              )
-              : Column(
-                children: [
-                  // Progress Indicator
-                  Container(
-                    color: scheme.surface,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 24,
-                      horizontal: 16,
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            _buildStepIndicator(
-                              0,
-                              l10n.personalData,
-                              Icons.person,
-                            ),
-                            _buildStepConnector(0),
-                            _buildStepIndicator(1, l10n.address, Icons.home),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        LinearProgressIndicator(
-                          value: (_currentStep + 1) / 2,
-                          backgroundColor: scheme.surfaceContainerHighest,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            scheme.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+      ),
+    );
+  }
 
-                  // Content
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
-                      child: Form(
-                        key: _formKey,
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 300),
-                          child: _buildStepContent(_currentStep, l10n),
-                        ),
-                      ),
-                    ),
-                  ),
+  /// Header con gradiente: titolo, sottotitolo e stepper moderno.
+  Widget _buildHeader(
+    ThemeData theme,
+    ColorScheme scheme,
+    AppLocalizations l10n,
+  ) {
+    final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight;
 
-                  // Navigation Buttons
-                  Container(
-                    decoration: BoxDecoration(
-                      color: scheme.surface,
-                      boxShadow: [
-                        BoxShadow(
-                          color: scheme.shadow.withOpacity(0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, -5),
-                        ),
-                      ],
-                    ),
-                    padding: const EdgeInsets.all(16),
-                    child: SafeArea(
-                      child: Row(
-                        children: [
-                          if (_currentStep > 0)
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: _isSubmitting ? null : _previousStep,
-                                icon: const Icon(Icons.arrow_back),
-                                label: Text(l10n.back),
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
-                                  side: BorderSide(color: scheme.primary),
-                                  foregroundColor: scheme.primary,
-                                ),
-                              ),
-                            ),
-                          if (_currentStep > 0) const SizedBox(width: 12),
-                          Expanded(
-                            flex: _currentStep == 0 ? 1 : 1,
-                            child: ElevatedButton.icon(
-                              onPressed: _isSubmitting ? null : _nextStep,
-                              icon:
-                                  _isSubmitting
-                                      ? SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: scheme.onPrimary,
-                                        ),
-                                      )
-                                      : Icon(
-                                        _currentStep == 1
-                                            ? Icons.check
-                                            : Icons.arrow_forward,
-                                      ),
-                              label: Text(
-                                _currentStep == 1 ? l10n.complete : l10n.next,
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: scheme.primary,
-                                foregroundColor: scheme.onPrimary,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                elevation: 0,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.fromLTRB(20, topPadding + 4, 20, 26),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [scheme.primary, const Color(0xFF1496C1)],
+        ),
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(28),
+          bottomRight: Radius.circular(28),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: scheme.primary.withOpacity(0.20),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.translate('completeProfileHeaderTitle'),
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            l10n.translate('completeProfileHeaderSubtitle'),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: Colors.white.withOpacity(0.85),
+              height: 1.35,
+            ),
+          ),
+          const SizedBox(height: 22),
+          Row(
+            children: [
+              _buildStepIndicator(0, l10n.personalData, Icons.person_rounded),
+              _buildStepConnector(0),
+              _buildStepIndicator(1, l10n.address, Icons.home_rounded),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Barra inferiore con i pulsanti di navigazione.
+  Widget _buildNavigationBar(
+    ThemeData theme,
+    ColorScheme scheme,
+    AppLocalizations l10n,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        boxShadow: [
+          BoxShadow(
+            color: scheme.shadow.withOpacity(0.08),
+            blurRadius: 16,
+            offset: const Offset(0, -6),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      child: SafeArea(
+        top: false,
+        child: Row(
+          children: [
+            if (_currentStep > 0)
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _isSubmitting ? null : _previousStep,
+                  icon: const Icon(Icons.arrow_back_rounded, size: 20),
+                  label: Text(l10n.back),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    side: BorderSide(color: scheme.primary.withOpacity(0.5)),
+                    foregroundColor: scheme.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                ],
+                ),
               ),
+            if (_currentStep > 0) const SizedBox(width: 12),
+            Expanded(
+              child: FilledButton.icon(
+                onPressed: _isSubmitting ? null : _nextStep,
+                icon:
+                    _isSubmitting
+                        ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: scheme.onPrimary,
+                          ),
+                        )
+                        : Icon(
+                          _currentStep == 1
+                              ? Icons.check_rounded
+                              : Icons.arrow_forward_rounded,
+                          size: 20,
+                        ),
+                label: Text(
+                  _currentStep == 1 ? l10n.complete : l10n.next,
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+                style: FilledButton.styleFrom(
+                  backgroundColor: scheme.primary,
+                  foregroundColor: scheme.onPrimary,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   Widget _buildStepIndicator(int step, String label, IconData icon) {
-    final scheme = Theme.of(context).colorScheme;
     final isActive = _currentStep == step;
     final isCompleted = _currentStep > step;
+    final isDone = isActive || isCompleted;
 
     return Expanded(
       child: Column(
         children: [
-          Container(
-            width: 48,
-            height: 48,
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            width: 46,
+            height: 46,
             decoration: BoxDecoration(
-              color:
-                  isCompleted
-                      ? scheme.secondary
-                      : isActive
-                      ? scheme.primary
-                      : scheme.surfaceContainerHighest,
+              color: isDone ? Colors.white : Colors.white.withOpacity(0.18),
               shape: BoxShape.circle,
+              border: Border.all(
+                color: Colors.white.withOpacity(isDone ? 1 : 0.4),
+                width: 2,
+              ),
+              boxShadow:
+                  isActive
+                      ? [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.15),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                      : null,
             ),
             child: Icon(
-              isCompleted ? Icons.check : icon,
-              color:
-                  isCompleted || isActive
-                      ? scheme.onPrimary
-                      : scheme.onSurfaceVariant,
-              size: 24,
+              isCompleted ? Icons.check_rounded : icon,
+              color: isDone ? const Color(0xFF1496C1) : Colors.white,
+              size: 22,
             ),
           ),
           const SizedBox(height: 8),
@@ -457,8 +539,8 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
             label,
             style: TextStyle(
               fontSize: 12,
-              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-              color: isActive ? scheme.primary : scheme.onSurfaceVariant,
+              fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+              color: Colors.white.withOpacity(isDone ? 1 : 0.75),
             ),
             textAlign: TextAlign.center,
             maxLines: 2,
@@ -470,14 +552,16 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
   }
 
   Widget _buildStepConnector(int step) {
-    final scheme = Theme.of(context).colorScheme;
     final isCompleted = _currentStep > step;
 
     return Expanded(
       child: Container(
-        height: 2,
-        margin: const EdgeInsets.only(bottom: 40),
-        color: isCompleted ? scheme.secondary : scheme.surfaceContainerHighest,
+        height: 3,
+        margin: const EdgeInsets.only(bottom: 28),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(isCompleted ? 1 : 0.3),
+          borderRadius: BorderRadius.circular(2),
+        ),
       ),
     );
   }
@@ -493,231 +577,234 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
     }
   }
 
-  Widget _buildPersonalDataStep(AppLocalizations l10n) {
+  /// Card contenitore con stile morbido (usata dai singoli step).
+  Widget _buildStepCard({required Key key, required List<Widget> children}) {
     final scheme = Theme.of(context).colorScheme;
-
-    return Card(
-      key: const ValueKey(0),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: scheme.outlineVariant),
+    return Container(
+      key: key,
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x120F2430),
+            blurRadius: 22,
+            offset: Offset(0, 10),
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: scheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(Icons.person, color: scheme.primary),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  l10n.personalData,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            TextFormField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: '${l10n.email} *',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                prefixIcon: const Icon(Icons.email),
-                filled: true,
-                fillColor: scheme.surfaceContainerLowest,
-              ),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _codiceFiscaleController,
-              decoration: InputDecoration(
-                labelText: '${l10n.fiscalCode} *',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                prefixIcon: const Icon(Icons.badge),
-                filled: true,
-                fillColor: scheme.surfaceContainerLowest,
-              ),
-              maxLength: 16,
-              textCapitalization: TextCapitalization.characters,
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _dataNascitaController,
-              decoration: InputDecoration(
-                labelText: l10n.birthDate,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                prefixIcon: const Icon(Icons.calendar_today),
-                hintText: 'DD/MM/YYYY',
-                helperText: 'Es: 13/07/1994',
-                filled: true,
-                fillColor: scheme.surfaceContainerLowest,
-              ),
-              keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9/]')),
-                LengthLimitingTextInputFormatter(10),
-                _DateInputFormatter(),
-              ],
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _luogoNascitaController,
-              decoration: InputDecoration(
-                labelText: l10n.birthPlace,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                prefixIcon: const Icon(Icons.location_city),
-                filled: true,
-                fillColor: scheme.surfaceContainerLowest,
-              ),
-            ),
-          ],
-        ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
       ),
     );
   }
 
-  Widget _buildAddressStep(AppLocalizations l10n) {
-    final scheme = Theme.of(context).colorScheme;
+  /// Intestazione di sezione con icona in badge, titolo e sottotitolo.
+  Widget _buildSectionHeader({
+    required IconData icon,
+    required String title,
+    String? subtitle,
+  }) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(11),
+          decoration: BoxDecoration(
+            color: scheme.primary.withOpacity(0.12),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Icon(icon, color: scheme.primary, size: 22),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              if (subtitle != null) ...[
+                const SizedBox(height: 3),
+                Text(
+                  subtitle,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 
-    return Card(
-      key: const ValueKey(1),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: scheme.outlineVariant),
+  /// Decorazione uniforme per i campi (bordi arrotondati, focus colorato).
+  InputDecoration _fieldDecoration({
+    required String label,
+    IconData? icon,
+    String? hint,
+    String? helper,
+  }) {
+    final scheme = Theme.of(context).colorScheme;
+    return InputDecoration(
+      labelText: label,
+      hintText: hint,
+      helperText: helper,
+      prefixIcon: icon != null ? Icon(icon, size: 20) : null,
+      filled: true,
+      fillColor: scheme.surfaceContainerLowest,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: scheme.outlineVariant),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: scheme.outlineVariant),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: scheme.primary, width: 1.6),
+      ),
+    );
+  }
+
+  Widget _buildPersonalDataStep(AppLocalizations l10n) {
+    return _buildStepCard(
+      key: const ValueKey(0),
+      children: [
+        _buildSectionHeader(
+          icon: Icons.person_rounded,
+          title: l10n.personalData,
+          subtitle: l10n.translate('personalDataSubtitle'),
+        ),
+        const SizedBox(height: 22),
+        TextFormField(
+          controller: _emailController,
+          decoration: _fieldDecoration(
+            label: '${l10n.email} *',
+            icon: Icons.email_outlined,
+          ),
+          keyboardType: TextInputType.emailAddress,
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: _codiceFiscaleController,
+          decoration: _fieldDecoration(
+            label: '${l10n.fiscalCode} *',
+            icon: Icons.badge_outlined,
+          ),
+          maxLength: 16,
+          textCapitalization: TextCapitalization.characters,
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _dataNascitaController,
+          decoration: _fieldDecoration(
+            label: l10n.birthDate,
+            icon: Icons.calendar_today_outlined,
+            hint: 'DD/MM/YYYY',
+            helper: 'Es: 13/07/1994',
+          ),
+          keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9/]')),
+            LengthLimitingTextInputFormatter(10),
+            _DateInputFormatter(),
+          ],
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: _luogoNascitaController,
+          decoration: _fieldDecoration(
+            label: l10n.birthPlace,
+            icon: Icons.location_city_outlined,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAddressStep(AppLocalizations l10n) {
+    return _buildStepCard(
+      key: const ValueKey(1),
+      children: [
+        _buildSectionHeader(
+          icon: Icons.home_rounded,
+          title: l10n.address,
+          subtitle: l10n.translate('addressSubtitle'),
+        ),
+        const SizedBox(height: 22),
+        AddressAutocompleteField(
+          controller: _indirizzoController,
+          label: l10n.address,
+          hint: l10n.searchAddress,
+          onSelected: (AddressSuggestion s) {
+            // Auto-compila i campi correlati dalla selezione (lingua app).
+            if (s.city.isNotEmpty) _cittaController.text = s.city;
+            if (s.postcode.isNotEmpty) _capController.text = s.postcode;
+            if (s.province.isNotEmpty) {
+              _provinciaController.text = s.province.toUpperCase();
+            }
+            setState(() {});
+          },
+        ),
+        const SizedBox(height: 16),
+        Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: scheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(Icons.home, color: scheme.primary),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  l10n.address,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            TextFormField(
-              controller: _indirizzoController,
-              decoration: InputDecoration(
-                labelText: l10n.address,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                prefixIcon: const Icon(Icons.location_on),
-                filled: true,
-                fillColor: scheme.surfaceContainerLowest,
+            Expanded(
+              flex: 2,
+              child: TextFormField(
+                controller: _cittaController,
+                decoration: _fieldDecoration(label: l10n.city),
               ),
             ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: TextFormField(
-                    controller: _cittaController,
-                    decoration: InputDecoration(
-                      labelText: l10n.city,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      filled: true,
-                      fillColor: scheme.surfaceContainerLowest,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    controller: _capController,
-                    decoration: InputDecoration(
-                      labelText: l10n.postalCode,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      filled: true,
-                      fillColor: scheme.surfaceContainerLowest,
-                    ),
-                    keyboardType: TextInputType.number,
-                    maxLength: 5,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: _provinciaController,
-                    decoration: InputDecoration(
-                      labelText: l10n.province,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      filled: true,
-                      fillColor: scheme.surfaceContainerLowest,
-                    ),
-                    maxLength: 2,
-                    textCapitalization: TextCapitalization.characters,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 2,
-                  child: TextFormField(
-                    controller: _professioneController,
-                    decoration: InputDecoration(
-                      labelText: l10n.profession,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      filled: true,
-                      fillColor: scheme.surfaceContainerLowest,
-                    ),
-                  ),
-                ),
-              ],
+            const SizedBox(width: 12),
+            Expanded(
+              child: TextFormField(
+                controller: _capController,
+                decoration: _fieldDecoration(label: l10n.postalCode),
+                keyboardType: TextInputType.number,
+                maxLength: 5,
+              ),
             ),
           ],
         ),
-      ),
+        const SizedBox(height: 4),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: _provinciaController,
+                decoration: _fieldDecoration(label: l10n.province),
+                maxLength: 2,
+                textCapitalization: TextCapitalization.characters,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              flex: 2,
+              child: TextFormField(
+                controller: _professioneController,
+                decoration: _fieldDecoration(
+                  label: l10n.profession,
+                  icon: Icons.work_outline,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

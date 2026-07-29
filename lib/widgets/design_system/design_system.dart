@@ -6,6 +6,7 @@
 /// ```
 library;
 
+export 'address_autocomplete_field.dart';
 export 'app_bottom_nav.dart';
 export 'app_button.dart';
 export 'app_card.dart';

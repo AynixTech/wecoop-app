@@ -4370,9 +4370,16 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
         title: Text(_OfferteLavoroText.tr(context, 'detailAnnouncement')),
       ),
       backgroundColor: const Color(0xFFF6F8FB),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
+      body: SafeArea(
+        top: false,
+        child: ListView(
+          padding: EdgeInsets.fromLTRB(
+            16,
+            16,
+            16,
+            16 + MediaQuery.of(context).padding.bottom,
+          ),
+          children: [
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -4658,6 +4665,7 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
             ),
           ),
         ],
+        ),
       ),
     );
   }

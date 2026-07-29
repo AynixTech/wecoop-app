@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/firma_digitale_provider.dart';
@@ -128,7 +129,7 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
             // Intestazione
             Container(
               padding: const EdgeInsets.all(16),
-              color: Colors.blue.shade50,
+              color: AppColors.infoBg,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -165,7 +166,7 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
                             children: [
                               const Icon(
                                 Icons.error_outline,
-                                color: Colors.red,
+                                color: AppColors.error,
                                 size: 48,
                               ),
                               const SizedBox(height: 16),
@@ -222,7 +223,7 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
                           ? widget.onFirmaClick
                           : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
+                        backgroundColor: AppColors.primary,
                         disabledBackgroundColor: Colors.grey.shade300,
                       ),
                       child: Text(

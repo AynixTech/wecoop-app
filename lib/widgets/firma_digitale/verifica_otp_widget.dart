@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
@@ -60,13 +61,13 @@ class _VerificaOTPWidgetState extends State<VerificaOTPWidget> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: Colors.green.shade100,
+                    color: AppColors.successBg,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.mail,
                     size: 40,
-                    color: Colors.green.shade600,
+                    color: AppColors.secondary,
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -134,14 +135,14 @@ class _VerificaOTPWidgetState extends State<VerificaOTPWidget> {
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(
-                        color: Colors.blue,
+                        color: AppColors.primary,
                         width: 2,
                       ),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(
-                        color: Colors.red,
+                        color: AppColors.error,
                       ),
                     ),
                     contentPadding: const EdgeInsets.all(16),
@@ -158,7 +159,7 @@ class _VerificaOTPWidgetState extends State<VerificaOTPWidget> {
                     '⚠️ ${l10n.translate('attemptsRemaining')}: $tentativiRimasti',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: tentativiRimasti == 1
-                              ? Colors.red
+                              ? AppColors.error
                               : Colors.orange,
                           fontWeight: FontWeight.bold,
                         ),
@@ -170,8 +171,8 @@ class _VerificaOTPWidgetState extends State<VerificaOTPWidget> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.red.shade100,
-                      border: Border.all(color: Colors.red),
+                      color: AppColors.errorBg,
+                      border: Border.all(color: AppColors.error),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Column(
@@ -184,7 +185,7 @@ class _VerificaOTPWidgetState extends State<VerificaOTPWidget> {
                               .bodyLarge
                               ?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.red,
+                                color: AppColors.error,
                               ),
                         ),
                         const SizedBox(height: 8),
@@ -194,7 +195,7 @@ class _VerificaOTPWidgetState extends State<VerificaOTPWidget> {
                               .textTheme
                               .bodyMedium
                               ?.copyWith(
-                                color: Colors.red.shade700,
+                                color: AppColors.error,
                               ),
                         ),
                       ],
@@ -222,7 +223,7 @@ class _VerificaOTPWidgetState extends State<VerificaOTPWidget> {
                             }
                           },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: AppColors.secondary,
                       disabledBackgroundColor: Colors.grey.shade300,
                     ),
                     child: provider.isLoading

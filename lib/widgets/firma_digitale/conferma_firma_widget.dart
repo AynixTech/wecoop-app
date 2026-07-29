@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/firma_digitale_provider.dart';
@@ -69,7 +70,7 @@ class _ConfermaFirmaWidgetState extends State<ConfermaFirmaWidget> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
+                    color: AppColors.infoBg,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -176,8 +177,8 @@ class _ConfermaFirmaWidgetState extends State<ConfermaFirmaWidget> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.red.shade100,
-                      border: Border.all(color: Colors.red),
+                      color: AppColors.errorBg,
+                      border: Border.all(color: AppColors.error),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Column(
@@ -190,7 +191,7 @@ class _ConfermaFirmaWidgetState extends State<ConfermaFirmaWidget> {
                               .bodyLarge
                               ?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.red,
+                                color: AppColors.error,
                               ),
                         ),
                         const SizedBox(height: 8),
@@ -200,7 +201,7 @@ class _ConfermaFirmaWidgetState extends State<ConfermaFirmaWidget> {
                               .textTheme
                               .bodyMedium
                               ?.copyWith(
-                                color: Colors.red.shade700,
+                                color: AppColors.error,
                               ),
                         ),
                       ],
@@ -237,7 +238,7 @@ class _ConfermaFirmaWidgetState extends State<ConfermaFirmaWidget> {
                                 }
                               },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
+                          backgroundColor: AppColors.secondary,
                           disabledBackgroundColor: Colors.grey.shade300,
                         ),
                         child: provider.isLoading

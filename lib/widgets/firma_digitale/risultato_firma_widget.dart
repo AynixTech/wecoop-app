@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/firma_digitale_provider.dart';
@@ -32,13 +33,13 @@ class RisultatoFirmaWidget extends StatelessWidget {
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
-                      color: Colors.green.shade100,
+                      color: AppColors.successBg,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.check_circle,
                       size: 60,
-                      color: Colors.green.shade600,
+                      color: AppColors.secondary,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -49,7 +50,7 @@ class RisultatoFirmaWidget extends StatelessWidget {
                     style:
                         Theme.of(context).textTheme.headlineSmall?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: Colors.green.shade700,
+                              color: AppColors.secondary,
                             ),
                     textAlign: TextAlign.center,
                   ),
@@ -108,8 +109,8 @@ class RisultatoFirmaWidget extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
-                      border: Border.all(color: Colors.blue.shade200),
+                      color: AppColors.infoBg,
+                      border: Border.all(color: AppColors.infoBg),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Column(
@@ -122,7 +123,7 @@ class RisultatoFirmaWidget extends StatelessWidget {
                               .bodyMedium
                               ?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.blue.shade700,
+                                color: AppColors.primaryDark,
                               ),
                         ),
                         const SizedBox(height: 8),
@@ -134,7 +135,7 @@ class RisultatoFirmaWidget extends StatelessWidget {
                               .textTheme
                               .bodySmall
                               ?.copyWith(
-                                color: Colors.blue.shade700,
+                                color: AppColors.primaryDark,
                               ),
                         ),
                       ],
@@ -152,7 +153,7 @@ class RisultatoFirmaWidget extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: onChiudi,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
+                            backgroundColor: AppColors.secondary,
                           ),
                           child: Text(
                             l10n.backToHome,

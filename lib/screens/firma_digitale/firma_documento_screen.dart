@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/firma_digitale_provider.dart';
@@ -172,11 +173,11 @@ class _FirmaDocumentoScreenState extends State<FirmaDocumentoScreen> {
 
   Color _getProgressColor(FirmaStep step) {
     if (step == FirmaStep.errore) {
-      return Colors.red;
+      return AppColors.error;
     } else if (step == FirmaStep.firmato) {
-      return Colors.green;
+      return AppColors.secondary;
     } else {
-      return Colors.blue;
+      return AppColors.primary;
     }
   }
 }

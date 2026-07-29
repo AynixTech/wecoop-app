@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/firma_digitale_provider.dart';
@@ -33,13 +34,13 @@ class _RichiestaOTPWidgetState extends State<RichiestaOTPWidget> {
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      color: Colors.blue.shade100,
+                      color: AppColors.infoBg,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.security,
                       size: 40,
-                      color: Colors.blue.shade600,
+                      color: AppColors.primary,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -67,8 +68,8 @@ class _RichiestaOTPWidgetState extends State<RichiestaOTPWidget> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.red.shade100,
-                        border: Border.all(color: Colors.red),
+                        color: AppColors.errorBg,
+                        border: Border.all(color: AppColors.error),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Column(
@@ -78,7 +79,7 @@ class _RichiestaOTPWidgetState extends State<RichiestaOTPWidget> {
                             '❌ ${l10n.error}',
                             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.red,
+                                  color: AppColors.error,
                                 ),
                           ),
                           const SizedBox(height: 8),
@@ -86,7 +87,7 @@ class _RichiestaOTPWidgetState extends State<RichiestaOTPWidget> {
                             provider.errorMessage ?? l10n.translate('unknownError'),
                             style:
                                 Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Colors.red.shade700,
+                                      color: AppColors.error,
                                     ),
                           ),
                         ],
@@ -112,7 +113,7 @@ class _RichiestaOTPWidgetState extends State<RichiestaOTPWidget> {
                               }
                             },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
+                        backgroundColor: AppColors.primary,
                         disabledBackgroundColor: Colors.grey.shade300,
                       ),
                       child: provider.isLoading

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/screens/firma_digitale/firma_documento_screen.dart';
@@ -59,7 +60,7 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.translate('userDataUnavailable')),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -80,9 +81,9 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
   Color _getColorFromStato(String stato) {
     switch (stato) {
       case 'firmato':
-        return Colors.green;
+        return AppColors.secondary;
       case 'rifiutato':
-        return Colors.red;
+        return AppColors.error;
       case 'pending_firma':
       default:
         return Colors.orange;
@@ -212,7 +213,7 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8, vertical: 4),
                                       decoration: BoxDecoration(
-                                        color: Colors.blue.shade100,
+                                        color: AppColors.infoBg,
                                         borderRadius:
                                             BorderRadius.circular(6),
                                       ),
@@ -220,7 +221,7 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
                                         'PDF',
                                         style: TextStyle(
                                           fontSize: 12,
-                                          color: Colors.blue.shade700,
+                                          color: AppColors.primaryDark,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -240,9 +241,9 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
                               Container(
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: Colors.blue.shade50,
+                                  color: AppColors.infoBg,
                                   border: Border.all(
-                                      color: Colors.blue.shade200),
+                                      color: AppColors.infoBg),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Column(
@@ -256,7 +257,7 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
                                           .titleSmall
                                           ?.copyWith(
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.blue.shade700,
+                                            color: AppColors.primaryDark,
                                           ),
                                     ),
                                     const SizedBox(height: 8),
@@ -266,7 +267,7 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
                                           .textTheme
                                           .bodySmall
                                           ?.copyWith(
-                                            color: Colors.blue.shade700,
+                                            color: AppColors.primaryDark,
                                           ),
                                     ),
                                   ],
@@ -281,7 +282,7 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
                                   icon: const Icon(Icons.security),
                                   label: Text(l10n.translate('signDocument')),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.green,
+                                    backgroundColor: AppColors.secondary,
                                   ),
                                 ),
                               ),
@@ -293,16 +294,16 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: Colors.green.shade50,
+                              color: AppColors.successBg,
                               border: Border.all(
-                                  color: Colors.green.shade200),
+                                  color: AppColors.successBg),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
                               children: [
                                 Icon(
                                   Icons.check_circle,
-                                  color: Colors.green.shade700,
+                                  color: AppColors.secondary,
                                   size: 32,
                                 ),
                                 const SizedBox(width: 12),
@@ -318,7 +319,7 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
                                             .bodyMedium
                                             ?.copyWith(
                                               fontWeight: FontWeight.bold,
-                                              color: Colors.green.shade700,
+                                              color: AppColors.secondary,
                                             ),
                                       ),
                                       Text(
@@ -327,7 +328,7 @@ class _RichiestaDettagliScreenState extends State<RichiestaDettagliScreen> {
                                             .textTheme
                                             .bodySmall
                                             ?.copyWith(
-                                              color: Colors.green.shade600,
+                                              color: AppColors.secondary,
                                             ),
                                       ),
                                     ],

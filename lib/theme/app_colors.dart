@@ -36,6 +36,9 @@ abstract final class AppColors {
   static const Color textSecondary = Color(0xFF52606D);
   static const Color textMuted = Color(0xFF6F7782);
 
+  /// Label dei campi input (tema legacy).
+  static const Color inputLabel = Color(0xFF4D4C4C);
+
   /// Testo su hero gradiente (leggermente azzurrato).
   static const Color onGradientMuted = Color(0xFFEBF6FF);
 
@@ -61,6 +64,12 @@ abstract final class AppColors {
   static const Color errorBg = Color(0xFFFDF0F4); // dal Figma (banner allerta)
   static const Color info = Color(0xFF2196F3);
   static const Color infoBg = Color(0xFFE3F2FD);
+
+  /// Sfondo chip (tema legacy).
+  static const Color chipBg = Color(0xFFEFF7FA);
+
+  /// Colore base ombra card branded (tema legacy).
+  static const Color shadowBranded = Color(0xFF0F2430);
 
   // --------------------------------------------------------- overlay/vetro
   /// Chip su AppBar teal (bianco 15%).

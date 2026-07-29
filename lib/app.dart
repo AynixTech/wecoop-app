@@ -14,6 +14,7 @@ import 'package:wecoop_app/services/deep_link_service.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/services/in_app_update_service.dart';
 import 'package:wecoop_app/utils/deep_link_handler.dart';
+import 'package:wecoop_app/theme/theme.dart';
 import 'package:wecoop_app/widgets/mandatory_update_gate.dart';
 import 'screens/main_screen.dart';
 import 'screens/login/login_screen.dart';
@@ -161,171 +162,173 @@ class _WECOOPAppState extends State<WECOOPApp> {
             Locale('zh'),
           ],
           theme: ThemeData(
-            fontFamily: 'Inter',
+            fontFamily: AppTypography.fontFamily,
             useMaterial3: true,
             colorScheme: const ColorScheme(
               brightness: Brightness.light,
-              primary: Color(0xFF1282A8),
-              onPrimary: Colors.white,
-              secondary: Color(0xFF59B575),
-              onSecondary: Colors.white,
-              error: Color(0xFFE6266B),
-              onError: Colors.white,
-              surface: Color(0xFFFFFFFF),
-              onSurface: Color(0xFF1F2933),
+              primary: AppColors.primary,
+              onPrimary: AppColors.onPrimary,
+              secondary: AppColors.secondary,
+              onSecondary: AppColors.onSecondary,
+              error: AppColors.error,
+              onError: AppColors.onError,
+              surface: AppColors.surface,
+              onSurface: AppColors.textPrimary,
             ),
             textTheme: ThemeData.light().textTheme.apply(
-              bodyColor: const Color(0xFF1F2933),
-              displayColor: const Color(0xFF1F2933),
+              bodyColor: AppColors.textPrimary,
+              displayColor: AppColors.textPrimary,
             ),
-            scaffoldBackgroundColor: const Color(0xFFF8FBFD),
-            appBarTheme: AppBarTheme(
+            scaffoldBackgroundColor: AppColors.background,
+            appBarTheme: const AppBarTheme(
               elevation: 0,
               centerTitle: false,
-              backgroundColor: const Color(0xFF1282A8),
-              foregroundColor: Colors.white,
-              titleTextStyle: const TextStyle(
-                fontFamily: 'Inter',
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.onPrimary,
+              titleTextStyle: TextStyle(
+                fontFamily: AppTypography.fontFamily,
                 fontSize: 16,
                 height: 1.2,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+                fontWeight: AppTypography.semiBold,
+                color: AppColors.onPrimary,
               ),
-              iconTheme: const IconThemeData(color: Colors.white),
+              iconTheme: IconThemeData(color: AppColors.onPrimary),
             ),
             cardTheme: CardThemeData(
               elevation: 0,
-              color: Colors.white,
-              shadowColor: const Color(0xFF0F2430).withOpacity(0.08),
+              color: AppColors.surface,
+              shadowColor: AppColors.shadowBranded.withValues(alpha: 0.08),
               shape: RoundedRectangleBorder(
-                side: const BorderSide(color: Color(0x14000000)),
-                borderRadius: BorderRadius.circular(16),
+                side: const BorderSide(color: AppColors.border),
+                borderRadius: BorderRadius.circular(AppRadius.card),
               ),
-              margin: const EdgeInsets.symmetric(vertical: 6),
+              margin: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
             ),
             elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1282A8),
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.onPrimary,
                 elevation: 0,
                 shadowColor: Colors.transparent,
                 minimumSize: const Size(132, 52),
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
+                  horizontal: AppSpacing.xxl,
                   vertical: 14,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(999),
+                  borderRadius: AppRadius.pillBr,
                 ),
                 textStyle: const TextStyle(
-                  fontFamily: 'Inter',
+                  fontFamily: AppTypography.fontFamily,
                   fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: AppTypography.semiBold,
                 ),
               ),
             ),
             outlinedButtonTheme: OutlinedButtonThemeData(
               style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF0E6786),
+                foregroundColor: AppColors.primaryDark,
                 minimumSize: const Size(120, 50),
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
+                  horizontal: AppSpacing.xl,
+                  vertical: AppSpacing.md,
                 ),
-                side: const BorderSide(color: Color(0xFF1282A8), width: 1.2),
+                side: const BorderSide(color: AppColors.primary, width: 1.2),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(999),
+                  borderRadius: AppRadius.pillBr,
                 ),
                 textStyle: const TextStyle(
-                  fontFamily: 'Inter',
+                  fontFamily: AppTypography.fontFamily,
                   fontSize: 15,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: AppTypography.semiBold,
                 ),
               ),
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF1282A8),
+                foregroundColor: AppColors.primary,
                 textStyle: const TextStyle(
-                  fontFamily: 'Inter',
+                  fontFamily: AppTypography.fontFamily,
                   fontSize: 15,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: AppTypography.semiBold,
                 ),
               ),
             ),
             inputDecorationTheme: InputDecorationTheme(
               filled: true,
-              fillColor: Colors.white,
+              fillColor: AppColors.surface,
               hintStyle: const TextStyle(
-                fontFamily: 'Inter',
-                color: Color(0xFF6F7782),
+                fontFamily: AppTypography.fontFamily,
+                color: AppColors.textMuted,
               ),
               labelStyle: const TextStyle(
-                fontFamily: 'Inter',
-                color: Color(0xFF4D4C4C),
+                fontFamily: AppTypography.fontFamily,
+                color: AppColors.inputLabel,
               ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Color(0x22000000)),
+                borderRadius: AppRadius.inputBr,
+                borderSide: const BorderSide(color: AppColors.borderInput),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Color(0x22000000)),
+                borderRadius: AppRadius.inputBr,
+                borderSide: const BorderSide(color: AppColors.borderInput),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.inputBr,
                 borderSide: const BorderSide(
-                  color: Color(0xFF1282A8),
+                  color: AppColors.primary,
                   width: 1.5,
                 ),
               ),
               contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
+                horizontal: AppSpacing.lg,
                 vertical: 14,
               ),
             ),
             chipTheme: ChipThemeData(
-              backgroundColor: const Color(0xFFEFF7FA),
-              selectedColor: const Color(0xFF1282A8),
+              backgroundColor: AppColors.chipBg,
+              selectedColor: AppColors.primary,
               side: BorderSide.none,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(AppRadius.chip),
               ),
               labelStyle: const TextStyle(
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF1F2933),
+                fontFamily: AppTypography.fontFamily,
+                fontWeight: AppTypography.medium,
+                color: AppColors.textPrimary,
               ),
             ),
             floatingActionButtonTheme: const FloatingActionButtonThemeData(
-              backgroundColor: Color(0xFF1282A8),
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.onPrimary,
             ),
-            bottomNavigationBarTheme: BottomNavigationBarThemeData(
-              backgroundColor: Colors.white,
-              selectedItemColor: const Color(0xFF1282A8),
-              unselectedItemColor: const Color(0xFF6F7782),
-              selectedLabelStyle: const TextStyle(
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w600,
+            bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+              backgroundColor: AppColors.surface,
+              selectedItemColor: AppColors.primary,
+              unselectedItemColor: AppColors.textMuted,
+              selectedLabelStyle: TextStyle(
+                fontFamily: AppTypography.fontFamily,
+                fontWeight: AppTypography.semiBold,
               ),
-              unselectedLabelStyle: const TextStyle(
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w500,
+              unselectedLabelStyle: TextStyle(
+                fontFamily: AppTypography.fontFamily,
+                fontWeight: AppTypography.medium,
               ),
               elevation: 10,
               type: BottomNavigationBarType.fixed,
             ),
             switchTheme: SwitchThemeData(
               thumbColor: WidgetStateProperty.resolveWith((states) {
-                if (states.contains(WidgetState.selected)) return Colors.white;
-                return const Color(0xFFCBCED4);
+                if (states.contains(WidgetState.selected)) {
+                  return AppColors.onPrimary;
+                }
+                return AppColors.disabled;
               }),
               trackColor: WidgetStateProperty.resolveWith((states) {
                 if (states.contains(WidgetState.selected)) {
-                  return const Color(0xFF59B575);
+                  return AppColors.secondary;
                 }
-                return const Color(0xFFCBCED4);
+                return AppColors.disabled;
               }),
             ),
             visualDensity: VisualDensity.adaptivePlatformDensity,

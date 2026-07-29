@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import '../../widgets/design_system/design_system.dart';
 import '../../models/post_model.dart';
 import '../../models/evento_model.dart';
 import '../../models/documento.dart';
@@ -988,28 +989,8 @@ class _SectionTitle extends StatelessWidget {
   const _SectionTitle({required this.title});
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return Row(
-      children: [
-        Container(
-          width: 4,
-          height: 20,
-          decoration: BoxDecoration(
-            color: scheme.primary,
-            borderRadius: BorderRadius.circular(6),
-          ),
-        ),
-        const SizedBox(width: 10),
-        Text(
-          title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: scheme.onSurface,
-          ),
-        ),
-      ],
-    );
+    // Delega al componente del design system (stesso stile: barretta teal + titolo).
+    return SectionHeader(title: title);
   }
 }
 

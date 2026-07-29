@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../models/supporto_ticket_model.dart';
 import '../../services/supporto_service.dart';
+import '../../services/app_localizations.dart';
+import '../../theme/theme.dart';
+import '../../widgets/design_system/design_system.dart';
 
 /// Schermata "Le mie richieste": elenca i ticket di supporto creati
 /// dall'utente, con numero ticket, servizio, priorità, stato e data
@@ -49,48 +52,47 @@ class _MieRichiesteScreenState extends State<MieRichiesteScreen> {
     }
   }
 
-  Color _statusColor(String status, ColorScheme scheme) {
+  RequestStatus _mapStatus(String status) {
     switch (status) {
       case 'aperta':
-        return Colors.blue;
+        return RequestStatus.open;
       case 'in_lavorazione':
-        return Colors.orange;
+        return RequestStatus.inProgress;
       case 'risolta':
-        return Colors.green;
+        return RequestStatus.resolved;
       case 'chiusa':
-        return Colors.grey;
+        return RequestStatus.closed;
       default:
-        return scheme.primary;
+        return RequestStatus.pending;
     }
   }
 
-  Color _prioritaColor(String priorita) {
+  RequestPriority _mapPriority(String priorita) {
     switch (priorita) {
       case 'alta':
-        return Colors.red;
+        return RequestPriority.high;
       case 'bassa':
-        return Colors.green;
+        return RequestPriority.low;
       case 'media':
       default:
-        return Colors.orange;
+        return RequestPriority.medium;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Le mie richieste')),
+      appBar: AppBar(title: Text(l10n.myRequests)),
       body: RefreshIndicator(
         onRefresh: _load,
-        child: _buildBody(theme, scheme),
+        child: _buildBody(l10n),
       ),
     );
   }
 
-  Widget _buildBody(ThemeData theme, ColorScheme scheme) {
+  Widget _buildBody(AppLocalizations l10n) {
     if (_loading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -98,25 +100,11 @@ class _MieRichiesteScreenState extends State<MieRichiesteScreen> {
     if (_error) {
       return ListView(
         children: [
-          const SizedBox(height: 120),
-          Icon(Icons.cloud_off_rounded, size: 56, color: scheme.onSurfaceVariant),
-          const SizedBox(height: 16),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Text(
-                _errorMessage ?? 'Impossibile caricare le richieste',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyLarge,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Center(
-            child: FilledButton.tonal(
-              onPressed: _load,
-              child: const Text('Riprova'),
-            ),
+          const SizedBox(height: 80),
+          ErrorState(
+            message: _errorMessage ?? l10n.loadRequestsError,
+            retryLabel: l10n.retry,
+            onRetry: _load,
           ),
         ],
       );
@@ -125,152 +113,104 @@ class _MieRichiesteScreenState extends State<MieRichiesteScreen> {
     if (_tickets.isEmpty) {
       return ListView(
         children: [
-          const SizedBox(height: 120),
-          Icon(Icons.sms_outlined, size: 56, color: scheme.onSurfaceVariant),
-          const SizedBox(height: 16),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Text(
-                'Non hai ancora richieste di supporto.',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: scheme.onSurfaceVariant,
-                ),
-              ),
-            ),
+          const SizedBox(height: 80),
+          EmptyState(
+            icon: Icons.sms_outlined,
+            title: l10n.noSupportRequests,
           ),
         ],
       );
     }
 
     return ListView.separated(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       itemCount: _tickets.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
       itemBuilder: (context, index) {
         final t = _tickets[index];
-        final statusColor = _statusColor(t.status, scheme);
-        final prioritaColor = _prioritaColor(t.priorita);
 
-        return Card(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: scheme.outlineVariant),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: scheme.primary.withOpacity(0.10),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.confirmation_number_outlined,
-                        color: scheme.primary,
-                      ),
+        return AppCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(AppSpacing.smd),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(AppRadius.input),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            t.serviceName,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
+                    child: const Icon(
+                      Icons.confirmation_number_outlined,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          t.serviceName,
+                          style: AppTypography.bodyL.copyWith(
+                            fontWeight: AppTypography.bold,
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            t.numeroTicket,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: scheme.onSurfaceVariant,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.3,
-                            ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          t.numeroTicket,
+                          style: AppTypography.caption.copyWith(
+                            fontWeight: AppTypography.semiBold,
+                            letterSpacing: 0.3,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                if ((t.messaggio ?? '').trim().isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    t.messaggio!.trim(),
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: scheme.onSurface.withOpacity(0.75),
-                    ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    _chip(
-                      label: t.statusLabel,
-                      color: statusColor,
-                    ),
-                    _chip(
-                      label: 'Priorità: ${t.priorita}',
-                      color: prioritaColor,
-                    ),
-                    if (t.dataFormattata.isNotEmpty)
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.schedule,
-                            size: 14,
-                            color: scheme.onSurfaceVariant,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            t.dataFormattata,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: scheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                  ],
+              ),
+              if ((t.messaggio ?? '').trim().isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  t.messaggio!.trim(),
+                  style: AppTypography.bodyM.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
-            ),
+              const SizedBox(height: AppSpacing.md),
+              Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  StatusPill.status(_mapStatus(t.status)),
+                  StatusPill.priority(_mapPriority(t.priorita)),
+                  if (t.dataFormattata.isNotEmpty)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.schedule,
+                          size: 14,
+                          color: AppColors.textMuted,
+                        ),
+                        const SizedBox(width: AppSpacing.xxs),
+                        Text(
+                          t.dataFormattata,
+                          style: AppTypography.caption,
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ],
           ),
         );
       },
-    );
-  }
-
-  Widget _chip({required String label, required Color color}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: color.withOpacity(0.4)),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: color,
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
     );
   }
 }

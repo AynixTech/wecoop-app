@@ -546,6 +546,9 @@ class AppLocalizations {
       'sports': 'Sportivi',
       'social': 'Sociali',
       'retry': 'Riprova',
+      'loadRequestsError': 'Impossibile caricare le richieste',
+      'noSupportRequests': 'Non hai ancora richieste di supporto.',
+      'priority': 'Priorità',
       'noEventsAvailable': 'Nessun evento disponibile',
       'enrolled': 'Iscritto',
       'eventConcluded': 'EVENTO CONCLUSO',
@@ -2147,6 +2150,9 @@ class AppLocalizations {
       'sports': 'رياضية',
       'social': 'اجتماعية',
       'retry': 'إعادة المحاولة',
+      'loadRequestsError': 'تعذّر تحميل الطلبات',
+      'noSupportRequests': 'ليس لديك طلبات دعم بعد.',
+      'priority': 'الأولوية',
       'noEventsAvailable': 'لا توجد فعاليات متاحة',
       'enrolled': 'مسجّل',
       'eventConcluded': 'انتهت الفعالية',
@@ -3487,6 +3493,9 @@ class AppLocalizations {
       'sports': '体育类',
       'social': '社交类',
       'retry': '重试',
+      'loadRequestsError': '无法加载请求',
+      'noSupportRequests': '您还没有支持请求。',
+      'priority': '优先级',
       'noEventsAvailable': '暂无可用活动',
       'enrolled': '已报名',
       'eventConcluded': '活动已结束',
@@ -4722,6 +4731,9 @@ class AppLocalizations {
       'sports': 'Sports',
       'social': 'Social',
       'retry': 'Retry',
+      'loadRequestsError': 'Unable to load requests',
+      'noSupportRequests': 'You have no support requests yet.',
+      'priority': 'Priority',
       'noEventsAvailable': 'No events available',
       'enrolled': 'Enrolled',
       'eventConcluded': 'EVENT CONCLUDED',
@@ -6219,6 +6231,9 @@ class AppLocalizations {
       'sports': 'Deportivos',
       'social': 'Sociales',
       'retry': 'Reintentar',
+      'loadRequestsError': 'No se pudieron cargar las solicitudes',
+      'noSupportRequests': 'Aún no tienes solicitudes de soporte.',
+      'priority': 'Prioridad',
       'noEventsAvailable': 'No hay eventos disponibles',
       'enrolled': 'Inscrito',
       'eventConcluded': 'EVENTO CONCLUIDO',
@@ -7261,6 +7276,9 @@ class AppLocalizations {
   String get priorityHigh => translate('priorityHigh');
   String get priorityMedium => translate('priorityMedium');
   String get priorityLow => translate('priorityLow');
+  String get loadRequestsError => translate('loadRequestsError');
+  String get noSupportRequests => translate('noSupportRequests');
+  String get priority => translate('priority');
   String get welcome => translate('welcome');
   String get user => translate('user');
   String get profile => translate('profile');

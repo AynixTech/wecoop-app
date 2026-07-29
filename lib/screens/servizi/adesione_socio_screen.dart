@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'package:flutter/services.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
@@ -88,7 +89,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!.translate('selectNationality')),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -98,7 +99,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!.translate('privacyRequired')),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -169,7 +170,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
               return AlertDialog(
                 title: Row(
                   children: [
-                    const Icon(Icons.check_circle, color: Colors.green, size: 32),
+                    const Icon(Icons.check_circle, color: AppColors.secondary, size: 32),
                     const SizedBox(width: 12),
                     Expanded(child: Text(l10n.registrationCompleted)),
                   ],
@@ -181,13 +182,13 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.blue.shade50,
+                        color: AppColors.infoBg,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.blue.shade200),
+                        border: Border.all(color: AppColors.infoBg),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.email, color: Colors.blue.shade700),
+                          Icon(Icons.email, color: AppColors.info),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -206,7 +207,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        color: Colors.red,
+                        color: AppColors.error,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -279,7 +280,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: AppColors.secondary,
                       foregroundColor: Colors.white,
                     ),
                     child: Text(l10n.iHaveSaved),
@@ -296,7 +297,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
             (context) => AlertDialog(
               title: Row(
                 children: [
-                  const Icon(Icons.error_outline, color: Colors.red, size: 32),
+                  const Icon(Icons.error_outline, color: AppColors.error, size: 32),
                   const SizedBox(width: 12),
                   Expanded(child: Text(l10n.error)),
                 ],

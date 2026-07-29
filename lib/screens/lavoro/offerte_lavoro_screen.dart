@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -1647,8 +1648,8 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   static const String _wecoopWhatsAppNumber = '393515112113';
-  static const Color _activeMenuColor = Color(0xFF1282A8);
-  static const Color _inactiveMenuColor = Color(0xFF9CA3AF);
+  static const Color _activeMenuColor = AppColors.primary;
+  static const Color _inactiveMenuColor = AppColors.iconInactive;
 
   final TextEditingController _searchController = TextEditingController();
 
@@ -1936,7 +1937,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                   : _OfferteLavoroText.tr(context, 'applicationError'))
               : msg,
         ),
-        backgroundColor: success ? Colors.green : Colors.red,
+        backgroundColor: success ? AppColors.secondary : AppColors.error,
       ),
     );
   }
@@ -1984,7 +1985,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                       ),
                       child: const Icon(
                         Icons.info_outline,
-                        color: Color(0xFF1282A8),
+                        color: AppColors.primary,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -2381,7 +2382,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.blue.shade50,
+              color: AppColors.infoBg,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(t('emptyFiltered')),
@@ -2494,7 +2495,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                 style: TextStyle(
                   fontSize: radius * 0.8,
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFF1282A8),
+                  color: AppColors.primary,
                 ),
               )
               : null,
@@ -2955,7 +2956,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(result['message'] ?? 'Annuncio inviato con successo!'),
-          backgroundColor: Colors.green,
+          backgroundColor: AppColors.secondary,
         ),
       );
       _titoloCtrl.clear();
@@ -2978,7 +2979,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(result['message'] ?? 'Errore nell\'invio'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
     }
@@ -3607,13 +3608,13 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
               decoration: BoxDecoration(
                 color:
                     _isProfileComplete
-                        ? Colors.green.shade50
+                        ? AppColors.successBg
                         : Colors.amber.shade50,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color:
                       _isProfileComplete
-                          ? Colors.green.shade200
+                          ? AppColors.successBg
                           : Colors.amber.shade200,
                 ),
               ),
@@ -3624,7 +3625,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                     _isProfileComplete ? Icons.verified : Icons.info_outline,
                     color:
                         _isProfileComplete
-                            ? Colors.green.shade700
+                            ? AppColors.secondary
                             : Colors.amber.shade800,
                   ),
                   const SizedBox(width: 10),
@@ -3642,7 +3643,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                       style: TextStyle(
                         color:
                             _isProfileComplete
-                                ? Colors.green.shade900
+                                ? AppColors.secondary
                                 : Colors.amber.shade900,
                       ),
                     ),
@@ -3769,9 +3770,9 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.blue.shade300),
+                border: Border.all(color: AppColors.info),
                 borderRadius: BorderRadius.circular(8),
-                color: Colors.blue.shade50,
+                color: AppColors.infoBg,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -3959,7 +3960,7 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
                 onPressed: _isSending ? null : _submit,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 0),
-                  backgroundColor: Colors.green,
+                  backgroundColor: AppColors.secondary,
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.grey[400],
                   disabledForegroundColor: Colors.grey[600],
@@ -4145,7 +4146,7 @@ class _PubblicaAnnuncioSheetState extends State<_PubblicaAnnuncioSheet> {
                   onPressed: _isSending ? null : _submit,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 0),
-                    backgroundColor: Colors.green,
+                    backgroundColor: AppColors.secondary,
                     foregroundColor: Colors.white,
                     disabledBackgroundColor: Colors.grey[400],
                     disabledForegroundColor: Colors.grey[600],
@@ -4222,10 +4223,10 @@ class _DirectionBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: isSeek ? Colors.orange.shade50 : Colors.green.shade50,
+        color: isSeek ? Colors.orange.shade50 : AppColors.successBg,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: isSeek ? Colors.orange.shade300 : Colors.green.shade300,
+          color: isSeek ? Colors.orange.shade300 : AppColors.secondary,
         ),
       ),
       child: Text(
@@ -4233,7 +4234,7 @@ class _DirectionBadge extends StatelessWidget {
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w700,
-          color: isSeek ? Colors.orange.shade800 : Colors.green.shade800,
+          color: isSeek ? Colors.orange.shade800 : AppColors.secondary,
         ),
       ),
     );
@@ -4338,7 +4339,7 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: radius * 0.8,
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFF1282A8),
+                  color: AppColors.primary,
                 ),
               )
               : null,
@@ -4379,7 +4380,7 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(18),
               boxShadow: const [
                 BoxShadow(
-                  color: Color(0x14000000),
+                  color: AppColors.border,
                   blurRadius: 18,
                   offset: Offset(0, 8),
                 ),

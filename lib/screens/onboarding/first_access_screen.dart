@@ -994,7 +994,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.blue[50],
+                      color: AppColors.infoBg,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -85,7 +86,7 @@ class _StoricoPraticheScreenState extends State<StoricoPraticheScreen> {
             (result['message'] as String?) ??
                 l10n.translate('storicoPraticheDownloadError'),
           ),
-          backgroundColor: Colors.red.shade600,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -100,7 +101,7 @@ class _StoricoPraticheScreenState extends State<StoricoPraticheScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.translate('storicoPraticheDownloadError')),
-          backgroundColor: Colors.red.shade600,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -112,7 +113,7 @@ class _StoricoPraticheScreenState extends State<StoricoPraticheScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.translate('storicoPraticheDownloadError')),
-          backgroundColor: Colors.red.shade600,
+          backgroundColor: AppColors.error,
         ),
       );
       return;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:table_calendar/table_calendar.dart';
@@ -328,11 +329,11 @@ class _CalendarScreenState extends State<CalendarScreen>
       case 'appointment_confirmed':
         return const Color(0xFF2e7d32); // Verde scuro
       case 'processing':
-        return Colors.blue;
+        return AppColors.info;
       case 'completed':
-        return Colors.green;
+        return AppColors.secondary;
       case 'cancelled':
-        return Colors.red;
+        return AppColors.error;
       case 'in_attesa':
         return Colors.amber;
       default:
@@ -503,7 +504,7 @@ class _CalendarScreenState extends State<CalendarScreen>
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(
             children: const [
-              Icon(Icons.mark_email_unread_rounded, color: Color(0xFF1282A8), size: 26),
+              Icon(Icons.mark_email_unread_rounded, color: AppColors.primary, size: 26),
               SizedBox(width: 10),
               Expanded(child: Text('Vuoi ricevere le email?')),
             ],
@@ -520,7 +521,7 @@ class _CalendarScreenState extends State<CalendarScreen>
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1282A8),
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
@@ -661,7 +662,7 @@ class _CalendarScreenState extends State<CalendarScreen>
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.error,
               foregroundColor: Colors.white,
             ),
             child: Text(l10n.deleteRequest),
@@ -707,7 +708,7 @@ class _CalendarScreenState extends State<CalendarScreen>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('✅ ${l10n.requestDeleted}'),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.secondary,
             ),
           );
         }
@@ -722,7 +723,7 @@ class _CalendarScreenState extends State<CalendarScreen>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('❌ ${result['message'] ?? l10n.cannotDeleteRequest}'),
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.error,
               duration: const Duration(seconds: 4),
             ),
           );
@@ -739,7 +740,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('❌ ${l10n.cannotDeleteRequest}: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
             duration: const Duration(seconds: 4),
           ),
         );
@@ -758,7 +759,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('❌ ${l10n.errorDownloadingReceipt}: ID pagamento mancante'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -845,7 +846,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                           ? '⚠️ PDF ricevuta non valido, aperto fallback web'
                           : '❌ PDF ricevuta non valido e fallback non disponibile',
                     ),
-                    backgroundColor: opened ? Colors.orange : Colors.red,
+                    backgroundColor: opened ? Colors.orange : AppColors.error,
                   ),
                 );
               }
@@ -885,7 +886,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                       ),
                     ],
                   ),
-                  backgroundColor: Colors.green,
+                  backgroundColor: AppColors.secondary,
                   duration: const Duration(seconds: 4),
                 ),
               );
@@ -906,7 +907,7 @@ class _CalendarScreenState extends State<CalendarScreen>
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('❌ Errore: $e'),
-                  backgroundColor: Colors.red,
+                  backgroundColor: AppColors.error,
                   duration: const Duration(seconds: 5),
                 ),
               );
@@ -935,7 +936,7 @@ class _CalendarScreenState extends State<CalendarScreen>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('❌ ${result['message'] ?? l10n.errorDownloadingReceipt}'),
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.error,
               duration: const Duration(seconds: 4),
             ),
           );
@@ -953,7 +954,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('❌ ${l10n.errorDownloadingReceipt}: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
             duration: const Duration(seconds: 4),
           ),
         );
@@ -1335,7 +1336,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!.cannotOpenFile),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
     }
@@ -1434,7 +1435,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                         ? '⚠️ ${AppLocalizations.of(context)!.translate('invalidMergedPdfFallbackOpened')}'
                         : '❌ ${AppLocalizations.of(context)!.translate('invalidPdfFallbackUnavailable')}',
                   ),
-                  backgroundColor: opened ? Colors.orange : Colors.red,
+                  backgroundColor: opened ? Colors.orange : AppColors.error,
                 ),
               );
             }
@@ -1444,7 +1445,7 @@ class _CalendarScreenState extends State<CalendarScreen>
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('❌ ${AppLocalizations.of(context)!.translate('pdfDocumentUnavailable')}'),
-                backgroundColor: Colors.red,
+                backgroundColor: AppColors.error,
               ),
             );
           }
@@ -1472,7 +1473,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                       ? '⚠️ ${AppLocalizations.of(context)!.translate('invalidMergedPdfFallbackOpened')}'
                       : '❌ ${AppLocalizations.of(context)!.translate('invalidPdfFallbackUnavailable')}',
                 ),
-                backgroundColor: opened ? Colors.orange : Colors.red,
+                backgroundColor: opened ? Colors.orange : AppColors.error,
               ),
             );
           }
@@ -1486,7 +1487,7 @@ class _CalendarScreenState extends State<CalendarScreen>
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('❌ ${AppLocalizations.of(context)!.translate('cannotSavePdfDocument')}'),
-                backgroundColor: Colors.red,
+                backgroundColor: AppColors.error,
               ),
             );
           }
@@ -1502,7 +1503,7 @@ class _CalendarScreenState extends State<CalendarScreen>
               content: Text(
                 '✅ ${AppLocalizations.of(context)!.translate('documentSavedMessage')} ${savedFile.path.split('/').last}',
               ),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.secondary,
             ),
           );
         }
@@ -1548,7 +1549,7 @@ class _CalendarScreenState extends State<CalendarScreen>
             content: Text(
               '❌ ${result['message'] ?? AppLocalizations.of(context)!.translate('errorDownloadingMergedDocument')}',
             ),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
             duration: const Duration(seconds: 4),
           ),
         );
@@ -1586,7 +1587,7 @@ class _CalendarScreenState extends State<CalendarScreen>
             content: Text(
               '❌ ${AppLocalizations.of(context)!.translate('errorDownloadingMergedDocument')}: $e',
             ),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
             duration: const Duration(seconds: 4),
           ),
         );
@@ -1839,7 +1840,7 @@ class _CalendarScreenState extends State<CalendarScreen>
             content: Text(
               AppLocalizations.of(context)!.translate('invalidDigitalSignatureRequestId'),
             ),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -1935,7 +1936,7 @@ class _CalendarScreenState extends State<CalendarScreen>
           content: Text(
             AppLocalizations.of(context)!.translate('missingDigitalSignatureUserData'),
           ),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -2002,7 +2003,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.translate('cannotOpenDocument')),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -2020,7 +2021,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.translate('cannotOpenDocument')),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
     }
@@ -2051,16 +2052,16 @@ class _CalendarScreenState extends State<CalendarScreen>
       Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.green.withOpacity(0.06),
+          color: AppColors.secondary.withOpacity(0.06),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.green.withOpacity(0.4)),
+          border: Border.all(color: AppColors.secondary.withOpacity(0.4)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(Icons.cloud_done, color: Colors.green.shade700),
+                Icon(Icons.cloud_done, color: AppColors.secondary),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -2068,7 +2069,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.green.shade800,
+                      color: AppColors.secondary,
                     ),
                   ),
                 ),
@@ -2092,13 +2093,13 @@ class _CalendarScreenState extends State<CalendarScreen>
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.green.shade200),
+                  border: Border.all(color: AppColors.successBg),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       isPdf ? Icons.picture_as_pdf : Icons.image_outlined,
-                      color: Colors.green.shade700,
+                      color: AppColors.secondary,
                     ),
                     const SizedBox(width: 10),
                     Expanded(
@@ -2130,7 +2131,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                     IconButton(
                       onPressed: () => _apriDocumentoRisultato(url),
                       icon: const Icon(Icons.download),
-                      color: Colors.green.shade700,
+                      color: AppColors.secondary,
                       tooltip: l10n.translate('downloadDocument'),
                     ),
                   ],
@@ -2217,7 +2218,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(l10n.documentUploadedSuccess),
-                    backgroundColor: Colors.green,
+                    backgroundColor: AppColors.secondary,
                   ),
                 );
                 await aggiornaSezione();
@@ -2228,7 +2229,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                     content: Text(
                       (res['message'] ?? l10n.documentUploadError).toString(),
                     ),
-                    backgroundColor: Colors.red,
+                    backgroundColor: AppColors.error,
                   ),
                 );
               }
@@ -2238,7 +2239,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(l10n.documentUploadError),
-                    backgroundColor: Colors.red,
+                    backgroundColor: AppColors.error,
                   ),
                 );
               }
@@ -2326,7 +2327,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: caricato
-                            ? Colors.green.shade300
+                            ? AppColors.secondary
                             : Colors.grey.shade300,
                       ),
                     ),
@@ -2337,7 +2338,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                               ? Icons.check_circle
                               : Icons.description_outlined,
                           color: caricato
-                              ? Colors.green
+                              ? AppColors.secondary
                               : const Color(0xFFe91e63),
                         ),
                         const SizedBox(width: 10),
@@ -2371,7 +2372,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   color: caricato
-                                      ? Colors.green.shade700
+                                      ? AppColors.secondary
                                       : Colors.orange.shade800,
                                 ),
                               ),
@@ -2405,20 +2406,20 @@ class _CalendarScreenState extends State<CalendarScreen>
                     width: double.infinity,
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.green.shade50,
+                      color: AppColors.successBg,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.green.shade300),
+                      border: Border.all(color: AppColors.secondary),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.check_circle, color: Colors.green.shade700),
+                        Icon(Icons.check_circle, color: AppColors.secondary),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             l10n.allDocumentsUploaded,
                             style: TextStyle(
                               fontSize: 13,
-                              color: Colors.green.shade900,
+                              color: AppColors.secondary,
                             ),
                           ),
                         ),
@@ -2623,15 +2624,15 @@ class _CalendarScreenState extends State<CalendarScreen>
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.green.shade50,
+                            color: AppColors.successBg,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.green.shade300),
+                            border: Border.all(color: AppColors.secondary),
                           ),
                           child: Row(
                             children: [
                               Icon(
                                 Icons.check_circle,
-                                color: Colors.green.shade700,
+                                color: AppColors.secondary,
                                 size: 32,
                               ),
                               const SizedBox(width: 12),
@@ -2644,7 +2645,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.green.shade900,
+                                        color: AppColors.secondary,
                                       ),
                                     ),
                                     if (pagamento['metodo'] != null) ...[
@@ -2653,7 +2654,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                                         '${AppLocalizations.of(context)!.paymentMethod}: ${pagamento['metodo']}',
                                         style: TextStyle(
                                           fontSize: 14,
-                                          color: Colors.green.shade700,
+                                          color: AppColors.secondary,
                                         ),
                                       ),
                                     ],
@@ -2746,8 +2747,8 @@ class _CalendarScreenState extends State<CalendarScreen>
                           icon: const Icon(Icons.delete_outline),
                           label: Text(AppLocalizations.of(context)!.deleteRequest),
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.red,
-                            side: const BorderSide(color: Colors.red),
+                            foregroundColor: AppColors.error,
+                            side: const BorderSide(color: AppColors.error),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             minimumSize: const Size(double.infinity, 0),
                           ),
@@ -2763,7 +2764,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                             AppLocalizations.of(context)!.translate('openMergedDocumentAndSignOtp'),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
+                            backgroundColor: AppColors.secondary,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             minimumSize: const Size(double.infinity, 0),
@@ -2797,9 +2798,9 @@ class _CalendarScreenState extends State<CalendarScreen>
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.blue.shade50,
+                            color: AppColors.infoBg,
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.blue.shade200),
+                            border: Border.all(color: AppColors.info),
                           ),
                           child: Theme(
                             data: Theme.of(context).copyWith(
@@ -2809,7 +2810,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                               initiallyExpanded: false,
                               tilePadding: EdgeInsets.zero,
                               childrenPadding: const EdgeInsets.only(bottom: 8),
-                              leading: const Icon(Icons.badge, color: Colors.blue),
+                              leading: const Icon(Icons.badge, color: AppColors.info),
                               title: Text(
                                 AppLocalizations.of(context)!.translate('digitalSignatureDetails'),
                                 style: const TextStyle(
@@ -2965,12 +2966,12 @@ class _CalendarScreenState extends State<CalendarScreen>
                                         Container(
                                           padding: const EdgeInsets.all(12),
                                           decoration: BoxDecoration(
-                                            color: Colors.blue.shade50,
+                                            color: AppColors.infoBg,
                                             borderRadius: BorderRadius.circular(8),
                                           ),
                                           child: const Row(
                                             children: [
-                                              Icon(Icons.lightbulb_outline, size: 20, color: Colors.blue),
+                                              Icon(Icons.lightbulb_outline, size: 20, color: AppColors.info),
                                               SizedBox(width: 8),
                                               Expanded(
                                                 child: Text(
@@ -2996,7 +2997,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                                         icon: const Icon(Icons.refresh),
                                         label: const Text('Ricarica'),
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.blue,
+                                          backgroundColor: AppColors.info,
                                           foregroundColor: Colors.white,
                                         ),
                                       ),
@@ -3016,8 +3017,8 @@ class _CalendarScreenState extends State<CalendarScreen>
                           icon: const Icon(Icons.receipt_long),
                           label: Text(AppLocalizations.of(context)!.downloadReceipt),
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.blue,
-                            side: const BorderSide(color: Colors.blue),
+                            foregroundColor: AppColors.info,
+                            side: const BorderSide(color: AppColors.info),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             minimumSize: const Size(double.infinity, 0),
                           ),
@@ -3047,7 +3048,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                                     content: Text(
                                       '❌ ${AppLocalizations.of(context)!.translate('invalidPdfFallbackUnavailable')}',
                                     ),
-                                    backgroundColor: Colors.red,
+                                    backgroundColor: AppColors.error,
                                   ),
                                 );
                               }
@@ -3058,8 +3059,8 @@ class _CalendarScreenState extends State<CalendarScreen>
                             AppLocalizations.of(context)!.translate('viewMergedDocument'),
                           ),
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.blue,
-                            side: BorderSide(color: Colors.blue.shade300),
+                            foregroundColor: AppColors.info,
+                            side: BorderSide(color: AppColors.info),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             minimumSize: const Size(double.infinity, 0),
                           ),
@@ -3202,7 +3203,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                           shape: BoxShape.circle,
                         ),
                         markerDecoration: const BoxDecoration(
-                          color: Colors.blue,
+                          color: AppColors.info,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -3371,7 +3372,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.green,
+                        color: AppColors.secondary,
                       ),
                     ),
                 ],
@@ -3425,7 +3426,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                       richiesta['prezzo_formattato'],
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.green.shade700,
+                        color: AppColors.secondary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -3476,14 +3477,14 @@ class _CalendarScreenState extends State<CalendarScreen>
                     const Icon(
                       Icons.check_circle,
                       size: 16,
-                      color: Colors.green,
+                      color: AppColors.secondary,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       AppLocalizations.of(context)!.paymentReceived,
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.green.shade700,
+                        color: AppColors.secondary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -3517,7 +3518,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                         child: Container(
                           padding: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
-                            color: Colors.blue.shade50,
+                            color: AppColors.infoBg,
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Row(
@@ -3526,14 +3527,14 @@ class _CalendarScreenState extends State<CalendarScreen>
                               Icon(
                                 Icons.receipt_long,
                                 size: 16,
-                                color: Colors.blue.shade700,
+                                color: AppColors.info,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 AppLocalizations.of(context)!.downloadReceipt,
                                 style: TextStyle(
                                   fontSize: 11,
-                                  color: Colors.blue.shade700,
+                                  color: AppColors.info,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -3597,7 +3598,7 @@ class _CalendarScreenState extends State<CalendarScreen>
           return false; // Non dismissare automaticamente, lo fa _eliminaRichiesta
         },
         background: Container(
-          color: Colors.red,
+          color: AppColors.error,
           alignment: Alignment.centerRight,
           padding: const EdgeInsets.only(right: 20),
           child: const Column(

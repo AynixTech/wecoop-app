@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/widgets/help_button_widget.dart';
@@ -747,7 +748,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
-                      color: Color(0xFF20303C),
+                      color: AppColors.textPrimary,
                     ),
                   ),
                 ),
@@ -810,7 +811,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF20303C),
+              color: AppColors.textPrimary,
             ),
           ),
           if (subtitle != null) ...[
@@ -820,7 +821,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
               style: const TextStyle(
                 fontSize: 13,
                 height: 1.35,
-                color: Color(0xFF61717E),
+                color: AppColors.textSecondary,
               ),
             ),
           ],
@@ -881,7 +882,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF253744),
+                          color: AppColors.textPrimary,
                         ),
                       ),
                     ),
@@ -2018,7 +2019,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF20303C),
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -2027,7 +2028,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                       style: const TextStyle(
                         fontSize: 13,
                         height: 1.35,
-                        color: Color(0xFF61717E),
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ],
@@ -2378,7 +2379,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                         fontSize: 16,
                         fontWeight:
                             selected ? FontWeight.w700 : FontWeight.w500,
-                        color: const Color(0xFF253744),
+                        color: AppColors.textPrimary,
                       ),
                     ),
                   ),
@@ -2488,7 +2489,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF20303C),
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -2497,7 +2498,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                       style: const TextStyle(
                         fontSize: 13,
                         height: 1.35,
-                        color: Color(0xFF61717E),
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ],
@@ -2540,7 +2541,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF20303C),
+                          color: AppColors.textPrimary,
                         ),
                       ),
                     ],
@@ -2616,7 +2617,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF20303C),
+                          color: AppColors.textPrimary,
                         ),
                       ),
                     ],
@@ -2653,7 +2654,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF20303C),
+                          color: AppColors.textPrimary,
                         ),
                       ),
                     ],
@@ -2691,7 +2692,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF20303C),
+                              color: AppColors.textPrimary,
                             ),
                           ),
                         ),

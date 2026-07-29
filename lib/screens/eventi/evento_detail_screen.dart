@@ -61,7 +61,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(result['message'] ?? l10n.operationCompleted),
-          backgroundColor: result['success'] == true ? Colors.green : Colors.red,
+          backgroundColor: result['success'] == true ? AppColors.secondary : AppColors.error,
         ),
       );
 
@@ -85,7 +85,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
             child: Text(l10n.cancelEnrollment),
           ),
         ],
@@ -108,7 +108,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(result['message'] ?? l10n.operationCompleted),
-          backgroundColor: result['success'] == true ? Colors.green : Colors.red,
+          backgroundColor: result['success'] == true ? AppColors.secondary : AppColors.error,
         ),
       );
 
@@ -371,8 +371,8 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
                     ? OutlinedButton(
                         onPressed: _isLoading ? null : _cancellaIscrizione,
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.red,
-                          side: const BorderSide(color: Colors.red),
+                          foregroundColor: AppColors.error,
+                          side: const BorderSide(color: AppColors.error),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         child: _isLoading

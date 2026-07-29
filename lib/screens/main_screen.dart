@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/theme.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../services/user_avatar_store.dart';
 import '../services/socio_service.dart';
@@ -60,7 +61,7 @@ class _MainScreenState extends State<MainScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: const [
-            Icon(Icons.account_circle_rounded, color: Color(0xFF1282A8), size: 28),
+            Icon(Icons.account_circle_rounded, color: AppColors.primary, size: 28),
             SizedBox(width: 10),
             Expanded(child: Text('Completa il tuo profilo')),
           ],
@@ -77,7 +78,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1282A8),
+              backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
@@ -129,8 +130,8 @@ class _MainScreenState extends State<MainScreen> {
     required bool selected,
     double size = 22,
   }) {
-    const selectedColor = Color(0xFF1282A8);
-    const unselectedColor = Color(0xFF9CA3AF);
+    const selectedColor = AppColors.primary;
+    const unselectedColor = AppColors.iconInactive;
 
     return SvgPicture.asset(
       assetPath,
@@ -166,8 +167,8 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildProfileNavItem() {
-    const selectedColor = Color(0xFF1282A8);
-    const unselectedColor = Color(0xFF9CA3AF);
+    const selectedColor = AppColors.primary;
+    const unselectedColor = AppColors.iconInactive;
     final isSelected = _selectedIndex == 6;
 
     return InkWell(
@@ -209,7 +210,7 @@ class _MainScreenState extends State<MainScreen> {
                     avatarUrl,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Container(
-                      color: const Color(0xFFF1F5F9),
+                      color: AppColors.bgSubtle,
                       alignment: Alignment.center,
                       child: Icon(
                         Icons.person,
@@ -243,15 +244,15 @@ class _MainScreenState extends State<MainScreen> {
           boxShadow: [
             BoxShadow(
               color: (isSelected
-                      ? const Color(0xFF1282A8)
-                      : const Color(0xFF1F2933))
+                      ? AppColors.primary
+                      : AppColors.textPrimary)
                   .withOpacity(0.14),
               blurRadius: 16,
               offset: const Offset(0, 8),
             ),
           ],
           border: Border.all(
-            color: isSelected ? const Color(0xFF1282A8) : Colors.white,
+            color: isSelected ? AppColors.primary : Colors.white,
             width: 3,
           ),
         ),
@@ -286,7 +287,7 @@ class _MainScreenState extends State<MainScreen> {
                   borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
                   boxShadow: [
                     BoxShadow(
-                      color: Color(0x14000000),
+                      color: AppColors.border,
                       blurRadius: 22,
                       offset: Offset(0, -4),
                     ),

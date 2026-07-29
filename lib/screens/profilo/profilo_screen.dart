@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:crop_your_image/crop_your_image.dart';
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -283,7 +284,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
         content: Text(
           (result['message'] ?? l10n.translate('avatarUpdateError')).toString(),
         ),
-        backgroundColor: Colors.red,
+        backgroundColor: AppColors.error,
       ),
     );
   }
@@ -1632,7 +1633,7 @@ class _AvatarCropScreenState extends State<_AvatarCropScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${l10n.translate('cropError')}: $cause'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
           ),
         );
     }

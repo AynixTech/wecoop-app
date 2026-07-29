@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import '../../services/app_localizations.dart';
 import '../../services/socio_service.dart';
 
@@ -425,8 +426,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       border: border(Colors.black.withOpacity(0.08)),
       enabledBorder: border(Colors.black.withOpacity(0.08)),
       focusedBorder: border(scheme.primary.withOpacity(0.75), width: 1.4),
-      errorBorder: border(Colors.red.withOpacity(0.45)),
-      focusedErrorBorder: border(Colors.red.withOpacity(0.7), width: 1.4),
+      errorBorder: border(AppColors.error.withOpacity(0.45)),
+      focusedErrorBorder: border(AppColors.error.withOpacity(0.7), width: 1.4),
       labelStyle: TextStyle(color: scheme.onSurface.withOpacity(0.72)),
       hintStyle: TextStyle(color: scheme.onSurface.withOpacity(0.38)),
     );

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'package:http/http.dart' as http;
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/push_notification_service.dart';
@@ -373,8 +374,8 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
       border: border(Colors.black.withOpacity(0.08)),
       enabledBorder: border(Colors.black.withOpacity(0.08)),
       focusedBorder: border(scheme.primary.withOpacity(0.75), width: 1.4),
-      errorBorder: border(Colors.red.withOpacity(0.45)),
-      focusedErrorBorder: border(Colors.red.withOpacity(0.7), width: 1.4),
+      errorBorder: border(AppColors.error.withOpacity(0.45)),
+      focusedErrorBorder: border(AppColors.error.withOpacity(0.7), width: 1.4),
       labelStyle: TextStyle(color: scheme.onSurface.withOpacity(0.72)),
       hintStyle: TextStyle(color: scheme.onSurface.withOpacity(0.38)),
     );
@@ -858,7 +859,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(AppLocalizations.of(context)!.welcomeSuccess),
-                backgroundColor: Colors.green,
+                backgroundColor: AppColors.secondary,
                 duration: const Duration(seconds: 3),
               ),
             );
@@ -1000,7 +1001,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                       children: [
                         const Icon(
                           Icons.info_outline,
-                          color: Color(0xFF2196F3),
+                          color: AppColors.info,
                           size: 18,
                         ),
                         const SizedBox(width: 8),
@@ -1037,7 +1038,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2196F3),
+                  backgroundColor: AppColors.info,
                 ),
                 child: Text(AppLocalizations.of(context)!.continue_),
               ),
@@ -1059,7 +1060,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
               children: [
                 const Icon(
                   Icons.check_circle,
-                  color: Color(0xFF2196F3),
+                  color: AppColors.info,
                   size: 28,
                 ),
                 const SizedBox(width: 12),
@@ -1096,15 +1097,15 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE3F2FD),
+                        color: AppColors.infoBg,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFF90CAF9)),
+                        border: Border.all(color: AppColors.info),
                       ),
                       child: Row(
                         children: [
                           const Icon(
                             Icons.person,
-                            color: Color(0xFF1976D2),
+                            color: AppColors.info,
                             size: 20,
                           ),
                           const SizedBox(width: 12),
@@ -1126,7 +1127,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF1976D2),
+                                    color: AppColors.info,
                                   ),
                                 ),
                               ],
@@ -1144,15 +1145,15 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE3F2FD),
+                        color: AppColors.infoBg,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFF90CAF9)),
+                        border: Border.all(color: AppColors.info),
                       ),
                       child: Row(
                         children: [
                           const Icon(
                             Icons.lock,
-                            color: Color(0xFF1976D2),
+                            color: AppColors.info,
                             size: 20,
                           ),
                           const SizedBox(width: 12),
@@ -1174,7 +1175,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF1976D2),
+                                    color: AppColors.info,
                                   ),
                                 ),
                               ],
@@ -1216,7 +1217,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
                 style: TextButton.styleFrom(
-                  backgroundColor: const Color(0xFF2196F3),
+                  backgroundColor: AppColors.info,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
@@ -1245,7 +1246,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
             ),
             title: Row(
               children: [
-                const Icon(Icons.error_outline, color: Colors.red, size: 32),
+                const Icon(Icons.error_outline, color: AppColors.error, size: 32),
                 const SizedBox(width: 12),
                 Text(AppLocalizations.of(context)!.error),
               ],

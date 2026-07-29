@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' hide Card;
 import '../../models/pagamento_model.dart';
 import '../../services/pagamento_service.dart';
@@ -264,7 +265,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            const Icon(Icons.error, color: Colors.red),
+            const Icon(Icons.error, color: AppColors.error),
             const SizedBox(width: 8),
             Text(l10n.error),
           ],
@@ -286,7 +287,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            const Icon(Icons.check_circle, color: Colors.green, size: 32),
+            const Icon(Icons.check_circle, color: AppColors.secondary, size: 32),
             const SizedBox(width: 12),
             Expanded(child: Text(title)),
           ],
@@ -360,7 +361,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                         const Icon(
                           Icons.error_outline,
                           size: 64,
-                          color: Colors.red,
+                          color: AppColors.error,
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -602,14 +603,14 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                             Padding(
                               padding: const EdgeInsets.all(16.0),
                               child: Card(
-                                color: Colors.green.shade50,
+                                color: AppColors.secondary,
                                 child: Padding(
                                   padding: const EdgeInsets.all(16.0),
                                   child: Row(
                                     children: [
                                       const Icon(
                                         Icons.check_circle,
-                                        color: Colors.green,
+                                        color: AppColors.secondary,
                                         size: 32,
                                       ),
                                       const SizedBox(width: 16),
@@ -726,13 +727,13 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
     switch (stato) {
       case 'paid':
       case 'completed':
-        return Colors.green;
+        return AppColors.secondary;
       case 'pending':
         return Colors.orange;
       case 'awaiting_payment':
         return Colors.amber;
       case 'failed':
-        return Colors.red;
+        return AppColors.error;
       case 'cancelled':
         return Colors.grey;
       default:

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import '../../services/app_localizations.dart';
 import '../../services/socio_service.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
@@ -59,7 +60,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(result['message'] ?? 'Password resettata! Controlla la tua email.'),
-            backgroundColor: Colors.green,
+            backgroundColor: AppColors.secondary,
             duration: const Duration(seconds: 5),
           ),
         );
@@ -72,7 +73,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(result['message'] ?? 'Errore durante il reset della password'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
             duration: const Duration(seconds: 4),
           ),
         );
@@ -83,7 +84,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Errore di connessione: $e'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
     } finally {
@@ -459,8 +460,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       border: border(Colors.black.withOpacity(0.08)),
       enabledBorder: border(Colors.black.withOpacity(0.08)),
       focusedBorder: border(scheme.primary.withOpacity(0.75), width: 1.4),
-      errorBorder: border(Colors.red.withOpacity(0.45)),
-      focusedErrorBorder: border(Colors.red.withOpacity(0.7), width: 1.4),
+      errorBorder: border(AppColors.error.withOpacity(0.45)),
+      focusedErrorBorder: border(AppColors.error.withOpacity(0.7), width: 1.4),
       labelStyle: TextStyle(color: scheme.onSurface.withOpacity(0.72)),
       hintStyle: TextStyle(color: scheme.onSurface.withOpacity(0.38)),
     );

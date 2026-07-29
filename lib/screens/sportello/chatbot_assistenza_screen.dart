@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/supporto_ai_service.dart';
 import '../servizi/servizi_gate_screen.dart';
@@ -490,7 +491,7 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        side: const BorderSide(color: Color(0xFF2196F3)),
+        side: const BorderSide(color: AppColors.info),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       child: Text(text, style: const TextStyle(fontSize: 13)),
@@ -563,7 +564,7 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
     return Container(
       constraints: const BoxConstraints(maxHeight: 300),
       decoration: BoxDecoration(
-        color: const Color(0xFFE3F2FD),
+        color: AppColors.infoBg,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -631,7 +632,7 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
         padding: const EdgeInsets.only(top: 4),
         child: Text(answer, style: const TextStyle(fontSize: 13)),
       ),
-      trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Color(0xFF2196F3)),
+      trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.info),
       onTap: onTap,
     );
   }
@@ -648,7 +649,7 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
               margin: const EdgeInsets.only(right: 8),
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFF2196F3),
+                color: AppColors.info,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Icon(Icons.support_agent, color: Colors.white, size: 20),
@@ -660,7 +661,7 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   decoration: BoxDecoration(
-                    color: message.isUser ? const Color(0xFF2196F3) : Colors.white,
+                    color: message.isUser ? AppColors.info : Colors.white,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -716,7 +717,7 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: const Color(0xFFF5F5F5),
+                fillColor: AppColors.bgSubtle,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               ),
               onSubmitted: (text) {
@@ -729,7 +730,7 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
           const SizedBox(width: 8),
           Container(
             decoration: const BoxDecoration(
-              color: Color(0xFF2196F3),
+              color: AppColors.info,
               shape: BoxShape.circle,
             ),
             child: IconButton(
@@ -756,7 +757,7 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
             margin: const EdgeInsets.only(right: 8),
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFF2196F3),
+              color: AppColors.info,
               borderRadius: BorderRadius.circular(20),
             ),
             child: const Icon(Icons.support_agent, color: Colors.white, size: 20),

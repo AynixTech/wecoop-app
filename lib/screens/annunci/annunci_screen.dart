@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import '../../theme/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
@@ -100,7 +101,7 @@ class _AnnunciScreenState extends State<AnnunciScreen> {
     return Scaffold(
       backgroundColor: scheme.surfaceContainerLowest,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1282A8),
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         title: Text(l10n.annunci,
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
@@ -132,7 +133,7 @@ class _AnnunciScreenState extends State<AnnunciScreen> {
             child: _loading
                 ? const Center(
                     child: CircularProgressIndicator(
-                        color: Color(0xFF1282A8)))
+                        color: AppColors.primary))
                 : _annunci.isEmpty
                     ? const _EmptyState()
                     : NotificationListener<ScrollNotification>(
@@ -153,7 +154,7 @@ class _AnnunciScreenState extends State<AnnunciScreen> {
                                 padding: EdgeInsets.all(16),
                                 child: Center(
                                     child: CircularProgressIndicator(
-                                        color: Color(0xFF1282A8))),
+                                        color: AppColors.primary)),
                               );
                             }
                             return _AnnuncioCard(
@@ -169,7 +170,7 @@ class _AnnunciScreenState extends State<AnnunciScreen> {
       ),
       floatingActionButton: _isLoggedIn
           ? FloatingActionButton.extended(
-              backgroundColor: const Color(0xFF1282A8),
+              backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               icon: const Icon(Icons.add),
               label: Text(l10n.annunciPublishButton),
@@ -216,7 +217,7 @@ class _SearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFF1282A8),
+      color: AppColors.primary,
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       child: TextField(
         controller: controller,
@@ -303,12 +304,12 @@ class _Chip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
           color: selected
-              ? const Color(0xFF1282A8)
+              ? AppColors.primary
               : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: selected
-                ? const Color(0xFF1282A8)
+                ? AppColors.primary
                 : Colors.grey.withOpacity(0.3),
           ),
         ),
@@ -389,7 +390,7 @@ class _AnnuncioCard extends StatelessWidget {
                         child: const Center(
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: Color(0xFF1282A8),
+                            color: AppColors.primary,
                           ),
                         ),
                       );
@@ -416,14 +417,14 @@ class _AnnuncioCard extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF1282A8)
+                            color: AppColors.primary
                                 .withOpacity(0.1),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(catName,
                               style: const TextStyle(
                                   fontSize: 11,
-                                  color: Color(0xFF1282A8),
+                                  color: AppColors.primary,
                                   fontWeight: FontWeight.w600)),
                         ),
                       const Spacer(),
@@ -435,8 +436,8 @@ class _AnnuncioCard extends StatelessWidget {
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
                           color: prezzo == 0
-                              ? Colors.green.shade700
-                              : const Color(0xFF1282A8),
+                              ? AppColors.secondary
+                              : AppColors.primary,
                         ),
                       ),
                     ],
@@ -466,13 +467,13 @@ class _AnnuncioCard extends StatelessWidget {
                     children: [
                       if (dataInizio.isNotEmpty) ...[
                         const Icon(Icons.calendar_today,
-                            size: 13, color: Color(0xFF1282A8)),
+                            size: 13, color: AppColors.primary),
                         const SizedBox(width: 4),
                         Text(
                           '${_fmtDate(dataInizio)}${ora.isNotEmpty ? '  $ora' : ''}',
                           style: const TextStyle(
                               fontSize: 12,
-                              color: Color(0xFF1282A8)),
+                              color: AppColors.primary),
                         ),
                         const SizedBox(width: 12),
                       ],
@@ -568,7 +569,7 @@ class _AnnuncioDetailSheetState
           ),
           FilledButton(
             style: FilledButton.styleFrom(
-                backgroundColor: Colors.red),
+                backgroundColor: AppColors.error),
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(l10n.annunciDeleteBtn),
           ),
@@ -584,7 +585,7 @@ class _AnnuncioDetailSheetState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.annunciDeleted),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
     } else {
@@ -611,7 +612,7 @@ class _AnnuncioDetailSheetState
         child: _loading
             ? const Center(
                 child: CircularProgressIndicator(
-                    color: Color(0xFF1282A8)))
+                    color: AppColors.primary))
             : _data == null
                 ? Center(child: Text(AppLocalizations.of(context)!.annunciNotFound))
                 : ListView(
@@ -643,7 +644,7 @@ class _AnnuncioDetailSheetState
                               child: const Center(
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  color: Color(0xFF1282A8),
+                                  color: AppColors.primary,
                                 ),
                               ),
                             );
@@ -718,7 +719,7 @@ class _AnnuncioDetailSheetState
                                 width: double.infinity,
                                 child: FilledButton.icon(
                                   style: FilledButton.styleFrom(
-                                      backgroundColor: Colors.red),
+                                      backgroundColor: AppColors.error),
                                   onPressed: _deleting
                                       ? null
                                       : () => _confirmDelete(context),
@@ -783,8 +784,8 @@ class _MetaRow extends StatelessWidget {
               ? AppLocalizations.of(context)!.annunciIngressoGratuito
               : '€${prezzo.toStringAsFixed(0)}',
           color: prezzo == 0
-              ? Colors.green
-              : const Color(0xFF1282A8),
+              ? AppColors.secondary
+              : AppColors.primary,
         ),
       ],
     );
@@ -800,7 +801,7 @@ class _MetaChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = color ?? const Color(0xFF1282A8);
+    final c = color ?? AppColors.primary;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -866,7 +867,7 @@ class _SpecificiSection extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF1282A8).withOpacity(0.05),
+        color: AppColors.primary.withOpacity(0.05),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -882,7 +883,7 @@ class _SpecificiSection extends StatelessWidget {
                 child: Text(AppLocalizations.of(context)!.annunciBuyTickets,
                     style: const TextStyle(
                         fontSize: 14,
-                        color: Color(0xFF1282A8),
+                        color: AppColors.primary,
                         decoration:
                             TextDecoration.underline)),
               ),
@@ -904,7 +905,7 @@ class _SpecificiSection extends StatelessWidget {
                 child: Text(AppLocalizations.of(context)!.annunciPrenota(prenota),
                     style: const TextStyle(
                         fontSize: 14,
-                        color: Color(0xFF1282A8),
+                        color: AppColors.primary,
                         decoration:
                             TextDecoration.underline)),
               ),
@@ -985,7 +986,7 @@ class _ContactRow extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 8),
         child: Row(
           children: [
-            Icon(icon, size: 18, color: const Color(0xFF1282A8)),
+            Icon(icon, size: 18, color: AppColors.primary),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
@@ -993,7 +994,7 @@ class _ContactRow extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 14,
                     color: onTap != null
-                        ? const Color(0xFF1282A8)
+                        ? AppColors.primary
                         : Colors.black87,
                     decoration: onTap != null
                         ? TextDecoration.underline
@@ -1106,7 +1107,7 @@ class _CreaAnnuncioSheetState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(result['message'] as String? ?? 'Errore'),
-        backgroundColor: Colors.red,
+        backgroundColor: AppColors.error,
       ));
       return;
     }
@@ -1136,7 +1137,7 @@ class _CreaAnnuncioSheetState
     widget.onCreated();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(AppLocalizations.of(context)!.annunciCreatedSuccess),
-      backgroundColor: const Color(0xFF1282A8),
+      backgroundColor: AppColors.primary,
     ));
   }
 
@@ -1166,7 +1167,7 @@ class _CreaAnnuncioSheetState
           content: Text(result['source'] == 'openai'
               ? AppLocalizations.of(context)!.annunciAiGenerated
               : AppLocalizations.of(context)!.annunciAiTemplate),
-          backgroundColor: const Color(0xFF1282A8),
+          backgroundColor: AppColors.primary,
         ),
       );
     } else {
@@ -1226,7 +1227,7 @@ class _CreaAnnuncioSheetState
                 l10n.annunciPublishSubtitle,
                 style: TextStyle(
                     fontSize: 13,
-                    color: Colors.green.shade700),
+                    color: AppColors.secondary),
               ),
               const SizedBox(height: 20),
 
@@ -1316,8 +1317,8 @@ class _CreaAnnuncioSheetState
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF1282A8),
-                    side: const BorderSide(color: Color(0xFF1282A8)),
+                    foregroundColor: AppColors.primary,
+                    side: const BorderSide(color: AppColors.primary),
                   ),
                   onPressed: _isImprovingDesc ? null : _improveDescrizionWithAi,
                   icon: _isImprovingDesc
@@ -1325,7 +1326,7 @@ class _CreaAnnuncioSheetState
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Color(0xFF1282A8)))
+                              strokeWidth: 2, color: AppColors.primary))
                       : const Icon(Icons.auto_awesome, size: 18),
                   label: Text(_isImprovingDesc
                       ? l10n.annunciAiGenerating
@@ -1464,7 +1465,7 @@ class _CreaAnnuncioSheetState
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1282A8),
+                    backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                         borderRadius:
@@ -1591,10 +1592,10 @@ class _CopertinaPickerTile extends StatelessWidget {
           height: 150,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: const Color(0xFF1282A8).withOpacity(0.06),
+            color: AppColors.primary.withOpacity(0.06),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: const Color(0xFF1282A8).withOpacity(0.3),
+              color: AppColors.primary.withOpacity(0.3),
               style: BorderStyle.solid,
             ),
           ),
@@ -1602,11 +1603,11 @@ class _CopertinaPickerTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.add_photo_alternate_outlined,
-                  size: 36, color: Color(0xFF1282A8)),
+                  size: 36, color: AppColors.primary),
               const SizedBox(height: 8),
               Text(AppLocalizations.of(context)!.annunciAddCoverPhoto,
                   style: const TextStyle(
-                      color: Color(0xFF1282A8),
+                      color: AppColors.primary,
                       fontWeight: FontWeight.w500)),
               const SizedBox(height: 4),
               Text(AppLocalizations.of(context)!.annunciCoverPhotoHint,
@@ -1641,7 +1642,7 @@ class _CopertinaPickerTile extends StatelessWidget {
                   icon: Icons.delete,
                   onTap: onRemove,
                   tooltip: AppLocalizations.of(context)!.annunciRemoveTooltip,
-                  color: Colors.red),
+                  color: AppColors.error),
             ],
           ),
         ),
@@ -1676,23 +1677,23 @@ class _GalleriaPickerRow extends StatelessWidget {
                 width: 100,
                 margin: const EdgeInsets.only(right: 8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1282A8).withOpacity(0.06),
+                  color: AppColors.primary.withOpacity(0.06),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
                     color:
-                        const Color(0xFF1282A8).withOpacity(0.3),
+                        AppColors.primary.withOpacity(0.3),
                   ),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(Icons.add_photo_alternate_outlined,
-                        size: 28, color: Color(0xFF1282A8)),
+                        size: 28, color: AppColors.primary),
                     const SizedBox(height: 4),
                     Text(AppLocalizations.of(context)!.annunciAddPhoto,
                         style: const TextStyle(
                             fontSize: 11,
-                            color: Color(0xFF1282A8))),
+                            color: AppColors.primary)),
                   ],
                 ),
               ),
@@ -1720,7 +1721,7 @@ class _GalleriaPickerRow extends StatelessWidget {
                     icon: Icons.close,
                     onTap: () => onRemove(i),
                     tooltip: AppLocalizations.of(context)!.annunciRemoveTooltip,
-                    color: Colors.red,
+                    color: AppColors.error,
                     size: 20,
                   ),
                 ),

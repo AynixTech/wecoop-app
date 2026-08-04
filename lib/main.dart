@@ -5,6 +5,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'services/locale_provider.dart';
 import 'services/secure_storage_service.dart';
+import 'services/error_reporter.dart';
 import 'services/firma_digitale_provider.dart';
 import 'config/stripe_config.dart';
 import 'app.dart';
@@ -58,6 +59,9 @@ Future<void> _initializeStripe() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Cattura crash e errori runtime e li invia al backend (pagina "Errori App").
+  ErrorReporter.instance.install();
 
   // Verifica integrita' secure storage (pulisce se corrotto dopo reinstallazione)
   final storageService = SecureStorageService();

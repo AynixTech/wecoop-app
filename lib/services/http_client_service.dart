@@ -3,6 +3,7 @@ import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:http/http.dart' as http;
 import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
+import 'package:wecoop_app/services/error_reporter.dart';
 import '../config/api_config.dart';
 
 /// Servizio HTTP centralizzato con gestione automatica del refresh token
@@ -44,6 +45,16 @@ class HttpClientService {
         return jsonDecode(response.body);
       } catch (e2) {
         AppLogger.d('❌ Errore nel parsing JSON: $e2');
+        // Segnala al backend: risposta non-JSON (spesso pagina HTML di errore).
+        final preview = response.body.length > 300
+            ? response.body.substring(0, 300)
+            : response.body;
+        ErrorReporter.instance.reportHttp(
+          endpoint: response.request?.url.toString() ?? 'unknown',
+          statusCode: response.statusCode,
+          message: 'Risposta non-JSON dal server (parse fallito)',
+          bodyPreview: preview,
+        );
         rethrow;
       }
     }

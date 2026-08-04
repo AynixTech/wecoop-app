@@ -1,10 +1,10 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:wecoop_app/screens/auth_gate.dart';
-import 'package:wecoop_app/screens/caf/compilazione_730_screen.dart';
+
 import 'package:wecoop_app/screens/prenota_appuntamento/prenota_appuntamento_screen.dart';
 import 'package:wecoop_app/screens/profilo/completa_profilo_screen.dart';
 import 'package:wecoop_app/services/locale_provider.dart';
@@ -13,6 +13,7 @@ import 'package:wecoop_app/services/push_notification_service.dart';
 import 'package:wecoop_app/services/deep_link_service.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/services/in_app_update_service.dart';
+import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/utils/deep_link_handler.dart';
 import 'package:wecoop_app/theme/theme.dart';
 import 'package:wecoop_app/widgets/mandatory_update_gate.dart';
@@ -38,9 +39,18 @@ class _WECOOPAppState extends State<WECOOPApp> {
   void initState() {
     super.initState();
     MaintenanceHandler.bindNavigatorKey(_navigatorKey);
+    PushNotificationService.navigatorKey = _navigatorKey;
+    _bindSessionExpiredHandler();
     _initializePushNotifications();
     _initializeDeepLinks();
     _checkForAppUpdate();
+  }
+
+  /// Quando il refresh token fallisce (sessione scaduta), riporta al login.
+  void _bindSessionExpiredHandler() {
+    HttpClientService.onSessionExpired = () async {
+      _navigatorKey.currentState?.pushNamedAndRemoveUntil('/login', (_) => false);
+    };
   }
 
   void _checkForAppUpdate() {
@@ -70,7 +80,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
         if (context != null) {
           DeepLinkHandler.handleDeepLink(context, uri);
         } else {
-          print('⚠️ Navigator context non disponibile per deep link');
+          AppLogger.d('⚠️ Navigator context non disponibile per deep link');
         }
       });
     });
@@ -86,41 +96,37 @@ class _WECOOPAppState extends State<WECOOPApp> {
     final screen = data['screen'] as String?;
     final id = data['id'] as String?;
 
-    print('📍 Navigazione richiesta: $data');
-    print('Screen: $screen, ID: $id');
+    AppLogger.d('📍 Navigazione richiesta: $data');
+    AppLogger.d('Screen: $screen, ID: $id');
 
     if (screen == null) return;
 
     // Naviga alla schermata specificata
     switch (screen) {
       case 'EventDetail':
-        if (id != null) {
-          // TODO: Implementare navigazione a EventDetailScreen
-          print('🔄 Navigazione a EventDetail: $id');
-          // _navigatorKey.currentState?.pushNamed('/event/$id');
-        }
+        // Eventi è un tab della MainScreen: entriamo dalla home.
+        AppLogger.d('🔄 Deep link EventDetail: $id -> home');
+        _navigatorKey.currentState?.pushNamed('/home');
         break;
 
       case 'ServiceDetail':
-        if (id != null) {
-          // TODO: Implementare navigazione a ServiceDetailScreen
-          print('🔄 Navigazione a ServiceDetail: $id');
-          // _navigatorKey.currentState?.pushNamed('/service/$id');
-        }
+        // Servizi è un tab della MainScreen: entriamo dalla home.
+        AppLogger.d('🔄 Deep link ServiceDetail: $id -> home');
+        _navigatorKey.currentState?.pushNamed('/home');
         break;
 
       case 'Profile':
-        print('🔄 Navigazione a Profile');
+        AppLogger.d('🔄 Navigazione a Profile');
         _navigatorKey.currentState?.pushNamed('/home');
         break;
 
       case 'Notifications':
-        print('🔄 Navigazione a Notifications');
+        AppLogger.d('🔄 Navigazione a Notifications');
         _navigatorKey.currentState?.pushNamed('/home');
         break;
 
       case 'AppointmentDetail':
-        print('🔄 Navigazione a AppointmentDetail (richiesta $id)');
+        AppLogger.d('🔄 Navigazione a AppointmentDetail (richiesta $id)');
         if (id != null) {
           _navigatorKey.currentState?.pushNamed(
             '/calendar',
@@ -132,7 +138,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
         break;
 
       default:
-        print('🔄 Schermata sconosciuta: $screen');
+        AppLogger.d('🔄 Schermata sconosciuta: $screen');
     }
   }
 
@@ -342,9 +348,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
             '/change-password': (context) => const ChangePasswordScreen(),
             '/complete-profile': (context) => const CompletaProfiloScreen(),
             '/prenotaAppuntamento': (context) => PrenotaAppuntamentoScreen(),
-            '/compila730':
-                (context) =>
-                    AuthGate(protectedScreen: const Compilazione730Screen()),
+            // '/compila730': rimosso — schermata 730 non ancora collegata al backend.
             // '/assegnoUnico': (context) => AuthGate(protectedScreen: const AssegnoUnicoScreen()),
           },
         );

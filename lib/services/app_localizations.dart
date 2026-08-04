@@ -1466,6 +1466,7 @@ class AppLocalizations {
       'annunciNotFound': 'Annuncio non trovato',
       'annunciDeleting': 'Eliminazione...',
       'annunciDeleteActionBtn': 'Elimina annuncio',
+      'annunciShareBtn': 'Condividi',
       'annunciContatti': 'Contatti',
       'annunciBuyTickets': '🎟 Acquista biglietti',
       'annunciMenuGiorno': 'Menu del giorno',
@@ -2887,6 +2888,7 @@ class AppLocalizations {
       'annunciNotFound': 'الإعلان غير موجود',
       'annunciDeleting': 'جارٍ الحذف...',
       'annunciDeleteActionBtn': 'حذف الإعلان',
+      'annunciShareBtn': 'مشاركة',
       'annunciContatti': 'جهات الاتصال',
       'annunciBuyTickets': '🎟 شراء التذاكر',
       'annunciMenuGiorno': 'قائمة اليوم',
@@ -4232,6 +4234,7 @@ class AppLocalizations {
       'annunciNotFound': '未找到公告',
       'annunciDeleting': '正在删除……',
       'annunciDeleteActionBtn': '删除公告',
+      'annunciShareBtn': '分享',
       'annunciContatti': '联系方式',
       'annunciBuyTickets': '🎟 购买门票',
       'annunciMenuGiorno': '每日菜单',
@@ -5665,6 +5668,7 @@ class AppLocalizations {
       'annunciNotFound': 'Listing not found',
       'annunciDeleting': 'Deleting...',
       'annunciDeleteActionBtn': 'Delete listing',
+      'annunciShareBtn': 'Share',
       'annunciContatti': 'Contacts',
       'annunciBuyTickets': '🎟 Buy tickets',
       'annunciMenuGiorno': 'Daily menu',
@@ -7167,6 +7171,7 @@ class AppLocalizations {
       'annunciNotFound': 'Anuncio no encontrado',
       'annunciDeleting': 'Eliminando...',
       'annunciDeleteActionBtn': 'Eliminar anuncio',
+      'annunciShareBtn': 'Compartir',
       'annunciContatti': 'Contactos',
       'annunciBuyTickets': '🎟 Comprar entradas',
       'annunciMenuGiorno': 'Menú del día',
@@ -8057,6 +8062,7 @@ class AppLocalizations {
   String get annunciNotFound => translate('annunciNotFound');
   String get annunciDeleting => translate('annunciDeleting');
   String get annunciDeleteActionBtn => translate('annunciDeleteActionBtn');
+  String get annunciShareBtn => translate('annunciShareBtn');
   String get annunciContatti => translate('annunciContatti');
   String get annunciBuyTickets => translate('annunciBuyTickets');
   String get annunciMenuGiorno => translate('annunciMenuGiorno');

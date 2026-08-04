@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/utils/app_logger.dart';
 import '../../theme/theme.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
@@ -1056,13 +1057,13 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
           userDisplayName.trim().isNotEmpty) {
         resolvedFullName = userDisplayName.trim();
         await _storage.write(key: 'full_name', value: resolvedFullName);
-        print(
+        AppLogger.d(
           '✅ [Prefill] Nome recuperato da storage user_display_name: $resolvedFullName',
         );
       }
 
       if (resolvedFullName.isEmpty) {
-        print(
+        AppLogger.d(
           '⚠️ [Prefill] Nome non trovato in storage, provo fallback API /soci/me...',
         );
         final meData = await SocioService.getMe();
@@ -1085,37 +1086,37 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
           if (apiFullName.isNotEmpty) {
             resolvedFullName = apiFullName;
             await _storage.write(key: 'full_name', value: apiFullName);
-            print(
+            AppLogger.d(
               '✅ [Prefill] Nome recuperato da API /soci/me (alias-aware): $apiFullName',
             );
           } else {
-            print(
+            AppLogger.d(
               '⚠️ [Prefill] API /soci/me non contiene campi nome utilizzabili',
             );
           }
         } else {
-          print('⚠️ [Prefill] Fallback API /soci/me non disponibile');
+          AppLogger.d('⚠️ [Prefill] Fallback API /soci/me non disponibile');
         }
       }
 
-      print('=== DEBUG PRECOMPILAZIONE ===');
-      print('fullName: $fullName');
-      print('firstName: $firstName');
-      print('lastName: $lastName');
-      print('nome (legacy key): $nome');
-      print('cognome (legacy key): $cognome');
-      print('user_display_name: $userDisplayName');
-      print('resolvedFullName (post-fallback): $resolvedFullName');
-      print('email: $email');
-      print('telefono: $telefono');
-      print('citta: $citta');
-      print('indirizzo: $indirizzo');
-      print('cap: $cap');
-      print('codice_fiscale: $codiceFiscale');
-      print('data_nascita: $dataNascita');
-      print('luogo_nascita: $luogoNascita');
-      print('paese_origine: $paeseOrigine');
-      print('nazionalita: $nazionalita');
+      AppLogger.d('=== DEBUG PRECOMPILAZIONE ===');
+      AppLogger.d('fullName: $fullName');
+      AppLogger.d('firstName: $firstName');
+      AppLogger.d('lastName: $lastName');
+      AppLogger.d('nome (legacy key): $nome');
+      AppLogger.d('cognome (legacy key): $cognome');
+      AppLogger.d('user_display_name: $userDisplayName');
+      AppLogger.d('resolvedFullName (post-fallback): $resolvedFullName');
+      AppLogger.d('email: $email');
+      AppLogger.d('telefono: $telefono');
+      AppLogger.d('citta: $citta');
+      AppLogger.d('indirizzo: $indirizzo');
+      AppLogger.d('cap: $cap');
+      AppLogger.d('codice_fiscale: $codiceFiscale');
+      AppLogger.d('data_nascita: $dataNascita');
+      AppLogger.d('luogo_nascita: $luogoNascita');
+      AppLogger.d('paese_origine: $paeseOrigine');
+      AppLogger.d('nazionalita: $nazionalita');
 
       // Mappa i dati ai campi del form
       final prefilledData = <String, String>{};
@@ -1246,9 +1247,9 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         prefilledData['Nacionalidad'] = nationalityFullName;
       }
 
-      print('Dati precompilati: $prefilledData');
-      print('Dati precompilati: $prefilledData');
-      print(
+      AppLogger.d('Dati precompilati: $prefilledData');
+      AppLogger.d('Dati precompilati: $prefilledData');
+      AppLogger.d(
         'Campi form ricevuti (${widget.campi.length}): ${widget.campi.map((c) => c['label']).toList()}',
       );
 
@@ -1291,7 +1292,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                     ? '${prefilledValue.substring(0, 40)}...'
                     : prefilledValue);
 
-        print(
+        AppLogger.d(
           '[PrefillField] label="$label" normalized="$normalizedLabel" '
           'looksLikeFullName=$looksLikeFullName matchedExact=$matchedExact '
           'matchedNormalized=$matchedNormalized source=$source value="$preview"',
@@ -1308,7 +1309,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Errore caricamento dati utente: $e');
+      AppLogger.d('Errore caricamento dati utente: $e');
       // Crea controller vuoti in caso di errore
       for (var campo in widget.campi) {
         final label = campo['label'] as String;
@@ -1719,10 +1720,15 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       return;
     }
 
-    // Controlla se ci sono documenti mancanti
+    // Controlla se ci sono documenti mancanti e BLOCCA l'invio se presenti.
     if (widget.documentiRichiesti != null &&
         widget.documentiRichiesti!.isNotEmpty) {
       await _checkDocumenti();
+      if (_documentiMancanti.isNotEmpty ||
+          _documentiMancantiFamiliare.isNotEmpty) {
+        if (mounted) _showDocumentiMancantiDialog();
+        return; // non proseguire con l'invio finché mancano documenti
+      }
     }
 
     // Non serve più save() perché usiamo onChanged
@@ -1772,32 +1778,32 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       // Priorità a user_id (ID reale nel backend Node); socio_id come fallback.
       if (userId != null && userId.isNotEmpty) {
         apiData['user_id'] = userId;
-        print('📋 Aggiunto user_id: $userId');
+        AppLogger.d('📋 Aggiunto user_id: $userId');
       } else if (socioId != null && socioId.isNotEmpty) {
         apiData['socio_id'] = socioId;
-        print('📋 Aggiunto socio_id: $socioId');
+        AppLogger.d('📋 Aggiunto socio_id: $socioId');
       }
       // Invia sempre il telefono per collegare in modo affidabile la richiesta.
       if (telefonoUtente != null && telefonoUtente.isNotEmpty) {
         apiData['telefono_utente'] = telefonoUtente;
       }
 
-      print('=== DATI FORM ORIGINALI ===');
-      print(_formData);
-      print('=== DATI CONVERTITI PER API ===');
-      print(apiData);
+      AppLogger.d('=== DATI FORM ORIGINALI ===');
+      AppLogger.d(_formData);
+      AppLogger.d('=== DATI CONVERTITI PER API ===');
+      AppLogger.d(apiData);
 
       // Standardizza servizio e categoria (da tradotti a chiavi inglesi)
       final servizioStandard = _getStandardServizio(widget.servizio);
       final categoriaStandard = _getStandardCategoria(widget.categoria);
 
-      print('=== STANDARDIZZAZIONE ===');
-      print('Servizio originale: ${widget.servizio}');
-      print('Servizio standard: $servizioStandard');
-      print('Categoria originale: ${widget.categoria}');
-      print('Categoria standard: $categoriaStandard');
+      AppLogger.d('=== STANDARDIZZAZIONE ===');
+      AppLogger.d('Servizio originale: ${widget.servizio}');
+      AppLogger.d('Servizio standard: $servizioStandard');
+      AppLogger.d('Categoria originale: ${widget.categoria}');
+      AppLogger.d('Categoria standard: $categoriaStandard');
 
-      print('\n🔄 CHIAMATA API IN CORSO...');
+      AppLogger.d('\n🔄 CHIAMATA API IN CORSO...');
       // Usa il nuovo endpoint API con valori standardizzati
       final result = await SocioService.inviaRichiestaServizio(
         servizio: servizioStandard,
@@ -1805,12 +1811,12 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         dati: apiData,
       );
 
-      print('\n📨 RESULT RICEVUTO:');
-      print('   success: ${result['success']}');
-      print('   numero_pratica: ${result['numero_pratica']}');
-      print('   requires_payment: ${result['requires_payment']}');
-      print('   payment_id: ${result['payment_id']}');
-      print('   importo: ${result['importo']}');
+      AppLogger.d('\n📨 RESULT RICEVUTO:');
+      AppLogger.d('   success: ${result['success']}');
+      AppLogger.d('   numero_pratica: ${result['numero_pratica']}');
+      AppLogger.d('   requires_payment: ${result['requires_payment']}');
+      AppLogger.d('   payment_id: ${result['payment_id']}');
+      AppLogger.d('   importo: ${result['importo']}');
 
       setState(() {
         _isSubmitting = false;
@@ -1825,11 +1831,11 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         final importo = result['importo'];
         final paymentId = result['payment_id'];
 
-        print('\n💬 PREPARAZIONE DIALOG:');
-        print('   numeroPratica: $numeroPratica');
-        print('   requiresPayment: $requiresPayment');
-        print('   importo: $importo');
-        print('   paymentId: $paymentId');
+        AppLogger.d('\n💬 PREPARAZIONE DIALOG:');
+        AppLogger.d('   numeroPratica: $numeroPratica');
+        AppLogger.d('   requiresPayment: $requiresPayment');
+        AppLogger.d('   importo: $importo');
+        AppLogger.d('   paymentId: $paymentId');
 
         String message =
             numeroPratica != null
@@ -2143,7 +2149,6 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   }
 
   // Mostra dialog per documenti mancanti
-  // ignore: unused_element
   void _showDocumentiMancantiDialog() {
     showDialog(
       context: context,

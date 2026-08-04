@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/utils/app_logger.dart';
 import '../../theme/theme.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -212,13 +213,13 @@ class _VerificaOTPWidgetState extends State<VerificaOTPWidget> {
                             _otpController.text.length != 6
                         ? null
                         : () async {
-                            print('✅ [OtpUI] Tap verifica OTP code=${_otpController.text} stepBefore=${provider.step} otpId=${provider.otpGenerata?.id}');
+                            AppLogger.d('✅ [OtpUI] Tap verifica OTP code=${_otpController.text} stepBefore=${provider.step} otpId=${provider.otpGenerata?.id}');
                             await provider
                                 .verificaOTP(_otpController.text);
-                            print('✅ [OtpUI] verificaOTP completata stepAfter=${provider.step} errorCode=${provider.errorCode} error=${provider.errorMessage}');
+                            AppLogger.d('✅ [OtpUI] verificaOTP completata stepAfter=${provider.step} errorCode=${provider.errorCode} error=${provider.errorMessage}');
                             if (provider.step ==
                                 FirmaStep.otpVerificato) {
-                              print('✅ [OtpUI] Navigo allo step firma');
+                              AppLogger.d('✅ [OtpUI] Navigo allo step firma');
                               widget.onOTPVerificato();
                             }
                           },

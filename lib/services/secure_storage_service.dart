@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:flutter/services.dart';
 
 /// Servizio centralizzato per Flutter Secure Storage con gestione errori
@@ -20,14 +21,14 @@ class SecureStorageService {
     } on PlatformException catch (e) {
       if (e.message?.contains('BadPaddingException') == true ||
           e.message?.contains('BAD_DECRYPT') == true) {
-        print('Errore decrittazione per chiave "$key", pulizia storage corrotto');
+        AppLogger.d('Errore decrittazione per chiave "$key", pulizia storage corrotto');
         
         // Elimina la chiave corrotta
         await _storage.delete(key: key);
         
         // Se e' una chiave critica (JWT), pulisci tutto
         if (key == 'jwt_token' || key == 'user_id' || key == 'user_nicename') {
-          print('Chiave critica corrotta, pulizia completa storage');
+          AppLogger.d('Chiave critica corrotta, pulizia completa storage');
           await deleteAll();
         }
         
@@ -35,10 +36,10 @@ class SecureStorageService {
       }
       
       // Altri errori
-      print('Errore lettura secure storage ($key): $e');
+      AppLogger.d('Errore lettura secure storage ($key): $e');
       return null;
     } catch (e) {
-      print('Errore generico lettura secure storage ($key): $e');
+      AppLogger.d('Errore generico lettura secure storage ($key): $e');
       return null;
     }
   }
@@ -48,7 +49,7 @@ class SecureStorageService {
     try {
       await _storage.write(key: key, value: value);
     } catch (e) {
-      print('Errore scrittura secure storage ($key): $e');
+      AppLogger.d('Errore scrittura secure storage ($key): $e');
       rethrow;
     }
   }
@@ -58,7 +59,7 @@ class SecureStorageService {
     try {
       await _storage.delete(key: key);
     } catch (e) {
-      print('Errore eliminazione secure storage ($key): $e');
+      AppLogger.d('Errore eliminazione secure storage ($key): $e');
     }
   }
 
@@ -66,9 +67,9 @@ class SecureStorageService {
   Future<void> deleteAll() async {
     try {
       await _storage.deleteAll();
-      print('Storage pulito completamente');
+      AppLogger.d('Storage pulito completamente');
     } catch (e) {
-      print('Errore pulizia storage: $e');
+      AppLogger.d('Errore pulizia storage: $e');
     }
   }
 
@@ -79,14 +80,14 @@ class SecureStorageService {
     } on PlatformException catch (e) {
       if (e.message?.contains('BadPaddingException') == true ||
           e.message?.contains('BAD_DECRYPT') == true) {
-        print('Storage corrotto rilevato durante readAll, pulizia completa');
+        AppLogger.d('Storage corrotto rilevato durante readAll, pulizia completa');
         await deleteAll();
         return {};
       }
-      print('Errore readAll secure storage: $e');
+      AppLogger.d('Errore readAll secure storage: $e');
       return {};
     } catch (e) {
-      print('Errore generico readAll: $e');
+      AppLogger.d('Errore generico readAll: $e');
       return {};
     }
   }
@@ -109,7 +110,7 @@ class SecureStorageService {
     } on PlatformException catch (e) {
       if (e.message?.contains('BadPaddingException') == true ||
           e.message?.contains('BAD_DECRYPT') == true) {
-        print('Storage corrotto rilevato, pulizia automatica');
+        AppLogger.d('Storage corrotto rilevato, pulizia automatica');
         await deleteAll();
         return false;
       }

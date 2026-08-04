@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/utils/app_logger.dart';
 import '../../theme/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
@@ -47,7 +48,7 @@ class _ConfermaFirmaWidgetState extends State<ConfermaFirmaWidget> {
         });
       }
     } catch (e) {
-      print('Errore nel recupero info dispositivo: $e');
+      AppLogger.d('Errore nel recupero info dispositivo: $e');
     }
   }
 

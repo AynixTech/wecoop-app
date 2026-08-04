@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:wecoop_app/utils/app_logger.dart';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -210,7 +211,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
 
       if (!mounted) return;
       setState(() {});
-    } catch (_) {}
+    } catch (e) { AppLogger.d("ignored: $e"); }
   }
 
   void _applyStoredPhone(String phone) {
@@ -845,7 +846,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
       if (response.statusCode == 200 && body is Map<String, dynamic>) {
         return body;
       }
-    } catch (_) {}
+    } catch (e) { AppLogger.d("ignored: $e"); }
 
     final localCached = await _loadLocalCachedCvs();
     for (final entry in localCached) {

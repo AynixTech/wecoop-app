@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter/foundation.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
 import '../config/api_config.dart';
@@ -21,6 +24,10 @@ class PushNotificationService {
 
   // Callback per navigazione
   Function(RemoteMessage)? onMessageTap;
+
+  /// NavigatorKey globale per la navigazione dal tap sulle notifiche
+  /// (impostato una volta all'avvio dell'app).
+  static GlobalKey<NavigatorState>? navigatorKey;
 
   // URL API backend Node
   static const String apiUrl = ApiConfig.baseUrl;
@@ -41,7 +48,7 @@ class PushNotificationService {
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('✅ Permessi notifiche concessi');
+      AppLogger.d('✅ Permessi notifiche concessi');
 
       // Inizializza local notifications
       await _initializeLocalNotifications();
@@ -52,7 +59,7 @@ class PushNotificationService {
       // Configura handlers
       _configureMessageHandlers();
     } else {
-      print('❌ Permessi notifiche negati');
+      AppLogger.d('❌ Permessi notifiche negati');
     }
   }
 
@@ -91,7 +98,7 @@ class PushNotificationService {
       String? token = await _firebaseMessaging.getToken();
 
       if (token != null) {
-        print('📱 FCM Token: ${token.substring(0, 20)}...');
+        AppLogger.d('📱 FCM Token: ${token.substring(0, 20)}...');
 
         // Salva token localmente
         await _storage.write(key: 'fcm_token', value: token);
@@ -103,35 +110,35 @@ class PushNotificationService {
         _firebaseMessaging.onTokenRefresh.listen(_sendTokenToBackend);
       }
     } catch (e) {
-      print('❌ Errore ottenimento FCM token: $e');
+      AppLogger.d('❌ Errore ottenimento FCM token: $e');
     }
   }
 
   /// Invia token FCM al backend WordPress
   Future<void> _sendTokenToBackend(String token) async {
     try {
-      print('🔄 Inizio invio FCM token al backend...');
+      AppLogger.d('🔄 Inizio invio FCM token al backend...');
 
       // Recupera JWT token
       final jwtToken = await _storage.read(key: 'jwt_token');
 
       if (jwtToken == null) {
-        print('⚠️ JWT token non trovato, impossibile salvare FCM token');
-        print('💡 Verifica che il login sia stato completato correttamente');
+        AppLogger.d('⚠️ JWT token non trovato, impossibile salvare FCM token');
+        AppLogger.d('💡 Verifica che il login sia stato completato correttamente');
         return;
       }
 
-      print('✅ JWT token trovato: ${jwtToken.substring(0, 20)}...');
+      AppLogger.d('✅ JWT token trovato: ${jwtToken.substring(0, 20)}...');
 
       // Ottieni info dispositivo
       final deviceInfo = await _getDeviceInfo();
 
       final url = Uri.parse('$apiUrl/push/token');
-      print('📡 POST $url');
-      print(
+      AppLogger.d('📡 POST $url');
+      AppLogger.d(
         '📝 Headers: Authorization: Bearer ${jwtToken.substring(0, 20)}...',
       );
-      print(
+      AppLogger.d(
         '📝 Body: {"token": "${token.substring(0, 20)}...", "device_info": "$deviceInfo"}',
       );
 
@@ -144,48 +151,60 @@ class PushNotificationService {
         body: json.encode({'token': token, 'device_info': deviceInfo}),
       );
 
-      print('📥 Response Status: ${response.statusCode}');
-      print('📥 Response Body: ${response.body}');
+      AppLogger.d('📥 Response Status: ${response.statusCode}');
+      AppLogger.d('📥 Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print('✅ FCM token salvato su backend: ${data['message']}');
+        AppLogger.d('✅ FCM token salvato su backend: ${data['message']}');
       } else if (response.statusCode == 401) {
-        print('❌ Errore 401: JWT token non valido o scaduto');
-        print('💡 L\'utente deve rifare il login');
+        AppLogger.d('❌ Errore 401: JWT token non valido o scaduto');
+        AppLogger.d('💡 L\'utente deve rifare il login');
       } else if (response.statusCode == 404) {
-        print('❌ Errore 404: Endpoint /push/token non trovato');
-        print('💡 Verifica che il plugin WordPress sia attivo');
+        AppLogger.d('❌ Errore 404: Endpoint /push/token non trovato');
+        AppLogger.d('💡 Verifica che il plugin WordPress sia attivo');
       } else {
-        print('❌ Errore salvataggio token: ${response.statusCode}');
-        print('📄 Response: ${response.body}');
+        AppLogger.d('❌ Errore salvataggio token: ${response.statusCode}');
+        AppLogger.d('📄 Response: ${response.body}');
       }
     } catch (e) {
-      print('❌ Errore invio token a backend: $e');
-      print(
+      AppLogger.d('❌ Errore invio token a backend: $e');
+      AppLogger.d(
         '💡 Verifica connessione internet e che il server sia raggiungibile',
       );
     }
   }
 
-  /// Ottieni informazioni dispositivo
+  /// Ottieni informazioni dispositivo reali (device_info_plus).
   Future<String> _getDeviceInfo() async {
-    // Usa package device_info_plus per ottenere info reali
-    // Per ora placeholder
-    return 'Flutter App - Android/iOS';
+    try {
+      final info = DeviceInfoPlugin();
+      if (Platform.isAndroid) {
+        final a = await info.androidInfo;
+        return '${a.manufacturer} ${a.model} · Android ${a.version.release} (SDK ${a.version.sdkInt})';
+      }
+      if (Platform.isIOS) {
+        final i = await info.iosInfo;
+        return '${i.name} · ${i.model} · iOS ${i.systemVersion}';
+      }
+      return 'Flutter App';
+    } catch (e) {
+      AppLogger.e('device info errore', e);
+      return 'Flutter App';
+    }
   }
 
   /// Configura handlers per messaggi Firebase
   void _configureMessageHandlers() {
     // App in foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('📬 Notifica ricevuta in foreground');
+      AppLogger.d('📬 Notifica ricevuta in foreground');
       _showLocalNotification(message);
     });
 
     // App aperta da notifica (background/terminated)
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('📬 App aperta da notifica');
+      AppLogger.d('📬 App aperta da notifica');
       _handleNotificationTap(message.data);
     });
 
@@ -199,7 +218,7 @@ class PushNotificationService {
         await _firebaseMessaging.getInitialMessage();
 
     if (initialMessage != null) {
-      print('📬 App aperta da notifica (terminated)');
+      AppLogger.d('📬 App aperta da notifica (terminated)');
       _handleNotificationTap(initialMessage.data);
     }
   }
@@ -243,7 +262,7 @@ class PushNotificationService {
 
   /// Gestisci tap su notifica
   void _handleNotificationTap(Map<String, dynamic> data) {
-    print('👆 Tap su notifica: $data');
+    AppLogger.d('👆 Tap su notifica: $data');
 
     if (onMessageTap != null) {
       onMessageTap!(RemoteMessage(data: data));
@@ -253,38 +272,24 @@ class PushNotificationService {
     }
   }
 
-  /// Naviga alla schermata specificata
+  /// Naviga alla schermata specificata dal payload della notifica.
   void _navigateToScreen(Map<String, dynamic> data) {
-    final screen = data['screen'] as String?;
-    final id = data['id'] as String?;
+    final navigator = navigatorKey?.currentState;
+    if (navigator == null) {
+      AppLogger.d('🔄 navigatorKey non disponibile, navigazione ignorata');
+      return;
+    }
 
-    if (screen == null) return;
-
-    // Implementa navigazione in base al tuo router
+    final screen = (data['screen'] ?? data['type'] ?? '').toString();
     switch (screen) {
-      case 'EventDetail':
-        if (id != null) {
-          // Navigator.push o router.go a EventDetailPage
-          print('🔄 Navigazione a EventDetail: $id');
-        }
+      case 'appuntamento':
+      case 'calendar':
+        navigator.pushNamed('/calendar');
         break;
-
-      case 'ServiceDetail':
-        if (id != null) {
-          print('🔄 Navigazione a ServiceDetail: $id');
-        }
-        break;
-
-      case 'Profile':
-        print('🔄 Navigazione a Profile');
-        break;
-
-      case 'Notifications':
-        print('🔄 Navigazione a Notifications');
-        break;
-
       default:
-        print('🔄 Schermata sconosciuta: $screen');
+        // Le altre sezioni (eventi, richieste, profilo) sono tab dentro la
+        // MainScreen: portiamo alla home come punto d'ingresso sicuro.
+        navigator.pushNamed('/home');
     }
   }
 
@@ -301,11 +306,11 @@ class PushNotificationService {
       );
 
       if (response.statusCode == 200) {
-        print('✅ FCM token rimosso da backend');
+        AppLogger.d('✅ FCM token rimosso da backend');
         await _storage.delete(key: 'fcm_token');
       }
     } catch (e) {
-      print('❌ Errore rimozione token: $e');
+      AppLogger.d('❌ Errore rimozione token: $e');
     }
   }
 
@@ -313,13 +318,13 @@ class PushNotificationService {
   Future<void> subscribeToTopic(String topic) async {
     if (Firebase.apps.isEmpty) return;
     await _firebaseMessaging.subscribeToTopic(topic);
-    print('📢 Iscritto al topic: $topic');
+    AppLogger.d('📢 Iscritto al topic: $topic');
   }
 
   /// Unsubscribe da topic (opzionale)
   Future<void> unsubscribeFromTopic(String topic) async {
     if (Firebase.apps.isEmpty) return;
     await _firebaseMessaging.unsubscribeFromTopic(topic);
-    print('🔕 Disiscritto dal topic: $topic');
+    AppLogger.d('🔕 Disiscritto dal topic: $topic');
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
 import '../models/firma_digitale_models.dart';
@@ -37,8 +38,8 @@ class FirmaDigitaleService {
       final headers = await _getHeaders();
       final url = '$baseUrl/documento-unico/$richiestaId/send';
 
-      print('📄 Scarico documento da: $url');
-      print(
+      AppLogger.d('📄 Scarico documento da: $url');
+      AppLogger.d(
         '📄 [DocFetch] richiestaId=$richiestaId hasAuthHeader=${headers.containsKey('Authorization')} lang=${headers['Accept-Language']}',
       );
 
@@ -47,19 +48,19 @@ class FirmaDigitaleService {
         headers: headers,
       );
 
-      print('Status code: ${response.statusCode}');
-      print('📄 [DocFetch] content-type=${response.headers['content-type']}');
-      print('📄 [DocFetch] body length=${response.body.length}');
+      AppLogger.d('Status code: ${response.statusCode}');
+      AppLogger.d('📄 [DocFetch] content-type=${response.headers['content-type']}');
+      AppLogger.d('📄 [DocFetch] body length=${response.body.length}');
       final bodyPreview =
           response.body.length > 500
               ? '${response.body.substring(0, 500)}...'
               : response.body;
-      print('📄 [DocFetch] body preview: $bodyPreview');
+      AppLogger.d('📄 [DocFetch] body preview: $bodyPreview');
 
       if (response.statusCode == 200) {
         // Verifica se la risposta contiene warning PHP
         if (response.body.trim().startsWith('<')) {
-          print('❌ [DocFetch] Risposta HTML invece di JSON');
+          AppLogger.d('❌ [DocFetch] Risposta HTML invece di JSON');
           throw FirmaDigitaleException(
             message: 'Il backend ha restituito HTML/warning PHP invece di JSON',
             code: 'INVALID_RESPONSE',
@@ -67,18 +68,18 @@ class FirmaDigitaleService {
         }
 
         final data = jsonDecode(response.body);
-        print(
+        AppLogger.d(
           '📄 [DocFetch] data keys=${data is Map<String, dynamic> ? data.keys.toList() : 'not-a-map'}',
         );
 
         if (data['success'] == true && data['documento'] != null) {
           final documento = data['documento'] as Map<String, dynamic>;
-          print('✅ [DocFetch] documento keys=${documento.keys.toList()}');
-          print('✅ [DocFetch] documento.url=${documento['url']}');
-          print('✅ [DocFetch] documento.nome=${documento['nome']}');
+          AppLogger.d('✅ [DocFetch] documento keys=${documento.keys.toList()}');
+          AppLogger.d('✅ [DocFetch] documento.url=${documento['url']}');
+          AppLogger.d('✅ [DocFetch] documento.nome=${documento['nome']}');
           return DocumentoUnico.fromJson(data['documento']);
         } else {
-          print(
+          AppLogger.d(
             '❌ [DocFetch] success=${data['success']} error=${data['error']} code=${data['code']}',
           );
           throw FirmaDigitaleException(
@@ -89,29 +90,29 @@ class FirmaDigitaleService {
           );
         }
       } else if (response.statusCode == 404) {
-        print('❌ [DocFetch] 404 richiesta non trovata');
-        print('❌ [DocFetch] body 404: ${response.body}');
+        AppLogger.d('❌ [DocFetch] 404 richiesta non trovata');
+        AppLogger.d('❌ [DocFetch] body 404: ${response.body}');
         throw FirmaDigitaleException(
           message: 'Richiesta non trovata',
           code: 'NOT_FOUND',
         );
       } else if (response.statusCode == 401) {
-        print('❌ [DocFetch] 401 autenticazione richiesta');
-        print('❌ [DocFetch] body 401: ${response.body}');
+        AppLogger.d('❌ [DocFetch] 401 autenticazione richiesta');
+        AppLogger.d('❌ [DocFetch] body 401: ${response.body}');
         throw FirmaDigitaleException(
           message: 'Autenticazione richiesta',
           code: 'UNAUTHORIZED',
         );
       } else {
-        print('❌ [DocFetch] status non gestito: ${response.statusCode}');
-        print('❌ [DocFetch] body error: ${response.body}');
+        AppLogger.d('❌ [DocFetch] status non gestito: ${response.statusCode}');
+        AppLogger.d('❌ [DocFetch] body error: ${response.body}');
         throw FirmaDigitaleException(
           message: 'Errore download documento: ${response.statusCode}',
           code: 'SERVER_ERROR',
         );
       }
     } on SocketException catch (e) {
-      print('❌ [DocFetch] SocketException: $e');
+      AppLogger.d('❌ [DocFetch] SocketException: $e');
       throw FirmaDigitaleException(
         message: 'Errore di connessione: $e',
         code: 'CONNECTION_ERROR',
@@ -119,7 +120,7 @@ class FirmaDigitaleService {
     } on FirmaDigitaleException {
       rethrow;
     } catch (e) {
-      print('❌ [DocFetch] Eccezione inattesa: $e');
+      AppLogger.d('❌ [DocFetch] Eccezione inattesa: $e');
       throw FirmaDigitaleException(
         message: 'Errore inaspettato: $e',
         code: 'UNEXPECTED_ERROR',
@@ -140,12 +141,12 @@ class FirmaDigitaleService {
       final url = '$baseUrl/firma-digitale/otp/generate';
       final requestBody = {'richiesta_id': richiestaId, 'telefono': telefono};
 
-      print('📱 Genero OTP per richiesta: $richiestaId');
-      print('📱 [OtpGenerate] url=$url');
-      print(
+      AppLogger.d('📱 Genero OTP per richiesta: $richiestaId');
+      AppLogger.d('📱 [OtpGenerate] url=$url');
+      AppLogger.d(
         '📱 [OtpGenerate] hasAuthHeader=${headers.containsKey('Authorization')}',
       );
-      print('📱 [OtpGenerate] requestBody=$requestBody');
+      AppLogger.d('📱 [OtpGenerate] requestBody=$requestBody');
 
       final response = await HttpClientService.post(
         Uri.parse(url),
@@ -153,28 +154,28 @@ class FirmaDigitaleService {
         body: jsonEncode(requestBody),
       );
 
-      print('Status code: ${response.statusCode}');
-      print(
+      AppLogger.d('Status code: ${response.statusCode}');
+      AppLogger.d(
         '📱 [OtpGenerate] content-type=${response.headers['content-type']}',
       );
-      print('📱 [OtpGenerate] body length=${response.body.length}');
+      AppLogger.d('📱 [OtpGenerate] body length=${response.body.length}');
       final bodyPreview =
           response.body.length > 500
               ? '${response.body.substring(0, 500)}...'
               : response.body;
-      print('📱 [OtpGenerate] body preview: $bodyPreview');
+      AppLogger.d('📱 [OtpGenerate] body preview: $bodyPreview');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        print(
+        AppLogger.d(
           '📱 [OtpGenerate] data keys=${data is Map<String, dynamic> ? data.keys.toList() : 'not-a-map'}',
         );
-        print(
+        AppLogger.d(
           '📱 [OtpGenerate] success=${data is Map<String, dynamic> ? data['success'] : null} error=${data is Map<String, dynamic> ? data['error'] : null} code=${data is Map<String, dynamic> ? data['code'] : null}',
         );
 
         if (data['success'] == true && data['otp'] != null) {
-          print(
+          AppLogger.d(
             '✅ [OtpGenerate] otp payload keys=${(data['otp'] as Map<String, dynamic>).keys.toList()}',
           );
           return OTPGenerateResponse.fromJson(data['otp']);
@@ -187,7 +188,7 @@ class FirmaDigitaleService {
             'tentativi_rimasti': 3,
             'metodo_invio': 'sms',
           };
-          print(
+          AppLogger.d(
             '✅ [OtpGenerate] formato alternativo rilevato, payload normalizzato=$otpFallbackPayload',
           );
           return OTPGenerateResponse.fromJson(otpFallbackPayload);
@@ -199,19 +200,19 @@ class FirmaDigitaleService {
         }
       } else if (response.statusCode == 429) {
         // Rate limited
-        print('❌ [OtpGenerate] 429 body=${response.body}');
+        AppLogger.d('❌ [OtpGenerate] 429 body=${response.body}');
         throw FirmaDigitaleException(
           message: 'Troppi tentativi. Riprova tra 1 ora',
           code: 'RATE_LIMITED',
         );
       } else if (response.statusCode == 401) {
-        print('❌ [OtpGenerate] 401 body=${response.body}');
+        AppLogger.d('❌ [OtpGenerate] 401 body=${response.body}');
         throw FirmaDigitaleException(
           message: 'Autenticazione richiesta',
           code: 'UNAUTHORIZED',
         );
       } else {
-        print(
+        AppLogger.d(
           '❌ [OtpGenerate] status=${response.statusCode} body=${response.body}',
         );
         throw FirmaDigitaleException(
@@ -220,7 +221,7 @@ class FirmaDigitaleService {
         );
       }
     } on SocketException catch (e) {
-      print('❌ [OtpGenerate] SocketException: $e');
+      AppLogger.d('❌ [OtpGenerate] SocketException: $e');
       throw FirmaDigitaleException(
         message: 'Errore di connessione: $e',
         code: 'CONNECTION_ERROR',
@@ -228,7 +229,7 @@ class FirmaDigitaleService {
     } on FirmaDigitaleException {
       rethrow;
     } catch (e) {
-      print('❌ [OtpGenerate] Eccezione inattesa: $e');
+      AppLogger.d('❌ [OtpGenerate] Eccezione inattesa: $e');
       throw FirmaDigitaleException(
         message: 'Errore inaspettato: $e',
         code: 'UNEXPECTED_ERROR',
@@ -248,12 +249,12 @@ class FirmaDigitaleService {
       final url = '$baseUrl/firma-digitale/otp/verify';
       final requestBody = {'otp_id': otpId, 'otp_code': otpCode};
 
-      print('✅ Verifico OTP: $otpId');
-      print('✅ [OtpVerify] url=$url');
-      print(
+      AppLogger.d('✅ Verifico OTP: $otpId');
+      AppLogger.d('✅ [OtpVerify] url=$url');
+      AppLogger.d(
         '✅ [OtpVerify] hasAuthHeader=${headers.containsKey('Authorization')}',
       );
-      print('✅ [OtpVerify] requestBody=$requestBody');
+      AppLogger.d('✅ [OtpVerify] requestBody=$requestBody');
 
       final response = await HttpClientService.post(
         Uri.parse(url),
@@ -261,17 +262,17 @@ class FirmaDigitaleService {
         body: jsonEncode(requestBody),
       );
 
-      print('Status code: ${response.statusCode}');
-      print('✅ [OtpVerify] content-type=${response.headers['content-type']}');
+      AppLogger.d('Status code: ${response.statusCode}');
+      AppLogger.d('✅ [OtpVerify] content-type=${response.headers['content-type']}');
       final bodyPreview =
           response.body.length > 500
               ? '${response.body.substring(0, 500)}...'
               : response.body;
-      print('✅ [OtpVerify] body preview: $bodyPreview');
+      AppLogger.d('✅ [OtpVerify] body preview: $bodyPreview');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        print(
+        AppLogger.d(
           '✅ [OtpVerify] data keys=${data is Map<String, dynamic> ? data.keys.toList() : 'not-a-map'}',
         );
 
@@ -283,7 +284,7 @@ class FirmaDigitaleService {
             'verified': true,
             'verified_at': DateTime.now().toIso8601String(),
           };
-          print(
+          AppLogger.d(
             '✅ [OtpVerify] formato alternativo rilevato, payload normalizzato=$otpVerifyFallbackPayload',
           );
           return OTPVerifyResponse.fromJson(otpVerifyFallbackPayload);
@@ -303,13 +304,13 @@ class FirmaDigitaleService {
           );
         }
       } else if (response.statusCode == 401) {
-        print('❌ [OtpVerify] 401 body=${response.body}');
+        AppLogger.d('❌ [OtpVerify] 401 body=${response.body}');
         throw FirmaDigitaleException(
           message: 'Autenticazione richiesta',
           code: 'UNAUTHORIZED',
         );
       } else {
-        print(
+        AppLogger.d(
           '❌ [OtpVerify] status=${response.statusCode} body=${response.body}',
         );
         throw FirmaDigitaleException(
@@ -318,7 +319,7 @@ class FirmaDigitaleService {
         );
       }
     } on SocketException catch (e) {
-      print('❌ [OtpVerify] SocketException: $e');
+      AppLogger.d('❌ [OtpVerify] SocketException: $e');
       throw FirmaDigitaleException(
         message: 'Errore di connessione: $e',
         code: 'CONNECTION_ERROR',
@@ -326,7 +327,7 @@ class FirmaDigitaleService {
     } on FirmaDigitaleException {
       rethrow;
     } catch (e) {
-      print('❌ [OtpVerify] Eccezione inattesa: $e');
+      AppLogger.d('❌ [OtpVerify] Eccezione inattesa: $e');
       throw FirmaDigitaleException(
         message: 'Errore inaspettato: $e',
         code: 'UNEXPECTED_ERROR',
@@ -357,11 +358,11 @@ class FirmaDigitaleService {
         'ip_address': 'auto',
       };
 
-      print('🔐 Firmo documento con OTP: $otpId');
-      print(
+      AppLogger.d('🔐 Firmo documento con OTP: $otpId');
+      AppLogger.d(
         '🔐 [Sign] url=$url richiestaId=$richiestaId contenutoLen=${documentoContenuto.length}',
       );
-      print(
+      AppLogger.d(
         '🔐 [Sign] hasAuthHeader=${headers.containsKey('Authorization')} requestBody(device)=${requestBody['device_info']}',
       );
 
@@ -371,24 +372,24 @@ class FirmaDigitaleService {
         body: jsonEncode(requestBody),
       );
 
-      print('Status code: ${response.statusCode}');
+      AppLogger.d('Status code: ${response.statusCode}');
       final bodyPreview =
           response.body.length > 500
               ? '${response.body.substring(0, 500)}...'
               : response.body;
-      print('🔐 [Sign] body preview: $bodyPreview');
+      AppLogger.d('🔐 [Sign] body preview: $bodyPreview');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        print(
+        AppLogger.d(
           '🔐 [Sign] data keys=${data is Map<String, dynamic> ? data.keys.toList() : 'not-a-map'}',
         );
-        print(
+        AppLogger.d(
           '🔐 [Sign] success=${data is Map<String, dynamic> ? data['success'] : null} message=${data is Map<String, dynamic> ? data['message'] : null} code=${data is Map<String, dynamic> ? data['code'] : null}',
         );
 
         if (data['success'] == true && data['firma'] != null) {
-          print(
+          AppLogger.d(
             '✅ [Sign] formato annidato rilevato: firma keys=${(data['firma'] as Map<String, dynamic>).keys.toList()}',
           );
           return FirmaDigitale.fromJson(data['firma']);
@@ -403,12 +404,12 @@ class FirmaDigitaleService {
             'status': 'valida',
             'hash_verificato': true,
           };
-          print(
+          AppLogger.d(
             '✅ [Sign] formato top-level rilevato, payload normalizzato=$normalizedFirma',
           );
           return FirmaDigitale.fromJson(normalizedFirma);
         } else {
-          print(
+          AppLogger.d(
             '❌ [Sign] success true ma payload firma non riconosciuto: $data',
           );
           throw FirmaDigitaleException(
@@ -417,14 +418,14 @@ class FirmaDigitaleService {
           );
         }
       } else if (response.statusCode == 401) {
-        print('❌ [Sign] 401 body=${response.body}');
+        AppLogger.d('❌ [Sign] 401 body=${response.body}');
         throw FirmaDigitaleException(
           message: 'Autenticazione richiesta',
           code: 'UNAUTHORIZED',
           status: response.statusCode,
         );
       } else if (response.statusCode == 409) {
-        print('⚠️ [Sign] 409 body=${response.body}');
+        AppLogger.d('⚠️ [Sign] 409 body=${response.body}');
         Map<String, dynamic>? parsed;
         try {
           final data = jsonDecode(response.body);
@@ -457,14 +458,14 @@ class FirmaDigitaleService {
           );
         }
       } else {
-        print('❌ [Sign] status=${response.statusCode} body=${response.body}');
+        AppLogger.d('❌ [Sign] status=${response.statusCode} body=${response.body}');
         Map<String, dynamic>? parsed;
         try {
           final data = jsonDecode(response.body);
           if (data is Map<String, dynamic>) {
             parsed = data;
           }
-        } catch (_) {}
+        } catch (e) { AppLogger.d("ignored: $e"); }
         throw FirmaDigitaleException(
           message:
               (parsed?['error'] ??
@@ -477,7 +478,7 @@ class FirmaDigitaleService {
         );
       }
     } on SocketException catch (e) {
-      print('❌ [Sign] SocketException: $e');
+      AppLogger.d('❌ [Sign] SocketException: $e');
       throw FirmaDigitaleException(
         message: 'Errore di connessione: $e',
         code: 'CONNECTION_ERROR',
@@ -485,7 +486,7 @@ class FirmaDigitaleService {
     } on FirmaDigitaleException {
       rethrow;
     } catch (e) {
-      print('❌ [Sign] Eccezione inattesa: $e');
+      AppLogger.d('❌ [Sign] Eccezione inattesa: $e');
       throw FirmaDigitaleException(
         message: 'Errore inaspettato: $e',
         code: 'UNEXPECTED_ERROR',
@@ -500,18 +501,18 @@ class FirmaDigitaleService {
       final headers = await _getHeaders();
       final url = '$baseUrl/firma-digitale/$richiestaId/status';
 
-      print('📊 Controllo stato firma: $richiestaId');
+      AppLogger.d('📊 Controllo stato firma: $richiestaId');
 
       final response = await HttpClientService.get(
         Uri.parse(url),
         headers: headers,
       );
 
-      print('Status code: ${response.statusCode}');
+      AppLogger.d('Status code: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        print(
+        AppLogger.d(
           '📊 [Status] data keys=${data is Map<String, dynamic> ? data.keys.toList() : 'not-a-map'}',
         );
 
@@ -547,11 +548,11 @@ class FirmaDigitaleService {
               firmaPayload['documento_download_url'] =
                   data['documento_download_url'];
             }
-            print('📊 [Status] formato annidato firma rilevato');
+            AppLogger.d('📊 [Status] formato annidato firma rilevato');
             return FirmaStatus.fromJson(firmaPayload);
           }
 
-          print('📊 [Status] formato top-level rilevato');
+          AppLogger.d('📊 [Status] formato top-level rilevato');
           final normalized =
               Map<String, dynamic>.from(data)
                 ..putIfAbsent('richiesta_id', () => richiestaId)
@@ -609,14 +610,14 @@ class FirmaDigitaleService {
       final headers = await _getHeaders();
       final url = '$baseUrl/firma-digitale/verifica/$firmaId';
 
-      print('🔍 Verifico integrità firma: $firmaId');
+      AppLogger.d('🔍 Verifico integrità firma: $firmaId');
 
       final response = await HttpClientService.get(
         Uri.parse(url),
         headers: headers,
       );
 
-      print('Status code: ${response.statusCode}');
+      AppLogger.d('Status code: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

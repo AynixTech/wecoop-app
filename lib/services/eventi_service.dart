@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
@@ -56,7 +57,7 @@ class EventiService {
 
       final response = await HttpClientService.get(uri, headers: headers);
 
-      print('GET $uri - Status: ${response.statusCode}');
+      AppLogger.d('GET $uri - Status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final rawData = jsonDecode(response.body);
@@ -74,7 +75,7 @@ class EventiService {
         'message': 'Errore nel caricamento degli eventi',
       };
     } catch (e) {
-      print('Errore getEventi: $e');
+      AppLogger.d('Errore getEventi: $e');
       return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
@@ -87,7 +88,7 @@ class EventiService {
 
       final response = await HttpClientService.get(uri, headers: headers);
 
-      print('GET $uri - Status: ${response.statusCode}');
+      AppLogger.d('GET $uri - Status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final rawData = jsonDecode(response.body);
@@ -95,10 +96,10 @@ class EventiService {
 
         // Log importante per verificare iscrizione
         if (data['sono_iscritto'] != null) {
-          print('\n=== VERIFICA ISCRIZIONE EVENTO $eventoId ===');
-          print('✓ sono_iscritto: ${data['sono_iscritto']}');
-          print('✓ stato_iscrizione: ${data['stato_iscrizione'] ?? "N/A"}');
-          print('✓ data_iscrizione: ${data['data_iscrizione'] ?? "N/A"}');
+          AppLogger.d('\n=== VERIFICA ISCRIZIONE EVENTO $eventoId ===');
+          AppLogger.d('✓ sono_iscritto: ${data['sono_iscritto']}');
+          AppLogger.d('✓ stato_iscrizione: ${data['stato_iscrizione'] ?? "N/A"}');
+          AppLogger.d('✓ data_iscrizione: ${data['data_iscrizione'] ?? "N/A"}');
         }
 
         return {'success': true, 'evento': Evento.fromJson(data)};
@@ -106,7 +107,7 @@ class EventiService {
 
       return {'success': false, 'message': 'Evento non trovato'};
     } catch (e) {
-      print('Errore getEvento: $e');
+      AppLogger.d('Errore getEvento: $e');
       return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
@@ -129,12 +130,12 @@ class EventiService {
         };
       }
 
-      print('\n=== ISCRIZIONE EVENTO ===');
+      AppLogger.d('\n=== ISCRIZIONE EVENTO ===');
       final timestamp = DateTime.now().toIso8601String();
-      print('⏰ Timestamp: $timestamp');
+      AppLogger.d('⏰ Timestamp: $timestamp');
 
       final uri = Uri.parse('$baseUrl/eventi/$eventoId/iscrizione');
-      print('📍 POST $uri');
+      AppLogger.d('📍 POST $uri');
 
       final body = {
         if (nome != null) 'nome': nome,
@@ -143,15 +144,15 @@ class EventiService {
         if (note != null) 'note': note,
       };
 
-      print('📤 Body richiesta: ${jsonEncode(body)}');
+      AppLogger.d('📤 Body richiesta: ${jsonEncode(body)}');
 
       final headers = await _getHeaders();
-      print('📋 Headers:');
+      AppLogger.d('📋 Headers:');
       headers.forEach((key, value) {
         if (key == 'Authorization') {
-          print('   $key: Bearer ${value.substring(7, 57)}...');
+          AppLogger.d('   $key: Bearer ${value.substring(7, 57)}...');
         } else {
-          print('   $key: $value');
+          AppLogger.d('   $key: $value');
         }
       });
 
@@ -161,19 +162,19 @@ class EventiService {
         body: jsonEncode(body),
       );
 
-      print('📥 Status: ${response.statusCode}');
-      print('📥 Response completa: ${response.body}');
+      AppLogger.d('📥 Status: ${response.statusCode}');
+      AppLogger.d('📥 Response completa: ${response.body}');
 
       final rawData = jsonDecode(response.body);
       final data = decodeHtmlInMap(rawData);
 
       if (response.statusCode == 200 && data['success'] == true) {
-        print('✅ Iscrizione completata con successo!');
-        print('✅ Message: ${data['message']}');
+        AppLogger.d('✅ Iscrizione completata con successo!');
+        AppLogger.d('✅ Message: ${data['message']}');
         if (data['partecipante'] != null) {
-          print('✅ Partecipante: ${data['partecipante']}');
+          AppLogger.d('✅ Partecipante: ${data['partecipante']}');
         }
-        print(
+        AppLogger.d(
           '💡 Ora dovresti chiamare getEvento($eventoId) per verificare sono_iscritto = true',
         );
 
@@ -189,7 +190,7 @@ class EventiService {
         'message': data['message'] ?? 'Errore durante l\'iscrizione',
       };
     } catch (e) {
-      print('Errore iscriviEvento: $e');
+      AppLogger.d('Errore iscriviEvento: $e');
       return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
@@ -209,7 +210,7 @@ class EventiService {
 
       final response = await HttpClientService.delete(uri, headers: headers);
 
-      print('DELETE $uri - Status: ${response.statusCode}');
+      AppLogger.d('DELETE $uri - Status: ${response.statusCode}');
 
       final rawData = jsonDecode(response.body);
       final data = decodeHtmlInMap(rawData);
@@ -226,7 +227,7 @@ class EventiService {
         'message': data['message'] ?? 'Errore durante la cancellazione',
       };
     } catch (e) {
-      print('Errore cancellaIscrizione: $e');
+      AppLogger.d('Errore cancellaIscrizione: $e');
       return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
@@ -240,24 +241,24 @@ class EventiService {
         return {'success': false, 'message': 'Devi effettuare il login'};
       }
 
-      print('\n=== CHIAMATA MIEI EVENTI ===');
+      AppLogger.d('\n=== CHIAMATA MIEI EVENTI ===');
 
       final uri = Uri.parse('$baseUrl/miei-eventi');
-      print('📍 URL: $uri');
+      AppLogger.d('📍 URL: $uri');
 
       final headers = await _getHeaders();
-      print('📋 Headers:');
+      AppLogger.d('📋 Headers:');
       headers.forEach((key, value) {
         if (key == 'Authorization') {
-          print('   $key: Bearer ${value.substring(7, 57)}...');
+          AppLogger.d('   $key: Bearer ${value.substring(7, 57)}...');
         } else {
-          print('   $key: $value');
+          AppLogger.d('   $key: $value');
         }
       });
 
       // Log JWT token (primi 50 caratteri)
       if (token.length > 50) {
-        print('🔑 JWT Token (primi 50 char): ${token.substring(0, 50)}...');
+        AppLogger.d('🔑 JWT Token (primi 50 char): ${token.substring(0, 50)}...');
 
         // Decodifica il payload del JWT per vedere user_id
         try {
@@ -270,38 +271,38 @@ class EventiService {
             final decoded = utf8.decode(base64Url.decode(normalized));
             final payloadData = jsonDecode(decoded);
 
-            print('🔓 JWT Payload decodificato:');
-            print(
+            AppLogger.d('🔓 JWT Payload decodificato:');
+            AppLogger.d(
               '   - User ID (data.user.id): ${payloadData['data']?['user']?['id']}',
             );
-            print('   - Email: ${payloadData['data']?['user']?['email']}');
-            print('   - Issued at: ${payloadData['iat']}');
-            print('   - Expires: ${payloadData['exp']}');
+            AppLogger.d('   - Email: ${payloadData['data']?['user']?['email']}');
+            AppLogger.d('   - Issued at: ${payloadData['iat']}');
+            AppLogger.d('   - Expires: ${payloadData['exp']}');
           }
         } catch (e) {
-          print('⚠️ Impossibile decodificare JWT: $e');
+          AppLogger.d('⚠️ Impossibile decodificare JWT: $e');
         }
       }
 
       final response = await HttpClientService.get(uri, headers: headers);
 
-      print('GET $uri - Status: ${response.statusCode}');
+      AppLogger.d('GET $uri - Status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final rawData = jsonDecode(response.body);
         final data = decodeHtmlInMap(rawData);
 
-        print('✅ Success: ${data['success']}');
-        print('✅ Totale eventi: ${data['totale']}');
-        print('✅ Eventi array length: ${(data['eventi'] as List).length}');
+        AppLogger.d('✅ Success: ${data['success']}');
+        AppLogger.d('✅ Totale eventi: ${data['totale']}');
+        AppLogger.d('✅ Eventi array length: ${(data['eventi'] as List).length}');
 
         if ((data['eventi'] as List).isEmpty) {
-          print('⚠️ ATTENZIONE: L\'array eventi è vuoto!');
-          print('⚠️ Possibili cause:');
-          print('   - Query SQL non trova iscrizioni');
-          print('   - User ID non corrisponde');
-          print('   - Iscrizioni salvate con formato diverso');
-          print(
+          AppLogger.d('⚠️ ATTENZIONE: L\'array eventi è vuoto!');
+          AppLogger.d('⚠️ Possibili cause:');
+          AppLogger.d('   - Query SQL non trova iscrizioni');
+          AppLogger.d('   - User ID non corrisponde');
+          AppLogger.d('   - Iscrizioni salvate con formato diverso');
+          AppLogger.d(
             '   - Verifica che l\'iscrizione sia stata salvata correttamente',
           );
         }
@@ -313,7 +314,7 @@ class EventiService {
           'totale': data['totale'],
         };
       } else if (response.statusCode == 500) {
-        print('❌ Errore server 500: ${response.body}');
+        AppLogger.d('❌ Errore server 500: ${response.body}');
         return {
           'success': false,
           'message': MaintenanceHandler.platformUpdateMessage,
@@ -330,7 +331,7 @@ class EventiService {
         'message': 'Errore ${response.statusCode}: ${response.body}',
       };
     } catch (e) {
-      print('Errore getMieiEventi: $e');
+      AppLogger.d('Errore getMieiEventi: $e');
       return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
@@ -344,30 +345,30 @@ class EventiService {
         return {'success': false, 'message': 'Devi effettuare il login'};
       }
 
-      print('\n=== GET USER ID ===');
+      AppLogger.d('\n=== GET USER ID ===');
 
       final uri = Uri.parse('$baseUrl/soci/me');
-      print('📍 URL: $uri');
+      AppLogger.d('📍 URL: $uri');
 
       final headers = await _getHeaders();
 
       final response = await HttpClientService.get(uri, headers: headers);
 
-      print('📥 Status: ${response.statusCode}');
-      print('📥 Response: ${response.body}');
+      AppLogger.d('📥 Status: ${response.statusCode}');
+      AppLogger.d('📥 Response: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        print('✅ User ID: ${data['id'] ?? data['user_id']}');
-        print('✅ Email: ${data['email']}');
-        print('✅ Nome: ${data['nome']} ${data['cognome']}');
+        AppLogger.d('✅ User ID: ${data['id'] ?? data['user_id']}');
+        AppLogger.d('✅ Email: ${data['email']}');
+        AppLogger.d('✅ Nome: ${data['nome']} ${data['cognome']}');
 
         return {'success': true, 'data': data};
       }
 
       return {'success': false, 'message': 'Errore ${response.statusCode}'};
     } catch (e) {
-      print('Errore getUserId: $e');
+      AppLogger.d('Errore getUserId: $e');
       return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
@@ -375,19 +376,19 @@ class EventiService {
   /// Debug endpoint per vedere tutti gli eventi e i loro meta
   static Future<Map<String, dynamic>> debugEventi() async {
     try {
-      print('\n=== DEBUG EVENTI ===');
+      AppLogger.d('\n=== DEBUG EVENTI ===');
 
       final uri = Uri.parse(
         '$baseUrl/eventi/debug',
       );
-      print('📍 URL: $uri');
+      AppLogger.d('📍 URL: $uri');
 
       final headers = await _getHeaders();
 
       final response = await HttpClientService.get(uri, headers: headers);
 
-      print('📥 Status: ${response.statusCode}');
-      print('📥 Response: ${response.body}');
+      AppLogger.d('📥 Status: ${response.statusCode}');
+      AppLogger.d('📥 Response: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -399,7 +400,7 @@ class EventiService {
         'message': 'Errore ${response.statusCode}: ${response.body}',
       };
     } catch (e) {
-      print('Errore debugEventi: $e');
+      AppLogger.d('Errore debugEventi: $e');
       return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }

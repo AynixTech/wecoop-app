@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:app_links/app_links.dart';
 
 class DeepLinkService {
@@ -18,28 +19,28 @@ class DeepLinkService {
     try {
       final initialUri = await _appLinks.getInitialAppLink();
       if (initialUri != null) {
-        print('🔗 Link iniziale: $initialUri');
+        AppLogger.d('🔗 Link iniziale: $initialUri');
         _handleLink(initialUri);
       }
     } catch (e) {
-      print('⚠️ Errore recupero link iniziale: $e');
+      AppLogger.d('⚠️ Errore recupero link iniziale: $e');
     }
 
     // Ascolta nuovi link (app già aperta)
     _sub = _appLinks.uriLinkStream.listen((uri) {
-      print('🔗 Link ricevuto (app aperta): $uri');
+      AppLogger.d('🔗 Link ricevuto (app aperta): $uri');
       _handleLink(uri);
     }, onError: (err) {
-      print('❌ Errore deep link stream: $err');
+      AppLogger.d('❌ Errore deep link stream: $err');
     });
   }
 
   void _handleLink(Uri uri) {
-    print('📱 Deep link processato:');
-    print('   Scheme: ${uri.scheme}');
-    print('   Host: ${uri.host}');
-    print('   Path: ${uri.path}');
-    print('   Query: ${uri.queryParameters}');
+    AppLogger.d('📱 Deep link processato:');
+    AppLogger.d('   Scheme: ${uri.scheme}');
+    AppLogger.d('   Host: ${uri.host}');
+    AppLogger.d('   Path: ${uri.path}');
+    AppLogger.d('   Query: ${uri.queryParameters}');
     _onLink?.call(uri);
   }
 

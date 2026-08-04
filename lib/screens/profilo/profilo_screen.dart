@@ -1,5 +1,9 @@
 import 'dart:io';
+import 'package:wecoop_app/utils/app_logger.dart';
+import 'dart:convert';
 import 'dart:typed_data';
+import 'package:wecoop_app/services/http_client_service.dart';
+import 'package:wecoop_app/config/api_config.dart';
 
 import 'package:crop_your_image/crop_your_image.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +79,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
         });
       }
     } catch (e) {
-      print('Errore lettura versione app: $e');
+      AppLogger.d('Errore lettura versione app: $e');
     }
   }
 
@@ -154,7 +158,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
         );
       }
     } catch (e) {
-      print('Errore verifica profilo: $e');
+      AppLogger.d('Errore verifica profilo: $e');
     }
   }
 
@@ -219,7 +223,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
         }
       }
     } catch (e) {
-      print('Errore refresh dati profilo: $e');
+      AppLogger.d('Errore refresh dati profilo: $e');
     } finally {
       if (mounted) {
         setState(() {
@@ -442,7 +446,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     // Verifica se l'utente è loggato
     final token = await storage.read(key: 'jwt_token');
     if (token == null) {
-      print('⚠️ Utente non loggato, impossibile caricare eventi');
+      AppLogger.d('⚠️ Utente non loggato, impossibile caricare eventi');
       // Utente non loggato, non caricare eventi
       if (mounted) {
         setState(() {
@@ -458,32 +462,32 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     });
 
     try {
-      print('🔄 Caricamento miei eventi...');
+      AppLogger.d('🔄 Caricamento miei eventi...');
       final response = await EventiService.getMieiEventi();
 
-      print('📥 Risposta getMieiEventi RAW: $response');
-      print('📥 success=${response['success']}');
-      print('📥 totale=${response['totale']}');
+      AppLogger.d('📥 Risposta getMieiEventi RAW: $response');
+      AppLogger.d('📥 success=${response['success']}');
+      AppLogger.d('📥 totale=${response['totale']}');
 
       if (response['success'] == true) {
         final eventiList = (response['eventi'] as List?)?.cast<Evento>() ?? [];
-        print('✅ ${eventiList.length} miei eventi caricati');
+        AppLogger.d('✅ ${eventiList.length} miei eventi caricati');
 
         // Log dettagliato per ogni evento
         for (var i = 0; i < eventiList.length; i++) {
           final evento = eventiList[i];
-          print('📌 Mio Evento #$i: ${evento.titolo}');
-          print('   - ID: ${evento.id}');
-          print('   - Data: ${evento.dataInizio} ${evento.oraInizio ?? ""}');
-          print('   - Categoria: ${evento.categoria ?? "nessuna"}');
-          print(
+          AppLogger.d('📌 Mio Evento #$i: ${evento.titolo}');
+          AppLogger.d('   - ID: ${evento.id}');
+          AppLogger.d('   - Data: ${evento.dataInizio} ${evento.oraInizio ?? ""}');
+          AppLogger.d('   - Categoria: ${evento.categoria ?? "nessuna"}');
+          AppLogger.d(
             '   - Immagine copertina: ${evento.immagineCopertina ?? "NESSUNA"}',
           );
-          print(
+          AppLogger.d(
             '   - Luogo: ${evento.luogo ?? evento.citta ?? "non specificato"}',
           );
-          print('   - Online: ${evento.online}');
-          print('   - Sono iscritto: ${evento.sonoIscritto}');
+          AppLogger.d('   - Online: ${evento.online}');
+          AppLogger.d('   - Sono iscritto: ${evento.sonoIscritto}');
         }
 
         if (mounted) {
@@ -493,7 +497,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
           });
         }
       } else {
-        print('❌ Errore: ${response['message']}');
+        AppLogger.d('❌ Errore: ${response['message']}');
         if (mounted) {
           setState(() {
             _isLoadingEventi = false;
@@ -501,7 +505,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
         }
       }
     } catch (e) {
-      print('❌ Errore getMieiEventi: $e');
+      AppLogger.d('❌ Errore getMieiEventi: $e');
       if (mounted) {
         setState(() {
           _isLoadingEventi = false;
@@ -522,14 +526,29 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     // Rimuovi FCM token dal backend prima di cancellare i dati locali
     try {
       await PushNotificationService().removeToken();
-      print('✅ FCM token rimosso dal backend');
+      AppLogger.d('✅ FCM token rimosso dal backend');
     } catch (e) {
-      print('⚠️ Errore rimozione FCM token: $e');
+      AppLogger.d('⚠️ Errore rimozione FCM token: $e');
       // Continua comunque con il logout
+    }
+
+    // Revoca il refresh token lato server (best-effort).
+    try {
+      final rt = await storage.read(key: 'refresh_token');
+      if (rt != null && rt.isNotEmpty) {
+        await HttpClientService.post(
+          Uri.parse('${ApiConfig.baseUrl}/auth/logout'),
+          body: jsonEncode({'refresh_token': rt}),
+          headers: {'Content-Type': 'application/json'},
+        );
+      }
+    } catch (e) {
+      AppLogger.d('⚠️ Errore revoca refresh token: $e');
     }
 
     // Cancella token e credenziali
     await storage.delete(key: 'jwt_token');
+    await storage.delete(key: 'refresh_token');
     await storage.delete(key: 'auth_username');
     await storage.delete(key: 'auth_password');
     await storage.delete(key: 'user_email');
@@ -565,7 +584,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
 
     // NON cancellare last_login_phone - serve per precompilare il login
 
-    print('Utente disconnesso');
+    AppLogger.d('Utente disconnesso');
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(l10n.logoutConfirm)));

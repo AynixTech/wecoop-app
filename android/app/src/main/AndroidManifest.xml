@@ -34,6 +34,21 @@
                     android:scheme="wecoop"
                     android:host="app" />
             </intent-filter>
+
+            <!--
+              App Link verificato per gli annunci condivisi (WhatsApp/social):
+              https://www.wecoop.org/annunci/123 apre direttamente l'app.
+              autoVerify + file /.well-known/assetlinks.json sul dominio.
+            -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="www.wecoop.org"
+                    android:pathPrefix="/annunci/" />
+            </intent-filter>
         </activity>
         <meta-data android:name="flutterEmbedding" android:value="2" />
         

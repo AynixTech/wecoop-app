@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:wecoop_app/utils/app_logger.dart';
 
 import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
@@ -19,7 +20,7 @@ class LavoroService {
   };
 
   static void _log(String event, Map<String, dynamic> data) {
-    print('[LAVORO_SERVICE] $event ${jsonEncode(data)}');
+    AppLogger.d('[LAVORO_SERVICE] $event ${jsonEncode(data)}');
   }
 
   static Map<String, String> _sanitizeHeaders(Map<String, String> headers) {

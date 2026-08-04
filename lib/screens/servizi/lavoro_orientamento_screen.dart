@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:wecoop_app/utils/app_logger.dart';
 
 import 'package:flutter/material.dart';
 
@@ -222,7 +223,7 @@ class _AttivazioneServizioLavoroScreenState
   final _storage = SecureStorageService();
 
   void _log(String event, Map<String, dynamic> data) {
-    print('[LAVORO_UI] $event ${jsonEncode(data)}');
+    AppLogger.d('[LAVORO_UI] $event ${jsonEncode(data)}');
   }
 
   bool _gdprConsent = false;
@@ -252,7 +253,7 @@ class _AttivazioneServizioLavoroScreenState
         final result = await LavoroService.getJobStatus(profileId: profileId);
         final status = LavoroService.extractJobStatus(result);
         isActive = LavoroService.isJobServiceActiveStatus(status);
-      } catch (_) {}
+      } catch (e) { AppLogger.d("ignored: $e"); }
     }
 
     if (!mounted) return;
@@ -470,7 +471,7 @@ class _AttivazioneServizioLavoroScreenState
               'timeline': timeline,
             };
           }
-        } catch (_) {}
+        } catch (e) { AppLogger.d("ignored: $e"); }
       }
 
       await _storage.write(key: widget.trackingKey, value: jsonEncode(tracking));
@@ -991,7 +992,7 @@ class _StatoCandidaturaScreenState extends State<StatoCandidaturaScreen> {
         if (decoded is Map<String, dynamic>) {
           tracking = decoded;
         }
-      } catch (_) {}
+      } catch (e) { AppLogger.d("ignored: $e"); }
     }
 
     final hasCvCache =
@@ -1051,7 +1052,7 @@ class _StatoCandidaturaScreenState extends State<StatoCandidaturaScreen> {
                     : (tracking?['timeline'] ?? []),
           };
         }
-      } catch (_) {}
+      } catch (e) { AppLogger.d("ignored: $e"); }
     }
 
     tracking ??= {

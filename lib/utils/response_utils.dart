@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:http/http.dart' as http;
 
 /// Utility per decodificare risposte HTTP mantenendo UTF-8 corretto
@@ -33,11 +34,11 @@ class ResponseUtils {
     final hasCharset = contentType.contains('charset=utf-8');
 
     if (!hasCharset) {
-      print(
+      AppLogger.d(
         '⚠️ [ResponseUtils] Header Warning: Content-Type non contiene charset=utf-8',
       );
-      print('   Content-Type riportato: $contentType');
-      print(
+      AppLogger.d('   Content-Type riportato: $contentType');
+      AppLogger.d(
         '   🔧 Fix server-side: Aggiungi "charset=utf-8" nell\'header della risposta',
       );
     }
@@ -49,15 +50,15 @@ class ResponseUtils {
       final decoded = jsonDecode(jsonString);
       return decoded;
     } catch (e) {
-      print(
+      AppLogger.d(
         '⚠️ [ResponseUtils] Errore UTF-8 decode, fallback a response.body: $e',
       );
       try {
         // Fallback: prova senza conversione UTF-8 esplicita
         return jsonDecode(response.body);
       } catch (e2) {
-        print('❌ [ResponseUtils] Errore nel parsing JSON: $e2');
-        print('   Response body: ${response.body.substring(0, 200)}...');
+        AppLogger.d('❌ [ResponseUtils] Errore nel parsing JSON: $e2');
+        AppLogger.d('   Response body: ${response.body.substring(0, 200)}...');
         rethrow;
       }
     }
@@ -71,7 +72,7 @@ class ResponseUtils {
     try {
       return jsonDecode(jsonString);
     } catch (e) {
-      print('❌ [ResponseUtils] Errore nel parsing JSON string: $e');
+      AppLogger.d('❌ [ResponseUtils] Errore nel parsing JSON string: $e');
       rethrow;
     }
   }
@@ -106,13 +107,13 @@ class ResponseUtils {
         ? '${response.body.substring(0, maxBodyLength)}...'
         : response.body;
 
-    print('');
-    print('🔍 === Debug: $label ===');
-    print('   Status: ${response.statusCode}');
-    print('   Content-Type: $contentType');
-    print('   Charset detected: ${charset ?? 'NOT FOUND ⚠️'}');
-    print('   Body length: ${response.body.length} bytes');
-    print('   Body preview: $bodyPreview');
-    print('');
+    AppLogger.d('');
+    AppLogger.d('🔍 === Debug: $label ===');
+    AppLogger.d('   Status: ${response.statusCode}');
+    AppLogger.d('   Content-Type: $contentType');
+    AppLogger.d('   Charset detected: ${charset ?? 'NOT FOUND ⚠️'}');
+    AppLogger.d('   Body length: ${response.body.length} bytes');
+    AppLogger.d('   Body preview: $bodyPreview');
+    AppLogger.d('');
   }
 }

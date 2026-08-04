@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import '../../theme/theme.dart';
 import 'package:http/http.dart' as http;
@@ -439,14 +440,14 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
   }
 
   Future<void> _completaPrimoAccesso() async {
-    print('\n🚀 === INIZIO PRIMO ACCESSO ===');
+    AppLogger.d('\n🚀 === INIZIO PRIMO ACCESSO ===');
 
     if (!_formKey.currentState!.validate()) {
-      print('❌ Form non validato');
+      AppLogger.d('❌ Form non validato');
       return;
     }
 
-    print('✅ Form validato correttamente');
+    AppLogger.d('✅ Form validato correttamente');
 
     setState(() => _isLoading = true);
 
@@ -459,13 +460,13 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
       final prefix = _prefixController.text.replaceAll('+', '');
       final telefonoCompleto = '+$prefix$cleanPhone';
 
-      print('📝 Dati raccolti:');
-      print('   - Nome: ${_nomeController.text.trim()}');
-      print('   - Cognome: ${_cognomeController.text.trim()}');
-      print('   - Prefisso: ${_prefixController.text}');
-      print('   - Telefono pulito: $cleanPhone');
-      print('   - Telefono completo: $telefonoCompleto');
-      print('\n🔄 Invio richiesta HTTP a backend...');
+      AppLogger.d('📝 Dati raccolti:');
+      AppLogger.d('   - Nome: ${_nomeController.text.trim()}');
+      AppLogger.d('   - Cognome: ${_cognomeController.text.trim()}');
+      AppLogger.d('   - Prefisso: ${_prefixController.text}');
+      AppLogger.d('   - Telefono pulito: $cleanPhone');
+      AppLogger.d('   - Telefono completo: $telefonoCompleto');
+      AppLogger.d('\n🔄 Invio richiesta HTTP a backend...');
 
       // Chiamata al backend Node
       final url = '${ApiConfig.baseUrl}/auth/primo-accesso';
@@ -476,8 +477,8 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
         'telefono': cleanPhone,
       };
 
-      print('🌐 URL: $url');
-      print('📤 Request Body: ${jsonEncode(requestBody)}');
+      AppLogger.d('🌐 URL: $url');
+      AppLogger.d('📤 Request Body: ${jsonEncode(requestBody)}');
 
       final response = await HttpClientService.post(
         Uri.parse(url),
@@ -489,64 +490,64 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
         return;
       }
 
-      print('\n📥 RISPOSTA RICEVUTA:');
-      print('   - Status Code: ${response.statusCode}');
-      print('   - Headers: ${response.headers}');
-      print('   - Body: ${response.body}');
+      AppLogger.d('\n📥 RISPOSTA RICEVUTA:');
+      AppLogger.d('   - Status Code: ${response.statusCode}');
+      AppLogger.d('   - Headers: ${response.headers}');
+      AppLogger.d('   - Body: ${response.body}');
 
       if (response.statusCode == 200) {
-        print('✅ Status 200 OK');
-        print('🔍 Parsing JSON...');
+        AppLogger.d('✅ Status 200 OK');
+        AppLogger.d('🔍 Parsing JSON...');
         final data = jsonDecode(response.body);
-        print('📦 JSON decodificato completo:');
-        print(jsonEncode(data)); // Stampa tutto il JSON formattato
+        AppLogger.d('📦 JSON decodificato completo:');
+        AppLogger.d(jsonEncode(data)); // Stampa tutto il JSON formattato
 
-        print('\n🔎 VERIFICA STRUTTURA RESPONSE:');
-        print('   - success presente? ${data.containsKey('success')}');
-        print('   - success valore: ${data['success']}');
-        print('   - data presente? ${data.containsKey('data')}');
+        AppLogger.d('\n🔎 VERIFICA STRUTTURA RESPONSE:');
+        AppLogger.d('   - success presente? ${data.containsKey('success')}');
+        AppLogger.d('   - success valore: ${data['success']}');
+        AppLogger.d('   - data presente? ${data.containsKey('data')}');
 
         if (data['data'] != null) {
-          print('\n📋 CONTENUTO data:');
-          print('   - id: ${data['data']['id']}');
-          print('   - user_id: ${data['data']['user_id']}');
-          print('   - username: ${data['data']['username']}');
-          print('   - password: ${data['data']['password']}');
-          print(
+          AppLogger.d('\n📋 CONTENUTO data:');
+          AppLogger.d('   - id: ${data['data']['id']}');
+          AppLogger.d('   - user_id: ${data['data']['user_id']}');
+          AppLogger.d('   - username: ${data['data']['username']}');
+          AppLogger.d('   - password: ${data['data']['password']}');
+          AppLogger.d(
             '   - token: ${data['data']['token'] != null ? 'PRESENTE (${data['data']['token'].toString().length} chars)' : 'MANCANTE'}',
           );
-          print('   - numero_pratica: ${data['data']['numero_pratica']}');
-          print('   - nome: ${data['data']['nome']}');
-          print('   - cognome: ${data['data']['cognome']}');
-          print('   - telefono_completo: ${data['data']['telefono_completo']}');
-          print('   - is_socio: ${data['data']['is_socio']}');
-          print('   - profilo_completo: ${data['data']['profilo_completo']}');
+          AppLogger.d('   - numero_pratica: ${data['data']['numero_pratica']}');
+          AppLogger.d('   - nome: ${data['data']['nome']}');
+          AppLogger.d('   - cognome: ${data['data']['cognome']}');
+          AppLogger.d('   - telefono_completo: ${data['data']['telefono_completo']}');
+          AppLogger.d('   - is_socio: ${data['data']['is_socio']}');
+          AppLogger.d('   - profilo_completo: ${data['data']['profilo_completo']}');
         } else {
-          print('⚠️ data è NULL!');
+          AppLogger.d('⚠️ data è NULL!');
         }
 
         if (data['success'] == true) {
-          print('✅ success = true');
+          AppLogger.d('✅ success = true');
 
           // Salva dati localmente
-          print('💾 Salvataggio in SharedPreferences...');
+          AppLogger.d('💾 Salvataggio in SharedPreferences...');
           final prefs = await SharedPreferences.getInstance();
           await prefs.setBool('primo_accesso_completato', true);
-          print('   ✓ primo_accesso_completato = true');
+          AppLogger.d('   ✓ primo_accesso_completato = true');
 
           if (data['data'] != null) {
             final userData = data['data'];
-            print('👤 Dati utente ricevuti:');
-            print('   - ID Richiesta: ${userData['id']}');
-            print('   - User ID WordPress: ${userData['user_id']}');
-            print('   - Numero Pratica: ${userData['numero_pratica']}');
-            print('   - Username: ${userData['username']}');
-            print('   - Password: ${userData['password']}');
-            print('   - Nome: ${userData['nome']}');
-            print('   - Cognome: ${userData['cognome']}');
-            print('   - Telefono: ${userData['telefono_completo']}');
-            print('   - Is Socio: ${userData['is_socio']}');
-            print('   - Profilo Completo: ${userData['profilo_completo']}');
+            AppLogger.d('👤 Dati utente ricevuti:');
+            AppLogger.d('   - ID Richiesta: ${userData['id']}');
+            AppLogger.d('   - User ID WordPress: ${userData['user_id']}');
+            AppLogger.d('   - Numero Pratica: ${userData['numero_pratica']}');
+            AppLogger.d('   - Username: ${userData['username']}');
+            AppLogger.d('   - Password: ${userData['password']}');
+            AppLogger.d('   - Nome: ${userData['nome']}');
+            AppLogger.d('   - Cognome: ${userData['cognome']}');
+            AppLogger.d('   - Telefono: ${userData['telefono_completo']}');
+            AppLogger.d('   - Is Socio: ${userData['is_socio']}');
+            AppLogger.d('   - Profilo Completo: ${userData['profilo_completo']}');
 
             await prefs.setInt('user_id', userData['user_id'] ?? 0);
             await prefs.setInt('richiesta_id', userData['id'] ?? 0);
@@ -566,7 +567,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
               'profilo_completo',
               userData['profilo_completo'] ?? false,
             );
-            print('   ✓ Salvato in SharedPreferences');
+            AppLogger.d('   ✓ Salvato in SharedPreferences');
 
             // Salva credenziali in secure storage
             await _storage.write(
@@ -596,82 +597,82 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
 
             if (userData['username'] != null &&
                 userData['username'].toString().isNotEmpty) {
-              print('   ✓ Username salvato: ${userData['username']}');
+              AppLogger.d('   ✓ Username salvato: ${userData['username']}');
             } else {
-              print('   ⚠️ USERNAME MANCANTE O VUOTO!');
+              AppLogger.d('   ⚠️ USERNAME MANCANTE O VUOTO!');
             }
 
             if (userData['password'] != null &&
                 userData['password'].toString().isNotEmpty) {
-              print('   ✓ Password salvata in secure storage');
+              AppLogger.d('   ✓ Password salvata in secure storage');
             } else {
-              print('   ⚠️ PASSWORD MANCANTE O VUOTA!');
+              AppLogger.d('   ⚠️ PASSWORD MANCANTE O VUOTA!');
             }
 
             // Salva JWT token se presente
             if (userData['token'] != null) {
               await _storage.write(key: 'jwt_token', value: userData['token']);
-              print('   ✓ JWT Token salvato');
+              AppLogger.d('   ✓ JWT Token salvato');
             }
 
-            print('   ✓ Salvato in SecureStorage');
+            AppLogger.d('   ✓ Salvato in SecureStorage');
           }
 
           if (mounted) {
-            print('\n🎉 Registrazione completata con successo!');
+            AppLogger.d('\n🎉 Registrazione completata con successo!');
 
             // Mostra SEMPRE il dialog con le credenziali
-            print('📱 Mostra dialog con credenziali...');
+            AppLogger.d('📱 Mostra dialog con credenziali...');
             await _showSuccessDialog(data);
 
             // Dopo che l'utente chiude il dialog, fa login automatico
-            print('\n🔍 CHECK CREDENZIALI PER LOGIN AUTOMATICO:');
-            print('   - data presente? ${data['data'] != null}');
-            print(
+            AppLogger.d('\n🔍 CHECK CREDENZIALI PER LOGIN AUTOMATICO:');
+            AppLogger.d('   - data presente? ${data['data'] != null}');
+            AppLogger.d(
               '   - username presente? ${data['data']?['username'] != null}',
             );
-            print('   - username valore: ${data['data']?['username']}');
-            print(
+            AppLogger.d('   - username valore: ${data['data']?['username']}');
+            AppLogger.d(
               '   - password presente? ${data['data']?['password'] != null}',
             );
-            print('   - password valore: ${data['data']?['password']}');
+            AppLogger.d('   - password valore: ${data['data']?['password']}');
 
             if (data['data'] != null &&
                 data['data']['username'] != null &&
                 data['data']['password'] != null &&
                 data['data']['username'].toString().isNotEmpty &&
                 data['data']['password'].toString().isNotEmpty) {
-              print('✅ Credenziali valide - Avvio login automatico...');
+              AppLogger.d('✅ Credenziali valide - Avvio login automatico...');
               await _autoLogin(
                 data['data']['username'],
                 data['data']['password'],
               );
             } else {
-              print('⚠️ CREDENZIALI MANCANTI O INVALIDE:');
+              AppLogger.d('⚠️ CREDENZIALI MANCANTI O INVALIDE:');
               if (data['data'] == null) {
-                print('   - data è NULL');
+                AppLogger.d('   - data è NULL');
               }
               final username = data['data']?['username'];
               final password = data['data']?['password'];
 
               if (username == null || username.toString().isEmpty) {
-                print('   - username è NULL o vuoto');
+                AppLogger.d('   - username è NULL o vuoto');
               }
               if (password == null || password.toString().isEmpty) {
-                print('   - password è NULL o vuota');
+                AppLogger.d('   - password è NULL o vuota');
               }
               // Fallback: vai a MainScreen senza login
-              print('🧭 Navigazione a MainScreen (senza login)...');
+              AppLogger.d('🧭 Navigazione a MainScreen (senza login)...');
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (_) => const MainScreen()),
               );
-              print('✅ Navigazione completata\n');
+              AppLogger.d('✅ Navigazione completata\n');
             }
           }
         } else {
-          print('⚠️ success = false');
-          print('   Messaggio: ${data['message']}');
-          print('   Codice errore: ${data['code']}');
+          AppLogger.d('⚠️ success = false');
+          AppLogger.d('   Messaggio: ${data['message']}');
+          AppLogger.d('   Codice errore: ${data['code']}');
 
           // Gestione errori specifici
           if (data['code'] == 'duplicate_phone') {
@@ -685,20 +686,20 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
           }
         }
       } else {
-        print('❌ Status code NON 200: ${response.statusCode}');
+        AppLogger.d('❌ Status code NON 200: ${response.statusCode}');
         await _handleFirstAccessErrorResponse(response, telefonoCompleto);
       }
     } catch (e, stackTrace) {
-      print('\n❌ ECCEZIONE CATTURATA:');
-      print('   Errore: $e');
-      print('   StackTrace: $stackTrace');
+      AppLogger.d('\n❌ ECCEZIONE CATTURATA:');
+      AppLogger.d('   Errore: $e');
+      AppLogger.d('   StackTrace: $stackTrace');
       _showErrorDialog('Errore di connessione: $e');
     } finally {
-      print('\n🏁 Termino caricamento...');
+      AppLogger.d('\n🏁 Termino caricamento...');
       if (mounted) {
         setState(() => _isLoading = false);
       }
-      print('=== FINE PRIMO ACCESSO ===\n');
+      AppLogger.d('=== FINE PRIMO ACCESSO ===\n');
     }
   }
 
@@ -752,14 +753,14 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
 
   /// Login automatico dopo registrazione
   Future<void> _autoLogin(String username, String password) async {
-    print('\n🔑 === INIZIO LOGIN AUTOMATICO ===');
-    print('   Username ricevuto: $username');
-    print('   Password ricevuta: $password');
-    print('   Username vuoto? ${username.isEmpty}');
-    print('   Password vuota? ${password.isEmpty}');
+    AppLogger.d('\n🔑 === INIZIO LOGIN AUTOMATICO ===');
+    AppLogger.d('   Username ricevuto: $username');
+    AppLogger.d('   Password ricevuta: $password');
+    AppLogger.d('   Username vuoto? ${username.isEmpty}');
+    AppLogger.d('   Password vuota? ${password.isEmpty}');
 
     if (username.isEmpty || password.isEmpty) {
-      print('❌ ERRORE: Username o password vuoti!');
+      AppLogger.d('❌ ERRORE: Username o password vuoti!');
       _showLoginErrorDialog('Credenziali mancanti (username o password vuoti)');
       return;
     }
@@ -767,9 +768,9 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
     final url = Uri.parse(ApiConfig.loginUrl);
 
     try {
-      print('🌐 Chiamata a: $url');
-      print('📤 Body request:');
-      print('   {"username": "$username", "password": "$password"}');
+      AppLogger.d('🌐 Chiamata a: $url');
+      AppLogger.d('📤 Body request:');
+      AppLogger.d('   {"username": "$username", "password": "$password"}');
       final response = await HttpClientService.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -780,29 +781,29 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
         return;
       }
 
-      print('\n📥 RISPOSTA LOGIN:');
-      print('   Status: ${response.statusCode}');
-      print('   Headers: ${response.headers}');
-      print('   Body completo: ${response.body}');
+      AppLogger.d('\n📥 RISPOSTA LOGIN:');
+      AppLogger.d('   Status: ${response.statusCode}');
+      AppLogger.d('   Headers: ${response.headers}');
+      AppLogger.d('   Body completo: ${response.body}');
 
       if (response.statusCode == 200) {
-        print('✅ Status 200 - Parsing JSON...');
+        AppLogger.d('✅ Status 200 - Parsing JSON...');
         final data = jsonDecode(response.body);
-        print('📦 JSON decodificato:');
-        print(jsonEncode(data));
+        AppLogger.d('📦 JSON decodificato:');
+        AppLogger.d(jsonEncode(data));
 
-        print('\n🔍 Verifica campi response:');
-        print('   - token presente? ${data['token'] != null}');
-        print('   - user_email: ${data['user_email']}');
-        print('   - user_display_name: ${data['user_display_name']}');
-        print('   - user_nicename: ${data['user_nicename']}');
-        print('   - user_id: ${data['user_id']}');
+        AppLogger.d('\n🔍 Verifica campi response:');
+        AppLogger.d('   - token presente? ${data['token'] != null}');
+        AppLogger.d('   - user_email: ${data['user_email']}');
+        AppLogger.d('   - user_display_name: ${data['user_display_name']}');
+        AppLogger.d('   - user_nicename: ${data['user_nicename']}');
+        AppLogger.d('   - user_id: ${data['user_id']}');
 
         if (data['token'] != null) {
-          print(
+          AppLogger.d(
             '✅ JWT Token ricevuto! (${data['token'].toString().length} chars)',
           );
-          print('\n💾 Salvataggio token e dati utente...');
+          AppLogger.d('\n💾 Salvataggio token e dati utente...');
 
           // Salva token e dati utente
           await _storage.write(key: 'jwt_token', value: data['token']);
@@ -827,11 +828,11 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
               key: 'user_id',
               value: data['user_id'].toString(),
             );
-            print('   ✓ User ID salvato: ${data['user_id']}');
+            AppLogger.d('   ✓ User ID salvato: ${data['user_id']}');
           }
 
-          print('   ✓ Token JWT salvato');
-          print('   ✓ Dati utente salvati');
+          AppLogger.d('   ✓ Token JWT salvato');
+          AppLogger.d('   ✓ Dati utente salvati');
 
           // Recupera metadati utente
           if (data['user_nicename'] != null) {
@@ -841,14 +842,14 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
           // Inizializza push notifications
           try {
             await PushNotificationService().initialize();
-            print('   ✓ Push notifications inizializzate');
+            AppLogger.d('   ✓ Push notifications inizializzate');
           } catch (e) {
-            print('   ⚠️ Errore push notifications: $e');
+            AppLogger.d('   ⚠️ Errore push notifications: $e');
           }
 
           if (mounted) {
-            print('\n🎉 Login automatico completato!');
-            print('🧭 Navigazione a MainScreen...');
+            AppLogger.d('\n🎉 Login automatico completato!');
+            AppLogger.d('🧭 Navigazione a MainScreen...');
 
             // Naviga alla schermata principale
             Navigator.of(context).pushReplacement(
@@ -864,47 +865,47 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
               ),
             );
 
-            print('✅ Navigazione completata');
+            AppLogger.d('✅ Navigazione completata');
           }
         } else {
-          print('\n❌ TOKEN MANCANTE NELLA RISPOSTA!');
-          print('   Response completa: ${response.body}');
+          AppLogger.d('\n❌ TOKEN MANCANTE NELLA RISPOSTA!');
+          AppLogger.d('   Response completa: ${response.body}');
           _showLoginErrorDialog('Token non ricevuto dal server');
         }
       } else {
-        print('\n❌ LOGIN FALLITO!');
-        print('   Status: ${response.statusCode}');
-        print('   Body: ${response.body}');
+        AppLogger.d('\n❌ LOGIN FALLITO!');
+        AppLogger.d('   Status: ${response.statusCode}');
+        AppLogger.d('   Body: ${response.body}');
 
         try {
           final data = jsonDecode(response.body);
-          print('   Messaggio errore: ${data['message']}');
-          print('   Codice errore: ${data['code']}');
+          AppLogger.d('   Messaggio errore: ${data['message']}');
+          AppLogger.d('   Codice errore: ${data['code']}');
           _showLoginErrorDialog(
             data['message'] ??
                 'Errore durante il login automatico (${response.statusCode})',
           );
         } catch (e) {
-          print('   Impossibile decodificare risposta errore: $e');
+          AppLogger.d('   Impossibile decodificare risposta errore: $e');
           _showLoginErrorDialog(
             'Errore durante il login automatico (${response.statusCode})',
           );
         }
       }
     } catch (e, stackTrace) {
-      print('\n❌ ERRORE LOGIN AUTOMATICO:');
-      print('   Errore: $e');
-      print('   StackTrace: $stackTrace');
+      AppLogger.d('\n❌ ERRORE LOGIN AUTOMATICO:');
+      AppLogger.d('   Errore: $e');
+      AppLogger.d('   StackTrace: $stackTrace');
       _showLoginErrorDialog('Errore di connessione durante il login');
     } finally {
-      print('=== FINE LOGIN AUTOMATICO ===\n');
+      AppLogger.d('=== FINE LOGIN AUTOMATICO ===\n');
     }
   }
 
   /// Recupera metadati utente dal backend
   Future<void> _fetchUserMeta(String token, String nicename) async {
     try {
-      print('🔍 Recupero metadati utente...');
+      AppLogger.d('🔍 Recupero metadati utente...');
 
       final url = Uri.parse('${ApiConfig.baseUrl}/soci/me');
       final response = await HttpClientService.get(
@@ -921,7 +922,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        print('✅ Metadati ricevuti');
+        AppLogger.d('✅ Metadati ricevuti');
 
         // Salva nome e cognome se presenti
         if (data['nome'] != null) {
@@ -933,7 +934,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
         if (data['nome'] != null && data['cognome'] != null) {
           final fullName = '${data['nome']} ${data['cognome']}';
           await _storage.write(key: 'full_name', value: fullName);
-          print('   ✓ Nome completo salvato: $fullName');
+          AppLogger.d('   ✓ Nome completo salvato: $fullName');
         }
 
         // Salva altri dati se presenti
@@ -945,10 +946,10 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
           await prefs.setBool('is_socio', data['is_socio']);
         }
       } else {
-        print('⚠️ Metadati non disponibili: ${response.statusCode}');
+        AppLogger.d('⚠️ Metadati non disponibili: ${response.statusCode}');
       }
     } catch (e) {
-      print('⚠️ Errore recupero metadati: $e');
+      AppLogger.d('⚠️ Errore recupero metadati: $e');
     }
   }
 
@@ -956,8 +957,8 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
   Future<void> _showLoginErrorDialog(String message) async {
     if (!mounted) return;
 
-    print('\n🚨 Mostro dialog errore login:');
-    print('   Messaggio: $message');
+    AppLogger.d('\n🚨 Mostro dialog errore login:');
+    AppLogger.d('   Messaggio: $message');
 
     return showDialog(
       context: context,

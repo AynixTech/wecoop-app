@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../theme/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
 import '../../services/annunci_wecoop_service.dart';
@@ -18,7 +19,11 @@ String _fmtDate(String raw) {
 }
 
 class AnnunciScreen extends StatefulWidget {
-  const AnnunciScreen({super.key});
+  /// Se valorizzato, all'apertura mostra subito il dettaglio di questo annuncio
+  /// (usato dai deep link/Universal Link https://www.wecoop.org/annunci/:id).
+  final int? initialAnnuncioId;
+
+  const AnnunciScreen({super.key, this.initialAnnuncioId});
 
   @override
   State<AnnunciScreen> createState() => _AnnunciScreenState();
@@ -42,6 +47,12 @@ class _AnnunciScreenState extends State<AnnunciScreen> {
   void initState() {
     super.initState();
     _init();
+    // Apre il dettaglio richiesto da deep link, dopo il primo frame.
+    if (widget.initialAnnuncioId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _showDetail(context, widget.initialAnnuncioId!);
+      });
+    }
   }
 
   @override
@@ -596,6 +607,17 @@ class _AnnuncioDetailSheetState
     }
   }
 
+  /// Condivide l'annuncio tramite il foglio di condivisione di sistema
+  /// (WhatsApp, ecc.). Il link punta alla pagina pubblica su wecoop.org:
+  /// chi ha l'app la apre sull'annuncio (Universal/App Link), chi non ce l'ha
+  /// vede l'anteprima web con il bottone per scaricarla.
+  Future<void> _shareAnnuncio() async {
+    final titolo = _data?['titolo'] as String? ?? 'Annuncio WeCoop';
+    final url = 'https://www.wecoop.org/annunci/${widget.id}';
+    final testo = '$titolo\n\nGuarda questo annuncio su WeCoop:\n$url';
+    await Share.share(testo, subject: titolo);
+  }
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -714,6 +736,18 @@ class _AnnuncioDetailSheetState
                             const SizedBox(height: 16),
                             _ContattiSection(data: _data!),
                             const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton.icon(
+                                onPressed: _shareAnnuncio,
+                                icon: const Icon(Icons.share_outlined),
+                                label: Text(
+                                  AppLocalizations.of(context)!
+                                      .annunciShareBtn,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
                             if (_isOwner)
                               SizedBox(
                                 width: double.infinity,

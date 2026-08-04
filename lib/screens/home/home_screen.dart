@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import '../../widgets/design_system/design_system.dart';
@@ -81,7 +82,6 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text(l10n.appTitle),
         actions: [
           const LanguageSelector(),
-          IconButton(icon: const Icon(Icons.notifications), onPressed: () {}),
         ],
       ),
       body: SafeArea(
@@ -1082,7 +1082,7 @@ class _UpcomingEventsSectionState extends State<_UpcomingEventsSection> {
       }
       return [];
     } catch (e) {
-      print('Errore caricamento eventi: $e');
+      AppLogger.d('Errore caricamento eventi: $e');
       return [];
     }
   }

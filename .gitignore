@@ -51,6 +51,7 @@ app.*.map.json
 
 # Android release signing secrets
 android/key.properties
+lib/key.properties
 keystore.jks
 *.jks
 

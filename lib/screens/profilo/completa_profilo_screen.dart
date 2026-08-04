@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:flutter/services.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import '../../services/app_localizations.dart';
@@ -78,7 +79,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
         }
       }
     } catch (e) {
-      print('Errore caricamento dati: $e');
+      AppLogger.d('Errore caricamento dati: $e');
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);

@@ -1,4 +1,5 @@
 import 'package:http/http.dart' as http;
+import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'dart:convert';
 import 'package:wecoop_app/services/secure_storage_service.dart';
@@ -15,12 +16,11 @@ class SocioService {
   static const String baseUrl = ApiConfig.baseUrl;
 
   /// Nuovo backend WeCoop (Node/Express) per la gestione delle richieste servizi.
-  static const String platformBaseUrl =
-      String.fromEnvironment('WECOOP_API_URL', defaultValue: 'https://wecoop-backend-s9gl.onrender.com/api');
+  static const String platformBaseUrl = ApiConfig.baseUrl;
 
   /// API key condivisa per autorizzare l'app verso il nuovo backend.
-  static const String platformApiKey =
-      String.fromEnvironment('WECOOP_API_KEY', defaultValue: 'af9a4cfa37958761a464c06a837d6860');
+  /// Passata in compilazione via --dart-define=WECOOP_API_KEY=... (mai hardcoded).
+  static const String platformApiKey = ApiConfig.apiKey;
 
   static final storage = SecureStorageService();
 
@@ -51,24 +51,24 @@ class SocioService {
       final email = await storage.read(key: 'user_email');
 
       if (email == null) {
-        print('Nessuna email trovata');
+        AppLogger.d('Nessuna email trovata');
         return false;
       }
 
       final encodedEmail = Uri.encodeComponent(email);
       final url = '$baseUrl/soci/verifica/$encodedEmail';
-      print('Verifico socio su: $url');
+      AppLogger.d('Verifico socio su: $url');
 
       final response = await HttpClientService.get(Uri.parse(url));
 
-      print('Status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      AppLogger.d('Status code: ${response.statusCode}');
+      AppLogger.d('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         // Verifica se la risposta contiene warning PHP invece di JSON
         if (response.body.trim().startsWith('<')) {
-          print('⚠️ Risposta contiene HTML/warning PHP invece di JSON');
-          print(
+          AppLogger.d('⚠️ Risposta contiene HTML/warning PHP invece di JSON');
+          AppLogger.d(
             '💡 Configura WordPress: WP_DEBUG_DISPLAY = false in wp-config.php',
           );
           return false;
@@ -81,12 +81,12 @@ class SocioService {
       }
       return false;
     } catch (e) {
-      print('Errore verifica socio: $e');
+      AppLogger.d('Errore verifica socio: $e');
       if (e is FormatException) {
-        print(
+        AppLogger.d(
           '💡 Il backend WordPress sta restituendo warning PHP invece di JSON',
         );
-        print(
+        AppLogger.d(
           '💡 Soluzione: Aggiungi in wp-config.php -> define("WP_DEBUG_DISPLAY", false);',
         );
       }
@@ -111,7 +111,7 @@ class SocioService {
       if (response.statusCode == 200) {
         // Verifica se la risposta contiene warning PHP invece di JSON
         if (response.body.trim().startsWith('<')) {
-          print('⚠️ Risposta contiene HTML/warning PHP invece di JSON');
+          AppLogger.d('⚠️ Risposta contiene HTML/warning PHP invece di JSON');
           return false;
         }
 
@@ -123,9 +123,9 @@ class SocioService {
       }
       return false;
     } catch (e) {
-      print('Errore verifica richiesta: $e');
+      AppLogger.d('Errore verifica richiesta: $e');
       if (e is FormatException) {
-        print(
+        AppLogger.d(
           '💡 Il backend sta restituendo warning PHP. Configura WP_DEBUG_DISPLAY = false',
         );
       }
@@ -158,8 +158,8 @@ class SocioService {
     try {
       final url = '$baseUrl/soci/richiesta';
 
-      print('=== INVIANDO RICHIESTA ADESIONE SOCIO ===');
-      print('URL: $url');
+      AppLogger.d('=== INVIANDO RICHIESTA ADESIONE SOCIO ===');
+      AppLogger.d('URL: $url');
 
       final Map<String, dynamic> bodyData = {
         'nome': nome,
@@ -195,7 +195,7 @@ class SocioService {
       }
 
       final body = jsonEncode(bodyData);
-      print('Body: $body');
+      AppLogger.d('Body: $body');
 
       final headers = await _getHeaders(includeAuth: false);
       final response = await HttpClientService.post(
@@ -204,8 +204,8 @@ class SocioService {
         body: body,
       );
 
-      print('Status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      AppLogger.d('Status code: ${response.statusCode}');
+      AppLogger.d('Response body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final rawData = ResponseUtils.decodeJson(response);
@@ -254,7 +254,7 @@ class SocioService {
         'message': 'Nessuna connessione internet. Verifica la connessione.',
       };
     } catch (e) {
-      print('Errore generico: $e');
+      AppLogger.d('Errore generico: $e');
       return {
         'success': false,
         'message': 'Errore imprevisto: ${e.toString()}',
@@ -273,13 +273,13 @@ class SocioService {
       // Invio verso il nuovo backend WeCoop (Node/Express).
       final url = '$platformBaseUrl/service-requests';
 
-      print(
+      AppLogger.d(
         '\n🎯 ==================== RICHIESTA SERVIZIO ====================',
       );
-      print('🚀 URL: $url');
-      print('📋 Servizio: $servizio');
-      print('📁 Categoria: $categoria');
-      print('📦 Dati completi: ${jsonEncode(dati)}');
+      AppLogger.d('🚀 URL: $url');
+      AppLogger.d('📋 Servizio: $servizio');
+      AppLogger.d('📁 Categoria: $categoria');
+      AppLogger.d('📦 Dati completi: ${jsonEncode(dati)}');
 
       final body = jsonEncode({
         'servizio': servizio,
@@ -287,7 +287,7 @@ class SocioService {
         'dati': dati,
       });
 
-      print('Body: $body');
+      AppLogger.d('Body: $body');
 
       final headers = <String, String>{
         'Content-Type': 'application/json',
@@ -300,32 +300,32 @@ class SocioService {
         body: body,
       );
 
-      print('\n📡 RESPONSE RICEVUTA:');
-      print('   Status code: ${response.statusCode}');
-      print('   Response body: ${response.body}');
+      AppLogger.d('\n📡 RESPONSE RICEVUTA:');
+      AppLogger.d('   Status code: ${response.statusCode}');
+      AppLogger.d('   Response body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
-        print('\n✅ PARSING RESPONSE:');
-        print('   success: ${data['success']}');
-        print('   message: ${data['message']}');
-        print('   numero_pratica: ${data['numero_pratica']}');
-        print('   requires_payment: ${data['requires_payment']}');
-        print('   payment_id: ${data['payment_id']}');
-        print('   importo: ${data['importo']}');
+        AppLogger.d('\n✅ PARSING RESPONSE:');
+        AppLogger.d('   success: ${data['success']}');
+        AppLogger.d('   message: ${data['message']}');
+        AppLogger.d('   numero_pratica: ${data['numero_pratica']}');
+        AppLogger.d('   requires_payment: ${data['requires_payment']}');
+        AppLogger.d('   payment_id: ${data['payment_id']}');
+        AppLogger.d('   importo: ${data['importo']}');
 
         if (data['requires_payment'] == true) {
-          print('\n💰 PAGAMENTO RICHIESTO!');
-          print('   💳 Payment ID: ${data['payment_id']}');
-          print('   💵 Importo: €${data['importo']}');
+          AppLogger.d('\n💰 PAGAMENTO RICHIESTO!');
+          AppLogger.d('   💳 Payment ID: ${data['payment_id']}');
+          AppLogger.d('   💵 Importo: €${data['importo']}');
         } else {
-          print('\n✅ Servizio gratuito - nessun pagamento richiesto');
+          AppLogger.d('\n✅ Servizio gratuito - nessun pagamento richiesto');
         }
-        print('==========================================================\n');
+        AppLogger.d('==========================================================\n');
 
-        print('✅ Richiesta creata con successo');
+        AppLogger.d('✅ Richiesta creata con successo');
         if (data['requires_payment'] == true) {
-          print(
+          AppLogger.d(
             '💰 Pagamento richiesto: €${data['importo']} - Payment ID: ${data['payment_id']}',
           );
         }
@@ -371,7 +371,7 @@ class SocioService {
     } on SocketException {
       return {'success': false, 'message': 'Nessuna connessione internet'};
     } catch (e) {
-      print('Errore: $e');
+      AppLogger.d('Errore: $e');
       return {'success': false, 'message': 'Errore: ${e.toString()}'};
     }
   }
@@ -383,12 +383,12 @@ class SocioService {
       final token = await storage.read(key: 'jwt_token');
 
       if (token == null) {
-        print('Token JWT mancante');
+        AppLogger.d('Token JWT mancante');
         return null;
       }
 
       final url = '$baseUrl/soci/me';
-      print('🔄 Chiamata GET /soci/me...');
+      AppLogger.d('🔄 Chiamata GET /soci/me...');
 
       final headers = await _getHeaders();
       final response = await HttpClientService.get(
@@ -396,7 +396,7 @@ class SocioService {
         headers: headers,
       );
 
-      print('📥 GET /soci/me status: ${response.statusCode}');
+      AppLogger.d('📥 GET /soci/me status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final rawData = jsonDecode(response.body);
@@ -406,13 +406,13 @@ class SocioService {
           return responseData['data'] as Map<String, dynamic>;
         }
       } else if (response.statusCode == 401) {
-        print('⚠️ Token scaduto o non valido');
+        AppLogger.d('⚠️ Token scaduto o non valido');
         return null;
       }
 
       return null;
     } catch (e) {
-      print('❌ Errore durante GET /soci/me: $e');
+      AppLogger.d('❌ Errore durante GET /soci/me: $e');
       return null;
     }
   }
@@ -431,7 +431,7 @@ class SocioService {
       final token = await storage.read(key: 'jwt_token');
 
       if (token == null) {
-        print('Token JWT mancante');
+        AppLogger.d('Token JWT mancante');
         return [];
       }
 
@@ -448,12 +448,12 @@ class SocioService {
       final uri = Uri.parse(
         '$baseUrl/soci',
       ).replace(queryParameters: queryParams);
-      print('🔄 Chiamata GET /soci...');
+      AppLogger.d('🔄 Chiamata GET /soci...');
 
       final headers = await _getHeaders();
       final response = await HttpClientService.get(uri, headers: headers);
 
-      print('📥 GET /soci status: ${response.statusCode}');
+      AppLogger.d('📥 GET /soci status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final rawData = jsonDecode(response.body);
@@ -465,7 +465,7 @@ class SocioService {
 
       return [];
     } catch (e) {
-      print('❌ Errore durante GET /soci: $e');
+      AppLogger.d('❌ Errore durante GET /soci: $e');
       return [];
     }
   }
@@ -481,7 +481,7 @@ class SocioService {
       final token = await storage.read(key: 'jwt_token');
 
       if (token == null) {
-        print('Token JWT mancante');
+        AppLogger.d('Token JWT mancante');
         return {'success': false, 'data': [], 'pagination': {}};
       }
 
@@ -514,7 +514,7 @@ class SocioService {
           };
         }
       } else if (response.statusCode == 401) {
-        print('⚠️ Token scaduto o non valido');
+        AppLogger.d('⚠️ Token scaduto o non valido');
         return {'success': false, 'message': 'Token scaduto', 'data': []};
       }
 
@@ -531,12 +531,12 @@ class SocioService {
       final token = await storage.read(key: 'jwt_token');
 
       if (token == null) {
-        print('Token JWT mancante');
+        AppLogger.d('Token JWT mancante');
         return null;
       }
 
       final url = '$baseUrl/richiesta-servizio/$id';
-      print('🔄 Chiamata GET /richiesta-servizio/$id...');
+      AppLogger.d('🔄 Chiamata GET /richiesta-servizio/$id...');
 
       final headers = await _getHeaders();
       final response = await HttpClientService.get(
@@ -544,7 +544,7 @@ class SocioService {
         headers: headers,
       );
 
-      print('📥 GET /richiesta-servizio/$id status: ${response.statusCode}');
+      AppLogger.d('📥 GET /richiesta-servizio/$id status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final rawData = jsonDecode(response.body);
@@ -553,16 +553,16 @@ class SocioService {
           return responseData['data'] as Map<String, dynamic>;
         }
       } else if (response.statusCode == 404) {
-        print('⚠️ Richiesta non trovata');
+        AppLogger.d('⚠️ Richiesta non trovata');
         return null;
       } else if (response.statusCode == 403) {
-        print('⚠️ Non hai i permessi per visualizzare questa richiesta');
+        AppLogger.d('⚠️ Non hai i permessi per visualizzare questa richiesta');
         return null;
       }
 
       return null;
     } catch (e) {
-      print('❌ Errore durante GET /richiesta-servizio/$id: $e');
+      AppLogger.d('❌ Errore durante GET /richiesta-servizio/$id: $e');
       return null;
     }
   }
@@ -575,12 +575,12 @@ class SocioService {
       final token = await storage.read(key: 'jwt_token');
 
       if (token == null) {
-        print('Token JWT mancante');
+        AppLogger.d('Token JWT mancante');
         return {'success': false, 'message': 'Utente non autenticato'};
       }
 
       final url = '$baseUrl/richiesta-servizio/$id';
-      print('🔄 Chiamata DELETE /richiesta-servizio/$id...');
+      AppLogger.d('🔄 Chiamata DELETE /richiesta-servizio/$id...');
 
       final headers = await _getHeaders();
       final response = await HttpClientService.delete(
@@ -588,14 +588,14 @@ class SocioService {
         headers: headers,
       );
 
-      print('📥 DELETE /richiesta-servizio/$id status: ${response.statusCode}');
-      print('📥 Response body: ${response.body}');
+      AppLogger.d('📥 DELETE /richiesta-servizio/$id status: ${response.statusCode}');
+      AppLogger.d('📥 Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final rawData = jsonDecode(response.body);
         final responseData = decodeHtmlInMap(rawData);
         if (responseData['success'] == true) {
-          print('✅ Richiesta eliminata: ${responseData['numero_pratica']}');
+          AppLogger.d('✅ Richiesta eliminata: ${responseData['numero_pratica']}');
           return {
             'success': true,
             'message':
@@ -631,7 +631,7 @@ class SocioService {
     } on SocketException {
       return {'success': false, 'message': 'Nessuna connessione internet'};
     } catch (e) {
-      print('❌ Errore durante DELETE /richiesta-servizio/$id: $e');
+      AppLogger.d('❌ Errore durante DELETE /richiesta-servizio/$id: $e');
       return {'success': false, 'message': 'Errore: ${e.toString()}'};
     }
   }
@@ -643,12 +643,12 @@ class SocioService {
       final token = await storage.read(key: 'jwt_token');
 
       if (token == null) {
-        print('Token JWT mancante');
+        AppLogger.d('Token JWT mancante');
         return {'success': false, 'message': 'Utente non autenticato'};
       }
 
       final url = '$baseUrl/pagamento/$paymentId/ricevuta';
-      print('🔄 Chiamata GET /pagamento/$paymentId/ricevuta...');
+      AppLogger.d('🔄 Chiamata GET /pagamento/$paymentId/ricevuta...');
 
       final headers = await _getHeaders();
       final response = await HttpClientService.get(
@@ -656,7 +656,7 @@ class SocioService {
         headers: headers,
       );
 
-      print(
+      AppLogger.d(
         '📥 GET /pagamento/$paymentId/ricevuta status: ${response.statusCode}',
       );
 
@@ -678,7 +678,7 @@ class SocioService {
             filename = filenameMatch.group(1) ?? filename;
           }
 
-          print(
+          AppLogger.d(
             '✅ PDF ricevuto: $filename (${response.bodyBytes.length} bytes)',
           );
 
@@ -700,7 +700,7 @@ class SocioService {
             final rawData = jsonDecode(response.body);
             final responseData = decodeHtmlInMap(rawData);
             if (responseData['success'] == true) {
-              print('✅ Ricevuta disponibile: ${responseData['receipt_url']}');
+              AppLogger.d('✅ Ricevuta disponibile: ${responseData['receipt_url']}');
               return {
                 'success': true,
                 'receipt_url': responseData['receipt_url'],
@@ -712,7 +712,7 @@ class SocioService {
               };
             }
           } catch (e) {
-            print('❌ Errore parsing JSON: $e');
+            AppLogger.d('❌ Errore parsing JSON: $e');
           }
         }
       } else if (response.statusCode == 401) {
@@ -746,7 +746,7 @@ class SocioService {
     } on SocketException {
       return {'success': false, 'message': 'Nessuna connessione internet'};
     } catch (e) {
-      print('❌ Errore durante GET /pagamento/$paymentId/ricevuta: $e');
+      AppLogger.d('❌ Errore durante GET /pagamento/$paymentId/ricevuta: $e');
       return {'success': false, 'message': 'Errore: ${e.toString()}'};
     }
   }
@@ -761,7 +761,7 @@ class SocioService {
     try {
       final token = await storage.read(key: 'jwt_token');
       if (token == null) {
-        print('Token JWT mancante');
+        AppLogger.d('Token JWT mancante');
         return [];
       }
 
@@ -769,7 +769,7 @@ class SocioService {
       if (tipo != null && tipo.isNotEmpty) {
         url += '?tipo=${Uri.encodeComponent(tipo)}';
       }
-      print('🔄 Chiamata GET /pratiche/me...');
+      AppLogger.d('🔄 Chiamata GET /pratiche/me...');
 
       final headers = await _getHeaders();
       final response = await HttpClientService.get(
@@ -777,7 +777,7 @@ class SocioService {
         headers: headers,
       );
 
-      print('📥 GET /pratiche/me status: ${response.statusCode}');
+      AppLogger.d('📥 GET /pratiche/me status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final rawData = jsonDecode(response.body);
@@ -793,7 +793,7 @@ class SocioService {
 
       return [];
     } catch (e) {
-      print('❌ Errore durante GET /pratiche/me: $e');
+      AppLogger.d('❌ Errore durante GET /pratiche/me: $e');
       return [];
     }
   }
@@ -814,7 +814,7 @@ class SocioService {
           ? doc.downloadUrl
           : '$baseUrl/pratiche/me/documento/${doc.id}/download';
 
-      print('🔄 Download documento pratica: $url');
+      AppLogger.d('🔄 Download documento pratica: $url');
 
       final headers = {
         'Accept': 'application/pdf,application/octet-stream,*/*',
@@ -826,7 +826,7 @@ class SocioService {
         headers: headers,
       );
 
-      print('📥 Download status: ${response.statusCode} (${response.bodyBytes.length} bytes)');
+      AppLogger.d('📥 Download status: ${response.statusCode} (${response.bodyBytes.length} bytes)');
 
       if (response.statusCode == 200) {
         final contentDisposition =
@@ -869,7 +869,7 @@ class SocioService {
     } on SocketException {
       return {'success': false, 'message': 'Nessuna connessione internet'};
     } catch (e) {
-      print('❌ Errore download documento pratica: $e');
+      AppLogger.d('❌ Errore download documento pratica: $e');
       return {'success': false, 'message': 'Errore: ${e.toString()}'};
     }
   }
@@ -884,36 +884,36 @@ class SocioService {
       final token = await storage.read(key: 'jwt_token');
 
       if (token == null) {
-        print('Token JWT mancante');
+        AppLogger.d('Token JWT mancante');
         return {'success': false, 'message': 'Utente non autenticato'};
       }
 
       final querySuffix = forceMerge ? '?force_merge=true' : '';
       final url =
           '$baseUrl/documento-unico/$richiestaId/download-merged$querySuffix';
-      print(
+      AppLogger.d(
         '🔄 Chiamata GET /documento-unico/$richiestaId/download-merged forceMerge=$forceMerge...',
       );
-      print('🔄 [DocMerged] URL completo: $url');
+      AppLogger.d('🔄 [DocMerged] URL completo: $url');
 
       final headers = await _getHeaders();
-      print(
+      AppLogger.d(
         '🔄 [DocMerged] hasAuthHeader=${headers.containsKey('Authorization')}',
       );
-      print('🔄 [DocMerged] acceptLanguage=${headers['Accept-Language']}');
+      AppLogger.d('🔄 [DocMerged] acceptLanguage=${headers['Accept-Language']}');
       final response = await HttpClientService.get(
         Uri.parse(url),
         headers: headers,
       );
 
-      print(
+      AppLogger.d(
         '📥 GET /documento-unico/$richiestaId/download-merged status: ${response.statusCode}',
       );
-      print('📥 [DocMerged] content-type=${response.headers['content-type']}');
-      print(
+      AppLogger.d('📥 [DocMerged] content-type=${response.headers['content-type']}');
+      AppLogger.d(
         '📥 [DocMerged] content-disposition=${response.headers['content-disposition']}',
       );
-      print(
+      AppLogger.d(
         '📥 [DocMerged] content-length=${response.headers['content-length']}',
       );
 
@@ -935,10 +935,10 @@ class SocioService {
           final pdfBytes = response.bodyBytes;
           final pdfBase64 = base64Encode(pdfBytes);
 
-          print(
+          AppLogger.d(
             '✅ Documento Unico merged ricevuto: $filename (${pdfBytes.length} bytes)',
           );
-          print('✅ [DocMerged] first-bytes=${pdfBytes.take(8).toList()}');
+          AppLogger.d('✅ [DocMerged] first-bytes=${pdfBytes.take(8).toList()}');
 
           return {
             'success': true,
@@ -956,7 +956,7 @@ class SocioService {
           response.body.length > 800
               ? '${response.body.substring(0, 800)}...'
               : response.body;
-      print('❌ [DocMerged] body preview: $errorBodyPreview');
+      AppLogger.d('❌ [DocMerged] body preview: $errorBodyPreview');
 
       if (response.statusCode == 401) {
         return {'success': false, 'message': 'Utente non autenticato'};
@@ -986,7 +986,7 @@ class SocioService {
               message = body['message'].toString();
             }
           }
-        } catch (_) {}
+        } catch (e) { AppLogger.d("ignored: $e"); }
 
         return {'success': false, 'message': message};
       }
@@ -997,12 +997,12 @@ class SocioService {
           if (body is Map<String, dynamic>) {
             final backendCode = body['code'];
             final backendMessage = body['message'];
-            print(
+            AppLogger.d(
               '❌ [DocMerged] backend 500 code=$backendCode message=$backendMessage',
             );
           }
         } catch (_) {
-          print('❌ [DocMerged] backend 500 body non-JSON');
+          AppLogger.d('❌ [DocMerged] backend 500 body non-JSON');
         }
         return {
           'success': false,
@@ -1015,17 +1015,17 @@ class SocioService {
         'message': 'Errore durante il download del documento unico',
       };
     } on TimeoutException {
-      print(
+      AppLogger.d(
         '❌ [DocMerged] TimeoutException richiestaId=$richiestaId forceMerge=$forceMerge',
       );
       return {'success': false, 'message': 'Timeout: il server non risponde'};
     } on SocketException {
-      print(
+      AppLogger.d(
         '❌ [DocMerged] SocketException richiestaId=$richiestaId forceMerge=$forceMerge',
       );
       return {'success': false, 'message': 'Nessuna connessione internet'};
     } catch (e) {
-      print(
+      AppLogger.d(
         '❌ Errore durante GET /documento-unico/$richiestaId/download-merged: $e',
       );
       return {'success': false, 'message': 'Errore: ${e.toString()}'};
@@ -1077,8 +1077,8 @@ class SocioService {
       }
       if (nazionalita != null) body['nazionalita'] = nazionalita;
 
-      print('📤 Completamento profilo su: $url');
-      print('📝 Dati: ${body.keys.join(", ")}');
+      AppLogger.d('📤 Completamento profilo su: $url');
+      AppLogger.d('📝 Dati: ${body.keys.join(", ")}');
 
       final response = await HttpClientService.post(
         Uri.parse(url),
@@ -1086,7 +1086,7 @@ class SocioService {
         body: jsonEncode(body),
       );
 
-      print('📥 Response status: ${response.statusCode}');
+      AppLogger.d('📥 Response status: ${response.statusCode}');
       final responseData = jsonDecode(response.body);
 
       // Salva dati aggiornati in storage se successo
@@ -1131,7 +1131,7 @@ class SocioService {
 
       return responseData;
     } catch (e) {
-      print('❌ Errore completamento profilo: $e');
+      AppLogger.d('❌ Errore completamento profilo: $e');
       return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
@@ -1143,7 +1143,7 @@ class SocioService {
       final headers = await _getHeaders(includeAuth: true);
       final url = '$baseUrl/soci/me';
 
-      print('📤 GET /soci/me');
+      AppLogger.d('📤 GET /soci/me');
 
       final response = await HttpClientService.get(
         Uri.parse(url),
@@ -1156,7 +1156,7 @@ class SocioService {
 
       return null;
     } catch (e) {
-      print('❌ Errore GET /soci/me: $e');
+      AppLogger.d('❌ Errore GET /soci/me: $e');
       return null;
     }
   }
@@ -1191,9 +1191,9 @@ class SocioService {
       // Aggiungi soggetto (nuovo, supportato dal backend)
       request.fields['soggetto'] = soggetto;
 
-      print('📤 Upload documento: ${file.path.split('/').last}');
-      print('📝 Tipo: $tipoDocumento');
-      print('📝 Soggetto: $soggetto');
+      AppLogger.d('📤 Upload documento: ${file.path.split('/').last}');
+      AppLogger.d('📝 Tipo: $tipoDocumento');
+      AppLogger.d('📝 Soggetto: $soggetto');
 
       final streamedResponse = await request.send().timeout(
         const Duration(seconds: 60),
@@ -1202,7 +1202,7 @@ class SocioService {
         await http.Response.fromStream(streamedResponse),
       );
 
-      print('📥 Response status: ${response.statusCode}');
+      AppLogger.d('📥 Response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
@@ -1213,7 +1213,7 @@ class SocioService {
         };
       }
     } catch (e) {
-      print('❌ Errore upload documento: $e');
+      AppLogger.d('❌ Errore upload documento: $e');
       return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
@@ -1256,8 +1256,8 @@ class SocioService {
         ),
       );
 
-      print('📤 Upload integrazione documento: ${file.path.split('/').last}');
-      print('📝 Richiesta: $richiestaId | Tipo: $tipo');
+      AppLogger.d('📤 Upload integrazione documento: ${file.path.split('/').last}');
+      AppLogger.d('📝 Richiesta: $richiestaId | Tipo: $tipo');
 
       final streamedResponse = await request.send().timeout(
         const Duration(seconds: 60),
@@ -1266,7 +1266,7 @@ class SocioService {
         await http.Response.fromStream(streamedResponse),
       );
 
-      print('📥 Response status: ${response.statusCode}');
+      AppLogger.d('📥 Response status: ${response.statusCode}');
 
       final body = jsonDecode(response.body);
       if (response.statusCode == 200) {
@@ -1282,7 +1282,7 @@ class SocioService {
         };
       }
     } catch (e) {
-      print('❌ Errore upload integrazione documento: $e');
+      AppLogger.d('❌ Errore upload integrazione documento: $e');
       return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
@@ -1319,7 +1319,7 @@ class SocioService {
         'message': 'Errore upload avatar: ${response.statusCode}',
       };
     } catch (e) {
-      print('❌ Errore upload avatar: $e');
+      AppLogger.d('❌ Errore upload avatar: $e');
       return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
@@ -1331,12 +1331,12 @@ class SocioService {
       final cleanUsername = username.trim().replaceAll(RegExp(r'[^\d]'), '');
       final url = '$baseUrl/auth/check-username?username=$cleanUsername';
 
-      print('📤 GET /auth/check-username?username=$cleanUsername');
+      AppLogger.d('📤 GET /auth/check-username?username=$cleanUsername');
 
       final response = await HttpClientService.get(Uri.parse(url));
 
-      print('📥 Response status: ${response.statusCode}');
-      print('📥 Response body: ${response.body}');
+      AppLogger.d('📥 Response status: ${response.statusCode}');
+      AppLogger.d('📥 Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
@@ -1347,7 +1347,7 @@ class SocioService {
         };
       }
     } catch (e) {
-      print('❌ Errore verifica username: $e');
+      AppLogger.d('❌ Errore verifica username: $e');
       return {'esiste': false, 'error': 'Errore di connessione: $e'};
     }
   }
@@ -1379,8 +1379,8 @@ class SocioService {
         body['email'] = email.trim();
       }
 
-      print('📤 POST /soci/reset-password');
-      print('📤 Body: $body');
+      AppLogger.d('📤 POST /soci/reset-password');
+      AppLogger.d('📤 Body: $body');
 
       final response = await HttpClientService.post(
         Uri.parse(url),
@@ -1388,8 +1388,8 @@ class SocioService {
         body: jsonEncode(body),
       );
 
-      print('📥 Response status: ${response.statusCode}');
-      print('📥 Response body: ${response.body}');
+      AppLogger.d('📥 Response status: ${response.statusCode}');
+      AppLogger.d('📥 Response body: ${response.body}');
 
       final data = jsonDecode(response.body);
 
@@ -1408,7 +1408,7 @@ class SocioService {
         };
       }
     } catch (e) {
-      print('❌ Errore reset password: $e');
+      AppLogger.d('❌ Errore reset password: $e');
       return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
@@ -1426,9 +1426,9 @@ class SocioService {
 
       final body = {'old_password': oldPassword, 'new_password': newPassword};
 
-      print('📤 POST /soci/me/change-password');
+      AppLogger.d('📤 POST /soci/me/change-password');
       // Non logghiamo le password per sicurezza
-      print('📤 Body: {old_password: ***, new_password: ***}');
+      AppLogger.d('📤 Body: {old_password: ***, new_password: ***}');
 
       final response = await HttpClientService.post(
         Uri.parse(url),
@@ -1436,8 +1436,8 @@ class SocioService {
         body: jsonEncode(body),
       );
 
-      print('📥 Response status: ${response.statusCode}');
-      print('📥 Response body: ${response.body}');
+      AppLogger.d('📥 Response status: ${response.statusCode}');
+      AppLogger.d('📥 Response body: ${response.body}');
 
       final data = jsonDecode(response.body);
 
@@ -1454,7 +1454,7 @@ class SocioService {
         };
       }
     } catch (e) {
-      print('❌ Errore cambio password: $e');
+      AppLogger.d('❌ Errore cambio password: $e');
       return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
@@ -1469,8 +1469,8 @@ class SocioService {
 
       final body = {'token': token, 'new_password': newPassword};
 
-      print('📤 POST /soci/reset-password/confirm');
-      print('📤 Body: {token: ***, new_password: ***}');
+      AppLogger.d('📤 POST /soci/reset-password/confirm');
+      AppLogger.d('📤 Body: {token: ***, new_password: ***}');
 
       final response = await HttpClientService.post(
         Uri.parse(url),
@@ -1478,8 +1478,8 @@ class SocioService {
         body: jsonEncode(body),
       );
 
-      print('📥 Response status: ${response.statusCode}');
-      print('📥 Response body: ${response.body}');
+      AppLogger.d('📥 Response status: ${response.statusCode}');
+      AppLogger.d('📥 Response body: ${response.body}');
 
       final data = jsonDecode(response.body);
 
@@ -1496,7 +1496,7 @@ class SocioService {
         'code': data['code'],
       };
     } catch (e) {
-      print('❌ Errore conferma reset password: $e');
+      AppLogger.d('❌ Errore conferma reset password: $e');
       return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }
@@ -1509,15 +1509,15 @@ class SocioService {
       final url = '$baseUrl/soci/me';
       final headers = await _getHeaders(includeAuth: true);
 
-      print('📤 GET $url');
+      AppLogger.d('📤 GET $url');
 
       final response = await HttpClientService.get(
         Uri.parse(url),
         headers: headers,
       );
 
-      print('📥 Response status: ${response.statusCode}');
-      print('📥 Response body: ${response.body}');
+      AppLogger.d('📥 Response status: ${response.statusCode}');
+      AppLogger.d('📥 Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final rawData = jsonDecode(response.body);
@@ -1541,7 +1541,7 @@ class SocioService {
         'code': data['code'],
       };
     } catch (e) {
-      print('❌ Errore get profilo: $e');
+      AppLogger.d('❌ Errore get profilo: $e');
       return {'success': false, 'message': 'Errore di connessione: $e'};
     }
   }

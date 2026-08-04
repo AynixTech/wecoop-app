@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/utils/app_logger.dart';
 import '../../theme/theme.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -89,7 +90,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     }
 
     _lastAutoRefreshAt = now;
-    print('🔄 [CalendarAutoRefresh] start reason=$reason');
+    AppLogger.d('🔄 [CalendarAutoRefresh] start reason=$reason');
     await _caricaRichieste();
   }
 
@@ -113,7 +114,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     if (args != null && args['richiesta_id'] != null && _richiestaIdToOpen == null) {
       _richiestaIdToOpen = args['richiesta_id'].toString();
-      print('📋 Richiesta da aprire: $_richiestaIdToOpen');
+      AppLogger.d('📋 Richiesta da aprire: $_richiestaIdToOpen');
       
       // Apri il dettaglio dopo che le richieste sono caricate
       if (!_isLoading && _tutteRichieste.isNotEmpty) {
@@ -199,7 +200,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         setState(() => _isLoading = false);
       }
       // Non mostrare errore generico, l'utente potrebbe non essere loggato
-      print('Errore caricamento richieste: $e');
+      AppLogger.d('Errore caricamento richieste: $e');
     }
   }
 
@@ -543,7 +544,7 @@ class _CalendarScreenState extends State<CalendarScreen>
 
   Future<void> _mostraDettaglioRichiesta(Map<String, dynamic> richiesta) async {
     if (_isOpeningDettaglioRichiesta) {
-      print('ℹ️ [Dettaglio] apertura già in corso, ignoro tap duplicato');
+      AppLogger.d('ℹ️ [Dettaglio] apertura già in corso, ignoro tap duplicato');
       return;
     }
 
@@ -560,29 +561,29 @@ class _CalendarScreenState extends State<CalendarScreen>
     final servizioIdInLista = _resolveServizioId(richiestaDettaglio);
     if (servizioIdInLista == 'N/A' && firmaRichiestaId != null) {
       try {
-        print('🔎 [Dettaglio] servizioId assente in lista, provo GET dettaglio richiesta id=$firmaRichiestaId');
+        AppLogger.d('🔎 [Dettaglio] servizioId assente in lista, provo GET dettaglio richiesta id=$firmaRichiestaId');
         final dettaglio = await SocioService.getDettaglioRichiesta(firmaRichiestaId);
         if (dettaglio != null && dettaglio.isNotEmpty) {
           richiestaDettaglio.addAll(dettaglio);
-          print('✅ [Dettaglio] richiesta arricchita da endpoint dettaglio, servizioId=${_resolveServizioId(richiestaDettaglio)}');
+          AppLogger.d('✅ [Dettaglio] richiesta arricchita da endpoint dettaglio, servizioId=${_resolveServizioId(richiestaDettaglio)}');
         } else {
-          print('⚠️ [Dettaglio] endpoint dettaglio non ha restituito dati utili per servizioId');
+          AppLogger.d('⚠️ [Dettaglio] endpoint dettaglio non ha restituito dati utili per servizioId');
         }
       } catch (e) {
-        print('❌ [Dettaglio] errore recupero dettaglio richiesta id=$firmaRichiestaId: $e');
+        AppLogger.d('❌ [Dettaglio] errore recupero dettaglio richiesta id=$firmaRichiestaId: $e');
       }
     }
 
     if (firmaRichiestaId != null) {
       try {
-        print('📊 [FirmaFlow] pre-check dettaglio stato firma richiestaId=$firmaRichiestaId');
+        AppLogger.d('📊 [FirmaFlow] pre-check dettaglio stato firma richiestaId=$firmaRichiestaId');
         final statoFirma = await FirmaDigitaleService.ottieniStatoFirma(firmaRichiestaId);
         if (mounted) {
           setState(() {
             _firmaStatusByRichiesta[firmaRichiestaId] = statoFirma;
           });
         }
-        print('📊 [FirmaFlow] pre-check esito richiestaId=$firmaRichiestaId firmato=${statoFirma.firmato}');
+        AppLogger.d('📊 [FirmaFlow] pre-check esito richiestaId=$firmaRichiestaId firmato=${statoFirma.firmato}');
       } on FirmaDigitaleException catch (e) {
         if (e.code == 'NOT_FOUND') {
           if (mounted) {
@@ -593,12 +594,12 @@ class _CalendarScreenState extends State<CalendarScreen>
               );
             });
           }
-          print('📊 [FirmaFlow] pre-check: nessuna firma esistente richiestaId=$firmaRichiestaId');
+          AppLogger.d('📊 [FirmaFlow] pre-check: nessuna firma esistente richiestaId=$firmaRichiestaId');
         } else {
-          print('❌ [FirmaFlow] pre-check errore stato firma richiestaId=$firmaRichiestaId code=${e.code} msg=${e.message}');
+          AppLogger.d('❌ [FirmaFlow] pre-check errore stato firma richiestaId=$firmaRichiestaId code=${e.code} msg=${e.message}');
         }
       } catch (e) {
-        print('❌ [FirmaFlow] pre-check eccezione stato firma richiestaId=$firmaRichiestaId: $e');
+        AppLogger.d('❌ [FirmaFlow] pre-check eccezione stato firma richiestaId=$firmaRichiestaId: $e');
       }
     }
 
@@ -752,7 +753,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     final l10n = AppLocalizations.of(context)!;
     final traceId = 'RICEVUTA-${DateTime.now().millisecondsSinceEpoch}';
     final startedAt = DateTime.now();
-    print('🧾 [$traceId] start paymentId=$paymentId richiestaId=$richiestaId numeroPratica=$numeroPratica');
+    AppLogger.d('🧾 [$traceId] start paymentId=$paymentId richiestaId=$richiestaId numeroPratica=$numeroPratica');
     
     // Se non abbiamo payment ID ma abbiamo richiesta ID, mostra messaggio
     if (paymentId == null && richiestaId == null) {
@@ -792,27 +793,27 @@ class _CalendarScreenState extends State<CalendarScreen>
       int actualPaymentId = paymentId ?? 0;
       
       if (paymentId == null && richiestaId != null) {
-        print('⚠️ [$traceId] paymentId mancante, fallback richiestaId=$richiestaId');
-        // TODO: Chiamare API per ottenere payment ID da richiesta ID
-        // Per ora usiamo richiestaId come fallback
+        AppLogger.d('⚠️ [$traceId] paymentId mancante, uso richiestaId=$richiestaId');
+        // Il backend `/pagamento/:id/ricevuta` gestisce il fallback: se l'id
+        // non corrisponde a un payment, cerca il pagamento per request_id.
         actualPaymentId = richiestaId;
       }
 
       // Ottieni ricevuta PDF
       final result = await SocioService.getRicevutaPdf(actualPaymentId);
       final elapsedMs = DateTime.now().difference(startedAt).inMilliseconds;
-      print('🧾 [$traceId] service result success=${result['success']} keys=${result.keys.toList()} elapsedMs=$elapsedMs');
+      AppLogger.d('🧾 [$traceId] service result success=${result['success']} keys=${result.keys.toList()} elapsedMs=$elapsedMs');
 
       // Chiudi loading
       if (mounted) Navigator.pop(context);
 
       if (result['success'] == true) {
-        print('🧾 [$traceId] priorità renderer locale; fallback web solo se necessario');
+        AppLogger.d('🧾 [$traceId] priorità renderer locale; fallback web solo se necessario');
 
         // Il backend ritorna il PDF direttamente come bytes
         final pdfBytes = result['pdf_bytes'] as List<int>?;
         final filename = result['filename'] as String? ?? 'ricevuta.pdf';
-        print('🧾 [$traceId] local branch filename=$filename bytes=${pdfBytes?.length ?? 0}');
+        AppLogger.d('🧾 [$traceId] local branch filename=$filename bytes=${pdfBytes?.length ?? 0}');
 
         if (pdfBytes != null) {
           // Salva il PDF automaticamente e aprilo
@@ -822,10 +823,10 @@ class _CalendarScreenState extends State<CalendarScreen>
               context: 'ricevuta_$actualPaymentId',
             );
             final isValid = _isPdfBytesProbablyValid(normalizedPdfBytes);
-            print('📄 [$traceId] bytes validazione pdf: $isValid');
+            AppLogger.d('📄 [$traceId] bytes validazione pdf: $isValid');
 
             if (!isValid) {
-              print('⚠️ [$traceId] bytes ricevuta non validi, uso fallback web autenticato');
+              AppLogger.d('⚠️ [$traceId] bytes ricevuta non validi, uso fallback web autenticato');
               final receiptUrl = result['receipt_url'] as String?;
               final receiptFilename = result['filename'] as String?;
               final opened = await _apriRicevutaFallbackWeb(
@@ -834,9 +835,9 @@ class _CalendarScreenState extends State<CalendarScreen>
                 receiptFilename: receiptFilename,
                 traceId: traceId,
               );
-              print('🧾 [$traceId] fallback dopo bytes invalidi opened=$opened');
+              AppLogger.d('🧾 [$traceId] fallback dopo bytes invalidi opened=$opened');
               if (!opened) {
-                print('⚠️ [$traceId] fallback non riuscito, provo comunque renderer locale con bytes normalizzati');
+                AppLogger.d('⚠️ [$traceId] fallback non riuscito, provo comunque renderer locale con bytes normalizzati');
               }
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -856,11 +857,11 @@ class _CalendarScreenState extends State<CalendarScreen>
             }
 
             final savedFile = await _salvaPdfLocale(normalizedPdfBytes, filename);
-            print('🧾 [$traceId] savedFile path=${savedFile?.path}');
+            AppLogger.d('🧾 [$traceId] savedFile path=${savedFile?.path}');
             
             if (savedFile != null && mounted) {
               await _apriPdfInApp(savedFile, title: filename);
-              print('🧾 [$traceId] apertura locale completata');
+              AppLogger.d('🧾 [$traceId] apertura locale completata');
               
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -891,9 +892,9 @@ class _CalendarScreenState extends State<CalendarScreen>
                 ),
               );
               
-              print('✅ [$traceId] PDF salvato e aperto in-app: ${savedFile.path}');
+              AppLogger.d('✅ [$traceId] PDF salvato e aperto in-app: ${savedFile.path}');
             } else if (mounted) {
-              print('❌ [$traceId] savedFile null dopo _salvaPdfLocale');
+              AppLogger.d('❌ [$traceId] savedFile null dopo _salvaPdfLocale');
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Text('⚠️ PDF ricevuto ma impossibile salvarlo'),
@@ -902,7 +903,7 @@ class _CalendarScreenState extends State<CalendarScreen>
               );
             }
           } catch (e) {
-            print('❌ [$traceId] Errore salvataggio/apertura PDF: $e');
+            AppLogger.d('❌ [$traceId] Errore salvataggio/apertura PDF: $e');
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -917,10 +918,10 @@ class _CalendarScreenState extends State<CalendarScreen>
           // Vecchio formato con URL
           final receiptUrl = result['receipt_url'] as String?;
           if (receiptUrl != null && mounted) {
-            print('🧾 [$traceId] legacy receipt_url branch: $receiptUrl');
+            AppLogger.d('🧾 [$traceId] legacy receipt_url branch: $receiptUrl');
             await _apriRicevutaWeb(receiptUrl);
           } else {
-            print('⚠️ [$traceId] nessun pdf_bytes e nessun receipt_url, provo fallback endpoint');
+            AppLogger.d('⚠️ [$traceId] nessun pdf_bytes e nessun receipt_url, provo fallback endpoint');
             await _apriRicevutaFallbackWeb(
               paymentId: actualPaymentId,
               receiptUrl: receiptUrl,
@@ -930,7 +931,7 @@ class _CalendarScreenState extends State<CalendarScreen>
           }
         }
       } else {
-        print('❌ [$traceId] service error message=${result['message']}');
+        AppLogger.d('❌ [$traceId] service error message=${result['message']}');
         // Mostra errore
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -943,7 +944,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         }
       }
     } catch (e) {
-      print('❌ [$traceId] eccezione: $e');
+      AppLogger.d('❌ [$traceId] eccezione: $e');
       // Chiudi loading se aperto
       if (mounted) {
         Navigator.of(context, rootNavigator: true).pop();
@@ -972,7 +973,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       try {
         directory = await getApplicationDocumentsDirectory();
       } catch (e) {
-        print('⚠️ [FileSave] Documents directory non disponibile, fallback temp: $e');
+        AppLogger.d('⚠️ [FileSave] Documents directory non disponibile, fallback temp: $e');
         directory = await getTemporaryDirectory();
       }
 
@@ -981,13 +982,13 @@ class _CalendarScreenState extends State<CalendarScreen>
 
       await file.writeAsBytes(pdfBytes);
 
-      print('✅ [FileSave] PDF salvato in directory privata: $filePath');
-      print('📁 [FileSave] Directory: ${directory.path}');
-      print('📄 [FileSave] File size: ${pdfBytes.length} bytes');
+      AppLogger.d('✅ [FileSave] PDF salvato in directory privata: $filePath');
+      AppLogger.d('📁 [FileSave] Directory: ${directory.path}');
+      AppLogger.d('📄 [FileSave] File size: ${pdfBytes.length} bytes');
 
       return file;
     } catch (e) {
-      print('❌ [FileSave] Errore salvataggio PDF: $e');
+      AppLogger.d('❌ [FileSave] Errore salvataggio PDF: $e');
       return null;
     }
   }
@@ -1138,11 +1139,11 @@ class _CalendarScreenState extends State<CalendarScreen>
       try {
         final rawText = latin1.decode(workingBytes);
         final rawHead = rawText.length > 120 ? '${rawText.substring(0, 120)}...' : rawText;
-        print('📄 [PdfNormalize][$context] quoted payload detected, rawHead=$rawHead');
+        AppLogger.d('📄 [PdfNormalize][$context] quoted payload detected, rawHead=$rawHead');
         workingBytes = decodeEscapedQuotedBytes(rawText);
-        print('📄 [PdfNormalize][$context] quoted unescape success len=${workingBytes.length} first8=${workingBytes.take(8).toList()}');
+        AppLogger.d('📄 [PdfNormalize][$context] quoted unescape success len=${workingBytes.length} first8=${workingBytes.take(8).toList()}');
       } catch (e) {
-        print('❌ [PdfNormalize][$context] quoted payload normalization failed: $e');
+        AppLogger.d('❌ [PdfNormalize][$context] quoted payload normalization failed: $e');
       }
     }
 
@@ -1152,7 +1153,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       eofMarker,
       start: startIndex >= 0 ? startIndex : 0,
     );
-    print('📄 [PdfNormalize][$context] len=${workingBytes.length} startIndex=$startIndex eofIndex=$eofIndex first8=${workingBytes.take(8).toList()}');
+    AppLogger.d('📄 [PdfNormalize][$context] len=${workingBytes.length} startIndex=$startIndex eofIndex=$eofIndex first8=${workingBytes.take(8).toList()}');
 
     if (startIndex <= 0 && eofIndex == -1) {
       return workingBytes;
@@ -1169,7 +1170,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     }
 
     final normalized = workingBytes.sublist(normalizedStart, normalizedEndExclusive);
-    print('📄 [PdfNormalize][$context] normalizedLen=${normalized.length} normalizedFirst8=${normalized.take(8).toList()}');
+    AppLogger.d('📄 [PdfNormalize][$context] normalizedLen=${normalized.length} normalizedFirst8=${normalized.take(8).toList()}');
     return normalized;
   }
 
@@ -1200,7 +1201,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     // Evita Google Docs su Documento Unico: su URL protette mostra spesso
     // "anteprima non disponibile". Se il download autenticato fallisce,
     // consideriamo fallito il fallback.
-    print('❌ [PdfFallback] apertura fallback autenticata fallita (Google disabilitato): $url');
+    AppLogger.d('❌ [PdfFallback] apertura fallback autenticata fallita (Google disabilitato): $url');
     return false;
   }
 
@@ -1221,7 +1222,7 @@ class _CalendarScreenState extends State<CalendarScreen>
 
       final response = await HttpClientService.get(uri, headers: headers);
       if (response.statusCode != 200) {
-        print('⚠️ [PdfFallbackAuth] status=${response.statusCode} url=$url');
+        AppLogger.d('⚠️ [PdfFallbackAuth] status=${response.statusCode} url=$url');
         return false;
       }
 
@@ -1231,7 +1232,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       );
       final isValid = _isPdfBytesProbablyValid(normalizedPdfBytes);
       if (!isValid) {
-        print('⚠️ [PdfFallbackAuth] bytes non validi url=$url');
+        AppLogger.d('⚠️ [PdfFallbackAuth] bytes non validi url=$url');
         return false;
       }
 
@@ -1240,15 +1241,15 @@ class _CalendarScreenState extends State<CalendarScreen>
           : _extractFileName(url);
       final savedFile = await _salvaPdfLocale(normalizedPdfBytes, filename);
       if (savedFile == null) {
-        print('❌ [PdfFallbackAuth] salvataggio file fallito url=$url');
+        AppLogger.d('❌ [PdfFallbackAuth] salvataggio file fallito url=$url');
         return false;
       }
 
       await _apriPdfInApp(savedFile, title: filename);
-      print('✅ [PdfFallbackAuth] PDF aperto in-app da URL autenticata');
+      AppLogger.d('✅ [PdfFallbackAuth] PDF aperto in-app da URL autenticata');
       return true;
     } catch (e) {
-      print('❌ [PdfFallbackAuth] eccezione: $e');
+      AppLogger.d('❌ [PdfFallbackAuth] eccezione: $e');
       return false;
     }
   }
@@ -1260,16 +1261,16 @@ class _CalendarScreenState extends State<CalendarScreen>
     String? traceId,
   }) async {
     final tag = traceId ?? 'RicevutaFallback';
-    print('🧾 [$tag] start paymentId=$paymentId receiptUrl=$receiptUrl');
+    AppLogger.d('🧾 [$tag] start paymentId=$paymentId receiptUrl=$receiptUrl');
     final token = await storage.read(key: 'jwt_token');
-    print('🧾 [$tag] tokenPresent=${token != null && token.isNotEmpty}');
+    AppLogger.d('🧾 [$tag] tokenPresent=${token != null && token.isNotEmpty}');
 
     // 1) Se abbiamo un URL diretto della ricevuta, scarichiamolo in modo
     //    autenticato e apriamolo con il viewer PDF locale. Evitiamo Google Docs
     //    Viewer perché su URL protette mostra "Anteprima non disponibile".
     if (receiptUrl != null && _isValidWebUrl(receiptUrl)) {
       final openedAuth = await _apriPdfFallbackAutenticato(receiptUrl);
-      print('🧾 [$tag] download autenticato receiptUrl opened=$openedAuth');
+      AppLogger.d('🧾 [$tag] download autenticato receiptUrl opened=$openedAuth');
       if (openedAuth) {
         return true;
       }
@@ -1284,14 +1285,14 @@ class _CalendarScreenState extends State<CalendarScreen>
     //    sono randomiche (fatture/<timestamp>-<random>.pdf) e non ricostruibili
     //    dal solo nome file.
     final ricevutaUrl = '${ApiConfig.baseUrl}/pagamento/$paymentId/ricevuta';
-    print('🧾 [$tag] provo fallback backend ricevuta url=$ricevutaUrl (filename=$receiptFilename)');
+    AppLogger.d('🧾 [$tag] provo fallback backend ricevuta url=$ricevutaUrl (filename=$receiptFilename)');
     final openedBackend = await _apriPdfFallbackAutenticato(ricevutaUrl);
-    print('🧾 [$tag] fallback backend opened=$openedBackend');
+    AppLogger.d('🧾 [$tag] fallback backend opened=$openedBackend');
     if (openedBackend) {
       return true;
     }
 
-    print('❌ [$tag] fallback fallito paymentId=$paymentId');
+    AppLogger.d('❌ [$tag] fallback fallito paymentId=$paymentId');
     return false;
   }
 
@@ -1312,13 +1313,13 @@ class _CalendarScreenState extends State<CalendarScreen>
             autoSpacing: true,
             pageSnap: true,
             onRender: (pages) {
-              print('📄 [PdfView] render completed pages=$pages path=${file.path}');
+              AppLogger.d('📄 [PdfView] render completed pages=$pages path=${file.path}');
             },
             onError: (error) {
-              print('❌ [PdfView] onError: $error path=${file.path}');
+              AppLogger.d('❌ [PdfView] onError: $error path=${file.path}');
             },
             onPageError: (page, error) {
-              print('❌ [PdfView] onPageError page=$page error=$error path=${file.path}');
+              AppLogger.d('❌ [PdfView] onPageError page=$page error=$error path=${file.path}');
             },
           ),
         ),
@@ -1356,7 +1357,7 @@ class _CalendarScreenState extends State<CalendarScreen>
           return candidate;
         }
       }
-    } catch (_) {}
+    } catch (e) { AppLogger.d("ignored: $e"); }
 
     final normalized = value.replaceAll('\\', '/');
     final parts = normalized.split('/').where((part) => part.isNotEmpty).toList();
@@ -1393,7 +1394,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     String? fallbackUrl,
   }) async {
     if (!mounted) return;
-    print('📄 [DocMergedUI] avvio visualizzazione richiestaId=$richiestaId forceMerge=$forceMerge');
+    AppLogger.d('📄 [DocMergedUI] avvio visualizzazione richiestaId=$richiestaId forceMerge=$forceMerge');
 
     showDialog(
       context: context,
@@ -1408,7 +1409,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         richiestaId,
         forceMerge: forceMerge,
       );
-      print('📄 [DocMergedUI] esito service success=${result['success']} keys=${result.keys.toList()}');
+      AppLogger.d('📄 [DocMergedUI] esito service success=${result['success']} keys=${result.keys.toList()}');
 
       if (mounted) {
         Navigator.of(context, rootNavigator: true).pop();
@@ -1417,12 +1418,12 @@ class _CalendarScreenState extends State<CalendarScreen>
       if (result['success'] == true) {
         final pdfBytes = result['pdf_bytes'] as List<int>?;
         final filename = result['filename'] as String? ?? 'Documento_Unico_$richiestaId.pdf';
-        print('📄 [DocMergedUI] filename=$filename bytes=${pdfBytes?.length ?? 0}');
+        AppLogger.d('📄 [DocMergedUI] filename=$filename bytes=${pdfBytes?.length ?? 0}');
 
         if (pdfBytes == null || pdfBytes.isEmpty) {
-          print('❌ [DocMergedUI] PDF vuoto o assente per richiestaId=$richiestaId');
+          AppLogger.d('❌ [DocMergedUI] PDF vuoto o assente per richiestaId=$richiestaId');
           if (fallbackUrl != null && _isValidWebUrl(fallbackUrl)) {
-            print('⚠️ [DocMergedUI] PDF assente, provo fallback avanzato richiestaId=$richiestaId');
+            AppLogger.d('⚠️ [DocMergedUI] PDF assente, provo fallback avanzato richiestaId=$richiestaId');
             final opened = await _tryOpenDocumentoUnicoFallbacks(
               richiestaId: richiestaId,
               preferredUrl: fallbackUrl,
@@ -1457,10 +1458,10 @@ class _CalendarScreenState extends State<CalendarScreen>
           context: 'documento_unico_$richiestaId',
         );
         final isValid = _isPdfBytesProbablyValid(normalizedPdfBytes);
-        print('📄 [DocMergedUI] bytes validazione pdf: $isValid');
+        AppLogger.d('📄 [DocMergedUI] bytes validazione pdf: $isValid');
 
         if (!isValid) {
-          print('⚠️ [DocMergedUI] bytes merged non validi, provo fallback avanzato richiestaId=$richiestaId');
+          AppLogger.d('⚠️ [DocMergedUI] bytes merged non validi, provo fallback avanzato richiestaId=$richiestaId');
           final opened = await _tryOpenDocumentoUnicoFallbacks(
             richiestaId: richiestaId,
             preferredUrl: fallbackUrl,
@@ -1482,7 +1483,7 @@ class _CalendarScreenState extends State<CalendarScreen>
 
         final savedFile = await _salvaPdfLocale(normalizedPdfBytes, filename);
         if (savedFile == null) {
-          print('❌ [DocMergedUI] salvataggio file fallito richiestaId=$richiestaId');
+          AppLogger.d('❌ [DocMergedUI] salvataggio file fallito richiestaId=$richiestaId');
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -1495,7 +1496,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         }
 
         await _apriPdfInApp(savedFile, title: filename);
-        print('✅ [DocMerged] PDF salvato e aperto in-app: ${savedFile.path}');
+        AppLogger.d('✅ [DocMerged] PDF salvato e aperto in-app: ${savedFile.path}');
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -1512,7 +1513,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       }
 
       if (!forceMerge) {
-        print('⚠️ [DocMergedUI] primo tentativo fallito, retry con forceMerge=true richiestaId=$richiestaId');
+        AppLogger.d('⚠️ [DocMergedUI] primo tentativo fallito, retry con forceMerge=true richiestaId=$richiestaId');
         await _visualizzaDocumentoUnico(
           richiestaId: richiestaId,
           forceMerge: true,
@@ -1522,7 +1523,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       }
 
       {
-        print('⚠️ [DocMergedUI] service non riuscito, provo fallback avanzato richiestaId=$richiestaId');
+        AppLogger.d('⚠️ [DocMergedUI] service non riuscito, provo fallback avanzato richiestaId=$richiestaId');
         final opened = await _tryOpenDocumentoUnicoFallbacks(
           richiestaId: richiestaId,
           preferredUrl: fallbackUrl,
@@ -1543,7 +1544,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       }
 
       if (mounted) {
-        print('❌ [DocMergedUI] errore service message=${result['message']}');
+        AppLogger.d('❌ [DocMergedUI] errore service message=${result['message']}');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -1555,13 +1556,13 @@ class _CalendarScreenState extends State<CalendarScreen>
         );
       }
     } catch (e) {
-      print('❌ [DocMergedUI] eccezione imprevista: $e');
+      AppLogger.d('❌ [DocMergedUI] eccezione imprevista: $e');
       if (mounted) {
         Navigator.of(context, rootNavigator: true).pop();
       }
 
       {
-        print('⚠️ [DocMergedUI] eccezione service, provo fallback avanzato richiestaId=$richiestaId');
+        AppLogger.d('⚠️ [DocMergedUI] eccezione service, provo fallback avanzato richiestaId=$richiestaId');
         final opened = await _tryOpenDocumentoUnicoFallbacks(
           richiestaId: richiestaId,
           preferredUrl: fallbackUrl,
@@ -1648,7 +1649,7 @@ class _CalendarScreenState extends State<CalendarScreen>
 
       candidates.addAll(_extractUrlsFromMetadata(status.metadata));
     } catch (e) {
-      print('⚠️ [DocMergedUI] impossibile recuperare stato firma aggiornato richiestaId=$richiestaId: $e');
+      AppLogger.d('⚠️ [DocMergedUI] impossibile recuperare stato firma aggiornato richiestaId=$richiestaId: $e');
     }
 
     final uniqueCandidates = <String>[];
@@ -1658,11 +1659,11 @@ class _CalendarScreenState extends State<CalendarScreen>
       }
     }
 
-    print('📄 [DocMergedUI] fallback candidates richiestaId=$richiestaId count=${uniqueCandidates.length}');
+    AppLogger.d('📄 [DocMergedUI] fallback candidates richiestaId=$richiestaId count=${uniqueCandidates.length}');
 
     for (final candidate in uniqueCandidates) {
       final opened = await _apriPdfFallbackWeb(candidate);
-      print('📄 [DocMergedUI] fallback candidate opened=$opened url=$candidate');
+      AppLogger.d('📄 [DocMergedUI] fallback candidate opened=$opened url=$candidate');
       if (opened) {
         return true;
       }
@@ -1672,7 +1673,7 @@ class _CalendarScreenState extends State<CalendarScreen>
   }
 
   void _apriRichiestaById(String id) {
-    print('🔍 Cerco richiesta con ID: $id');
+    AppLogger.d('🔍 Cerco richiesta con ID: $id');
     
     final richiesta = _tutteRichieste.firstWhere(
       (r) => r['id'].toString() == id,
@@ -1680,10 +1681,10 @@ class _CalendarScreenState extends State<CalendarScreen>
     );
     
     if (richiesta.isNotEmpty) {
-      print('✅ Richiesta trovata: ${richiesta['numero_pratica']}');
+      AppLogger.d('✅ Richiesta trovata: ${richiesta['numero_pratica']}');
       _mostraDettaglioRichiesta(richiesta);
     } else {
-      print('❌ Richiesta non trovata: $id');
+      AppLogger.d('❌ Richiesta non trovata: $id');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -1829,9 +1830,9 @@ class _CalendarScreenState extends State<CalendarScreen>
 
   Future<void> _apriFirmaDocumento(Map<String, dynamic> richiesta) async {
     final firmaRichiestaId = _resolveFirmaRichiestaId(richiesta);
-    print('🔐 [FirmaFlow] Avvio apertura firma');
-    print('🔐 [FirmaFlow] Campi ID candidati: richiesta_id=${richiesta['richiesta_id']} id_richiesta=${richiesta['id_richiesta']} request_id=${richiesta['request_id']} service_request_id=${richiesta['service_request_id']} id=${richiesta['id']}');
-    print('🔐 [FirmaFlow] ID selezionato per endpoint documento-unico: $firmaRichiestaId');
+    AppLogger.d('🔐 [FirmaFlow] Avvio apertura firma');
+    AppLogger.d('🔐 [FirmaFlow] Campi ID candidati: richiesta_id=${richiesta['richiesta_id']} id_richiesta=${richiesta['id_richiesta']} request_id=${richiesta['request_id']} service_request_id=${richiesta['service_request_id']} id=${richiesta['id']}');
+    AppLogger.d('🔐 [FirmaFlow] ID selezionato per endpoint documento-unico: $firmaRichiestaId');
 
     if (firmaRichiestaId == null) {
       if (mounted) {
@@ -1848,9 +1849,9 @@ class _CalendarScreenState extends State<CalendarScreen>
     }
 
     try {
-      print('📊 [FirmaFlow] controllo stato firma per richiestaId=$firmaRichiestaId');
+      AppLogger.d('📊 [FirmaFlow] controllo stato firma per richiestaId=$firmaRichiestaId');
       final statoFirma = await FirmaDigitaleService.ottieniStatoFirma(firmaRichiestaId);
-      print('📊 [FirmaFlow] stato firma ricevuto: firmato=${statoFirma.firmato}, documentoUrl=${statoFirma.documentoUrl}, documentoDownloadUrl=${statoFirma.documentoDownloadUrl}');
+      AppLogger.d('📊 [FirmaFlow] stato firma ricevuto: firmato=${statoFirma.firmato}, documentoUrl=${statoFirma.documentoUrl}, documentoDownloadUrl=${statoFirma.documentoDownloadUrl}');
 
       if (statoFirma.firmato) {
         if (mounted) {
@@ -1868,12 +1869,12 @@ class _CalendarScreenState extends State<CalendarScreen>
 
     } on FirmaDigitaleException catch (e) {
       if (e.code == 'NOT_FOUND') {
-        print('📊 [FirmaFlow] nessuna firma esistente per richiestaId=$firmaRichiestaId, continuo con il flusso');
+        AppLogger.d('📊 [FirmaFlow] nessuna firma esistente per richiestaId=$firmaRichiestaId, continuo con il flusso');
       } else {
-        print('❌ [FirmaFlow] errore durante controllo stato firma: ${e.code} - ${e.message}');
+        AppLogger.d('❌ [FirmaFlow] errore durante controllo stato firma: ${e.code} - ${e.message}');
       }
     } catch (e) {
-      print('❌ [FirmaFlow] eccezione non prevista durante controllo stato firma: $e');
+      AppLogger.d('❌ [FirmaFlow] eccezione non prevista durante controllo stato firma: $e');
     }
 
     final userIdRaw = await storage.read(key: 'user_id');
@@ -1886,15 +1887,15 @@ class _CalendarScreenState extends State<CalendarScreen>
     int? userId = parsedUserId ?? parsedSocioId;
     String? telefono = telefonoRaw?.trim();
 
-    print('🔐 [FirmaFlow] Storage user_id raw: $userIdRaw');
-    print('🔐 [FirmaFlow] Storage socio_id raw: $socioIdRaw');
-    print('🔐 [FirmaFlow] Storage telefono presente: ${telefono != null && telefono.isNotEmpty}');
-    print('🔐 [FirmaFlow] userId parse: $userId');
+    AppLogger.d('🔐 [FirmaFlow] Storage user_id raw: $userIdRaw');
+    AppLogger.d('🔐 [FirmaFlow] Storage socio_id raw: $socioIdRaw');
+    AppLogger.d('🔐 [FirmaFlow] Storage telefono presente: ${telefono != null && telefono.isNotEmpty}');
+    AppLogger.d('🔐 [FirmaFlow] userId parse: $userId');
 
     // Fallback: se i dati non sono in storage (es. login biometrico o sessione
     // ripristinata), li recuperiamo da /soci/me e li salviamo.
     if (userId == null || telefono == null || telefono.isEmpty) {
-      print('🔄 [FirmaFlow] Dati utente mancanti in storage, recupero da /soci/me');
+      AppLogger.d('🔄 [FirmaFlow] Dati utente mancanti in storage, recupero da /soci/me');
       try {
         final meData = await SocioService.getMe();
         if (meData != null) {
@@ -1918,19 +1919,19 @@ class _CalendarScreenState extends State<CalendarScreen>
             telefono = meTelefono;
             await storage.write(key: 'telefono', value: meTelefono);
           }
-          print('🔄 [FirmaFlow] Dopo /soci/me userId=$userId telefonoPresente=${telefono != null && telefono.isNotEmpty}');
+          AppLogger.d('🔄 [FirmaFlow] Dopo /soci/me userId=$userId telefonoPresente=${telefono != null && telefono.isNotEmpty}');
         } else {
-          print('⚠️ [FirmaFlow] /soci/me ha restituito null');
+          AppLogger.d('⚠️ [FirmaFlow] /soci/me ha restituito null');
         }
       } catch (e) {
-        print('❌ [FirmaFlow] Errore recupero dati da /soci/me: $e');
+        AppLogger.d('❌ [FirmaFlow] Errore recupero dati da /soci/me: $e');
       }
     }
 
     if (!mounted) return;
 
     if (userId == null || telefono == null || telefono.isEmpty) {
-      print('❌ [FirmaFlow] Dati utente mancanti, blocco apertura firma');
+      AppLogger.d('❌ [FirmaFlow] Dati utente mancanti, blocco apertura firma');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -1946,7 +1947,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     final userIdFinal = userId;
 
     Navigator.pop(context);
-    print('🔐 [FirmaFlow] Bottom sheet chiuso, apro FirmaDocumentoScreen');
+    AppLogger.d('🔐 [FirmaFlow] Bottom sheet chiuso, apro FirmaDocumentoScreen');
 
     await Navigator.push(
       context,
@@ -1959,7 +1960,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       ),
     );
 
-    print('🔐 [FirmaFlow] Rientro da FirmaDocumentoScreen, ricarico richieste');
+    AppLogger.d('🔐 [FirmaFlow] Rientro da FirmaDocumentoScreen, ricarico richieste');
 
     await _refreshLoggedUserSocioStatus();
     _caricaRichieste();
@@ -1988,9 +1989,9 @@ class _CalendarScreenState extends State<CalendarScreen>
         await storage.write(key: 'data_iscrizione', value: dataAdesione);
       }
 
-      print('✅ [FirmaFlow] Stato socio sincronizzato dopo firma. isSocio=$isSocio status=${statusSocio.isNotEmpty ? statusSocio : 'attivo'}');
+      AppLogger.d('✅ [FirmaFlow] Stato socio sincronizzato dopo firma. isSocio=$isSocio status=${statusSocio.isNotEmpty ? statusSocio : 'attivo'}');
     } catch (e) {
-      print('⚠️ [FirmaFlow] Impossibile sincronizzare stato socio dopo firma: $e');
+      AppLogger.d('⚠️ [FirmaFlow] Impossibile sincronizzare stato socio dopo firma: $e');
     }
   }
 
@@ -2187,7 +2188,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                 }
               }
             } catch (e) {
-              print('⚠️ [Integrazione] errore aggiornamento sezione: $e');
+              AppLogger.d('⚠️ [Integrazione] errore aggiornamento sezione: $e');
             }
             if (mounted) setSectionState(() {});
           }
@@ -2455,20 +2456,20 @@ class _CalendarScreenState extends State<CalendarScreen>
     final canOpenFirmaCta = documentoUnicoUrl != null && !isGiaFirmata;
     
     // Debug: verifica dati pagamento COMPLETI
-    print('📋 ==================== DEBUG RICHIESTA ====================');
-    print('📋 Richiesta ID: $richiestaId');
-    print('📋 Stato: $stato');
-    print('📋 Numero pratica: ${richiesta['numero_pratica']}');
-    print('💰 ==================== PAGAMENTO COMPLETO ====================');
-    print('💰 Pagamento object: $pagamento');
-    print('💰 Pagamento keys: ${pagamento.keys.toList()}');
-    print('🔑 pagamento["id"]: ${pagamento['id']}');
-    print('🔑 pagamento["payment_id"]: ${pagamento['payment_id']}');
-    print('🔑 pagamento["pagamento_id"]: ${pagamento['pagamento_id']}');
-    print('✅ pagamento["ricevuto"]: ${pagamento['ricevuto']}');
-    print('🔐 [FirmaFlow] CTA abilitata: $canOpenFirmaCta');
-    print('🔐 [FirmaFlow] isFirmabile=$isFirmabile stato=$stato puo_firmare=${richiesta['puo_firmare']} richiestaId=$richiestaId isGiaFirmata=$isGiaFirmata');
-    print('📋 =========================================================');
+    AppLogger.d('📋 ==================== DEBUG RICHIESTA ====================');
+    AppLogger.d('📋 Richiesta ID: $richiestaId');
+    AppLogger.d('📋 Stato: $stato');
+    AppLogger.d('📋 Numero pratica: ${richiesta['numero_pratica']}');
+    AppLogger.d('💰 ==================== PAGAMENTO COMPLETO ====================');
+    AppLogger.d('💰 Pagamento object: $pagamento');
+    AppLogger.d('💰 Pagamento keys: ${pagamento.keys.toList()}');
+    AppLogger.d('🔑 pagamento["id"]: ${pagamento['id']}');
+    AppLogger.d('🔑 pagamento["payment_id"]: ${pagamento['payment_id']}');
+    AppLogger.d('🔑 pagamento["pagamento_id"]: ${pagamento['pagamento_id']}');
+    AppLogger.d('✅ pagamento["ricevuto"]: ${pagamento['ricevuto']}');
+    AppLogger.d('🔐 [FirmaFlow] CTA abilitata: $canOpenFirmaCta');
+    AppLogger.d('🔐 [FirmaFlow] isFirmabile=$isFirmabile stato=$stato puo_firmare=${richiesta['puo_firmare']} richiestaId=$richiestaId isGiaFirmata=$isGiaFirmata');
+    AppLogger.d('📋 =========================================================');
     
     // Stato awaiting_payment significa che c'è un pagamento da effettuare
     final isAwaitingPayment = _isAwaitingPaymentStatus(stato);
@@ -2915,10 +2916,10 @@ class _CalendarScreenState extends State<CalendarScreen>
                             
                             final transactionId = pagamento['transazione_id'] as String?;
                             
-                            print('🧾 Tentativo scarica ricevuta:');
-                            print('   - Payment ID: $paymentId');
-                            print('   - Transaction ID: $transactionId');
-                            print('   - Richiesta ID: $richiestaId');
+                            AppLogger.d('🧾 Tentativo scarica ricevuta:');
+                            AppLogger.d('   - Payment ID: $paymentId');
+                            AppLogger.d('   - Transaction ID: $transactionId');
+                            AppLogger.d('   - Richiesta ID: $richiestaId');
                             
                             if (paymentId == null) {
                               // Mostra dialog informativo invece di errore
@@ -3030,7 +3031,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                         const SizedBox(height: 12),
                         OutlinedButton.icon(
                           onPressed: () async {
-                            print('🖱️ [DocMergedUI] tap Visualizza Documento Unico richiestaId=$firmaRichiestaId stato=$stato isGiaFirmata=$isGiaFirmata fallbackUrl=$documentoUnicoUrl');
+                            AppLogger.d('🖱️ [DocMergedUI] tap Visualizza Documento Unico richiestaId=$firmaRichiestaId stato=$stato isGiaFirmata=$isGiaFirmata fallbackUrl=$documentoUnicoUrl');
 
                             if (firmaRichiestaId != null) {
                               await _visualizzaDocumentoUnico(

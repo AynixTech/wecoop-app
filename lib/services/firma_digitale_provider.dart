@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/utils/app_logger.dart';
 import '../models/firma_digitale_models.dart';
 import './firma_digitale_service.dart';
 
@@ -269,6 +270,6 @@ class FirmaDigitaleProvider extends ChangeNotifier {
 
   // Debug helper
   void printDebug(String message) {
-    print('[FirmaDigitalProvider] $message');
+    AppLogger.d('[FirmaDigitalProvider] $message');
   }
 }

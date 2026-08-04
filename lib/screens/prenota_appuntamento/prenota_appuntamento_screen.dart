@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
@@ -17,10 +18,14 @@ class PrenotaAppuntamentoScreen extends StatefulWidget {
 
 class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
   final storage = SecureStorageService();
+  final TextEditingController _emailController = TextEditingController();
   List appuntamenti = [];
   int? selectedAppuntamentoId;
   String? selectedOrario;
   String email = '';
+  bool _isLoading = true;
+  bool _isSubmitting = false;
+  String? _loadError;
 
   @override
   void initState() {
@@ -29,37 +34,67 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
     fetchAppuntamenti();
   }
 
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
   Future<void> caricaDatiUtente() async {
     final storedEmail = await storage.read(key: 'user_email');
     if (storedEmail != null && mounted) {
       setState(() {
         email = storedEmail;
+        _emailController.text = storedEmail;
       });
     }
   }
 
   Future<void> fetchAppuntamenti() async {
-    final response = await HttpClientService.get(
-      Uri.parse('${ApiConfig.baseUrl}/appuntamenti'),
-    );
-    if (response.statusCode == 200) {
-      final dati = json.decode(response.body);
-      dati.sort((a, b) {
-        final daStr = a['data'];
-        final dbStr = b['data'];
-        if (daStr == null || dbStr == null) return 0;
-        final da = DateTime.tryParse(daStr);
-        final db = DateTime.tryParse(dbStr);
-        if (da == null || db == null) return 0;
-        return da.compareTo(db);
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+        _loadError = null;
       });
+    }
+    try {
+      final response = await HttpClientService.get(
+        Uri.parse('${ApiConfig.baseUrl}/appuntamenti'),
+      );
+      if (response.statusCode == 200) {
+        final dati = json.decode(response.body);
+        dati.sort((a, b) {
+          final daStr = a['data'];
+          final dbStr = b['data'];
+          if (daStr == null || dbStr == null) return 0;
+          final da = DateTime.tryParse(daStr);
+          final db = DateTime.tryParse(dbStr);
+          if (da == null || db == null) return 0;
+          return da.compareTo(db);
+        });
+        if (mounted) {
+          setState(() {
+            appuntamenti = dati;
+            _isLoading = false;
+          });
+        }
+      } else {
+        AppLogger.d('Errore nel recupero appuntamenti: ${response.statusCode}');
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+            _loadError = 'Impossibile caricare gli appuntamenti.';
+          });
+        }
+      }
+    } catch (e) {
+      AppLogger.e('fetchAppuntamenti errore', e);
       if (mounted) {
         setState(() {
-          appuntamenti = dati;
+          _isLoading = false;
+          _loadError = 'Errore di rete. Riprova più tardi.';
         });
       }
-    } else {
-      print('Errore nel recupero appuntamenti: ${response.body}');
     }
   }
 
@@ -78,6 +113,7 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
 
   Future<void> inviaPrenotazione() async {
     final l10n = AppLocalizations.of(context)!;
+    if (_isSubmitting) return; // anti doppio submit
     if (selectedAppuntamentoId == null ||
         selectedOrario == null ||
         email.isEmpty) {
@@ -87,33 +123,47 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
       return;
     }
 
-    final response = await HttpClientService.post(
-      Uri.parse('${ApiConfig.baseUrl}/prenota'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'email': email,
-        'appuntamento_id': selectedAppuntamentoId,
-        'orario': selectedOrario,
-      }),
-    );
-    if (MaintenanceHandler.isPlatformUpdateStatusCode(response.statusCode)) {
-      return;
-    }
-
-    final result = json.decode(response.body);
-    if (response.statusCode == 200 && result['success'] == true) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.bookingConfirmed)));
-      Navigator.pop(context, true); // ✅ Torna con conferma
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '${l10n.error}: ${result['message'] ?? 'Impossibile prenotare'}',
-          ),
-        ),
+    setState(() => _isSubmitting = true);
+    try {
+      final response = await HttpClientService.post(
+        Uri.parse('${ApiConfig.baseUrl}/prenota'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'email': email,
+          'appuntamento_id': selectedAppuntamentoId,
+          'orario': selectedOrario,
+        }),
       );
+      if (MaintenanceHandler.isPlatformUpdateStatusCode(response.statusCode)) {
+        if (mounted) setState(() => _isSubmitting = false);
+        return;
+      }
+
+      final result = json.decode(response.body);
+      if (!mounted) return;
+      if (response.statusCode == 200 && result['success'] == true) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.bookingConfirmed)));
+        Navigator.pop(context, true); // ✅ Torna con conferma
+      } else {
+        setState(() => _isSubmitting = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${l10n.error}: ${result['message'] ?? 'Impossibile prenotare'}',
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      AppLogger.e('inviaPrenotazione errore', e);
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l10n.error}: rete non disponibile')),
+        );
+      }
     }
   }
 
@@ -141,12 +191,28 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
             children: [
               TextField(
                 decoration: InputDecoration(labelText: AppLocalizations.of(context)!.email),
-                controller: TextEditingController(text: email),
+                controller: _emailController,
                 onChanged: (val) => email = val,
               ),
               SizedBox(height: 16),
               Expanded(
-                child: ListView(
+                child: _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _loadError != null
+                        ? Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(_loadError!, textAlign: TextAlign.center),
+                                const SizedBox(height: 12),
+                                OutlinedButton(
+                                  onPressed: fetchAppuntamenti,
+                                  child: const Text('Riprova'),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView(
                   children:
                       appuntamentiPerSedeEServizio.entries.map((sedeEntry) {
                         final sede = sedeEntry.key;
@@ -252,8 +318,14 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
           child: SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: inviaPrenotazione,
-              child: Text(AppLocalizations.of(context)!.book),
+              onPressed: _isSubmitting ? null : inviaPrenotazione,
+              child: _isSubmitting
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(AppLocalizations.of(context)!.book),
             ),
           ),
         ),

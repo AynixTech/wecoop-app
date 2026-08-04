@@ -1,14 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/utils/app_logger.dart';
 import '../screens/profilo/change_password_screen.dart';
 import '../screens/servizi/pagamento_screen.dart';
+import '../screens/annunci/annunci_screen.dart';
 
 class DeepLinkHandler {
   /// Naviga alla schermata corretta in base all'URI
   static void handleDeepLink(BuildContext context, Uri uri) {
-    print('📍 Gestisco deep link: ${uri.path}');
+    AppLogger.d('📍 Gestisco deep link: ${uri.path}');
     
     final path = uri.path;
     final queryParams = uri.queryParameters;
+
+    // Universal Link / App Link condivisibile: https://www.wecoop.org/annunci/123
+    // (oppure schema custom wecoop://app/annunci/123). Apre il dettaglio annuncio.
+    if (path.startsWith('/annunci/')) {
+      final id = int.tryParse(path.split('/').last);
+      if (id != null) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => AnnunciScreen(initialAnnuncioId: id),
+          ),
+        );
+        return;
+      }
+    }
 
     // wecoop://app/richieste o wecoop://app/calendar
     if (path == '/richieste' || path == '/calendar') {
@@ -94,7 +110,7 @@ class DeepLinkHandler {
     }
 
     // Link non riconosciuto
-    print('⚠️ Deep link non gestito: $path');
+    AppLogger.d('⚠️ Deep link non gestito: $path');
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Link non valido'),
@@ -104,7 +120,7 @@ class DeepLinkHandler {
   }
 
   static void _navigateToRichiesta(BuildContext context, String id) {
-    print('🔄 Navigazione a richiesta ID: $id');
+    AppLogger.d('🔄 Navigazione a richiesta ID: $id');
     // Naviga al calendario con l'ID della richiesta da aprire
     Navigator.of(context).pushNamed(
       '/calendar',

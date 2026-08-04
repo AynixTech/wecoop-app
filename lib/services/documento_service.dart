@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'package:wecoop_app/utils/app_logger.dart';
 import 'dart:io';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/documento.dart';
 import 'socio_service.dart';
+import 'secure_storage_service.dart';
 
 class DocumentoService {
   static const String _documentiKey = 'documenti_utente';
@@ -15,6 +16,8 @@ class DocumentoService {
   factory DocumentoService() => _instance;
   DocumentoService._internal();
 
+  static final _storage = SecureStorageService();
+
   // Cache locale
   List<Documento>? _documenti;
 
@@ -22,26 +25,29 @@ class DocumentoService {
   Future<List<Documento>> getDocumenti() async {
     if (_documenti != null) return _documenti!;
 
-    final prefs = await SharedPreferences.getInstance();
-    final String? documentiJson = prefs.getString(_documentiKey);
+    final String? documentiJson = await _storage.read(key: _documentiKey);
 
     if (documentiJson == null || documentiJson.isEmpty) {
       _documenti = [];
       return _documenti!;
     }
 
-    final List<dynamic> documentiList = jsonDecode(documentiJson);
-    _documenti = documentiList.map((json) => Documento.fromJson(json)).toList();
+    try {
+      final List<dynamic> documentiList = jsonDecode(documentiJson);
+      _documenti = documentiList.map((json) => Documento.fromJson(json)).toList();
+    } catch (e) {
+      AppLogger.e('Documenti cache corrotta', e);
+      _documenti = [];
+    }
     return _documenti!;
   }
 
-  // Salva i documenti
+  // Salva i documenti (in secure storage: possono contenere dati sensibili)
   Future<void> _saveDocumenti(List<Documento> documenti) async {
-    final prefs = await SharedPreferences.getInstance();
     final String documentiJson = jsonEncode(
       documenti.map((doc) => doc.toJson()).toList(),
     );
-    await prefs.setString(_documentiKey, documentiJson);
+    await _storage.write(key: _documentiKey, value: documentiJson);
     _documenti = documenti;
   }
 
@@ -59,13 +65,13 @@ class DocumentoService {
     try {
       if (soggetto != DocumentoSoggetto.richiedente &&
           soggetto != DocumentoSoggetto.familiare) {
-        print('⚠️ Soggetto non valido: $soggetto');
+        AppLogger.d('⚠️ Soggetto non valido: $soggetto');
         return [];
       }
 
       final profilo = await SocioService.getProfiloCompleto();
       if (profilo['success'] != true) {
-        print('⚠️ Errore fetch profilo: ${profilo['message']}');
+        AppLogger.d('⚠️ Errore fetch profilo: ${profilo['message']}');
         return [];
       }
 
@@ -91,7 +97,7 @@ class DocumentoService {
                         : null,
               );
             } catch (e) {
-              print('⚠️ Errore parsing documento: $e');
+              AppLogger.d('⚠️ Errore parsing documento: $e');
               return null;
             }
           })
@@ -99,7 +105,7 @@ class DocumentoService {
           .where((doc) => doc.soggetto == soggetto)
           .toList();
     } catch (e) {
-      print('❌ Errore fetching documenti per soggetto: $e');
+      AppLogger.d('❌ Errore fetching documenti per soggetto: $e');
       return [];
     }
   }
@@ -216,7 +222,7 @@ class DocumentoService {
     required File fileRetro,
     String soggetto = DocumentoSoggetto.richiedente,
   }) async {
-    print('🔍 DEBUG: caricaDocumentoDueLati() tipo=$tipo');
+    AppLogger.d('🔍 DEBUG: caricaDocumentoDueLati() tipo=$tipo');
 
     final appDir = await getApplicationDocumentsDirectory();
     final documentiDir = Directory('${appDir.path}/documenti');
@@ -240,34 +246,34 @@ class DocumentoService {
 
     try {
       // Upload fronte
-      print('📤 Upload fronte...');
+      AppLogger.d('📤 Upload fronte...');
       final uploadFrente = await SocioService.uploadDocumento(
         file: savedFrente,
         tipoDocumento: '${tipo}_fronte',
         soggetto: soggetto,
       );
       if (uploadFrente['success'] != true) {
-        print('❌ Errore upload fronte: ${uploadFrente['message']}');
+        AppLogger.d('❌ Errore upload fronte: ${uploadFrente['message']}');
         await savedFrente.delete();
         await savedRetro.delete();
         return null;
       }
 
       // Upload retro
-      print('📤 Upload retro...');
+      AppLogger.d('📤 Upload retro...');
       final uploadRetro = await SocioService.uploadDocumento(
         file: savedRetro,
         tipoDocumento: '${tipo}_retro',
         soggetto: soggetto,
       );
       if (uploadRetro['success'] != true) {
-        print('❌ Errore upload retro: ${uploadRetro['message']}');
+        AppLogger.d('❌ Errore upload retro: ${uploadRetro['message']}');
         await savedFrente.delete();
         await savedRetro.delete();
         return null;
       }
 
-      print('✅ Fronte e retro caricati!');
+      AppLogger.d('✅ Fronte e retro caricati!');
 
       final backendId = uploadFrente['data']?['id'];
       final documento = Documento(
@@ -288,7 +294,7 @@ class DocumentoService {
 
       return documento;
     } catch (e) {
-      print('❌ Eccezione caricaDocumentoDueLati: $e');
+      AppLogger.d('❌ Eccezione caricaDocumentoDueLati: $e');
       if (await savedFrente.exists()) await savedFrente.delete();
       if (await savedRetro.exists()) await savedRetro.delete();
       return null;
@@ -340,9 +346,9 @@ class DocumentoService {
     required String soggetto,
     DateTime? dataScadenza,
   }) async {
-    print('🔍 DEBUG: Inizio _salvaDocumento()');
-    print('   Tipo: $tipo');
-    print('   FileName: $fileName');
+    AppLogger.d('🔍 DEBUG: Inizio _salvaDocumento()');
+    AppLogger.d('   Tipo: $tipo');
+    AppLogger.d('   FileName: $fileName');
 
     // 1. Copia il file nella directory dell'app (per cache locale)
     final appDir = await getApplicationDocumentsDirectory();
@@ -358,23 +364,23 @@ class DocumentoService {
     final savedFile = await file.copy(newPath);
 
     // 2. ✅ INVIA AL BACKEND
-    print('📤 Invio documento al backend...');
+    AppLogger.d('📤 Invio documento al backend...');
     try {
       final uploadResult = await SocioService.uploadDocumento(
         file: savedFile,
         tipoDocumento: tipo,
         soggetto: soggetto,
       );
-      print('📥 Upload result: $uploadResult');
+      AppLogger.d('📥 Upload result: $uploadResult');
 
       if (uploadResult['success'] != true) {
-        print('❌ Errore upload backend: ${uploadResult['message']}');
+        AppLogger.d('❌ Errore upload backend: ${uploadResult['message']}');
         // Rimuovi file locale se upload fallisce
         await savedFile.delete();
         return null;
       }
 
-      print('✅ Documento caricato sul backend!');
+      AppLogger.d('✅ Documento caricato sul backend!');
 
       // 3. Crea documento locale con ID dal backend
       final backendId = uploadResult['data']?['id'];
@@ -398,7 +404,7 @@ class DocumentoService {
 
       return documento;
     } catch (e) {
-      print('❌ Eccezione durante upload: $e');
+      AppLogger.d('❌ Eccezione durante upload: $e');
       // Rimuovi file locale se upload fallisce
       await savedFile.delete();
       return null;

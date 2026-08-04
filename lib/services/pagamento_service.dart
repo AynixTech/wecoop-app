@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:wecoop_app/utils/response_utils.dart';
 import 'secure_storage_service.dart';
 import 'http_client_service.dart';
@@ -29,32 +30,32 @@ class PagamentoService {
       final token = await storage.read(key: 'jwt_token');
 
       if (token == null) {
-        print('❌ Token JWT mancante');
+        AppLogger.d('❌ Token JWT mancante');
         return null;
       }
 
       final url = Uri.parse('$baseUrl/payment/$paymentId');
-      print('🔄 Chiamata GET /payment/$paymentId...');
+      AppLogger.d('🔄 Chiamata GET /payment/$paymentId...');
 
       final headers = await _getHeaders();
       final response = await HttpClientService.get(url, headers: headers);
 
-      print('📥 GET /payment/$paymentId status: ${response.statusCode}');
+      AppLogger.d('📥 GET /payment/$paymentId status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = ResponseUtils.decodeJson(response) as Map<String, dynamic>;
         return Pagamento.fromJson(data);
       } else if (response.statusCode == 404) {
-        print('⚠️ Pagamento non trovato');
+        AppLogger.d('⚠️ Pagamento non trovato');
         return null;
       } else if (response.statusCode == 403) {
-        print('⚠️ Non hai i permessi per visualizzare questo pagamento');
+        AppLogger.d('⚠️ Non hai i permessi per visualizzare questo pagamento');
         return null;
       }
 
       return null;
     } catch (e) {
-      print('❌ Errore durante GET /payment/$paymentId: $e');
+      AppLogger.d('❌ Errore durante GET /payment/$paymentId: $e');
       return null;
     }
   }
@@ -67,17 +68,17 @@ class PagamentoService {
       final userId = await storage.read(key: 'user_id');
 
       if (token == null || userId == null) {
-        print('❌ Token o User ID mancante');
+        AppLogger.d('❌ Token o User ID mancante');
         return [];
       }
 
       final url = Uri.parse('$baseUrl/payments/user/$userId');
-      print('🔄 Chiamata GET /payments/user/$userId...');
+      AppLogger.d('🔄 Chiamata GET /payments/user/$userId...');
 
       final headers = await _getHeaders();
       final response = await HttpClientService.get(url, headers: headers);
 
-      print('📥 GET /payments/user/$userId status: ${response.statusCode}');
+      AppLogger.d('📥 GET /payments/user/$userId status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final List<dynamic> data = ResponseUtils.decodeJson(response);
@@ -86,7 +87,7 @@ class PagamentoService {
 
       return [];
     } catch (e) {
-      print('❌ Errore durante GET /payments/user: $e');
+      AppLogger.d('❌ Errore durante GET /payments/user: $e');
       return [];
     }
   }
@@ -98,38 +99,38 @@ class PagamentoService {
       final token = await storage.read(key: 'jwt_token');
 
       if (token == null) {
-        print('❌ Token JWT mancante');
+        AppLogger.d('❌ Token JWT mancante');
         return null;
       }
 
       final url = Uri.parse('$baseUrl/payment/richiesta/$richiestaId');
-      print('🔄 Chiamata GET /payment/richiesta/$richiestaId...');
+      AppLogger.d('🔄 Chiamata GET /payment/richiesta/$richiestaId...');
 
       final headers = await _getHeaders();
       final response = await HttpClientService.get(url, headers: headers);
 
-      print(
+      AppLogger.d(
         '📥 GET /payment/richiesta/$richiestaId status: ${response.statusCode}',
       );
 
       if (response.statusCode == 200) {
         final data = ResponseUtils.decodeJson(response) as Map<String, dynamic>;
-        print(
+        AppLogger.d(
           '✅ Pagamento trovato per richiesta $richiestaId: ID ${data['id']}, Importo €${data['importo']}, Stato: ${data['stato']}',
         );
         return Pagamento.fromJson(data);
       } else if (response.statusCode == 404) {
-        print('ℹ️ Nessun pagamento trovato per richiesta $richiestaId');
-        print('📝 Response body: ${response.body}');
+        AppLogger.d('ℹ️ Nessun pagamento trovato per richiesta $richiestaId');
+        AppLogger.d('📝 Response body: ${response.body}');
         return null;
       } else {
-        print('⚠️ Status code inatteso: ${response.statusCode}');
-        print('📝 Response body: ${response.body}');
+        AppLogger.d('⚠️ Status code inatteso: ${response.statusCode}');
+        AppLogger.d('📝 Response body: ${response.body}');
       }
 
       return null;
     } catch (e) {
-      print('❌ Errore durante GET /payment/richiesta/$richiestaId: $e');
+      AppLogger.d('❌ Errore durante GET /payment/richiesta/$richiestaId: $e');
       return null;
     }
   }
@@ -146,12 +147,12 @@ class PagamentoService {
       final token = await storage.read(key: 'jwt_token');
 
       if (token == null) {
-        print('❌ Token JWT mancante');
+        AppLogger.d('❌ Token JWT mancante');
         return {'success': false, 'message': 'Token JWT mancante'};
       }
 
       final url = Uri.parse('$baseUrl/payment/$paymentId/confirm');
-      print('🔄 Chiamata POST /payment/$paymentId/confirm...');
+      AppLogger.d('🔄 Chiamata POST /payment/$paymentId/confirm...');
 
       final body = {
         'metodo_pagamento': metodoPagamento,
@@ -166,7 +167,7 @@ class PagamentoService {
         body: jsonEncode(body),
       );
 
-      print(
+      AppLogger.d(
         '📥 POST /payment/$paymentId/confirm status: ${response.statusCode}',
       );
 
@@ -188,7 +189,7 @@ class PagamentoService {
         };
       }
     } catch (e) {
-      print('❌ Errore durante POST /payment/$paymentId/confirm: $e');
+      AppLogger.d('❌ Errore durante POST /payment/$paymentId/confirm: $e');
       return {'success': false, 'message': 'Errore di connessione'};
     }
   }
@@ -204,7 +205,7 @@ class PagamentoService {
       final url = Uri.parse(
         '$baseUrl/create-payment-intent',
       );
-      print(
+      AppLogger.d(
         '🔄 Chiamata POST /create-payment-intent (importo: €$importo, paymentId: $paymentId)...',
       );
 
@@ -215,7 +216,7 @@ class PagamentoService {
         'payment_id': paymentId,
       };
 
-      print('📤 Body richiesta: ${jsonEncode(body)}');
+      AppLogger.d('📤 Body richiesta: ${jsonEncode(body)}');
 
       final response = await HttpClientService.post(
         url,
@@ -223,26 +224,26 @@ class PagamentoService {
         body: jsonEncode(body),
       );
 
-      print('📥 POST /create-payment-intent status: ${response.statusCode}');
-      print('📥 Response body: ${response.body}');
+      AppLogger.d('📥 POST /create-payment-intent status: ${response.statusCode}');
+      AppLogger.d('📥 Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = ResponseUtils.decodeJson(response);
         final clientSecret = data['clientSecret'] as String?;
 
         if (clientSecret != null) {
-          print('✅ Client Secret ricevuto');
+          AppLogger.d('✅ Client Secret ricevuto');
           return clientSecret;
         } else {
-          print('⚠️ Client Secret non presente nella risposta');
+          AppLogger.d('⚠️ Client Secret non presente nella risposta');
         }
       } else {
-        print('❌ Errore HTTP ${response.statusCode}: ${response.body}');
+        AppLogger.d('❌ Errore HTTP ${response.statusCode}: ${response.body}');
       }
 
       return null;
     } catch (e) {
-      print('❌ Errore durante creazione Payment Intent: $e');
+      AppLogger.d('❌ Errore durante creazione Payment Intent: $e');
       return null;
     }
   }
@@ -255,7 +256,7 @@ class PagamentoService {
       final headers = await _getHeaders();
       final response = await HttpClientService.get(url, headers: headers);
 
-      print('📥 GET /stripe-config status: ${response.statusCode}');
+      AppLogger.d('📥 GET /stripe-config status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = ResponseUtils.decodeJson(response) as Map<String, dynamic>;
@@ -263,12 +264,12 @@ class PagamentoService {
         if (key != null && key.isNotEmpty) {
           return key;
         }
-        print('⚠️ publishable_key non presente nella risposta');
+        AppLogger.d('⚠️ publishable_key non presente nella risposta');
       }
 
       return null;
     } catch (e) {
-      print('❌ Errore durante GET /stripe-config: $e');
+      AppLogger.d('❌ Errore durante GET /stripe-config: $e');
       return null;
     }
   }

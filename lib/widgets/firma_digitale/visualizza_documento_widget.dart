@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/utils/app_logger.dart';
 import '../../theme/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
@@ -40,26 +41,26 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
   @override
   void initState() {
     super.initState();
-    print('📄 [DocView] initState richiestaId=${widget.richiestaId} userId=${widget.userId}');
+    AppLogger.d('📄 [DocView] initState richiestaId=${widget.richiestaId} userId=${widget.userId}');
     _webViewController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {
-            print('🌐 [DocView] WebView onPageStarted: $url');
+            AppLogger.d('🌐 [DocView] WebView onPageStarted: $url');
           },
           onPageFinished: (String url) {
-            print('✅ [DocView] WebView onPageFinished: $url');
+            AppLogger.d('✅ [DocView] WebView onPageFinished: $url');
           },
           onWebResourceError: (WebResourceError error) {
-            print('❌ [DocView] WebView error code=${error.errorCode} type=${error.errorType} description=${error.description}');
+            AppLogger.d('❌ [DocView] WebView error code=${error.errorCode} type=${error.errorType} description=${error.description}');
             final l10n = AppLocalizations.of(context)!;
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('${l10n.translate('docViewLoadError')}: ${error.description}')),
             );
           },
           onNavigationRequest: (NavigationRequest request) {
-            print('🌐 [DocView] Navigation request: ${request.url}');
+            AppLogger.d('🌐 [DocView] Navigation request: ${request.url}');
             return NavigationDecision.navigate;
           },
         ),
@@ -67,35 +68,35 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
 
     // Carica il documento quando il widget inizializza
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      print('📄 [DocView] postFrameCallback -> _loadDocumento');
+      AppLogger.d('📄 [DocView] postFrameCallback -> _loadDocumento');
       _loadDocumento();
     });
   }
 
   void _loadDocumento() async {
-    print('📄 [DocView] _loadDocumento start');
+    AppLogger.d('📄 [DocView] _loadDocumento start');
     final provider =
         Provider.of<FirmaDigitaleProvider>(context, listen: false);
-    print('📄 [DocView] provider.step before init: ${provider.step}');
+    AppLogger.d('📄 [DocView] provider.step before init: ${provider.step}');
     provider.iniziaFlusso(
       richiestaId: widget.richiestaId,
       userId: widget.userId,
       telefono: widget.telefono,
     );
-    print('📄 [DocView] iniziaFlusso completato, scarico documento...');
+    AppLogger.d('📄 [DocView] iniziaFlusso completato, scarico documento...');
     await provider.scaricaDocumento();
-    print('📄 [DocView] scaricaDocumento completato step=${provider.step} hasError=${provider.hasError}');
+    AppLogger.d('📄 [DocView] scaricaDocumento completato step=${provider.step} hasError=${provider.hasError}');
 
     if (provider.documento != null) {
-      print('✅ [DocView] documento ricevuto url=${provider.documento!.url} nome=${provider.documento!.nome}');
+      AppLogger.d('✅ [DocView] documento ricevuto url=${provider.documento!.url} nome=${provider.documento!.nome}');
       final viewerUrl = _buildViewerUrl(provider.documento!.url);
-      print('🌐 [DocView] viewerUrl=$viewerUrl');
+      AppLogger.d('🌐 [DocView] viewerUrl=$viewerUrl');
       _webViewController.loadRequest(
         Uri.parse(viewerUrl),
       );
-      print('🌐 [DocView] loadRequest inviato alla WebView');
+      AppLogger.d('🌐 [DocView] loadRequest inviato alla WebView');
     } else {
-      print('❌ [DocView] documento nullo, error=${provider.errorMessage} code=${provider.errorCode}');
+      AppLogger.d('❌ [DocView] documento nullo, error=${provider.errorMessage} code=${provider.errorCode}');
     }
   }
 
@@ -123,7 +124,7 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
     final l10n = AppLocalizations.of(context)!;
     return Consumer<FirmaDigitaleProvider>(
       builder: (context, provider, _) {
-        print('📄 [DocView] build step=${provider.step} isLoading=${provider.isLoading} hasDoc=${provider.documento != null} hasError=${provider.hasError}');
+        AppLogger.d('📄 [DocView] build step=${provider.step} isLoading=${provider.isLoading} hasDoc=${provider.documento != null} hasError=${provider.hasError}');
         return Column(
           children: [
             // Intestazione

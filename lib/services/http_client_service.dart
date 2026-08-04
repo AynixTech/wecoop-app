@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:http/http.dart' as http;
 import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
@@ -7,7 +8,13 @@ import '../config/api_config.dart';
 /// Servizio HTTP centralizzato con gestione automatica del refresh token
 class HttpClientService {
   static const String authUrl = ApiConfig.loginUrl;
+  static const String refreshUrl = '${ApiConfig.baseUrl}/auth/refresh';
   static final storage = SecureStorageService();
+
+  /// Callback invocato quando il refresh fallisce definitivamente (sessione
+  /// scaduta): l'app dovrebbe pulire lo stato e riportare l'utente al login.
+  /// Impostato una volta all'avvio (es. da main/AuthGate).
+  static Future<void> Function()? onSessionExpired;
 
   /// Decodifica JSON dalla risposta HTTP mantenendo l'encoding UTF-8 corretto
   ///
@@ -21,8 +28,8 @@ class HttpClientService {
     final hasCharset = contentType.toLowerCase().contains('charset=utf-8');
 
     if (!hasCharset) {
-      print('⚠️ Header Warning: Content-Type non contiene charset=utf-8');
-      print('   Content-Type riportato: $contentType');
+      AppLogger.d('⚠️ Header Warning: Content-Type non contiene charset=utf-8');
+      AppLogger.d('   Content-Type riportato: $contentType');
     }
 
     try {
@@ -31,25 +38,31 @@ class HttpClientService {
       final decoded = jsonDecode(jsonString);
       return decoded;
     } catch (e) {
-      print('⚠️ Errore UTF-8 decode, fallback a response.body: $e');
+      AppLogger.d('⚠️ Errore UTF-8 decode, fallback a response.body: $e');
       try {
         // Fallback se utf8.decode fallisce
         return jsonDecode(response.body);
       } catch (e2) {
-        print('❌ Errore nel parsing JSON: $e2');
+        AppLogger.d('❌ Errore nel parsing JSON: $e2');
         rethrow;
       }
     }
   }
 
-  /// Rinfresca il JWT token usando le credenziali salvate.
+  /// Rinnova il JWT usando il refresh token opaco.
   /// Le chiamate concorrenti condividono lo stesso Future (nessun doppio refresh).
   static Future<bool>? _refreshFuture;
+
+  /// Pulisce i token di sessione (logout locale).
+  static Future<void> _clearSession() async {
+    await storage.delete(key: 'jwt_token');
+    await storage.delete(key: 'refresh_token');
+  }
 
   static Future<bool> refreshToken() {
     // Se un refresh è già in corso, attendi lo stesso risultato.
     if (_refreshFuture != null) {
-      print('⏳ Refresh già in corso, attendo il risultato condiviso...');
+      AppLogger.d('⏳ Refresh già in corso, attendo il risultato condiviso...');
       return _refreshFuture!;
     }
     _refreshFuture = _doRefreshToken().whenComplete(() {
@@ -60,55 +73,42 @@ class HttpClientService {
 
   static Future<bool> _doRefreshToken() async {
     try {
-      final authUsername =
-          await storage.read(key: 'auth_username') ??
-          await storage.read(key: 'username') ??
-          await storage.read(key: 'saved_phone');
-      final authPassword =
-          await storage.read(key: 'auth_password') ??
-          await storage.read(key: 'password') ??
-          await storage.read(key: 'saved_password');
+      final refreshToken = await storage.read(key: 'refresh_token');
 
-      if (authUsername == null || authPassword == null) {
-        print(
-          '❌ Credenziali non salvate - impossibile fare refresh automatico',
-        );
+      if (refreshToken == null || refreshToken.isEmpty) {
+        AppLogger.d('❌ Nessun refresh token salvato - impossibile rinnovare');
         return false;
       }
 
-      print('🔄 === INIZIO TOKEN REFRESH ===');
-      print('📱 Username: $authUsername');
+      AppLogger.d('🔄 === INIZIO TOKEN REFRESH ===');
 
       final response = await processResponse(await http
           .post(
-            Uri.parse(authUrl),
+            Uri.parse(refreshUrl),
             headers: {'Content-Type': 'application/json'},
-            body: jsonEncode({
-              'username': authUsername,
-              'password': authPassword,
-            }),
+            body: jsonEncode({'refresh_token': refreshToken}),
           )
           .timeout(const Duration(seconds: 30)));
 
-      print('📥 Refresh Response Status: ${response.statusCode}');
+      AppLogger.d('📥 Refresh Response Status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = decodeJsonResponse(response);
-
         if (data['token'] != null) {
-          final newToken = data['token'];
-          await storage.write(key: 'jwt_token', value: newToken);
-
-          print('✅ Token rinfresco con successo!');
-          print('🔑 Nuovo token salvato');
+          await storage.write(key: 'jwt_token', value: data['token']);
+          // Rotazione: il backend emette un nuovo refresh token ad ogni uso.
+          if (data['refresh_token'] != null) {
+            await storage.write(key: 'refresh_token', value: data['refresh_token']);
+          }
+          AppLogger.d('✅ Token rinnovato con successo');
           return true;
         }
       }
 
-      print('❌ Refresh fallito - Status: ${response.statusCode}');
+      AppLogger.d('❌ Refresh fallito - Status: ${response.statusCode}');
       return false;
     } catch (e) {
-      print('❌ Errore durante il refresh: $e');
+      AppLogger.d('❌ Errore durante il refresh: $e');
       return false;
     }
   }
@@ -253,24 +253,34 @@ class HttpClientService {
               response.statusCode == 401;
 
           if (isTokenError) {
-            print('⚠️ Token scaduto rilevato in: $requestUrl (status ${response.statusCode})');
-            print('🔄 Tentativo di refresh...');
+            AppLogger.d('⚠️ Token scaduto rilevato in: $requestUrl (status ${response.statusCode})');
+            AppLogger.d('🔄 Tentativo di refresh...');
 
             final refreshSuccess = await refreshToken();
 
             if (refreshSuccess) {
-              print('✅ Refresh completato - Ritentativo della richiesta...');
+              AppLogger.d('✅ Refresh completato - Ritentativo della richiesta...');
               response = await processResponse(await request());
 
               if (response.statusCode == 200) {
-                print('✅ Richiesta riuscita dopo refresh!');
+                AppLogger.d('✅ Richiesta riuscita dopo refresh!');
               }
             } else {
-              print('❌ Refresh fallito - Mantengo la risposta originale');
+              // Refresh fallito definitivamente: sessione scaduta. Pulisci i
+              // token e notifica l'app per riportare l'utente al login.
+              AppLogger.d('❌ Refresh fallito - sessione scaduta, logout');
+              await _clearSession();
+              if (onSessionExpired != null) {
+                try {
+                  await onSessionExpired!();
+                } catch (_) {
+                  // il logout non deve propagare errori
+                }
+              }
             }
           }
         } catch (e) {
-          print('⚠️ Errore nel parsing della risposta ${response.statusCode}: $e');
+          AppLogger.d('⚠️ Errore nel parsing della risposta ${response.statusCode}: $e');
         }
       }
 
@@ -281,7 +291,7 @@ class HttpClientService {
           errorText.contains('Failed host lookup') ||
           errorText.contains('No address associated with hostname');
       if (!isDnsLookupError) {
-        print('❌ Errore durante la richiesta: $e');
+        AppLogger.d('❌ Errore durante la richiesta: $e');
       }
       rethrow;
     }

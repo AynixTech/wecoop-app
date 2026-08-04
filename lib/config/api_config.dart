@@ -11,9 +11,12 @@ class ApiConfig {
   );
 
   /// API key compartida para endpoints llamados sin login (ej. service-requests).
+  /// NON hardcodare il valore reale: va passato in compilazione con
+  /// --dart-define=WECOOP_API_KEY=... (o via file dart-define). Se assente,
+  /// resta vuota e il backend rifiuta le chiamate non autenticate.
   static const String apiKey = String.fromEnvironment(
     'WECOOP_API_KEY',
-    defaultValue: 'af9a4cfa37958761a464c06a837d6860',
+    defaultValue: '',
   );
 
   /// Endpoint de login (antes jwt-auth/v1/token de WordPress).

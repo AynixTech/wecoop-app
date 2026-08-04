@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/utils/app_logger.dart';
 import '../../theme/theme.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' hide Card;
 import '../../models/pagamento_model.dart';
@@ -29,13 +30,13 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
   @override
   void initState() {
     super.initState();
-    print('🚀 [PagamentoScreen] initState - paymentId: ${widget.paymentId}, richiestaId: ${widget.richiestaId}');
+    AppLogger.d('🚀 [PagamentoScreen] initState - paymentId: ${widget.paymentId}, richiestaId: ${widget.richiestaId}');
     _loadPagamento();
   }
 
   Future<void> _loadPagamento() async {
-    print('📱 [PagamentoScreen] Caricamento pagamento...');
-    print('📱 [PagamentoScreen] paymentId: ${widget.paymentId}, richiestaId: ${widget.richiestaId}');
+    AppLogger.d('📱 [PagamentoScreen] Caricamento pagamento...');
+    AppLogger.d('📱 [PagamentoScreen] paymentId: ${widget.paymentId}, richiestaId: ${widget.richiestaId}');
     
     setState(() {
       _isLoading = true;
@@ -46,21 +47,21 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       Pagamento? pagamento;
 
       if (widget.richiestaId != null) {
-        print('📱 [PagamentoScreen] Carico tramite richiestaId: ${widget.richiestaId}');
+        AppLogger.d('📱 [PagamentoScreen] Carico tramite richiestaId: ${widget.richiestaId}');
         // Carica pagamento tramite richiesta_id
         pagamento = await PagamentoService.getPagamentoPerRichiesta(
           widget.richiestaId!,
         );
       } else if (widget.paymentId > 0) {
-        print('📱 [PagamentoScreen] Carico tramite paymentId: ${widget.paymentId}');
+        AppLogger.d('📱 [PagamentoScreen] Carico tramite paymentId: ${widget.paymentId}');
         // Carica pagamento tramite payment_id
         pagamento = await PagamentoService.getPagamento(widget.paymentId);
       } else {
-        print('⚠️ [PagamentoScreen] Né paymentId né richiestaId forniti!');
+        AppLogger.d('⚠️ [PagamentoScreen] Né paymentId né richiestaId forniti!');
       }
 
       if (pagamento == null) {
-        print('❌ [PagamentoScreen] Pagamento non trovato o non esiste');
+        AppLogger.d('❌ [PagamentoScreen] Pagamento non trovato o non esiste');
         
         String errorMsg;
         if (widget.richiestaId != null) {
@@ -80,14 +81,14 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
         return;
       }
 
-      print('✅ [PagamentoScreen] Pagamento caricato: ID ${pagamento.id}, €${pagamento.importo}, Stato: ${pagamento.stato}');
+      AppLogger.d('✅ [PagamentoScreen] Pagamento caricato: ID ${pagamento.id}, €${pagamento.importo}, Stato: ${pagamento.stato}');
       
       setState(() {
         _pagamento = pagamento;
         _isLoading = false;
       });
     } catch (e) {
-      print('❌ [PagamentoScreen] Errore caricamento: $e');
+      AppLogger.d('❌ [PagamentoScreen] Errore caricamento: $e');
       setState(() {
         _errorMessage = 'Errore durante il caricamento del pagamento';
         _isLoading = false;
@@ -101,7 +102,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
 
     final key = await PagamentoService.getStripePublishableKey();
     if (key == null || key.isEmpty) {
-      print('⚠️ [PagamentoScreen] Publishable key non disponibile dal backend');
+      AppLogger.d('⚠️ [PagamentoScreen] Publishable key non disponibile dal backend');
       return;
     }
 
@@ -111,28 +112,28 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       Stripe.merchantIdentifier = StripeConfig.merchantIdentifier;
       Stripe.urlScheme = StripeConfig.urlScheme;
       await Stripe.instance.applySettings();
-      print('✅ [PagamentoScreen] Stripe inizializzato da backend (${StripeConfig.isTestMode ? "TEST" : "LIVE"})');
+      AppLogger.d('✅ [PagamentoScreen] Stripe inizializzato da backend (${StripeConfig.isTestMode ? "TEST" : "LIVE"})');
     } catch (e) {
-      print('❌ [PagamentoScreen] Errore applySettings Stripe: $e');
+      AppLogger.d('❌ [PagamentoScreen] Errore applySettings Stripe: $e');
     }
   }
 
   Future<void> _handleStripePayment() async {
-    print('💳 [PagamentoScreen] Inizio processo pagamento Stripe');
+    AppLogger.d('💳 [PagamentoScreen] Inizio processo pagamento Stripe');
     
     if (_pagamento == null) {
-      print('❌ [PagamentoScreen] Pagamento null, impossibile procedere');
+      AppLogger.d('❌ [PagamentoScreen] Pagamento null, impossibile procedere');
       return;
     }
 
-    print('💳 [PagamentoScreen] Pagamento: ID ${_pagamento!.id}, Importo €${_pagamento!.importo}, Stato: ${_pagamento!.stato}');
+    AppLogger.d('💳 [PagamentoScreen] Pagamento: ID ${_pagamento!.id}, Importo €${_pagamento!.importo}, Stato: ${_pagamento!.stato}');
 
     // Assicura che Stripe sia inizializzato usando la chiave del backend (wp-config-stripe.php)
     await _ensureStripeReady();
 
     // Verifica se Stripe è configurato
     if (!StripeConfig.isConfigured) {
-      print('❌ [PagamentoScreen] Stripe non configurato');
+      AppLogger.d('❌ [PagamentoScreen] Stripe non configurato');
       _showErrorDialog(
         'Stripe non disponibile!\n\n'
         'I pagamenti con carta non sono al momento disponibili. '
@@ -141,7 +142,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       return;
     }
 
-    print('✅ [PagamentoScreen] Stripe configurato correttamente');
+    AppLogger.d('✅ [PagamentoScreen] Stripe configurato correttamente');
 
     try {
       // Mostra loading
@@ -155,7 +156,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       );
       _isStripeLoadingDialogVisible = true;
 
-      print('🔄 Creo Payment Intent per €${_pagamento!.importo}...');
+      AppLogger.d('🔄 Creo Payment Intent per €${_pagamento!.importo}...');
 
       // 1. Crea Payment Intent sul backend
       final clientSecret = await PagamentoService.creaStripePaymentIntent(
@@ -163,7 +164,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
         paymentId: _pagamento!.id,
       );
 
-      print('✅ Client Secret ricevuto: ${clientSecret != null ? "OK" : "NULL"}');
+      AppLogger.d('✅ Client Secret ricevuto: ${clientSecret != null ? "OK" : "NULL"}');
 
       if (!mounted) return;
       if (_isStripeLoadingDialogVisible &&
@@ -183,7 +184,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
         return;
       }
 
-      print('🔄 Inizializzo Payment Sheet...');
+      AppLogger.d('🔄 Inizializzo Payment Sheet...');
 
       // 2. Inizializza Payment Sheet
       await Stripe.instance.initPaymentSheet(
@@ -199,12 +200,12 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
         ),
       );
 
-      print('✅ Payment Sheet inizializzato, mostro UI...');
+      AppLogger.d('✅ Payment Sheet inizializzato, mostro UI...');
 
       // 3. Mostra Payment Sheet
       await Stripe.instance.presentPaymentSheet();
 
-      print('✅ Pagamento completato con successo!');
+      AppLogger.d('✅ Pagamento completato con successo!');
 
       // 4. Se arriviamo qui, il pagamento è riuscito
       // Conferma sul backend WordPress
@@ -229,7 +230,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
         _showErrorDialog(result['message'] ?? 'Errore durante la conferma del pagamento');
       }
     } on StripeException catch (e) {
-      print('❌ StripeException: ${e.error.code} - ${e.error.message}');
+      AppLogger.d('❌ StripeException: ${e.error.code} - ${e.error.message}');
       if (!mounted) return;
       
       if (_isStripeLoadingDialogVisible &&
@@ -240,14 +241,14 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
 
       // Gestisci errori Stripe specifici
       if (e.error.code == FailureCode.Canceled) {
-        print('ℹ️ Utente ha annullato il pagamento');
+        AppLogger.d('ℹ️ Utente ha annullato il pagamento');
         // Utente ha annullato
         return;
       }
 
       _showErrorDialog('Errore Stripe: ${e.error.localizedMessage ?? e.error.message}');
     } catch (e) {
-      print('❌ Errore generico: $e');
+      AppLogger.d('❌ Errore generico: $e');
       if (!mounted) return;
       if (_isStripeLoadingDialogVisible &&
           Navigator.of(context, rootNavigator: true).canPop()) {

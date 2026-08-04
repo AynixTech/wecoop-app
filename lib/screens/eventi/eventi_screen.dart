@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/utils/app_logger.dart';
 import '../../theme/theme.dart';
 import '../../models/evento_model.dart';
 import '../../services/eventi_service.dart';
@@ -32,40 +33,40 @@ class _EventiScreenState extends State<EventiScreen> {
       });
     }
 
-    print('🔄 Caricamento eventi - Filtro categoria: ${_categoriaFiltro ?? "nessuno"}');
+    AppLogger.d('🔄 Caricamento eventi - Filtro categoria: ${_categoriaFiltro ?? "nessuno"}');
 
     final result = await EventiService.getEventi(
       perPage: 50,
       categoria: _categoriaFiltro,
     );
 
-    print('📥 Risultato getEventi: success=${result['success']}');
+    AppLogger.d('📥 Risultato getEventi: success=${result['success']}');
     
     if (mounted) {
       setState(() {
         _isLoading = false;
         if (result['success'] == true) {
           _eventi = result['eventi'] as List<Evento>;
-          print('✅ ${_eventi.length} eventi caricati');
+          AppLogger.d('✅ ${_eventi.length} eventi caricati');
           
           // Log dettagliato per ogni evento
           for (var i = 0; i < _eventi.length; i++) {
             final evento = _eventi[i];
-            print('📌 Evento #$i: ${evento.titolo}');
-            print('   - ID: ${evento.id}');
-            print('   - Data: ${evento.dataInizio} ${evento.oraInizio ?? ""}');
-            print('   - Categoria: ${evento.categoria ?? "nessuna"}');
-            print('   - Immagine copertina: ${evento.immagineCopertina ?? "NESSUNA"}');
-            print('   - Luogo: ${evento.luogo ?? evento.citta ?? "non specificato"}');
-            print('   - Online: ${evento.online}');
-            print('   - Richiede iscrizione: ${evento.richiedeIscrizione}');
-            print('   - Sono iscritto: ${evento.sonoIscritto}');
-            print('   - Partecipanti: ${evento.partecipantiCount}/${evento.maxPartecipanti}');
-            print('   - Prezzo: ${evento.prezzoFormattato}');
+            AppLogger.d('📌 Evento #$i: ${evento.titolo}');
+            AppLogger.d('   - ID: ${evento.id}');
+            AppLogger.d('   - Data: ${evento.dataInizio} ${evento.oraInizio ?? ""}');
+            AppLogger.d('   - Categoria: ${evento.categoria ?? "nessuna"}');
+            AppLogger.d('   - Immagine copertina: ${evento.immagineCopertina ?? "NESSUNA"}');
+            AppLogger.d('   - Luogo: ${evento.luogo ?? evento.citta ?? "non specificato"}');
+            AppLogger.d('   - Online: ${evento.online}');
+            AppLogger.d('   - Richiede iscrizione: ${evento.richiedeIscrizione}');
+            AppLogger.d('   - Sono iscritto: ${evento.sonoIscritto}');
+            AppLogger.d('   - Partecipanti: ${evento.partecipantiCount}/${evento.maxPartecipanti}');
+            AppLogger.d('   - Prezzo: ${evento.prezzoFormattato}');
           }
         } else {
           _errorMessage = result['message'];
-          print('❌ Errore caricamento eventi: $_errorMessage');
+          AppLogger.d('❌ Errore caricamento eventi: $_errorMessage');
         }
       });
     }
@@ -202,10 +203,10 @@ class _EventoCard extends StatelessWidget {
                       fit: BoxFit.cover,
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) {
-                          print('✅ Immagine caricata: ${evento.immagineCopertina}');
+                          AppLogger.d('✅ Immagine caricata: ${evento.immagineCopertina}');
                           return child;
                         }
-                        print('⏳ Caricamento immagine: ${evento.immagineCopertina} - ${loadingProgress.cumulativeBytesLoaded}/${loadingProgress.expectedTotalBytes ?? "?"}');
+                        AppLogger.d('⏳ Caricamento immagine: ${evento.immagineCopertina} - ${loadingProgress.cumulativeBytesLoaded}/${loadingProgress.expectedTotalBytes ?? "?"}');
                         return Container(
                           height: 180,
                           color: Colors.grey[200],
@@ -219,8 +220,8 @@ class _EventoCard extends StatelessWidget {
                         );
                       },
                       errorBuilder: (context, error, stackTrace) {
-                        print('❌ Errore caricamento immagine: ${evento.immagineCopertina}');
-                        print('   Error: $error');
+                        AppLogger.d('❌ Errore caricamento immagine: ${evento.immagineCopertina}');
+                        AppLogger.d('   Error: $error');
                         return Container(
                           height: 180,
                           color: AppColors.infoBg,

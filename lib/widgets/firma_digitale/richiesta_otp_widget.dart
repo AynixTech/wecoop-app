@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/utils/app_logger.dart';
 import '../../theme/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
@@ -103,12 +104,12 @@ class _RichiestaOTPWidgetState extends State<RichiestaOTPWidget> {
                       onPressed: provider.isLoading
                           ? null
                           : () async {
-                              print('📱 [OtpUI] Tap invia OTP stepBefore=${provider.step} richiestaId=${provider.richiestaId} telefono=${provider.telefono}');
+                              AppLogger.d('📱 [OtpUI] Tap invia OTP stepBefore=${provider.step} richiestaId=${provider.richiestaId} telefono=${provider.telefono}');
                               await provider.richiestaOTP();
-                              print('📱 [OtpUI] richiestaOTP completata stepAfter=${provider.step} errorCode=${provider.errorCode} error=${provider.errorMessage}');
+                              AppLogger.d('📱 [OtpUI] richiestaOTP completata stepAfter=${provider.step} errorCode=${provider.errorCode} error=${provider.errorMessage}');
                               if (provider.step ==
                                   FirmaStep.otpInviato) {
-                                print('📱 [OtpUI] Navigo allo step verifica OTP');
+                                AppLogger.d('📱 [OtpUI] Navigo allo step verifica OTP');
                                 widget.onOTPInviato();
                               }
                             },

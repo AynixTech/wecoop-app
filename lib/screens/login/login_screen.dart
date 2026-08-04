@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
@@ -100,12 +101,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _loginWithBiometrics() async {
     final l10n = AppLocalizations.of(context)!;
-    print('');
-    print('👆 ==================== LOGIN BIOMETRICO ====================');
-    print('👆 _biometricLoginEnabled=$_biometricLoginEnabled _canUseBiometrics=$_canUseBiometrics');
+    AppLogger.d('');
+    AppLogger.d('👆 ==================== LOGIN BIOMETRICO ====================');
+    AppLogger.d('👆 _biometricLoginEnabled=$_biometricLoginEnabled _canUseBiometrics=$_canUseBiometrics');
 
     if (!_biometricLoginEnabled) {
-      print('👆 Biometria disabilitata nelle impostazioni');
+      AppLogger.d('👆 Biometria disabilitata nelle impostazioni');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.translate('biometricDisabledInSettings'))),
       );
@@ -113,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     if (!_canUseBiometrics) {
-      print('👆 Biometria non disponibile sul dispositivo');
+      AppLogger.d('👆 Biometria non disponibile sul dispositivo');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.translate('biometricNotAvailable'))),
       );
@@ -127,14 +128,14 @@ class _LoginScreenState extends State<LoginScreen> {
         await storage.read(key: 'biometric_password') ??
         await storage.read(key: 'auth_password');
 
-    print('👆 savedPhone="$savedPhone" (null=${savedPhone == null})');
-    print('👆 savedPassword length=${savedPassword?.length ?? 0} (null=${savedPassword == null})');
+    AppLogger.d('👆 savedPhone="$savedPhone" (null=${savedPhone == null})');
+    AppLogger.d('👆 savedPassword length=${savedPassword?.length ?? 0} (null=${savedPassword == null})');
 
     if (savedPhone == null ||
         savedPhone.isEmpty ||
         savedPassword == null ||
         savedPassword.isEmpty) {
-      print('👆 Credenziali biometriche mancanti/vuote');
+      AppLogger.d('👆 Credenziali biometriche mancanti/vuote');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.translate('biometricCredentialsMissing'))),
       );
@@ -142,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     try {
-      print('👆 Avvio autenticazione biometrica...');
+      AppLogger.d('👆 Avvio autenticazione biometrica...');
       final authenticated = await _localAuth.authenticate(
         localizedReason: l10n.translate('biometricAuthReason'),
         options: const AuthenticationOptions(
@@ -150,13 +151,13 @@ class _LoginScreenState extends State<LoginScreen> {
           stickyAuth: true,
         ),
       );
-      print('👆 Biometria autenticata: $authenticated');
+      AppLogger.d('👆 Biometria autenticata: $authenticated');
 
       if (!authenticated) return;
 
       await _loginWithCredentials(phone: savedPhone, password: savedPassword, fromBiometrics: true);
     } catch (e) {
-      print('👆 Eccezione biometria: $e');
+      AppLogger.d('👆 Eccezione biometria: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.translate('biometricAuthFailed'))),
       );
@@ -168,11 +169,11 @@ class _LoginScreenState extends State<LoginScreen> {
     required String password,
     bool fromBiometrics = false,
   }) async {
-    print('');
-    print('🔐 ==================== LOGIN ====================');
-    print('🔐 Tipo: ${fromBiometrics ? "BIOMETRICO" : "MANUALE"}');
-    print('🔐 phone (username): "$phone"');
-    print('🔐 password length: ${password.length} (vuota=${password.isEmpty})');
+    AppLogger.d('');
+    AppLogger.d('🔐 ==================== LOGIN ====================');
+    AppLogger.d('🔐 Tipo: ${fromBiometrics ? "BIOMETRICO" : "MANUALE"}');
+    AppLogger.d('🔐 phone (username): "$phone"');
+    AppLogger.d('🔐 password length: ${password.length} (vuota=${password.isEmpty})');
 
     if (mounted) {
       setState(() {
@@ -184,8 +185,8 @@ class _LoginScreenState extends State<LoginScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     final requestBody = jsonEncode({'username': phone, 'password': password});
-    print('🔐 URL: $url');
-    print('🔐 Payload: $requestBody');
+    AppLogger.d('🔐 URL: $url');
+    AppLogger.d('🔐 Payload: $requestBody');
 
     try {
       final response = await HttpClientService.post(
@@ -198,36 +199,41 @@ class _LoginScreenState extends State<LoginScreen> {
         body: requestBody,
       );
 
-      print('📡 Response status: ${response.statusCode}');
-      print('📡 Response body: ${response.body}');
+      AppLogger.d('📡 Response status: ${response.statusCode}');
+      AppLogger.d('📡 Response body: ${response.body}');
 
       final decodedData = HttpClientService.decodeJsonResponse(response);
-      print('📦 Decoded type: ${decodedData.runtimeType}');
+      AppLogger.d('📦 Decoded type: ${decodedData.runtimeType}');
       final data = decodedData is Map<String, dynamic>
           ? decodedData
           : <String, dynamic>{};
-      print('📦 token presente: ${data['token'] != null}');
-      print('📦 user_email=${data['user_email']} display=${data['user_display_name']} nicename=${data['user_nicename']} user_id=${data['user_id']}');
+      AppLogger.d('📦 token presente: ${data['token'] != null}');
+      AppLogger.d('📦 user_email=${data['user_email']} display=${data['user_display_name']} nicename=${data['user_nicename']} user_id=${data['user_id']}');
 
       if (response.statusCode == 200 && data['token'] != null) {
-        print('✅ Login riuscito, salvataggio dati...');
+        AppLogger.d('✅ Login riuscito, salvataggio dati...');
         await storage.write(key: 'jwt_token', value: data['token']);
-        print('   ✓ jwt_token');
+        AppLogger.d('   ✓ jwt_token');
+        // Refresh token opaco: usato per rinnovare il JWT senza ri-inviare la
+        // password. Sostituisce il vecchio "re-login" con credenziali salvate.
+        if (data['refresh_token'] != null) {
+          await storage.write(key: 'refresh_token', value: data['refresh_token']);
+          AppLogger.d('   ✓ refresh_token');
+        }
         await storage.write(key: 'auth_username', value: phone);
-        await storage.write(key: 'auth_password', value: password);
-        print('   ✓ auth credentials');
+        AppLogger.d('   ✓ auth username');
 
         // Salva SEMPRE le credenziali biometriche dopo un login riuscito.
         await storage.write(key: 'biometric_username', value: phone);
         await storage.write(key: 'biometric_password', value: password);
-        print('   ✓ biometric credentials');
+        AppLogger.d('   ✓ biometric credentials');
         await storage.write(key: 'user_email', value: data['user_email'] ?? '');
         await storage.write(
           key: 'user_display_name',
           value: data['user_display_name'] ?? '',
         );
         await storage.write(key: 'user_nicename', value: data['user_nicename'] ?? '');
-        print('   ✓ user_* fields');
+        AppLogger.d('   ✓ user_* fields');
 
         if (data['user_id'] != null) {
           await storage.write(
@@ -235,7 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
             value: data['user_id'].toString(),
           );
         }
-        print('   ✓ user_id');
+        AppLogger.d('   ✓ user_id');
 
         await storage.write(key: 'last_login_phone', value: phone);
 
@@ -246,20 +252,20 @@ class _LoginScreenState extends State<LoginScreen> {
           await storage.delete(key: 'saved_phone');
           await storage.delete(key: 'saved_password');
         }
-        print('   ✓ preferenze; chiamo _fetchUserMeta...');
+        AppLogger.d('   ✓ preferenze; chiamo _fetchUserMeta...');
 
         await _fetchUserMeta(data['token'], data['user_nicename'] ?? '');
-        print('   ✓ _fetchUserMeta OK');
+        AppLogger.d('   ✓ _fetchUserMeta OK');
 
         await _loadBiometricState();
 
         try {
           await PushNotificationService().initialize();
         } catch (e) {
-          print('⚠️ Push init fallita (non bloccante): $e');
+          AppLogger.d('⚠️ Push init fallita (non bloccante): $e');
         }
 
-        print('🎉 Navigazione a /home');
+        AppLogger.d('🎉 Navigazione a /home');
         if (mounted) {
           setState(() {
             isLoading = false;
@@ -267,14 +273,14 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushReplacementNamed(context, '/home');
         }
       } else {
-        print('⚠️ Login NON riuscito (status ${response.statusCode}, token=${data['token'] != null})');
+        AppLogger.d('⚠️ Login NON riuscito (status ${response.statusCode}, token=${data['token'] != null})');
         if (mounted) {
           setState(() {
             isLoading = false;
           });
         }
         if (fromBiometrics && response.statusCode == 401) {
-          print('🧹 Credenziali biometriche obsolete, le rimuovo');
+          AppLogger.d('🧹 Credenziali biometriche obsolete, le rimuovo');
           await storage.delete(key: 'biometric_username');
           await storage.delete(key: 'biometric_password');
           if (mounted) {
@@ -288,7 +294,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         final message = data['message'] ?? l10n.networkError;
         final decodedMessage = decodeHtmlEntities(message);
-        print('⚠️ Messaggio mostrato: $decodedMessage');
+        AppLogger.d('⚠️ Messaggio mostrato: $decodedMessage');
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(decodedMessage)));
@@ -299,9 +305,9 @@ class _LoginScreenState extends State<LoginScreen> {
           isLoading = false;
         });
       }
-      print('❌❌❌ ECCEZIONE durante il login: $e');
-      print('❌ Tipo eccezione: ${e.runtimeType}');
-      print('❌ StackTrace:\n$stackTrace');
+      AppLogger.d('❌❌❌ ECCEZIONE durante il login: $e');
+      AppLogger.d('❌ Tipo eccezione: ${e.runtimeType}');
+      AppLogger.d('❌ StackTrace:\n$stackTrace');
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l10n.networkError)));
@@ -312,9 +318,9 @@ class _LoginScreenState extends State<LoginScreen> {
     // Usa il nuovo endpoint /soci/me per ottenere tutti i dati dell'utente
     final url = Uri.parse('${ApiConfig.baseUrl}/soci/me');
 
-    print('🔄 Chiamata a /soci/me...');
-    print('URL: $url');
-    print('Token: ${token.substring(0, 20)}...');
+    AppLogger.d('🔄 Chiamata a /soci/me...');
+    AppLogger.d('URL: $url');
+    AppLogger.d('Token: ${token.substring(0, 20)}...');
 
     try {
       final response = await HttpClientService.get(
@@ -326,8 +332,8 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
-      print('📥 GET /soci/me status: ${response.statusCode}');
-      print('📥 GET /soci/me body: ${response.body}');
+      AppLogger.d('📥 GET /soci/me status: ${response.statusCode}');
+      AppLogger.d('📥 GET /soci/me body: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
@@ -338,13 +344,13 @@ class _LoginScreenState extends State<LoginScreen> {
             ? responseData['data'] as Map<String, dynamic>
             : (responseData as Map<String, dynamic>);
 
-        print('📦 Dati ricevuti:');
-        print('  - id: ${data['id']}');
-        print('  - nome: ${data['nome']}');
-        print('  - cognome: ${data['cognome']}');
-        print('  - telefono: ${data['telefono']}');
-        print('  - citta: ${data['citta']}');
-        print('  - numero_tessera: ${data['numero_tessera']}');
+        AppLogger.d('📦 Dati ricevuti:');
+        AppLogger.d('  - id: ${data['id']}');
+        AppLogger.d('  - nome: ${data['nome']}');
+        AppLogger.d('  - cognome: ${data['cognome']}');
+        AppLogger.d('  - telefono: ${data['telefono']}');
+        AppLogger.d('  - citta: ${data['citta']}');
+        AppLogger.d('  - numero_tessera: ${data['numero_tessera']}');
 
         // Salva tutti i dati dell'utente socio
         // Salva sia socio_id (ID tabella soci) che user_id (ID WordPress)
@@ -444,25 +450,25 @@ class _LoginScreenState extends State<LoginScreen> {
         if (nome.isNotEmpty || cognome.isNotEmpty) {
           final fullName = '$nome $cognome'.trim();
           await storage.write(key: 'full_name', value: fullName);
-          print('✅ Nome completo salvato: $fullName');
+          AppLogger.d('✅ Nome completo salvato: $fullName');
         }
 
-        print('✅ Dati socio salvati con successo');
-        print('Tessera: ${data['numero_tessera']}');
-        print('Anni socio: ${data['anni_socio']}');
-        print('Quota pagata: ${data['quota_pagata']}');
-        print('Paese origine: ${data['paese_origine']}');
-        print('Nazionalità: ${data['nazionalita']}');
+        AppLogger.d('✅ Dati socio salvati con successo');
+        AppLogger.d('Tessera: ${data['numero_tessera']}');
+        AppLogger.d('Anni socio: ${data['anni_socio']}');
+        AppLogger.d('Quota pagata: ${data['quota_pagata']}');
+        AppLogger.d('Paese origine: ${data['paese_origine']}');
+        AppLogger.d('Nazionalità: ${data['nazionalita']}');
       } else if (response.statusCode == 404) {
-        print('⚠️ Utente non trovato come socio nel database');
-        print('⚠️ Response: ${response.body}');
+        AppLogger.d('⚠️ Utente non trovato come socio nel database');
+        AppLogger.d('⚠️ Response: ${response.body}');
       } else {
-        print('⚠️ Errore nel recupero dei dati socio: ${response.statusCode}');
-        print('⚠️ Response: ${response.body}');
+        AppLogger.d('⚠️ Errore nel recupero dei dati socio: ${response.statusCode}');
+        AppLogger.d('⚠️ Response: ${response.body}');
       }
     } catch (e, stackTrace) {
-      print('❌ Eccezione durante il recupero dei dati socio: $e');
-      print('Stack trace: $stackTrace');
+      AppLogger.d('❌ Eccezione durante il recupero dei dati socio: $e');
+      AppLogger.d('Stack trace: $stackTrace');
     }
   }
 

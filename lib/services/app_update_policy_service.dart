@@ -4,29 +4,36 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:wecoop_app/config/api_config.dart';
 
-/// Verifica automaticamente la versione pubblicata sull'App Store.
+/// Verifica se l'aggiornamento dell'app è obbligatorio interrogando il backend
+/// WeCoop (fonte unica gestita dagli amministratori dal portale).
 ///
-/// Google Play offre gia' un controllo nativo su Android tramite
-/// [InAppUpdateService]. Apple non offre un equivalente nativo: per iOS viene
-/// usato il catalogo pubblico App Store, che restituisce sia la versione sia
-/// l'URL della pagina dello store, senza configurazione manuale per release.
+/// L'endpoint pubblico `GET /api/app-version/:platform?current=<versione>`
+/// restituisce già il calcolo `update_required` (versione minima non
+/// soddisfatta oppure flag "aggiornamento obbligatorio" attivo) e l'URL dello
+/// store dove aggiornare. Vale sia per iOS sia per Android.
 class AppUpdatePolicyService {
-  static const _appStoreLookupUrl = 'https://itunes.apple.com/lookup';
-  static const _bundleId = 'org.wecoop.app';
-
   static Future<AppUpdateRequirement> checkForMandatoryUpdate() async {
-    if (kIsWeb || !Platform.isIOS) {
+    if (kIsWeb) {
+      return const AppUpdateRequirement.notRequired();
+    }
+
+    final platform = _platformKey();
+    if (platform == null) {
       return const AppUpdateRequirement.notRequired();
     }
 
     try {
       final packageInfo = await PackageInfo.fromPlatform();
+      final current = packageInfo.version;
+
+      final uri = Uri.parse('${ApiConfig.baseUrl}/app-version/$platform')
+          .replace(queryParameters: {'current': current});
+
       final response = await http
           .get(
-            Uri.parse(_appStoreLookupUrl).replace(
-              queryParameters: const {'bundleId': _bundleId, 'country': 'IT'},
-            ),
+            uri,
             headers: const {'Accept': 'application/json'},
           )
           .timeout(const Duration(seconds: 10));
@@ -40,56 +47,35 @@ class AppUpdatePolicyService {
         return const AppUpdateRequirement.notRequired();
       }
 
-      final results = decoded['results'];
-      if (results is! List || results.isEmpty || results.first is! Map) {
-        return const AppUpdateRequirement.notRequired();
-      }
+      final updateRequired = decoded['update_required'] == true;
+      final requiredVersion =
+          decoded['latest_version']?.toString() ?? '';
+      final storeUrl = decoded['store_url']?.toString() ?? '';
 
-      final storeEntry = Map<String, dynamic>.from(results.first as Map);
-      final publishedVersion = storeEntry['version']?.toString() ?? '';
-      final storeUrl = storeEntry['trackViewUrl']?.toString() ?? '';
-      if (publishedVersion.isEmpty || storeUrl.isEmpty) {
+      // Non forziamo l'update se manca l'URL dello store (l'utente resterebbe
+      // bloccato senza via d'uscita). L'admin deve compilarlo dal portale.
+      if (updateRequired && storeUrl.isEmpty) {
         return const AppUpdateRequirement.notRequired();
       }
 
       return AppUpdateRequirement(
-        isRequired: _isOlderVersion(packageInfo.version, publishedVersion),
-        requiredVersion: publishedVersion,
+        isRequired: updateRequired,
+        requiredVersion: requiredVersion,
         storeUrl: storeUrl,
       );
     } catch (error) {
-      debugPrint('AppUpdatePolicyService: App Store non disponibile: $error');
-      // La verifica non puo' bloccare chi e' offline o quando App Store non
-      // e' raggiungibile; al prossimo avvio/rientro nell'app verra' rieseguita.
+      debugPrint('AppUpdatePolicyService: backend non disponibile: $error');
+      // La verifica non può bloccare chi è offline o quando il backend non è
+      // raggiungibile; al prossimo avvio/rientro nell'app verrà rieseguita.
       return const AppUpdateRequirement.notRequired();
     }
   }
 
-  static bool _isOlderVersion(String current, String required) {
-    final currentParts = _numericVersionParts(current);
-    final requiredParts = _numericVersionParts(required);
-    if (currentParts == null || requiredParts == null) return false;
-
-    final length =
-        currentParts.length > requiredParts.length
-            ? currentParts.length
-            : requiredParts.length;
-    for (var index = 0; index < length; index++) {
-      final currentPart = index < currentParts.length ? currentParts[index] : 0;
-      final requiredPart =
-          index < requiredParts.length ? requiredParts[index] : 0;
-      if (currentPart != requiredPart) return currentPart < requiredPart;
-    }
-    return false;
-  }
-
-  static List<int>? _numericVersionParts(String version) {
-    final match = RegExp(r'^v?(\d+(?:\.\d+)*)').firstMatch(version.trim());
-    if (match == null) return null;
-    final parts = match.group(1)!.split('.');
-    final parsed = parts.map(int.tryParse).toList();
-    if (parsed.any((part) => part == null)) return null;
-    return parsed.cast<int>();
+  /// Chiave piattaforma attesa dal backend ('ios' | 'android'), null altrove.
+  static String? _platformKey() {
+    if (Platform.isIOS) return 'ios';
+    if (Platform.isAndroid) return 'android';
+    return null;
   }
 }
 

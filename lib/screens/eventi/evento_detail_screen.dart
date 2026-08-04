@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../models/evento_model.dart';
 import '../../services/eventi_service.dart';
 import '../../services/app_localizations.dart';
@@ -125,6 +126,16 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
     }
   }
 
+  /// Condivide l'evento tramite il foglio di sistema (WhatsApp, ecc.). Il link
+  /// punta alla pagina pubblica: chi ha l'app la apre sull'evento, chi no vede
+  /// l'anteprima web con il bottone per scaricarla.
+  Future<void> _shareEvento() async {
+    if (_evento == null) return;
+    final titolo = _evento!.titolo;
+    final url = 'https://www.wecoop.org/eventi/${_evento!.id}';
+    await Share.share('$titolo\n\n$url', subject: titolo);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -147,6 +158,13 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
           SliverAppBar(
             expandedHeight: 300,
             pinned: true,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.share, color: Colors.white),
+                tooltip: l10n.translate('annunciShareBtn'),
+                onPressed: _shareEvento,
+              ),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               background: _evento!.immagineCopertina != null
                   ? Stack(

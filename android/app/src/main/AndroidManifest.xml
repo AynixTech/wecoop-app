@@ -48,6 +48,9 @@
                     android:scheme="https"
                     android:host="www.wecoop.org"
                     android:pathPrefix="/annunci/" />
+                <data android:pathPrefix="/eventi/" />
+                <data android:pathPrefix="/offerte-lavoro/" />
+                <data android:pathPrefix="/offerte-formative/" />
             </intent-filter>
         </activity>
         <meta-data android:name="flutterEmbedding" android:value="2" />

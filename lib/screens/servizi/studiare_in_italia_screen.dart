@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
 import '../../services/app_localizations.dart';
 import '../../services/secure_storage_service.dart';
@@ -390,21 +391,35 @@ class _OffertaCard extends StatelessWidget {
               ),
             ],
             const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  if (offerta.linkInfo.isNotEmpty) {
-                    launchUrl(Uri.parse(offerta.linkInfo),
-                        mode: LaunchMode.externalApplication);
-                  } else {
-                    Navigator.push(context, MaterialPageRoute(
-                        builder: (_) => const _StudiareItaliaFormScreen()));
-                  }
-                },
-                icon: const Icon(Icons.info_outline, size: 16),
-                label: Text(l10n.translate('studiareItaliaRequestInfo')),
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      if (offerta.linkInfo.isNotEmpty) {
+                        launchUrl(Uri.parse(offerta.linkInfo),
+                            mode: LaunchMode.externalApplication);
+                      } else {
+                        Navigator.push(context, MaterialPageRoute(
+                            builder: (_) => const _StudiareItaliaFormScreen()));
+                      }
+                    },
+                    icon: const Icon(Icons.info_outline, size: 16),
+                    label: Text(l10n.translate('studiareItaliaRequestInfo')),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  onPressed: () {
+                    final url =
+                        'https://www.wecoop.org/offerte-formative/${offerta.id}';
+                    Share.share('${offerta.titolo}\n\n$url',
+                        subject: offerta.titolo);
+                  },
+                  icon: const Icon(Icons.share_outlined, size: 20),
+                  tooltip: l10n.translate('annunciShareBtn'),
+                ),
+              ],
             ),
           ],
         ),

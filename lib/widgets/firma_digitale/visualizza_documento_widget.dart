@@ -54,6 +54,7 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
           },
           onWebResourceError: (WebResourceError error) {
             AppLogger.d('❌ [DocView] WebView error code=${error.errorCode} type=${error.errorType} description=${error.description}');
+            if (!mounted) return;
             final l10n = AppLocalizations.of(context)!;
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('${l10n.translate('docViewLoadError')}: ${error.description}')),

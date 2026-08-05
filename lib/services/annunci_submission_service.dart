@@ -153,7 +153,7 @@ class AnnunciSubmissionService {
     String status = 'generated',
   }) async {
     try {
-      final uri = Uri.parse('$baseUrl/cv')
+      final uri = Uri.parse('$baseUrl/annunci/cv')
           .replace(
         queryParameters: {
           'limit': limit.toString(),
@@ -171,7 +171,8 @@ class AnnunciSubmissionService {
       );
 
       if (response.statusCode == 200) {
-        final rawItems = body['cvs'] ?? body['items'] ?? body['data'];
+        final rawItems =
+            body['cv'] ?? body['cvs'] ?? body['items'] ?? body['data'];
         final items = <Map<String, dynamic>>[];
 
         if (rawItems is List) {

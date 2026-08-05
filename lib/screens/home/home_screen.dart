@@ -12,6 +12,7 @@ import '../../services/wordpress_service.dart';
 import '../../services/eventi_service.dart';
 import '../../services/documento_service.dart';
 import '../../services/user_avatar_store.dart';
+import '../../widgets/whatsapp_contact_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../servizi/accoglienza_screen.dart';
 import '../servizi/mediazione_fiscale_screen.dart';
@@ -194,6 +195,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (!isLoggedIn) const SizedBox(height: 24),
 
                 const _ServicesSection(),
+                const SizedBox(height: 24),
+
+                // Contatto WhatsApp (mostrato solo se configurato lato backend).
+                const WhatsappContactButton(),
                 const SizedBox(height: 24),
 
                 const _UpcomingEventsSection(),

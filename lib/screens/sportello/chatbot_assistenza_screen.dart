@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/theme.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/supporto_ai_service.dart';
+import '../../widgets/whatsapp_contact_button.dart';
 import '../servizi/servizi_gate_screen.dart';
 import '../progetti/progetti_screen.dart';
 import '../servizi/permesso_soggiorno_screen.dart';
@@ -536,6 +537,10 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
       ),
       body: Column(
         children: [
+          const Padding(
+            padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: WhatsappContactButton(),
+          ),
           if (_showFAQ) _buildFAQSection(),
           Expanded(
             child: ListView.builder(

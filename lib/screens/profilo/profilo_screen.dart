@@ -49,6 +49,8 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   String tesseraNumero = '...';
   String? tesseraUrl;
   String? avatarUrl;
+  /// Data di scadenza tesseramento (YYYY-MM-DD) dal backend, se disponibile.
+  DateTime? dataScadenzaSocio;
   bool profiloCompleto = true; // Assume completo finché non verifichiamo
 
   String selectedLanguageCode = 'it';
@@ -204,6 +206,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
         final freshTessera = (data['numero_tessera'] ?? '').toString().trim();
         final freshTesseraUrl = (data['tessera_url'] ?? '').toString().trim();
         final freshEmail = (data['email'] ?? '').toString().trim();
+        final freshScadenza = (data['data_scadenza_socio'] ?? '').toString().trim();
 
         await UserAvatarStore.setAvatarUrl(freshAvatar);
 
@@ -219,6 +222,8 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
             tesseraUrl =
                 freshTesseraUrl.isNotEmpty ? freshTesseraUrl : tesseraUrl;
             avatarUrl = freshAvatar.isNotEmpty ? freshAvatar : avatarUrl;
+            dataScadenzaSocio =
+                freshScadenza.isNotEmpty ? DateTime.tryParse(freshScadenza) : dataScadenzaSocio;
           });
         }
       }
@@ -617,6 +622,70 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     final normalized = tesseraNumero.trim().toLowerCase();
     return normalized.isNotEmpty && normalized != '...';
   }
+
+  /// Banner di scadenza tesseramento: mostrato solo se la scadenza è entro 30
+  /// giorni o già passata. Stile allerta (scaduto) o warning (in scadenza).
+  Widget _buildScadenzaBanner(
+    ThemeData theme,
+    ColorScheme scheme,
+    AppLocalizations l10n,
+  ) {
+    final scadenza = dataScadenzaSocio;
+    if (scadenza == null) return const SizedBox.shrink();
+
+    final today = DateTime.now();
+    final onlyDate = DateTime(scadenza.year, scadenza.month, scadenza.day);
+    final giorni = onlyDate.difference(DateTime(today.year, today.month, today.day)).inDays;
+
+    // Mostra solo se in scadenza (<=30 gg) o scaduto.
+    if (giorni > 30) return const SizedBox.shrink();
+
+    final scaduto = giorni < 0;
+    final dateStr =
+        '${scadenza.day.toString().padLeft(2, '0')}/${scadenza.month.toString().padLeft(2, '0')}/${scadenza.year}';
+    final color = scaduto ? scheme.error : AppColors.warning;
+    final title = l10n.translate(
+      scaduto ? 'membershipExpiredTitle' : 'membershipExpiringTitle',
+    );
+    final body = l10n
+        .translate(scaduto ? 'membershipExpiredBody' : 'membershipExpiringBody')
+        .replaceAll('{date}', dateStr);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 18),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: color, width: 1.5),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(scaduto ? Icons.error_outline : Icons.warning_amber_rounded,
+              color: color, size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: color,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(body, style: theme.textTheme.bodySmall),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   String get _appVersionDisplay {
     if (_appVersion.isEmpty) return '...';
@@ -1021,6 +1090,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                     ],
                   ),
                   const SizedBox(height: 18),
+                  _buildScadenzaBanner(theme, scheme, l10n),
                   if (_hasTesseraNumero) ...[
                     Container(
                       padding: const EdgeInsets.all(16),

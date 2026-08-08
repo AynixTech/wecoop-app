@@ -5,7 +5,10 @@ import 'package:wecoop_app/utils/phone_prefixes.dart';
 import '../../services/app_localizations.dart';
 import '../../services/secure_storage_service.dart';
 import '../../services/wordpress_service.dart';
+import '../../services/socio_service.dart';
 import '../../models/offerta_formativa_model.dart';
+import '../../models/partner_model.dart';
+import '../../models/partner_dettaglio_model.dart';
 
 // ─────────────────────────────────────────────────────────────
 // ENTRY POINT – Schermata intro con CTA e tab "Percorsi"
@@ -71,7 +74,7 @@ class _StudiareInItaliaScreenState extends State<StudiareInItaliaScreen>
               ),
             );
           }),
-          _PercorsiTab(wpService: _wpService),
+          _PartnerAccademiciTab(wpService: _wpService),
         ],
       ),
     );
@@ -227,19 +230,19 @@ class _SupportItem extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────
-// TAB 2 – Percorsi formativi disponibili (Screen 7)
+// TAB 2 – Partner Accademici (vetrina delle università partner WECOOP)
 // ─────────────────────────────────────────────────────────────
-class _PercorsiTab extends StatefulWidget {
+class _PartnerAccademiciTab extends StatefulWidget {
   final WordpressService wpService;
-  const _PercorsiTab({required this.wpService});
+  const _PartnerAccademiciTab({required this.wpService});
 
   @override
-  State<_PercorsiTab> createState() => _PercorsiTabState();
+  State<_PartnerAccademiciTab> createState() => _PartnerAccademiciTabState();
 }
 
-class _PercorsiTabState extends State<_PercorsiTab>
+class _PartnerAccademiciTabState extends State<_PartnerAccademiciTab>
     with AutomaticKeepAliveClientMixin {
-  List<OffertaFormativa> _offerte = [];
+  List<Partner> _partners = [];
   bool _isLoading = true;
   String? _error;
 
@@ -249,13 +252,13 @@ class _PercorsiTabState extends State<_PercorsiTab>
   @override
   void initState() {
     super.initState();
-    _loadOfferte();
+    _loadPartners();
   }
 
-  Future<void> _loadOfferte() async {
+  Future<void> _loadPartners() async {
     try {
-      final data = await widget.wpService.getOfferteFormative();
-      if (mounted) setState(() { _offerte = data; _isLoading = false; });
+      final data = await widget.wpService.getPartnerAccademici();
+      if (mounted) setState(() { _partners = data; _isLoading = false; });
     } catch (e) {
       if (mounted) setState(() { _error = e.toString(); _isLoading = false; });
     }
@@ -284,7 +287,7 @@ class _PercorsiTabState extends State<_PercorsiTab>
               const SizedBox(height: 12),
               OutlinedButton(onPressed: () {
                 setState(() { _isLoading = true; _error = null; });
-                _loadOfferte();
+                _loadPartners();
               }, child: const Text('Riprova')),
             ],
           ),
@@ -292,28 +295,121 @@ class _PercorsiTabState extends State<_PercorsiTab>
       );
     }
 
-    if (_offerte.isEmpty) {
-      return Center(
+    return RefreshIndicator(
+      onRefresh: _loadPartners,
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // Header della vetrina Partner Accademici.
+          Text(
+            l10n.translate('partnerAccademiciHeaderTitle'),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.translate('partnerAccademiciHeaderSubtitle'),
+            style: TextStyle(fontSize: 14, color: scheme.onSurfaceVariant),
+          ),
+          const SizedBox(height: 20),
+          if (_partners.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 40),
+              child: Column(
+                children: [
+                  Icon(Icons.school_outlined, size: 60, color: scheme.onSurfaceVariant),
+                  const SizedBox(height: 12),
+                  Text(l10n.translate('partnerAccademiciNessuno'),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: scheme.onSurfaceVariant)),
+                ],
+              ),
+            )
+          else
+            ..._partners.map((p) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _PartnerCard(
+                    partner: p,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => _PartnerDettaglioScreen(
+                            partner: p,
+                            wpService: widget.wpService,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                )),
+        ],
+      ),
+    );
+  }
+}
+
+/// Card di un Partner Accademico: logo, nome, breve descrizione, "Scopri di più".
+class _PartnerCard extends StatelessWidget {
+  final Partner partner;
+  final VoidCallback onTap;
+  const _PartnerCard({required this.partner, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
+
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(16),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.school_outlined, size: 60, color: scheme.onSurfaceVariant),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _PartnerAvatar(logoUrl: partner.logoUrl, size: 56),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(partner.nome,
+                            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                        if (partner.citta.isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Text(partner.citta,
+                              style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant)),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              if (partner.descrizione.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Text(partner.descrizione,
+                    style: TextStyle(fontSize: 13, color: scheme.onSurfaceVariant),
+                    maxLines: 3, overflow: TextOverflow.ellipsis),
+              ],
               const SizedBox(height: 12),
-              Text(l10n.translate('studiareItaliaNoPercorsi'), textAlign: TextAlign.center,
-                  style: TextStyle(color: scheme.onSurfaceVariant)),
+              Align(
+                alignment: Alignment.centerRight,
+                child: FilledButton.tonalIcon(
+                  onPressed: onTap,
+                  icon: const Icon(Icons.arrow_forward, size: 16),
+                  label: Text(l10n.translate('partnerAccademiciScopri')),
+                ),
+              ),
             ],
           ),
         ),
-      );
-    }
-
-    return ListView.separated(
-      padding: const EdgeInsets.all(16),
-      itemCount: _offerte.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (context, index) => _OffertaCard(offerta: _offerte[index]),
+      ),
     );
   }
 }
@@ -470,6 +566,271 @@ class _Chip extends StatelessWidget {
       decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(20)),
       child: Text(label, style: TextStyle(fontSize: 11, color: textColor, fontWeight: FontWeight.w600)),
     );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// PAGINA DETTAGLIO PARTNER ACCADEMICO
+// Offerta formativa (per categoria) + materiale multimediale + box consulenza.
+// ─────────────────────────────────────────────────────────────
+class _PartnerDettaglioScreen extends StatefulWidget {
+  final Partner partner;
+  final WordpressService wpService;
+  const _PartnerDettaglioScreen({required this.partner, required this.wpService});
+
+  @override
+  State<_PartnerDettaglioScreen> createState() => _PartnerDettaglioScreenState();
+}
+
+class _PartnerDettaglioScreenState extends State<_PartnerDettaglioScreen> {
+  PartnerDettaglio? _dettaglio;
+  bool _isLoading = true;
+  bool _sendingConsulenza = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final data = await widget.wpService.getPartnerDettaglio(widget.partner.id);
+    if (mounted) setState(() { _dettaglio = data; _isLoading = false; });
+  }
+
+  Future<void> _openMedia(String url) async {
+    if (url.isEmpty) return;
+    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+  }
+
+  /// Apre una richiesta di consulenza collegata al Partner Accademico e notifica
+  /// gli operatori WECOOP (via service_requests).
+  Future<void> _richiediConsulenza() async {
+    final l10n = AppLocalizations.of(context)!;
+    setState(() => _sendingConsulenza = true);
+    try {
+      final res = await SocioService.inviaRichiestaServizio(
+        servizio: 'study_italy_service',
+        categoria: 'studiare_in_italia',
+        dati: {
+          'tipo_richiesta': 'consulenza_partner_accademico',
+          'partner_id': widget.partner.id,
+          'partner_nome': widget.partner.nome,
+        },
+      );
+      if (!mounted) return;
+      final ok = res['success'] == true;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(ok
+              ? l10n.translate('partnerAccademiciConsulenzaInviata')
+              : l10n.translate('partnerAccademiciConsulenzaErrore')),
+          backgroundColor: ok ? null : Theme.of(context).colorScheme.error,
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.translate('partnerAccademiciConsulenzaErrore'))),
+      );
+    } finally {
+      if (mounted) setState(() => _sendingConsulenza = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
+    final d = _dettaglio;
+
+    return Scaffold(
+      appBar: AppBar(title: Text(widget.partner.nome)),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                // --- Header partner ---
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _PartnerAvatar(logoUrl: widget.partner.logoUrl, size: 72),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(widget.partner.nome,
+                              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                          if (widget.partner.citta.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text(widget.partner.citta,
+                                style: TextStyle(fontSize: 13, color: scheme.onSurfaceVariant)),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                if ((d?.partner.descrizioneEstesa ?? widget.partner.descrizioneEstesa).isNotEmpty) ...[
+                  const SizedBox(height: 14),
+                  Text(d?.partner.descrizioneEstesa ?? widget.partner.descrizioneEstesa,
+                      style: TextStyle(fontSize: 14, color: scheme.onSurfaceVariant, height: 1.4)),
+                ] else if (widget.partner.descrizione.isNotEmpty) ...[
+                  const SizedBox(height: 14),
+                  Text(widget.partner.descrizione,
+                      style: TextStyle(fontSize: 14, color: scheme.onSurfaceVariant, height: 1.4)),
+                ],
+
+                // --- Offerta formativa (per categoria) ---
+                if (d != null && d.offerteFormative.isNotEmpty) ...[
+                  const SizedBox(height: 24),
+                  _SectionTitle(l10n.translate('partnerAccademiciOffertaFormativa')),
+                  const SizedBox(height: 8),
+                  ...d.offertePerCategoria.entries.map((entry) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 8),
+                          Text(entry.key,
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  color: scheme.primary)),
+                          const SizedBox(height: 8),
+                          ...entry.value.map((o) => Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: _OffertaCard(offerta: o),
+                              )),
+                        ],
+                      )),
+                ],
+
+                // --- Video ---
+                if (d != null && d.video.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  _SectionTitle(l10n.translate('partnerAccademiciVideo')),
+                  const SizedBox(height: 8),
+                  ...d.video.map((m) => Card(
+                        child: ListTile(
+                          leading: const Icon(Icons.play_circle_outline),
+                          title: Text(m.titolo.isNotEmpty ? m.titolo : 'Video'),
+                          subtitle: m.descrizione.isNotEmpty ? Text(m.descrizione) : null,
+                          trailing: const Icon(Icons.open_in_new, size: 18),
+                          onTap: () => _openMedia(m.url),
+                        ),
+                      )),
+                ],
+
+                // --- Brochure e documenti (PDF) ---
+                if (d != null && d.documenti.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  _SectionTitle(l10n.translate('partnerAccademiciBrochure')),
+                  const SizedBox(height: 8),
+                  ...d.documenti.map((m) => Card(
+                        child: ListTile(
+                          leading: const Icon(Icons.picture_as_pdf_outlined),
+                          title: Text(m.titolo.isNotEmpty ? m.titolo : 'Documento'),
+                          subtitle: m.descrizione.isNotEmpty ? Text(m.descrizione) : null,
+                          trailing: const Icon(Icons.download_outlined, size: 18),
+                          onTap: () => _openMedia(m.url),
+                        ),
+                      )),
+                ],
+
+                // --- Galleria fotografica ---
+                if (d != null && d.galleria.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  _SectionTitle(l10n.translate('partnerAccademiciGalleria')),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 120,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: d.galleria.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      itemBuilder: (context, i) {
+                        final m = d.galleria[i];
+                        return GestureDetector(
+                          onTap: () => _openMedia(m.url),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.network(
+                              m.url,
+                              width: 160,
+                              height: 120,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(
+                                width: 160,
+                                color: scheme.surfaceContainerHighest,
+                                child: const Icon(Icons.broken_image_outlined),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+
+                // --- Box consulenza WECOOP (relazione con lo studente) ---
+                const SizedBox(height: 28),
+                Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    color: scheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.translate('partnerAccademiciBoxTitle'),
+                        style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            color: scheme.onPrimaryContainer),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        l10n.translate('partnerAccademiciBoxMessage'),
+                        style: TextStyle(
+                            fontSize: 13.5,
+                            color: scheme.onPrimaryContainer,
+                            height: 1.4),
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed: _sendingConsulenza ? null : _richiediConsulenza,
+                          icon: _sendingConsulenza
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(strokeWidth: 2))
+                              : const Icon(Icons.support_agent_outlined),
+                          label: Text(l10n.translate('partnerAccademiciBoxButton')),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  final String text;
+  const _SectionTitle(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(text,
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold));
   }
 }
 

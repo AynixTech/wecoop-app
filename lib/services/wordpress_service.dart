@@ -5,6 +5,7 @@ import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/utils/app_logger.dart';
 import '../models/post_model.dart';
 import '../models/partner_model.dart';
+import '../models/partner_dettaglio_model.dart';
 import '../models/offerta_formativa_model.dart';
 import '../utils/html_utils.dart';
 import '../config/api_config.dart';
@@ -63,6 +64,44 @@ class WordpressService {
     } catch (e) {
       debugPrint('getPartners error: $e');
       return [];
+    }
+  }
+
+  /// Recupera i Partner Accademici (università partner WECOOP) pubblicati.
+  Future<List<Partner>> getPartnerAccademici({int perPage = 50}) async {
+    final url = Uri.parse('$wecoopApiUrl/partners?tipo=accademico&per_page=$perPage');
+    try {
+      final response = await HttpClientService.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> rawData = json.decode(response.body);
+        return rawData
+            .map((json) => Partner.fromJson(json as Map<String, dynamic>))
+            .toList();
+      } else {
+        throw Exception('Errore Partner Accademici: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('getPartnerAccademici error: $e');
+      return [];
+    }
+  }
+
+  /// Recupera il dettaglio di un Partner Accademico: offerta formativa +
+  /// materiale multimediale. Ritorna null in caso di errore.
+  Future<PartnerDettaglio?> getPartnerDettaglio(int partnerId) async {
+    final url = Uri.parse('$wecoopApiUrl/partners/$partnerId');
+    try {
+      final response = await HttpClientService.get(url);
+      if (response.statusCode == 200) {
+        return PartnerDettaglio.fromJson(
+          json.decode(response.body) as Map<String, dynamic>,
+        );
+      }
+      debugPrint('getPartnerDettaglio HTTP ${response.statusCode}');
+      return null;
+    } catch (e) {
+      debugPrint('getPartnerDettaglio error: $e');
+      return null;
     }
   }
 

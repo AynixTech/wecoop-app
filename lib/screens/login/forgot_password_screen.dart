@@ -44,6 +44,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         final prefix = _prefixController.text.trim().replaceAll(RegExp(r'[^\d]'), '');
 
         if (prefix.isNotEmpty && !phone.startsWith(prefix)) {
+          // Rimuovi lo "0" troncale nazionale iniziale (es. Ecuador 09... -> 9...)
+          phone = phone.replaceFirst(RegExp(r'^0+'), '');
           phone = prefix + phone;
         }
         phoneToSend = phone;

@@ -453,11 +453,16 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
 
     try {
       // Pulisci il telefono (solo numeri)
-      final cleanPhone = _telefonoController.text.replaceAll(
+      var cleanPhone = _telefonoController.text.replaceAll(
         RegExp(r'[^\d]'),
         '',
       );
       final prefix = _prefixController.text.replaceAll('+', '');
+      // Rimuovi lo "0" troncale nazionale iniziale (es. Ecuador 09... -> 9...)
+      // per evitare numeri non validi come +5930939825935.
+      if (prefix.isNotEmpty) {
+        cleanPhone = cleanPhone.replaceFirst(RegExp(r'^0+'), '');
+      }
       final telefonoCompleto = '+$prefix$cleanPhone';
 
       AppLogger.d('📝 Dati raccolti:');

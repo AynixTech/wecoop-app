@@ -52,6 +52,23 @@
                 <data android:pathPrefix="/offerte-lavoro/" />
                 <data android:pathPrefix="/offerte-formative/" />
             </intent-filter>
+
+            <!--
+              App Link verificato per i link transazionali della piattaforma
+              (email di richiesta pagamento): https://cloud.wecoop.org/pagamento/405
+              apre direttamente la schermata di pagamento nell'app.
+              autoVerify + file /.well-known/assetlinks.json su cloud.wecoop.org.
+            -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="cloud.wecoop.org"
+                    android:pathPrefix="/pagamento/" />
+                <data android:pathPrefix="/richieste/" />
+            </intent-filter>
         </activity>
         <meta-data android:name="flutterEmbedding" android:value="2" />
         

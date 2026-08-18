@@ -66,6 +66,8 @@ class DeepLinkHandler {
     }
 
     // wecoop://app/richieste/405
+    // oppure App Link: https://cloud.wecoop.org/richieste/405
+    // (email integrazione documenti, firma, appuntamento, completamento)
     if (path.startsWith('/richieste/')) {
       final id = path.split('/').last;
       _navigateToRichiesta(context, id);
@@ -79,6 +81,7 @@ class DeepLinkHandler {
     }
 
     // wecoop://app/pagamento/405
+    // oppure App Link: https://cloud.wecoop.org/pagamento/405 (email pagamento)
     if (path.startsWith('/pagamento/')) {
       final id = int.tryParse(path.split('/').last);
       if (id != null) {

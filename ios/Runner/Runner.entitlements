@@ -7,6 +7,7 @@
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>applinks:www.wecoop.org</string>
+		<string>applinks:cloud.wecoop.org</string>
 	</array>
 </dict>
 </plist>

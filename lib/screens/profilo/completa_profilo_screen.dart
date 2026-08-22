@@ -5,6 +5,7 @@ import 'package:wecoop_app/services/secure_storage_service.dart';
 import '../../services/app_localizations.dart';
 import '../../services/socio_service.dart';
 import '../../services/address_autocomplete_service.dart';
+import '../../utils/italian_validators.dart';
 import '../../widgets/design_system/design_system.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
@@ -136,6 +137,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
   Future<void> _completaProfilo() async {
     // Evita doppio invio (doppio tap sul bottone).
     if (_isSubmitting) return;
+    if (!_validateStep1(showSnackBar: true)) return;
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -143,29 +145,18 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
     setState(() => _isSubmitting = true);
 
     try {
-      // Converti data da DD/MM/YYYY a YYYY-MM-DD per l'API
-      String? dataNascitaApi;
-      final dataInput = _dataNascitaController.text.trim();
-      if (dataInput.isNotEmpty && dataInput.contains('/')) {
-        final parts = dataInput.split('/');
-        if (parts.length == 3) {
-          dataNascitaApi = '${parts[2]}-${parts[1]}-${parts[0]}';
-        } else {
-          dataNascitaApi = dataInput;
-        }
-      } else if (dataInput.isNotEmpty) {
-        dataNascitaApi = dataInput;
-      }
+      final dataNascitaApi = ItalianValidators.birthDateToIso(
+        _dataNascitaController.text.trim(),
+      );
 
       final result = await SocioService.completaProfilo(
         email:
             _emailController.text.trim().isEmpty
                 ? null
                 : _emailController.text.trim(),
-        codiceFiscale:
-            _codiceFiscaleController.text.trim().isEmpty
-                ? null
-                : _codiceFiscaleController.text.trim(),
+        codiceFiscale: ItalianValidators.normalizeCodiceFiscale(
+          _codiceFiscaleController.text,
+        ),
         dataNascita: dataNascitaApi,
         luogoNascita:
             _luogoNascitaController.text.trim().isEmpty
@@ -246,39 +237,108 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
 
   void _nextStep() {
     if (_currentStep < 1) {
-      // Valida solo i campi dello step corrente
-      bool isValid = true;
-      if (_currentStep == 0) {
-        // Valida email e codice fiscale
-        if (_emailController.text.trim().isEmpty ||
-            !_emailController.text.contains('@')) {
-          isValid = false;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.invalidEmail),
-              backgroundColor: Theme.of(context).colorScheme.tertiary,
-            ),
-          );
-        }
-        if (_codiceFiscaleController.text.trim().length != 16) {
-          isValid = false;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                AppLocalizations.of(context)!.fiscalCodeMustBe16Chars,
-              ),
-              backgroundColor: Theme.of(context).colorScheme.tertiary,
-            ),
-          );
-        }
+      if (_currentStep == 0 && !_validateStep0(showSnackBar: true)) {
+        return;
       }
-
-      if (isValid) {
-        setState(() => _currentStep++);
-      }
+      setState(() => _currentStep++);
     } else {
       _completaProfilo();
     }
+  }
+
+  String? _validateEmailField(String? value) {
+    final l10n = AppLocalizations.of(context)!;
+    if (value == null || value.trim().isEmpty || !ItalianValidators.isValidEmail(value)) {
+      return l10n.invalidEmail;
+    }
+    return null;
+  }
+
+  String? _validateCodiceFiscaleField(String? value) {
+    final l10n = AppLocalizations.of(context)!;
+    final trimmed = (value ?? '').trim();
+    if (trimmed.isEmpty) return l10n.fiscalCodeMustBe16Chars;
+    if (trimmed.length != 16) return l10n.fiscalCodeMustBe16Chars;
+    if (!ItalianValidators.isValidCodiceFiscale(trimmed)) {
+      return l10n.translate('invalidFiscalCode');
+    }
+    return null;
+  }
+
+  String? _validateBirthDateField(String? value) {
+    final l10n = AppLocalizations.of(context)!;
+    final errKey = ItalianValidators.validateBirthDate(value ?? '');
+    if (errKey == null) return null;
+    return l10n.translate(errKey);
+  }
+
+  String? _validateAddressField(String? value) {
+    final l10n = AppLocalizations.of(context)!;
+    final errKey = ItalianValidators.validateAddress(value ?? '', required: true);
+    if (errKey == null) return null;
+    return l10n.translate(errKey);
+  }
+
+  String? _validateCityField(String? value) {
+    final l10n = AppLocalizations.of(context)!;
+    final errKey = ItalianValidators.validateCity(value ?? '', required: true);
+    if (errKey == null) return null;
+    return l10n.translate(errKey);
+  }
+
+  String? _validateCapField(String? value) {
+    final l10n = AppLocalizations.of(context)!;
+    final trimmed = (value ?? '').trim();
+    if (trimmed.isEmpty) return l10n.translate('invalidPostalCode');
+    if (!ItalianValidators.isValidCap(trimmed)) return l10n.invalidPostalCode;
+    return null;
+  }
+
+  String? _validateProvinceField(String? value) {
+    final l10n = AppLocalizations.of(context)!;
+    final trimmed = (value ?? '').trim();
+    if (trimmed.isEmpty) return l10n.translate('invalidProvince');
+    if (!ItalianValidators.isValidProvince(trimmed)) return l10n.translate('invalidProvince');
+    return null;
+  }
+
+  bool _validateStep0({required bool showSnackBar}) {
+    final errors = [
+      _validateEmailField(_emailController.text),
+      _validateCodiceFiscaleField(_codiceFiscaleController.text),
+      _validateBirthDateField(_dataNascitaController.text),
+    ].whereType<String>().toList();
+    if (errors.isEmpty) return true;
+    if (showSnackBar) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errors.first),
+          backgroundColor: Theme.of(context).colorScheme.tertiary,
+        ),
+      );
+    }
+    _formKey.currentState?.validate();
+    return false;
+  }
+
+  bool _validateStep1({required bool showSnackBar}) {
+    final errors = [
+      _validateAddressField(_indirizzoController.text),
+      _validateCityField(_cittaController.text),
+      _validateCapField(_capController.text),
+      _validateProvinceField(_provinciaController.text),
+    ].whereType<String>().toList();
+    if (errors.isEmpty) return true;
+    if (showSnackBar) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errors.first),
+          backgroundColor: Theme.of(context).colorScheme.tertiary,
+        ),
+      );
+    }
+    _formKey.currentState?.validate();
+    return false;
   }
 
   void _previousStep() {
@@ -702,6 +762,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
             icon: Icons.email_outlined,
           ),
           keyboardType: TextInputType.emailAddress,
+          validator: _validateEmailField,
         ),
         const SizedBox(height: 16),
         TextFormField(
@@ -712,6 +773,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
           ),
           maxLength: 16,
           textCapitalization: TextCapitalization.characters,
+          validator: _validateCodiceFiscaleField,
         ),
         const SizedBox(height: 8),
         TextFormField(
@@ -728,6 +790,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
             LengthLimitingTextInputFormatter(10),
             _DateInputFormatter(),
           ],
+          validator: _validateBirthDateField,
         ),
         const SizedBox(height: 16),
         TextFormField(
@@ -753,7 +816,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
         const SizedBox(height: 22),
         AddressAutocompleteField(
           controller: _indirizzoController,
-          label: l10n.address,
+          label: '${l10n.address} *',
           hint: l10n.searchAddress,
           onSelected: (AddressSuggestion s) {
             // Auto-compila i campi correlati dalla selezione (lingua app).
@@ -773,16 +836,19 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
               flex: 2,
               child: TextFormField(
                 controller: _cittaController,
-                decoration: _fieldDecoration(label: l10n.city),
+                decoration: _fieldDecoration(label: '${l10n.city} *'),
+                validator: _validateCityField,
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: TextFormField(
                 controller: _capController,
-                decoration: _fieldDecoration(label: l10n.postalCode),
+                decoration: _fieldDecoration(label: '${l10n.postalCode} *'),
                 keyboardType: TextInputType.number,
                 maxLength: 5,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                validator: _validateCapField,
               ),
             ),
           ],
@@ -794,9 +860,10 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
             Expanded(
               child: TextFormField(
                 controller: _provinciaController,
-                decoration: _fieldDecoration(label: l10n.province),
+                decoration: _fieldDecoration(label: '${l10n.province} *'),
                 maxLength: 2,
                 textCapitalization: TextCapitalization.characters,
+                validator: _validateProvinceField,
               ),
             ),
             const SizedBox(width: 12),

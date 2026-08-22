@@ -3,6 +3,7 @@ import '../../theme/theme.dart';
 import 'package:flutter/services.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
+import 'package:wecoop_app/utils/italian_validators.dart';
 import '../../services/socio_service.dart';
 import '../login/login_screen.dart';
 
@@ -119,10 +120,10 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
       privacyAccepted: _privacyAccepted,
       // Campi opzionali
       codiceFiscale: _codiceFiscaleController.text.trim().isNotEmpty
-          ? _codiceFiscaleController.text.trim().toUpperCase()
+          ? ItalianValidators.normalizeCodiceFiscale(_codiceFiscaleController.text)
           : null,
       dataNascita: _dataNascitaController.text.trim().isNotEmpty
-          ? _dataNascitaController.text.trim()
+          ? ItalianValidators.birthDateToIso(_dataNascitaController.text.trim())
           : null,
       luogoNascita: _luogoNascitaController.text.trim().isNotEmpty
           ? _luogoNascitaController.text.trim()
@@ -600,8 +601,12 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                   ),
                                   textCapitalization: TextCapitalization.characters,
                                   validator: (value) {
-                                    if (value != null && value.isNotEmpty && value.length != 16) {
+                                    if (value == null || value.isEmpty) return null;
+                                    if (value.length != 16) {
                                       return l10n.translate('fiscalCodeMustBe16Chars');
+                                    }
+                                    if (!ItalianValidators.isValidCodiceFiscale(value)) {
+                                      return l10n.translate('invalidFiscalCode');
                                     }
                                     return null;
                                   },
@@ -616,6 +621,12 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                     suffixIcon: const Icon(Icons.calendar_today),
                                   ),
                                   readOnly: true,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) return null;
+                                    final errKey = ItalianValidators.validateBirthDate(value);
+                                    if (errKey == null) return null;
+                                    return l10n.translate(errKey);
+                                  },
                                   onTap: () async {
                                     final date = await showDatePicker(
                                       context: context,
@@ -644,6 +655,12 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                     labelText: l10n.address,
                                     border: const OutlineInputBorder(),
                                   ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) return null;
+                                    final errKey = ItalianValidators.validateAddress(value);
+                                    if (errKey == null) return null;
+                                    return l10n.translate(errKey);
+                                  },
                                 ),
                                 const SizedBox(height: 12),
                                 Row(
@@ -656,6 +673,12 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                           labelText: l10n.city,
                                           border: const OutlineInputBorder(),
                                         ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) return null;
+                                          final errKey = ItalianValidators.validateCity(value);
+                                          if (errKey == null) return null;
+                                          return l10n.translate(errKey);
+                                        },
                                       ),
                                     ),
                                     const SizedBox(width: 12),
@@ -667,8 +690,10 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                           border: const OutlineInputBorder(),
                                         ),
                                         keyboardType: TextInputType.number,
+                                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                                         validator: (value) {
-                                          if (value != null && value.isNotEmpty && value.length != 5) {
+                                          if (value == null || value.isEmpty) return null;
+                                          if (!ItalianValidators.isValidCap(value)) {
                                             return l10n.translate('invalidPostalCode');
                                           }
                                           return null;
@@ -686,6 +711,13 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                     hintText: l10n.translate('provinceExample'),
                                   ),
                                   textCapitalization: TextCapitalization.characters,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) return null;
+                                    if (!ItalianValidators.isValidProvince(value)) {
+                                      return l10n.translate('invalidProvince');
+                                    }
+                                    return null;
+                                  },
                                 ),
                                 const SizedBox(height: 12),
                                 TextFormField(

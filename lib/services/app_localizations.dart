@@ -876,6 +876,14 @@ class AppLocalizations {
           'Il codice fiscale deve essere di 16 caratteri',
       'birthPlace': 'Luogo di Nascita',
       'invalidPostalCode': 'CAP non valido',
+      'invalidFiscalCode': 'Codice fiscale non valido',
+      'invalidBirthDate': 'Data di nascita non valida',
+      'birthDateFuture': 'La data di nascita non può essere nel futuro',
+      'addressRequired': 'Inserisci l\'indirizzo',
+      'addressTooShort': 'Indirizzo non valido',
+      'cityRequired': 'Inserisci la città',
+      'cityTooShort': 'Città non valida',
+      'invalidProvince': 'Provincia non valida (2 lettere)',
       'provinceExample': 'Es: MI, RM, TO',
       'accessToAllServices': 'Accesso a tutti i servizi di assistenza',
       'dedicatedSupport': 'Supporto dedicato per pratiche burocratiche',
@@ -2440,6 +2448,14 @@ class AppLocalizations {
       'fiscalCodeMustBe16Chars': 'يجب أن يتكون الرمز الضريبي من 16 حرفًا',
       'birthPlace': 'مكان الميلاد',
       'invalidPostalCode': 'رمز بريدي غير صالح',
+      'invalidFiscalCode': 'الرمز الضريبي غير صالح',
+      'invalidBirthDate': 'تاريخ الميلاد غير صالح',
+      'birthDateFuture': 'لا يمكن أن يكون تاريخ الميلاد في المستقبل',
+      'addressRequired': 'أدخل العنوان',
+      'addressTooShort': 'عنوان غير صالح',
+      'cityRequired': 'أدخل المدينة',
+      'cityTooShort': 'مدينة غير صالحة',
+      'invalidProvince': 'مقاطعة غير صالحة (حرفان)',
       'provinceExample': 'مثال: MI، RM، TO',
       'accessToAllServices': 'الوصول إلى جميع خدمات المساعدة',
       'dedicatedSupport': 'دعم مخصص للمعاملات البيروقراطية',
@@ -3808,6 +3824,14 @@ class AppLocalizations {
       'fiscalCodeMustBe16Chars': '税号必须为 16 个字符',
       'birthPlace': '出生地',
       'invalidPostalCode': '邮编无效',
+      'invalidFiscalCode': '税号无效',
+      'invalidBirthDate': '出生日期无效',
+      'birthDateFuture': '出生日期不能是未来日期',
+      'addressRequired': '请输入地址',
+      'addressTooShort': '地址无效',
+      'cityRequired': '请输入城市',
+      'cityTooShort': '城市无效',
+      'invalidProvince': '省份无效（2个字母）',
       'provinceExample': '例如：MI、RM、TO',
       'accessToAllServices': '使用所有协助服务',
       'dedicatedSupport': '为行政手续提供专属支持',
@@ -5128,6 +5152,14 @@ class AppLocalizations {
       'fiscalCodeMustBe16Chars': 'Tax ID must be 16 characters',
       'birthPlace': 'Place of Birth',
       'invalidPostalCode': 'Invalid postal code',
+      'invalidFiscalCode': 'Invalid tax ID',
+      'invalidBirthDate': 'Invalid birth date',
+      'birthDateFuture': 'Birth date cannot be in the future',
+      'addressRequired': 'Enter your address',
+      'addressTooShort': 'Invalid address',
+      'cityRequired': 'Enter your city',
+      'cityTooShort': 'Invalid city',
+      'invalidProvince': 'Invalid province (2 letters)',
       'fillFollowingFields': 'Fill in the following fields',
       'sendingError': 'Error during submission',
       'internationalProtectionRequest':
@@ -6649,6 +6681,14 @@ class AppLocalizations {
       'fiscalCodeMustBe16Chars': 'El código fiscal debe tener 16 caracteres',
       'birthPlace': 'Lugar de Nacimiento',
       'invalidPostalCode': 'Código postal no válido',
+      'invalidFiscalCode': 'Código fiscal no válido',
+      'invalidBirthDate': 'Fecha de nacimiento no válida',
+      'birthDateFuture': 'La fecha de nacimiento no puede ser futura',
+      'addressRequired': 'Introduce la dirección',
+      'addressTooShort': 'Dirección no válida',
+      'cityRequired': 'Introduce la ciudad',
+      'cityTooShort': 'Ciudad no válida',
+      'invalidProvince': 'Provincia no válida (2 letras)',
       'fillFollowingFields': 'Completa los siguientes campos',
       'sendingError': 'Error durante el envío',
       'internationalProtectionRequest':
@@ -7661,6 +7701,8 @@ class AppLocalizations {
   String get fiscalCodeMustBe16Chars => translate('fiscalCodeMustBe16Chars');
   String get birthPlace => translate('birthPlace');
   String get invalidPostalCode => translate('invalidPostalCode');
+  String get invalidFiscalCode => translate('invalidFiscalCode');
+  String get invalidBirthDate => translate('invalidBirthDate');
   String get invalidEmail => translate('invalidEmail');
   String get fillFollowingFields => translate('fillFollowingFields');
   String get sendingError => translate('sendingError');

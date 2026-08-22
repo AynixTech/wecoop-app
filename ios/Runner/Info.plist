@@ -47,6 +47,8 @@
 	<string>Abbiamo bisogno di accedere alla fotocamera per scattare foto ai tuoi documenti</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Usiamo Face ID per permetterti un accesso rapido e sicuro</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Alcuni servizi integrati, come i pagamenti sicuri, possono utilizzare la posizione approssimativa per prevenire frodi e garantire transazioni più sicure.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Abbiamo bisogno di salvare i documenti generati nella tua libreria quando lo richiedi</string>
 	<key>NSPhotoLibraryUsageDescription</key>

@@ -293,6 +293,12 @@ class PushNotificationService {
     }
   }
 
+  /// Re-invia il token FCM al backend (es. dopo login o pagamento completato).
+  Future<void> syncTokenWithBackend() async {
+    if (Firebase.apps.isEmpty) return;
+    await _getFCMToken();
+  }
+
   /// Rimuovi token FCM dal backend (logout)
   Future<void> removeToken() async {
     try {

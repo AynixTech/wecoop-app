@@ -5,6 +5,7 @@ import 'package:flutter_stripe/flutter_stripe.dart' hide Card;
 import '../../models/pagamento_model.dart';
 import '../../services/pagamento_service.dart';
 import '../../services/app_localizations.dart';
+import '../../services/push_notification_service.dart';
 import '../../config/stripe_config.dart';
 
 class PagamentoScreen extends StatefulWidget {
@@ -219,6 +220,9 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       if (!mounted) return;
 
       if (result['success'] == true) {
+        // Registra push token per email future con deep link app (non "Vai alla piattaforma").
+        await PushNotificationService().syncTokenWithBackend();
+
         // Ricarica i dati del pagamento
         await _loadPagamento();
 

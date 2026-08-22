@@ -89,8 +89,23 @@ class Pagamento {
     };
   }
 
-  bool get isPending => stato == 'pending' || stato == 'awaiting_payment';
-  bool get isPaid => stato == 'paid' || stato == 'completed';
+  bool get isPending {
+    final s = stato.toLowerCase();
+    return s == 'pending' ||
+        s == 'awaiting_payment' ||
+        s == 'in_attesa' ||
+        s == 'in attesa';
+  }
+
+  bool get isPaid {
+    final s = stato.toLowerCase();
+    return s == 'paid' ||
+        s == 'completed' ||
+        s == 'completato' ||
+        s == 'pagato' ||
+        s == 'ricevuto' ||
+        s == 'succeeded';
+  }
   bool get isFailed => stato == 'failed';
   bool get isCancelled => stato == 'cancelled';
 
@@ -106,8 +121,10 @@ class Pagamento {
       case 'awaiting_payment':
         return l10n.paymentStatusAwaitingPayment;
       case 'completed':
+      case 'completato':
         return l10n.paymentStatusCompleted;
       case 'paid':
+      case 'pagato':
         return l10n.paymentStatusPaid;
       case 'failed':
         return l10n.paymentStatusFailed;

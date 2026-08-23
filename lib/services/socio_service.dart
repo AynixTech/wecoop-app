@@ -289,10 +289,13 @@ class SocioService {
 
       AppLogger.d('Body: $body');
 
-      final headers = <String, String>{
-        'Content-Type': 'application/json',
-        'x-api-key': platformApiKey,
-      };
+      // JWT se l'utente è loggato + API key (se presente in build).
+      // Il backend accetta entrambi: evita 401 "non autenticato" quando
+      // WECOOP_API_KEY manca nella build ma la sessione JWT è valida.
+      final headers = await _getHeaders(includeAuth: true);
+      if (platformApiKey.isNotEmpty) {
+        headers['x-api-key'] = platformApiKey;
+      }
 
       final response = await HttpClientService.post(
         Uri.parse(url),

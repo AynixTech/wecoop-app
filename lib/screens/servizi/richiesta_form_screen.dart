@@ -80,6 +80,13 @@ const Map<String, String> servizioStandardMap = {
   'Ricongiungimento familiare': 'family_reunification',
   'Family Reunification': 'family_reunification',
   'Reagrupación Familiar': 'family_reunification',
+
+  // Educazione finanziaria + credito
+  'Educazione finanziaria + credito': 'financial_education_credit',
+  'Financial Education + Credit': 'financial_education_credit',
+  'Educación financiera + crédito': 'financial_education_credit',
+  'التثقيف المالي + الائتمان': 'financial_education_credit',
+  '金融教育 + 信贷': 'financial_education_credit',
 };
 
 /// Mappa categorie multilingua -> chiave standardizzata (inglese)
@@ -204,6 +211,25 @@ const Map<String, String> categoriaStandardMap = {
   'Dependent parents': 'dependent_parents',
   'Padres dependientes': 'dependent_parents',
   'Padres a cargo': 'dependent_parents',
+
+  // Educazione finanziaria + credito — categorie
+  'Educazione finanziaria di base': 'financial_basics',
+  'Basic Financial Education': 'financial_basics',
+  'Educación financiera básica': 'financial_basics',
+  'التثقيف المالي الأساسي': 'financial_basics',
+  '基础金融教育': 'financial_basics',
+
+  'Supporto credito': 'credit_support',
+  'Credit Support': 'credit_support',
+  'Soporte de crédito': 'credit_support',
+  'دعم الائتمان': 'credit_support',
+  '信贷支持': 'credit_support',
+
+  'Finanziamento a piccole aziende': 'small_business_financing',
+  'Small Business Financing': 'small_business_financing',
+  'Financiación para pequeñas empresas': 'small_business_financing',
+  'تمويل الشركات الصغيرة': 'small_business_financing',
+  '小微企业融资': 'small_business_financing',
 };
 
 /// Converte servizio tradotto in chiave standard

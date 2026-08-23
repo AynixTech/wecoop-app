@@ -255,13 +255,21 @@ class HttpClientService {
         try {
           final body = decodeJsonResponse(response);
           final message = (body['message'] ?? '').toString().toLowerCase();
+          // Non trattare i 401 di API key come sessione scaduta: altrimenti
+          // l'utente loggato vede "Devi essere autenticato" su endpoint
+          // protetti solo da x-api-key (es. POST /service-requests).
+          final isApiKeyError =
+              message.contains('api key') || message.contains('api-key');
           final isTokenError =
-              body['code'] == 'jwt_auth_invalid_token' ||
-              message.contains('expired') ||
-              message.contains('invalid') ||
-              message.contains('token') ||
-              message.contains('authorization') ||
-              response.statusCode == 401;
+              !isApiKeyError &&
+              (body['code'] == 'jwt_auth_invalid_token' ||
+                  message.contains('expired') ||
+                  message.contains('invalid token') ||
+                  message.contains('authorization') ||
+                  (response.statusCode == 401 &&
+                      (message.contains('token') ||
+                          message.contains('authenticated') ||
+                          message.contains('authorization'))));
 
           if (isTokenError) {
             AppLogger.d('⚠️ Token scaduto rilevato in: $requestUrl (status ${response.statusCode})');

@@ -255,21 +255,26 @@ class HttpClientService {
         try {
           final body = decodeJsonResponse(response);
           final message = (body['message'] ?? '').toString().toLowerCase();
-          // Non trattare i 401 di API key come sessione scaduta: altrimenti
-          // l'utente loggato vede "Devi essere autenticato" su endpoint
-          // protetti solo da x-api-key (es. POST /service-requests).
+          // Non trattare i 401 di sola API key come sessione scaduta.
+          // Eccezione: se abbiamo un JWT in storage, un 401 "API key" su
+          // POST /service-requests è spesso un JWT scaduto mascherato
+          // (optionalAuth lo ignora): conviene tentare il refresh.
           final isApiKeyError =
               message.contains('api key') || message.contains('api-key');
+          final storedJwt = await storage.read(key: 'jwt_token');
+          final hasJwt = storedJwt != null && storedJwt.isNotEmpty;
+          final looksLikeExpiredJwt =
+              body['code'] == 'jwt_auth_invalid_token' ||
+              message.contains('expired') ||
+              message.contains('invalid token') ||
+              message.contains('authorization') ||
+              (response.statusCode == 401 &&
+                  (message.contains('token') ||
+                      message.contains('authenticated') ||
+                      message.contains('authorization')));
+          // API-key 401 + JWT in storage → prova refresh (flussi lunghi es. fiscali).
           final isTokenError =
-              !isApiKeyError &&
-              (body['code'] == 'jwt_auth_invalid_token' ||
-                  message.contains('expired') ||
-                  message.contains('invalid token') ||
-                  message.contains('authorization') ||
-                  (response.statusCode == 401 &&
-                      (message.contains('token') ||
-                          message.contains('authenticated') ||
-                          message.contains('authorization'))));
+              (isApiKeyError && hasJwt) || (!isApiKeyError && looksLikeExpiredJwt);
 
           if (isTokenError) {
             AppLogger.d('⚠️ Token scaduto rilevato in: $requestUrl (status ${response.statusCode})');

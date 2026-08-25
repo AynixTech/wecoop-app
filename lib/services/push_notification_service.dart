@@ -25,6 +25,9 @@ class PushNotificationService {
   // Callback per navigazione
   Function(RemoteMessage)? onMessageTap;
 
+  /// Callback opzionale: aggiorna badge (count) oppure refresh API se null.
+  void Function(int? count)? onBadgeSync;
+
   /// NavigatorKey globale per la navigazione dal tap sulle notifiche
   /// (impostato una volta all'avvio dell'app).
   static GlobalKey<NavigatorState>? navigatorKey;
@@ -199,7 +202,21 @@ class PushNotificationService {
     // App in foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       AppLogger.d('📬 Notifica ricevuta in foreground');
+      if (message.data['type']?.toString() == 'badge_sync') {
+        // Solo sync badge: niente banner.
+        final count = int.tryParse(message.data['unread_count']?.toString() ?? '');
+        if (count != null) {
+          onBadgeSync?.call(count);
+        }
+        return;
+      }
       _showLocalNotification(message);
+      final count = int.tryParse(message.data['unread_count']?.toString() ?? '');
+      if (count != null) {
+        onBadgeSync?.call(count);
+      } else {
+        onBadgeSync?.call(null); // null = refresh from API
+      }
     });
 
     // App aperta da notifica (background/terminated)
@@ -280,16 +297,49 @@ class PushNotificationService {
       return;
     }
 
-    final screen = (data['screen'] ?? data['type'] ?? '').toString();
+    if (data['type']?.toString() == 'badge_sync') return;
+
+    final screen = (data['screen'] ?? data['type'] ?? data['tipo'] ?? '').toString();
+    final requestId = (data['request_id'] ?? data['entity_id'] ?? data['id'])
+        ?.toString();
+
     switch (screen) {
       case 'appuntamento':
+      case 'appuntamento_reminder':
       case 'calendar':
-        navigator.pushNamed('/calendar');
+        if (requestId != null && requestId.isNotEmpty) {
+          navigator.pushNamed('/calendar', arguments: {'richiesta_id': requestId});
+        } else {
+          navigator.pushNamed('/calendar');
+        }
+        break;
+      case 'support':
+      case 'support_reply':
+      case 'notifications':
+      case 'Notifications':
+        navigator.pushNamed('/notifications');
+        break;
+      case 'documenti':
+      case 'document_expiry':
+        navigator.pushNamed('/notifications');
+        break;
+      case 'status':
+      case 'payment':
+      case 'integrazione':
+      case 'document_ready':
+      case 'operator_message':
+      case 'service_request':
+        navigator.pushNamed(
+          '/calendar',
+          arguments: requestId != null ? {'richiesta_id': requestId} : null,
+        );
         break;
       default:
-        // Le altre sezioni (eventi, richieste, profilo) sono tab dentro la
-        // MainScreen: portiamo alla home come punto d'ingresso sicuro.
-        navigator.pushNamed('/home');
+        if (requestId != null && requestId.isNotEmpty) {
+          navigator.pushNamed('/calendar', arguments: {'richiesta_id': requestId});
+        } else {
+          navigator.pushNamed('/notifications');
+        }
     }
   }
 

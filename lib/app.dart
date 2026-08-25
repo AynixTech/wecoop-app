@@ -17,6 +17,10 @@ import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/utils/deep_link_handler.dart';
 import 'package:wecoop_app/theme/theme.dart';
 import 'package:wecoop_app/widgets/mandatory_update_gate.dart';
+import 'package:wecoop_app/services/notification_badge_provider.dart';
+import 'package:wecoop_app/screens/notifiche/notifiche_screen.dart';
+import 'package:wecoop_app/screens/profilo/documenti_screen.dart';
+import 'package:wecoop_app/screens/profilo/mie_richieste_screen.dart';
 import 'screens/main_screen.dart';
 import 'screens/login/login_screen.dart';
 import 'screens/login/forgot_password_screen.dart';
@@ -30,7 +34,7 @@ class WECOOPApp extends StatefulWidget {
   State<WECOOPApp> createState() => _WECOOPAppState();
 }
 
-class _WECOOPAppState extends State<WECOOPApp> {
+class _WECOOPAppState extends State<WECOOPApp> with WidgetsBindingObserver {
   final PushNotificationService _pushService = PushNotificationService();
   final DeepLinkService _deepLinkService = DeepLinkService();
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
@@ -38,12 +42,31 @@ class _WECOOPAppState extends State<WECOOPApp> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     MaintenanceHandler.bindNavigatorKey(_navigatorKey);
     PushNotificationService.navigatorKey = _navigatorKey;
     _bindSessionExpiredHandler();
     _initializePushNotifications();
     _initializeDeepLinks();
     _checkForAppUpdate();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshBadge();
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refreshBadge();
+    }
+  }
+
+  void _refreshBadge() {
+    final ctx = _navigatorKey.currentContext;
+    if (ctx == null) return;
+    try {
+      ctx.read<NotificationBadgeProvider>().refresh();
+    } catch (_) {}
   }
 
   /// Quando il refresh token fallisce (sessione scaduta), riporta al login.
@@ -70,6 +93,18 @@ class _WECOOPAppState extends State<WECOOPApp> {
     _pushService.onMessageTap = (RemoteMessage message) {
       _handleNotificationNavigation(message.data);
     };
+    _pushService.onBadgeSync = (count) {
+      final ctx = _navigatorKey.currentContext;
+      if (ctx == null) return;
+      try {
+        final provider = ctx.read<NotificationBadgeProvider>();
+        if (count != null) {
+          provider.setCount(count);
+        } else {
+          provider.refresh();
+        }
+      } catch (_) {}
+    };
   }
 
   Future<void> _initializeDeepLinks() async {
@@ -88,57 +123,108 @@ class _WECOOPAppState extends State<WECOOPApp> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _deepLinkService.dispose();
     super.dispose();
   }
 
   void _handleNotificationNavigation(Map<String, dynamic> data) {
-    final screen = data['screen'] as String?;
-    final id = data['id'] as String?;
-
     AppLogger.d('📍 Navigazione richiesta: $data');
-    AppLogger.d('Screen: $screen, ID: $id');
 
-    if (screen == null) return;
+    // Sync badge se il payload include unread_count.
+    final unreadRaw = data['unread_count']?.toString();
+    if (unreadRaw != null) {
+      final count = int.tryParse(unreadRaw);
+      final ctx = _navigatorKey.currentContext;
+      if (count != null && ctx != null) {
+        try {
+          ctx.read<NotificationBadgeProvider>().setCount(count);
+        } catch (_) {}
+      }
+    }
 
-    // Naviga alla schermata specificata
+    // badge_sync silent: solo aggiorna contatore, no nav.
+    if (data['type']?.toString() == 'badge_sync') return;
+
+    final screen = (data['screen'] ?? data['type'] ?? data['tipo'] ?? '').toString();
+    final requestId = (data['request_id'] ?? data['entity_id'] ?? data['id'])
+        ?.toString();
+
     switch (screen) {
-      case 'EventDetail':
-        // Eventi è un tab della MainScreen: entriamo dalla home.
-        AppLogger.d('🔄 Deep link EventDetail: $id -> home');
-        _navigatorKey.currentState?.pushNamed('/home');
-        break;
-
-      case 'ServiceDetail':
-        // Servizi è un tab della MainScreen: entriamo dalla home.
-        AppLogger.d('🔄 Deep link ServiceDetail: $id -> home');
-        _navigatorKey.currentState?.pushNamed('/home');
-        break;
-
-      case 'Profile':
-        AppLogger.d('🔄 Navigazione a Profile');
-        _navigatorKey.currentState?.pushNamed('/home');
-        break;
-
       case 'Notifications':
-        AppLogger.d('🔄 Navigazione a Notifications');
-        _navigatorKey.currentState?.pushNamed('/home');
+      case 'notifications':
+        _navigatorKey.currentState?.pushNamed('/notifications');
         break;
 
+      case 'appuntamento':
+      case 'appuntamento_reminder':
+      case 'calendar':
       case 'AppointmentDetail':
-        AppLogger.d('🔄 Navigazione a AppointmentDetail (richiesta $id)');
-        if (id != null) {
+        if (requestId != null && requestId.isNotEmpty) {
           _navigatorKey.currentState?.pushNamed(
             '/calendar',
-            arguments: {'richiesta_id': id},
+            arguments: {'richiesta_id': requestId},
           );
         } else {
           _navigatorKey.currentState?.pushNamed('/calendar');
         }
         break;
 
+      case 'support':
+      case 'support_reply':
+        _navigatorKey.currentState?.push(
+          MaterialPageRoute(builder: (_) => const MieRichiesteScreen()),
+        );
+        break;
+
+      case 'documenti':
+      case 'document_expiry':
+      case 'document_ready':
+        if (screen == 'document_ready' ||
+            data['type']?.toString() == 'document_ready' ||
+            data['entity_type']?.toString() == 'service_request') {
+          _navigatorKey.currentState?.pushNamed(
+            '/calendar',
+            arguments: requestId != null ? {'richiesta_id': requestId} : null,
+          );
+        } else {
+          _navigatorKey.currentState?.push(
+            MaterialPageRoute(builder: (_) => const DocumentiScreen()),
+          );
+        }
+        break;
+
+      case 'profile':
+      case 'membership_expiry':
+      case 'Profile':
+        _navigatorKey.currentState?.pushNamed('/home');
+        break;
+
+      case 'service_request':
+      case 'status':
+      case 'payment':
+      case 'integrazione':
+      case 'operator_message':
+      case 'ServiceDetail':
+        _navigatorKey.currentState?.pushNamed(
+          '/calendar',
+          arguments: requestId != null ? {'richiesta_id': requestId} : null,
+        );
+        break;
+
+      case 'EventDetail':
+        _navigatorKey.currentState?.pushNamed('/home');
+        break;
+
       default:
-        AppLogger.d('🔄 Schermata sconosciuta: $screen');
+        if (requestId != null && requestId.isNotEmpty) {
+          _navigatorKey.currentState?.pushNamed(
+            '/calendar',
+            arguments: {'richiesta_id': requestId},
+          );
+        } else {
+          _navigatorKey.currentState?.pushNamed('/notifications');
+        }
     }
   }
 
@@ -343,6 +429,7 @@ class _WECOOPAppState extends State<WECOOPApp> {
           routes: {
             '/home': (context) => const MainScreen(),
             '/calendar': (context) => const CalendarScreen(),
+            '/notifications': (context) => const NotificheScreen(),
             '/login': (context) => const LoginScreen(),
             '/forgot-password': (context) => const ForgotPasswordScreen(),
             '/change-password': (context) => const ChangePasswordScreen(),

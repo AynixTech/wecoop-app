@@ -3,10 +3,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
-import 'services/locale_provider.dart';
-import 'services/secure_storage_service.dart';
-import 'services/error_reporter.dart';
-import 'services/firma_digitale_provider.dart';
+import 'package:wecoop_app/services/locale_provider.dart';
+import 'package:wecoop_app/services/firma_digitale_provider.dart';
+import 'package:wecoop_app/services/notification_badge_provider.dart';
+import 'package:wecoop_app/services/secure_storage_service.dart';
+import 'package:wecoop_app/services/error_reporter.dart';
 import 'config/stripe_config.dart';
 import 'app.dart';
 
@@ -84,6 +85,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
         ChangeNotifierProvider(create: (_) => FirmaDigitaleProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationBadgeProvider()),
       ],
       child: const WECOOPApp(),
     ),

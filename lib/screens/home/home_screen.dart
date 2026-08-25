@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'package:wecoop_app/services/notification_badge_provider.dart';
 import '../../widgets/design_system/design_system.dart';
 import '../../models/post_model.dart';
 import '../../models/evento_model.dart';
@@ -25,6 +27,7 @@ import '../progetti/project_category_detail_screen.dart';
 import '../eventi/evento_detail_screen.dart';
 import '../profilo/documenti_screen.dart';
 import '../../widgets/language_selector.dart';
+import '../notifiche/notifiche_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -42,6 +45,10 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     UserAvatarStore.hydrate();
     _loadUserData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<NotificationBadgeProvider>().refresh();
+    });
   }
 
   void _loadUserData() async {
@@ -82,6 +89,29 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text(l10n.appTitle),
         actions: [
+          if (isLoggedIn)
+            Consumer<NotificationBadgeProvider>(
+              builder: (context, badge, _) {
+                return IconButton(
+                  tooltip: l10n.notifications,
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const NotificheScreen(),
+                      ),
+                    );
+                  },
+                  icon: Badge(
+                    isLabelVisible: badge.unreadCount > 0,
+                    label: Text(
+                      badge.unreadCount > 99 ? '99+' : '${badge.unreadCount}',
+                      style: const TextStyle(fontSize: 10),
+                    ),
+                    child: const Icon(Icons.notifications_outlined),
+                  ),
+                );
+              },
+            ),
           const LanguageSelector(),
         ],
       ),

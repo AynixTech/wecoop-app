@@ -61,6 +61,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   bool _isLoadingEventi = false;
   bool _isUploadingAvatar = false;
   bool _isLoadingProfile = true;
+  bool _isLoggingOut = false;
 
   @override
   void initState() {
@@ -144,6 +145,9 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   }
 
   Future<void> _checkProfiloCompleto() async {
+    final token = await storage.read(key: 'jwt_token');
+    if (token == null || token.isEmpty) return;
+
     try {
       final userData = await SocioService.getMeData();
       if (userData != null && userData['success'] == true) {
@@ -195,46 +199,49 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
       });
     }
 
-    try {
-      final userData = await SocioService.getMeData();
-      if (userData != null && userData['success'] == true) {
-        final data = (userData['data'] as Map?)?.cast<String, dynamic>() ?? {};
-        final nome = (data['nome'] ?? '').toString().trim();
-        final cognome = (data['cognome'] ?? '').toString().trim();
-        final fullName = '$nome $cognome'.trim();
-        final freshAvatar = (data['avatar_url'] ?? '').toString().trim();
-        final freshTessera = (data['numero_tessera'] ?? '').toString().trim();
-        final freshTesseraUrl = (data['tessera_url'] ?? '').toString().trim();
-        final freshEmail = (data['email'] ?? '').toString().trim();
-        final freshScadenza = (data['data_scadenza_socio'] ?? '').toString().trim();
+    final token = await storage.read(key: 'jwt_token');
+    if (token != null && token.isNotEmpty) {
+      try {
+        final userData = await SocioService.getMeData();
+        if (userData != null && userData['success'] == true) {
+          final data = (userData['data'] as Map?)?.cast<String, dynamic>() ?? {};
+          final nome = (data['nome'] ?? '').toString().trim();
+          final cognome = (data['cognome'] ?? '').toString().trim();
+          final fullName = '$nome $cognome'.trim();
+          final freshAvatar = (data['avatar_url'] ?? '').toString().trim();
+          final freshTessera = (data['numero_tessera'] ?? '').toString().trim();
+          final freshTesseraUrl = (data['tessera_url'] ?? '').toString().trim();
+          final freshEmail = (data['email'] ?? '').toString().trim();
+          final freshScadenza = (data['data_scadenza_socio'] ?? '').toString().trim();
 
-        await UserAvatarStore.setAvatarUrl(freshAvatar);
+          await UserAvatarStore.setAvatarUrl(freshAvatar);
 
-        if (mounted) {
-          setState(() {
-            userName =
-                fullName.isNotEmpty
-                    ? fullName
-                    : (data['display_name'] ?? userName).toString();
-            userEmail = freshEmail.isNotEmpty ? freshEmail : userEmail;
-            tesseraNumero =
-                freshTessera.isNotEmpty ? freshTessera : tesseraNumero;
-            tesseraUrl =
-                freshTesseraUrl.isNotEmpty ? freshTesseraUrl : tesseraUrl;
-            avatarUrl = freshAvatar.isNotEmpty ? freshAvatar : avatarUrl;
-            dataScadenzaSocio =
-                freshScadenza.isNotEmpty ? DateTime.tryParse(freshScadenza) : dataScadenzaSocio;
-          });
+          if (mounted) {
+            setState(() {
+              userName =
+                  fullName.isNotEmpty
+                      ? fullName
+                      : (data['display_name'] ?? userName).toString();
+              userEmail = freshEmail.isNotEmpty ? freshEmail : userEmail;
+              tesseraNumero =
+                  freshTessera.isNotEmpty ? freshTessera : tesseraNumero;
+              tesseraUrl =
+                  freshTesseraUrl.isNotEmpty ? freshTesseraUrl : tesseraUrl;
+              avatarUrl = freshAvatar.isNotEmpty ? freshAvatar : avatarUrl;
+              dataScadenzaSocio =
+                  freshScadenza.isNotEmpty ? DateTime.tryParse(freshScadenza) : dataScadenzaSocio;
+            });
+          }
         }
+      } catch (e) {
+        AppLogger.d('Errore refresh dati profilo: $e');
       }
-    } catch (e) {
-      AppLogger.d('Errore refresh dati profilo: $e');
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoadingProfile = false;
-        });
-      }
+    }
+
+    if (mounted) {
+      setState(() {
+        _isLoadingProfile = false;
+      });
     }
   }
 
@@ -519,11 +526,16 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     }
   }
 
-  void _logout(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!;
+  Future<void> _logout(BuildContext context) async {
+    if (_isLoggingOut) return;
+    _isLoggingOut = true;
 
-    // Salva el teléfono antes de hacer logout para poder recargarlo
-    final currentPhone = await storage.read(key: 'telefono');
+    final l10n = AppLocalizations.of(context)!;
+    final logoutMessage = l10n.logoutConfirm;
+
+    try {
+      // Salva el teléfono antes de hacer logout para poder recargarlo
+      final currentPhone = await storage.read(key: 'telefono');
     if (currentPhone != null) {
       await storage.write(key: 'last_login_phone', value: currentPhone);
     }
@@ -590,11 +602,27 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     // NON cancellare last_login_phone - serve per precompilare il login
 
     AppLogger.d('Utente disconnesso');
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(l10n.logoutConfirm)));
 
-    Navigator.pushReplacementNamed(context, '/login');
+    final navigator = PushNotificationService.navigatorKey?.currentState;
+    final rootContext = PushNotificationService.navigatorKey?.currentContext;
+
+    if (rootContext != null) {
+      ScaffoldMessenger.of(rootContext).showSnackBar(
+        SnackBar(content: Text(logoutMessage)),
+      );
+    }
+
+    if (navigator != null) {
+      navigator.pushNamedAndRemoveUntil('/login', (_) => false);
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(logoutMessage)),
+      );
+      Navigator.pushReplacementNamed(context, '/login');
+    }
+    } finally {
+      _isLoggingOut = false;
+    }
   }
 
   Future<void> _changeLanguage(String languageCode) async {

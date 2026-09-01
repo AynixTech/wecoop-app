@@ -3,6 +3,7 @@ import '../theme/theme.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../services/user_avatar_store.dart';
 import '../services/socio_service.dart';
+import '../services/secure_storage_service.dart';
 import 'annunci/annunci_screen.dart';
 import 'home/home_screen.dart';
 import 'calendar/calendar_screen.dart';
@@ -41,6 +42,10 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> _checkProfiloCompleto() async {
     if (_profileCheckDone) return;
     _profileCheckDone = true;
+
+    final token = await SecureStorageService().read(key: 'jwt_token');
+    if (token == null || token.isEmpty) return;
+
     try {
       final res = await SocioService.getProfiloCompleto();
       if (res['success'] != true) return;

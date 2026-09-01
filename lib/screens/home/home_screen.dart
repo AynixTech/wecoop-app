@@ -22,7 +22,8 @@ import '../servizi/supporto_contabile_screen.dart';
 import '../servizi/educazione_finanziaria_credito_screen.dart';
 import '../servizi/lavoro_orientamento_screen.dart';
 import '../servizi/studiare_in_italia_screen.dart';
-import '../onboarding/first_access_screen.dart';
+import '../../utils/member_service_navigation.dart';
+import '../../widgets/network_image_fallback.dart';
 import '../progetti/project_category_detail_screen.dart';
 import '../eventi/evento_detail_screen.dart';
 import '../profilo/documenti_screen.dart';
@@ -676,11 +677,12 @@ class _InfoCard extends StatelessWidget {
                 ),
                 child: Stack(
                   children: [
-                    Image.network(
-                      imageUrl!,
+                    NetworkImageFallback(
+                      url: imageUrl!,
                       height: 100,
                       width: double.infinity,
                       fit: BoxFit.cover,
+                      fallbackIcon: Icons.event_outlined,
                     ),
                     Container(
                       height: 100,
@@ -772,24 +774,13 @@ class _ServicesSection extends StatelessWidget {
         const SizedBox(height: 12),
         _ServiceButton(
           title: l10n.welcomeOrientation,
-          imagePath: 'assets/images/home/accoglienza.jpg',
-          onTap: () async {
-            final storage = SecureStorageService();
-            final token = await storage.read(key: 'jwt_token');
-            final isLoggedIn = token != null && token.isNotEmpty;
-
-            if (!context.mounted) return;
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder:
-                    (context) =>
-                        isLoggedIn
-                            ? const AccoglienzaScreen()
-                            : const FirstAccessScreen(),
+          imagePath: 'assets/images/home/vivere-in-italia.jpg',
+          onTap:
+              () => openMemberService(
+                context,
+                destination: const AccoglienzaScreen(),
+                serviceName: l10n.welcomeOrientation,
               ),
-            );
-          },
         ),
         const SizedBox(height: 12),
         _ServiceButton(
@@ -808,89 +799,45 @@ class _ServicesSection extends StatelessWidget {
         _ServiceButton(
           title: l10n.translate('fiscalServices'),
           imagePath: 'assets/images/home/mediazione.jpg',
-          onTap: () async {
-            final storage = SecureStorageService();
-            final token = await storage.read(key: 'jwt_token');
-            final isLoggedIn = token != null && token.isNotEmpty;
-
-            if (!context.mounted) return;
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder:
-                    (context) =>
-                        isLoggedIn
-                            ? const MediazioneFiscaleScreen()
-                            : const FirstAccessScreen(),
+          onTap:
+              () => openMemberService(
+                context,
+                destination: const MediazioneFiscaleScreen(),
+                serviceName: l10n.translate('fiscalServices'),
               ),
-            );
-          },
         ),
         const SizedBox(height: 12),
         _ServiceButton(
           title: l10n.accountingSupport,
           imagePath: 'assets/images/home/contabile.jpg',
-          onTap: () async {
-            final storage = SecureStorageService();
-            final token = await storage.read(key: 'jwt_token');
-            final isLoggedIn = token != null && token.isNotEmpty;
-
-            if (!context.mounted) return;
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder:
-                    (context) =>
-                        isLoggedIn
-                            ? const SupportoContabileScreen()
-                            : const FirstAccessScreen(),
+          onTap:
+              () => openMemberService(
+                context,
+                destination: const SupportoContabileScreen(),
+                serviceName: l10n.accountingSupport,
               ),
-            );
-          },
         ),
         const SizedBox(height: 12),
         _ServiceButton(
           title: l10n.translate('workAndOrientation'),
           imagePath: 'assets/images/home/cv_ai.jpg',
-          onTap: () async {
-            final storage = SecureStorageService();
-            final token = await storage.read(key: 'jwt_token');
-            final isLoggedIn = token != null && token.isNotEmpty;
-
-            if (!context.mounted) return;
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder:
-                    (context) =>
-                        isLoggedIn
-                            ? const LavoroOrientamentoScreen()
-                            : const FirstAccessScreen(),
+          onTap:
+              () => openMemberService(
+                context,
+                destination: const LavoroOrientamentoScreen(),
+                serviceName: l10n.translate('workAndOrientation'),
               ),
-            );
-          },
         ),
         const SizedBox(height: 12),
         _ServiceButton(
           title: l10n.translate('financialEducationCredit'),
           imagePath: 'assets/images/home/orientamento.jpg',
-          onTap: () async {
-            final storage = SecureStorageService();
-            final token = await storage.read(key: 'jwt_token');
-            final isLoggedIn = token != null && token.isNotEmpty;
-
-            if (!context.mounted) return;
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder:
-                    (context) =>
-                        isLoggedIn
-                            ? const EducazioneFinanziariaCreditoScreen()
-                            : const FirstAccessScreen(),
+          onTap:
+              () => openMemberService(
+                context,
+                destination: const EducazioneFinanziariaCreditoScreen(),
+                serviceName: l10n.translate('financialEducationCredit'),
               ),
-            );
-          },
         ),
 
       ],

@@ -7,9 +7,7 @@ import '../../services/app_localizations.dart';
 import '../../services/notification_badge_provider.dart';
 import '../../services/notifications_service.dart';
 import '../../theme/theme.dart';
-import '../calendar/calendar_screen.dart';
-import '../profilo/documenti_screen.dart';
-import '../profilo/mie_richieste_screen.dart';
+import '../../utils/app_navigation.dart';
 
 /// Centro Notifiche: elenco lette/non lette con deep link agli oggetti.
 class NotificheScreen extends StatefulWidget {
@@ -43,7 +41,9 @@ class _NotificheScreenState extends State<NotificheScreen> {
 
     if (result['success'] == true) {
       final count = result['unread_count'] as int? ?? 0;
+      if (!mounted) return;
       await context.read<NotificationBadgeProvider>().setCount(count);
+      if (!mounted) return;
       setState(() {
         _items = (result['data'] as List<AppNotification>?) ?? [];
         _loading = false;
@@ -98,62 +98,14 @@ class _NotificheScreenState extends State<NotificheScreen> {
   }
 
   void _navigateFor(AppNotification n) {
-    final type = n.type;
-    final entityType = n.entityType ?? n.data['entity_type']?.toString();
-    final entityId = n.entityId ?? n.data['entity_id']?.toString();
-    final requestId =
-        n.data['request_id']?.toString() ??
-        (entityType == 'service_request' ? entityId : null);
-    final screen = n.data['screen']?.toString();
-
-    if (type == 'appuntamento' ||
-        type == 'appuntamento_reminder' ||
-        screen == 'calendar' ||
-        entityType == 'appuntamento') {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => const CalendarScreen(),
-          settings: RouteSettings(
-            arguments: requestId != null ? {'richiesta_id': requestId} : null,
-          ),
-        ),
-      );
-      return;
-    }
-
-    if (type == 'support_reply' ||
-        screen == 'support' ||
-        entityType == 'support_ticket') {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const MieRichiesteScreen()),
-      );
-      return;
-    }
-
-    if (type == 'document_expiry' ||
-        type == 'membership_expiry' ||
-        screen == 'documenti' ||
-        screen == 'profile' ||
-        entityType == 'documento') {
-      if (type == 'document_expiry' || entityType == 'documento') {
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const DocumentiScreen()),
-        );
-      } else {
-        Navigator.of(context).pushNamed('/home');
-      }
-      return;
-    }
-
-    // Pratiche / status / integrazione / payment / document_ready / operator_message
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const CalendarScreen(),
-        settings: RouteSettings(
-          arguments: requestId != null ? {'richiesta_id': requestId} : null,
-        ),
-      ),
-    );
+    AppNavigation.handleNotificationPayload({
+      'type': n.type,
+      'screen': n.data['screen'] ?? n.type,
+      'entity_type': n.entityType ?? n.data['entity_type'],
+      'entity_id': n.entityId ?? n.data['entity_id'],
+      'request_id': n.data['request_id'] ?? n.entityId,
+      'event_id': n.data['event_id'] ?? n.data['evento_id'],
+    });
   }
 
   String _formatDate(DateTime dt) {

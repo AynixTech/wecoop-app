@@ -693,6 +693,15 @@ class AppLocalizations {
       'completeProfileMessage':
           'Completa i tuoi dati per accedere a tutti i servizi',
       'completeNow': 'Completa Ora',
+      'completeProfileDialogTitle': 'Completa il tuo profilo',
+      'completeProfileDialogMessage':
+          'Il tuo profilo non è ancora completo. Completa i tuoi dati per accedere a tutti i servizi WeCoop e ricevere aggiornamenti via email.',
+      'completeProfileLater': 'Più tardi',
+      'invalidDeepLink': 'Link non valido',
+      'invalidResetPasswordLink': 'Link reset password non valido',
+      'guestProfileTitle': 'Accedi al tuo spazio WeCoop',
+      'guestProfileSubtitle':
+          'Effettua il login per gestire tessera, documenti e servizi riservati ai soci.',
       'updateYourPersonalData': 'Aggiorna i tuoi dati personali',
       'personalData': 'Dati Personali',
       'documents': 'Documenti',
@@ -1871,6 +1880,15 @@ class AppLocalizations {
       'profileIncomplete': 'الملف الشخصي غير مكتمل',
       'completeProfileMessage': 'أكمل بياناتك للوصول إلى جميع الخدمات',
       'completeNow': 'أكمل الآن',
+      'completeProfileDialogTitle': 'أكمل ملفك الشخصي',
+      'completeProfileDialogMessage':
+          'ملفك الشخصي غير مكتمل بعد. أكمل بياناتك للوصول إلى جميع خدمات WeCoop.',
+      'completeProfileLater': 'لاحقًا',
+      'invalidDeepLink': 'رابط غير صالح',
+      'invalidResetPasswordLink': 'رابط إعادة تعيين كلمة المرور غير صالح',
+      'guestProfileTitle': 'سجّل الدخول إلى مساحة WeCoop',
+      'guestProfileSubtitle':
+          'سجّل الدخول لإدارة بطاقة العضوية والمستندات والخدمات المخصصة للأعضاء.',
       'memberCard': 'بطاقة العضوية',
       'memberCardNumberUnavailable': 'رقم البطاقة غير متاح',
       // Biometric
@@ -3249,6 +3267,14 @@ class AppLocalizations {
       'profileIncomplete': '个人资料不完整',
       'completeProfileMessage': '完善您的信息以访问所有服务',
       'completeNow': '立即完善',
+      'completeProfileDialogTitle': '完善您的资料',
+      'completeProfileDialogMessage':
+          '您的资料尚未完善。请补充信息以使用全部 WeCoop 服务并接收邮件更新。',
+      'completeProfileLater': '稍后',
+      'invalidDeepLink': '无效链接',
+      'invalidResetPasswordLink': '密码重置链接无效',
+      'guestProfileTitle': '登录 WeCoop 空间',
+      'guestProfileSubtitle': '登录后可管理会员卡、文档和会员专属服务。',
       'memberCard': '会员卡',
       'memberCardNumberUnavailable': '卡号不可用',
       // Biometric
@@ -4966,6 +4992,15 @@ class AppLocalizations {
       'profileIncomplete': 'Incomplete Profile',
       'completeProfileMessage': 'Complete your data to access all services',
       'completeNow': 'Complete Now',
+      'completeProfileDialogTitle': 'Complete your profile',
+      'completeProfileDialogMessage':
+          'Your profile is not complete yet. Add your details to access all WeCoop services and receive email updates.',
+      'completeProfileLater': 'Later',
+      'invalidDeepLink': 'Invalid link',
+      'invalidResetPasswordLink': 'Invalid password reset link',
+      'guestProfileTitle': 'Sign in to your WeCoop space',
+      'guestProfileSubtitle':
+          'Log in to manage your membership card, documents, and member-only services.',
       'updateYourPersonalData': 'Update your personal data',
       'personalData': 'Personal Data',
       'documents': 'Documents',
@@ -6502,6 +6537,15 @@ class AppLocalizations {
       'completeProfileMessage':
           'Completa tus datos para acceder a todos los servicios',
       'completeNow': 'Completar Ahora',
+      'completeProfileDialogTitle': 'Completa tu perfil',
+      'completeProfileDialogMessage':
+          'Tu perfil aún no está completo. Completa tus datos para acceder a todos los servicios WeCoop y recibir actualizaciones por email.',
+      'completeProfileLater': 'Más tarde',
+      'invalidDeepLink': 'Enlace no válido',
+      'invalidResetPasswordLink': 'Enlace de restablecimiento no válido',
+      'guestProfileTitle': 'Accede a tu espacio WeCoop',
+      'guestProfileSubtitle':
+          'Inicia sesión para gestionar tu tarjeta, documentos y servicios reservados a socios.',
       'updateYourPersonalData': 'Actualiza tus datos personales',
       'personalData': 'Datos Personales',
       'documents': 'Documentos',

@@ -1410,7 +1410,9 @@ class _CategoriaMenuHelper {
 }
 
 class OfferteLavoroScreen extends StatefulWidget {
-  const OfferteLavoroScreen({super.key});
+  final int? initialOffertaId;
+
+  const OfferteLavoroScreen({super.key, this.initialOffertaId});
 
   @override
   State<OfferteLavoroScreen> createState() => _OfferteLavoroScreenState();
@@ -1660,6 +1662,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
 
   bool _isLoading = true;
   bool _isLoadingMore = false;
+  bool _openedInitialOfferta = false;
   String? _errorMessage;
 
   String? _selectedCategoriaSlug;
@@ -1839,6 +1842,7 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                 ? (categorieResult['categorie'] as List<OffertaCategoria>)
                 : <OffertaCategoria>[];
       });
+      await _tryOpenInitialOfferta();
       return;
     }
 
@@ -1853,6 +1857,23 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
               ? (categorieResult['categorie'] as List<OffertaCategoria>)
               : <OffertaCategoria>[];
     });
+  }
+
+  Future<void> _tryOpenInitialOfferta() async {
+    if (_openedInitialOfferta || widget.initialOffertaId == null) return;
+    _openedInitialOfferta = true;
+
+    OffertaLavoro? match;
+    for (final offerta in _offerte) {
+      if (offerta.id == widget.initialOffertaId) {
+        match = offerta;
+        break;
+      }
+    }
+
+    if (match != null && mounted) {
+      await _openDetail(match);
+    }
   }
 
   Future<void> _loadMore() async {

@@ -145,6 +145,8 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
           : null,
     );
 
+    if (!mounted) return;
+
     setState(() {
       _isSubmitting = false;
     });

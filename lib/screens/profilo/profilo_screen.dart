@@ -19,6 +19,7 @@ import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:provider/provider.dart';
 import '../../services/locale_provider.dart';
 import '../../services/app_localizations.dart';
+import '../../utils/app_navigation.dart';
 import '../../services/eventi_service.dart';
 import '../../services/socio_service.dart';
 import '../../services/user_avatar_store.dart';
@@ -62,6 +63,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   bool _isUploadingAvatar = false;
   bool _isLoadingProfile = true;
   bool _isLoggingOut = false;
+  bool _isLoggedIn = false;
 
   @override
   void initState() {
@@ -185,6 +187,9 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     final interest = await storage.read(key: 'selected_interest');
     final biometricSetting = await storage.read(key: 'biometric_login_enabled');
 
+    final token = await storage.read(key: 'jwt_token');
+    final loggedIn = token != null && token.isNotEmpty;
+
     if (mounted) {
       setState(() {
         userName = name ?? displayName ?? '';
@@ -196,11 +201,11 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
         selectedInterest = interest ?? 'culture';
         _biometricLoginEnabled =
             biometricSetting == null || biometricSetting == 'true';
+        _isLoggedIn = loggedIn;
       });
     }
 
-    final token = await storage.read(key: 'jwt_token');
-    if (token != null && token.isNotEmpty) {
+    if (loggedIn) {
       try {
         final userData = await SocioService.getMeData();
         if (userData != null && userData['success'] == true) {
@@ -534,6 +539,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     final logoutMessage = l10n.logoutConfirm;
 
     try {
+      HttpClientService.suppressSessionExpired = true;
       // Salva el teléfono antes de hacer logout para poder recargarlo
       final currentPhone = await storage.read(key: 'telefono');
     if (currentPhone != null) {
@@ -603,24 +609,16 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
 
     AppLogger.d('Utente disconnesso');
 
-    final navigator = PushNotificationService.navigatorKey?.currentState;
     final rootContext = PushNotificationService.navigatorKey?.currentContext;
-
     if (rootContext != null) {
       ScaffoldMessenger.of(rootContext).showSnackBar(
         SnackBar(content: Text(logoutMessage)),
       );
     }
 
-    if (navigator != null) {
-      navigator.pushNamedAndRemoveUntil('/login', (_) => false);
-    } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(logoutMessage)),
-      );
-      Navigator.pushReplacementNamed(context, '/login');
-    }
+    AppNavigation.navigateToLogin();
     } finally {
+      HttpClientService.suppressSessionExpired = false;
       _isLoggingOut = false;
     }
   }
@@ -798,6 +796,126 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     );
   }
 
+  Widget _buildGuestProfile(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+
+    return Scaffold(
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [scheme.primary, const Color(0xFF1496C1)],
+                ),
+                borderRadius: BorderRadius.circular(28),
+              ),
+              child: Column(
+                children: [
+                  Image.asset('assets/icons/app_icon.png', height: 72),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.translate('guestProfileTitle'),
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: scheme.onPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.translate('guestProfileSubtitle'),
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: scheme.onPrimary.withOpacity(0.9),
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed:
+                          () => Navigator.pushReplacementNamed(context, '/login'),
+                      icon: const Icon(Icons.login),
+                      label: Text(l10n.login),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: scheme.onPrimary,
+                        foregroundColor: scheme.primary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            _buildSectionCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.translate('language'),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    initialValue: selectedLanguageCode,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    items: const [
+                      DropdownMenuItem(value: 'it', child: Text('Italiano')),
+                      DropdownMenuItem(value: 'en', child: Text('English')),
+                      DropdownMenuItem(value: 'es', child: Text('Español')),
+                      DropdownMenuItem(value: 'ar', child: Text('العربية')),
+                      DropdownMenuItem(value: 'zh', child: Text('中文')),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) _changeLanguage(value);
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            _buildSectionCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.translate('profileAppInfoTitle'),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${l10n.translate('profileAppVersion')}: $_appVersionDisplay',
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 28),
+            OutlinedButton.icon(
+              onPressed: _launchPrivacyPolicy,
+              icon: const Icon(Icons.privacy_tip_outlined),
+              label: const Text('Privacy Policy'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -895,6 +1013,10 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
           ),
         ),
       );
+    }
+
+    if (!_isLoggedIn) {
+      return _buildGuestProfile(context);
     }
 
     return Scaffold(

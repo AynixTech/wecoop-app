@@ -12,6 +12,9 @@ class HttpClientService {
   static const String refreshUrl = '${ApiConfig.baseUrl}/auth/refresh';
   static final storage = SecureStorageService();
 
+  /// Quando true, non invocare [onSessionExpired] (es. logout manuale in corso).
+  static bool suppressSessionExpired = false;
+
   /// Callback invocato quando il refresh fallisce definitivamente (sessione
   /// scaduta): l'app dovrebbe pulire lo stato e riportare l'utente al login.
   /// Impostato una volta all'avvio (es. da main/AuthGate).
@@ -294,7 +297,7 @@ class HttpClientService {
               // token e notifica l'app per riportare l'utente al login.
               AppLogger.d('❌ Refresh fallito - sessione scaduta, logout');
               await _clearSession();
-              if (onSessionExpired != null) {
+              if (onSessionExpired != null && !suppressSessionExpired) {
                 try {
                   await onSessionExpired!();
                 } catch (_) {

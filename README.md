@@ -1,42 +1,61 @@
-# wecoop_app
+# WeCoop App (Flutter)
 
-A new Flutter project.
+Mobile app for WeCoop members and guests.
 
-## Getting Started
+## Requirements
 
-This project is a starting point for a Flutter application.
+- Flutter SDK ^3.7
+- Xcode (iOS) / Android Studio (Android)
 
-A few resources to get you started if this is your first Flutter project:
+## Setup
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```bash
+flutter pub get
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Run (development)
 
-## Android Play Store Release
+```bash
+flutter run \
+  --dart-define=WECOOP_API_URL=https://your-backend.example.com/api \
+  --dart-define=WECOOP_API_KEY=your-api-key \
+  --dart-define=STRIPE_PUBLISHABLE_KEY=pk_test_xxx \
+  --dart-define=STRIPE_URL_SCHEME=wecoop \
+  --dart-define=STRIPE_MERCHANT_IDENTIFIER=merchant.org.wecoop
+```
 
-1. Prepare signing secrets locally:
+## Quality checks
+
+```bash
+dart analyze lib
+flutter test
+```
+
+## Android release (Play Store)
+
+1. Copy signing config:
 
 ```bash
 cp android/key.properties.example android/key.properties
 ```
 
-2. Build the release App Bundle (AAB):
+2. Build App Bundle:
 
 ```bash
 flutter clean
 flutter pub get
-flutter analyze
-flutter build appbundle \
-	--release \
-	--dart-define=STRIPE_PUBLISHABLE_KEY=pk_live_xxx \
-	--dart-define=STRIPE_URL_SCHEME=wecoop \
-	--dart-define=STRIPE_MERCHANT_IDENTIFIER=merchant.org.wecoop \
-	--dart-define=STRIPE_BACKEND_URL=https://www.wecoop.org/wp-json/wecoop/v1
+flutter build appbundle --release \
+  --dart-define=WECOOP_API_URL=https://your-backend.example.com/api \
+  --dart-define=WECOOP_API_KEY=your-api-key \
+  --dart-define=STRIPE_PUBLISHABLE_KEY=pk_live_xxx \
+  --dart-define=STRIPE_URL_SCHEME=wecoop \
+  --dart-define=STRIPE_MERCHANT_IDENTIFIER=merchant.org.wecoop
 ```
 
-3. Upload the generated file:
+Output: `build/app/outputs/bundle/release/app-release.aab`
 
-`build/app/outputs/bundle/release/app-release.aab`
+## Architecture notes
+
+- **Navigation:** use `AppNavigation` (`lib/utils/app_navigation.dart`) for tabs, login, and push/deep-link routing.
+- **Member services:** use `openMemberService()` (`lib/utils/member_service_navigation.dart`) for gated flows.
+- **i18n:** runtime strings live in `lib/services/app_localizations.dart` (it, en, es, ar, zh).

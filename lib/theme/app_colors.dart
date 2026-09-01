@@ -43,7 +43,8 @@ abstract final class AppColors {
   static const Color onGradientMuted = Color(0xFFEBF6FF);
 
   // -------------------------------------------------------------- neutri/UI
-  static const Color iconInactive = Color(0xFF9CA3AF);
+  /// Icone/tab inattivi — contrasto ≥4.5:1 su bianco (prima #9CA3AF era ~2.8:1).
+  static const Color iconInactive = Color(0xFF6F7782);
   static const Color disabled = Color(0xFFCBCED4);
   static const Color bgSubtle = Color(0xFFF1F5F9);
 

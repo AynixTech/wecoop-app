@@ -23,7 +23,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:file_picker/file_picker.dart';
 
 class CalendarScreen extends StatefulWidget {
-  const CalendarScreen({super.key});
+  final String? initialRichiestaId;
+
+  const CalendarScreen({super.key, this.initialRichiestaId});
 
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
@@ -56,6 +58,10 @@ class _CalendarScreenState extends State<CalendarScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _selectedDay = _focusedDay;
+    if (widget.initialRichiestaId != null &&
+        widget.initialRichiestaId!.isNotEmpty) {
+      _richiestaIdToOpen = widget.initialRichiestaId;
+    }
     _startAutoRefreshTimer();
   }
 

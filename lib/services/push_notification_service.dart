@@ -8,6 +8,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
+import '../utils/app_navigation.dart';
 import '../config/api_config.dart';
 
 /// Servizio per gestire le notifiche push Firebase
@@ -291,56 +292,12 @@ class PushNotificationService {
 
   /// Naviga alla schermata specificata dal payload della notifica.
   void _navigateToScreen(Map<String, dynamic> data) {
-    final navigator = navigatorKey?.currentState;
-    if (navigator == null) {
+    if (navigatorKey?.currentState == null) {
       AppLogger.d('🔄 navigatorKey non disponibile, navigazione ignorata');
       return;
     }
 
-    if (data['type']?.toString() == 'badge_sync') return;
-
-    final screen = (data['screen'] ?? data['type'] ?? data['tipo'] ?? '').toString();
-    final requestId = (data['request_id'] ?? data['entity_id'] ?? data['id'])
-        ?.toString();
-
-    switch (screen) {
-      case 'appuntamento':
-      case 'appuntamento_reminder':
-      case 'calendar':
-        if (requestId != null && requestId.isNotEmpty) {
-          navigator.pushNamed('/calendar', arguments: {'richiesta_id': requestId});
-        } else {
-          navigator.pushNamed('/calendar');
-        }
-        break;
-      case 'support':
-      case 'support_reply':
-      case 'notifications':
-      case 'Notifications':
-        navigator.pushNamed('/notifications');
-        break;
-      case 'documenti':
-      case 'document_expiry':
-        navigator.pushNamed('/notifications');
-        break;
-      case 'status':
-      case 'payment':
-      case 'integrazione':
-      case 'document_ready':
-      case 'operator_message':
-      case 'service_request':
-        navigator.pushNamed(
-          '/calendar',
-          arguments: requestId != null ? {'richiesta_id': requestId} : null,
-        );
-        break;
-      default:
-        if (requestId != null && requestId.isNotEmpty) {
-          navigator.pushNamed('/calendar', arguments: {'richiesta_id': requestId});
-        } else {
-          navigator.pushNamed('/notifications');
-        }
-    }
+    AppNavigation.handleNotificationPayload(data);
   }
 
   /// Re-invia il token FCM al backend (es. dopo login o pagamento completato).

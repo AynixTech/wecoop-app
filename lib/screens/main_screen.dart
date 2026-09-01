@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../services/user_avatar_store.dart';
 import '../services/socio_service.dart';
 import '../services/secure_storage_service.dart';
+import '../services/app_localizations.dart';
 import 'annunci/annunci_screen.dart';
 import 'home/home_screen.dart';
 import 'calendar/calendar_screen.dart';
@@ -15,10 +16,12 @@ import 'eventi/eventi_screen.dart';
 
 class MainScreen extends StatefulWidget {
   final int initialIndex;
+  final String? initialRichiestaId;
 
   const MainScreen({
     super.key,
     this.initialIndex = 0,
+    this.initialRichiestaId,
   });
 
   @override
@@ -27,6 +30,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   late int _selectedIndex;
+  late final List<Widget> _tabScreens;
   int _profileScreenVersion = 0;
   bool _profileCheckDone = false;
 
@@ -34,8 +38,16 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
+    _tabScreens = [
+      const HomeScreen(),
+      const EventiScreen(),
+      const AnnunciScreen(),
+      CalendarScreen(initialRichiestaId: widget.initialRichiestaId),
+      const OfferteLavoroScreen(),
+      const SportelloScreen(),
+      const SizedBox.shrink(),
+    ];
     UserAvatarStore.hydrate();
-    // Controlla se il profilo è completo e, se no, invita a completarlo.
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkProfiloCompleto());
   }
 
@@ -59,27 +71,27 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _showCompletaProfiloDialog() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       barrierDismissible: true,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
-          children: const [
-            Icon(Icons.account_circle_rounded, color: AppColors.primary, size: 28),
-            SizedBox(width: 10),
-            Expanded(child: Text('Completa il tuo profilo')),
+          children: [
+            const Icon(Icons.account_circle_rounded, color: AppColors.primary, size: 28),
+            const SizedBox(width: 10),
+            Expanded(child: Text(l10n.translate('completeProfileDialogTitle'))),
           ],
         ),
-        content: const Text(
-          'Il tuo profilo non è ancora completo. Completa i tuoi dati per accedere a '
-          'tutti i servizi WeCoop e ricevere aggiornamenti via email.',
-          style: TextStyle(height: 1.4),
+        content: Text(
+          l10n.translate('completeProfileDialogMessage'),
+          style: const TextStyle(height: 1.4),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Più tardi'),
+            child: Text(l10n.translate('completeProfileLater')),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -93,22 +105,21 @@ class _MainScreenState extends State<MainScreen> {
                 MaterialPageRoute(builder: (_) => const CompletaProfiloScreen()),
               );
             },
-            child: const Text('Completa ora'),
+            child: Text(l10n.completeNow),
           ),
         ],
       ),
     );
   }
 
-  List<Widget> get _screens => const [
-    HomeScreen(),
-    EventiScreen(),
-    AnnunciScreen(),
-    CalendarScreen(),
-    OfferteLavoroScreen(),
-    SportelloScreen(),
-    // Placeholder, replaced below to keep the profile tab refreshable.
-    SizedBox.shrink(),
+  List<Widget> get _resolvedScreens => [
+    _tabScreens[0],
+    _tabScreens[1],
+    _tabScreens[2],
+    _tabScreens[3],
+    _tabScreens[4],
+    _tabScreens[5],
+    ProfiloScreen(key: ValueKey('profile-$_profileScreenVersion')),
   ];
 
   void _onItemTapped(int index) {
@@ -119,16 +130,6 @@ class _MainScreenState extends State<MainScreen> {
       _selectedIndex = index;
     });
   }
-
-  List<Widget> get _resolvedScreens => [
-    _screens[0],
-    _screens[1],
-    _screens[2],
-    _screens[3],
-    _screens[4],
-    _screens[5],
-    ProfiloScreen(key: ValueKey('profile-$_profileScreenVersion')),
-  ];
 
   Widget _buildMenuIcon(
     String assetPath, {
@@ -257,7 +258,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ],
           border: Border.all(
-            color: isSelected ? AppColors.primary : Colors.white,
+            color: isSelected ? AppColors.primary : AppColors.borderInput,
             width: 3,
           ),
         ),

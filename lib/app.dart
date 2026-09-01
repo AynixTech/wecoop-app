@@ -14,18 +14,16 @@ import 'package:wecoop_app/services/deep_link_service.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/services/in_app_update_service.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
+import 'package:wecoop_app/utils/app_navigation.dart';
 import 'package:wecoop_app/utils/deep_link_handler.dart';
 import 'package:wecoop_app/theme/theme.dart';
 import 'package:wecoop_app/widgets/mandatory_update_gate.dart';
 import 'package:wecoop_app/services/notification_badge_provider.dart';
 import 'package:wecoop_app/screens/notifiche/notifiche_screen.dart';
-import 'package:wecoop_app/screens/profilo/documenti_screen.dart';
-import 'package:wecoop_app/screens/profilo/mie_richieste_screen.dart';
 import 'screens/main_screen.dart';
 import 'screens/login/login_screen.dart';
 import 'screens/login/forgot_password_screen.dart';
 import 'screens/profilo/change_password_screen.dart';
-import 'screens/calendar/calendar_screen.dart';
 
 class WECOOPApp extends StatefulWidget {
   const WECOOPApp({super.key});
@@ -72,7 +70,7 @@ class _WECOOPAppState extends State<WECOOPApp> with WidgetsBindingObserver {
   /// Quando il refresh token fallisce (sessione scaduta), riporta al login.
   void _bindSessionExpiredHandler() {
     HttpClientService.onSessionExpired = () async {
-      _navigatorKey.currentState?.pushNamedAndRemoveUntil('/login', (_) => false);
+      AppNavigation.navigateToLogin();
     };
   }
 
@@ -146,86 +144,7 @@ class _WECOOPAppState extends State<WECOOPApp> with WidgetsBindingObserver {
     // badge_sync silent: solo aggiorna contatore, no nav.
     if (data['type']?.toString() == 'badge_sync') return;
 
-    final screen = (data['screen'] ?? data['type'] ?? data['tipo'] ?? '').toString();
-    final requestId = (data['request_id'] ?? data['entity_id'] ?? data['id'])
-        ?.toString();
-
-    switch (screen) {
-      case 'Notifications':
-      case 'notifications':
-        _navigatorKey.currentState?.pushNamed('/notifications');
-        break;
-
-      case 'appuntamento':
-      case 'appuntamento_reminder':
-      case 'calendar':
-      case 'AppointmentDetail':
-        if (requestId != null && requestId.isNotEmpty) {
-          _navigatorKey.currentState?.pushNamed(
-            '/calendar',
-            arguments: {'richiesta_id': requestId},
-          );
-        } else {
-          _navigatorKey.currentState?.pushNamed('/calendar');
-        }
-        break;
-
-      case 'support':
-      case 'support_reply':
-        _navigatorKey.currentState?.push(
-          MaterialPageRoute(builder: (_) => const MieRichiesteScreen()),
-        );
-        break;
-
-      case 'documenti':
-      case 'document_expiry':
-      case 'document_ready':
-        if (screen == 'document_ready' ||
-            data['type']?.toString() == 'document_ready' ||
-            data['entity_type']?.toString() == 'service_request') {
-          _navigatorKey.currentState?.pushNamed(
-            '/calendar',
-            arguments: requestId != null ? {'richiesta_id': requestId} : null,
-          );
-        } else {
-          _navigatorKey.currentState?.push(
-            MaterialPageRoute(builder: (_) => const DocumentiScreen()),
-          );
-        }
-        break;
-
-      case 'profile':
-      case 'membership_expiry':
-      case 'Profile':
-        _navigatorKey.currentState?.pushNamed('/home');
-        break;
-
-      case 'service_request':
-      case 'status':
-      case 'payment':
-      case 'integrazione':
-      case 'operator_message':
-      case 'ServiceDetail':
-        _navigatorKey.currentState?.pushNamed(
-          '/calendar',
-          arguments: requestId != null ? {'richiesta_id': requestId} : null,
-        );
-        break;
-
-      case 'EventDetail':
-        _navigatorKey.currentState?.pushNamed('/home');
-        break;
-
-      default:
-        if (requestId != null && requestId.isNotEmpty) {
-          _navigatorKey.currentState?.pushNamed(
-            '/calendar',
-            arguments: {'richiesta_id': requestId},
-          );
-        } else {
-          _navigatorKey.currentState?.pushNamed('/notifications');
-        }
-    }
+    AppNavigation.handleNotificationPayload(data);
   }
 
   @override
@@ -256,8 +175,10 @@ class _WECOOPAppState extends State<WECOOPApp> with WidgetsBindingObserver {
           theme: ThemeData(
             fontFamily: AppTypography.fontFamily,
             useMaterial3: true,
-            colorScheme: const ColorScheme(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: AppColors.primary,
               brightness: Brightness.light,
+            ).copyWith(
               primary: AppColors.primary,
               onPrimary: AppColors.onPrimary,
               secondary: AppColors.secondary,
@@ -266,7 +187,10 @@ class _WECOOPAppState extends State<WECOOPApp> with WidgetsBindingObserver {
               onError: AppColors.onError,
               surface: AppColors.surface,
               onSurface: AppColors.textPrimary,
+              onSurfaceVariant: AppColors.textSecondary,
+              outline: AppColors.borderInput,
             ),
+            iconTheme: const IconThemeData(color: AppColors.textPrimary),
             textTheme: ThemeData.light().textTheme.apply(
               bodyColor: AppColors.textPrimary,
               displayColor: AppColors.textPrimary,
@@ -427,8 +351,26 @@ class _WECOOPAppState extends State<WECOOPApp> with WidgetsBindingObserver {
           ),
           home: const MainScreen(),
           routes: {
-            '/home': (context) => const MainScreen(),
-            '/calendar': (context) => const CalendarScreen(),
+            '/home': (context) {
+              final args = parseMainScreenRouteArgs(
+                ModalRoute.of(context)?.settings.arguments,
+              );
+              return MainScreen(
+                initialIndex: args.initialIndex,
+                initialRichiestaId: args.initialRichiestaId,
+              );
+            },
+            '/calendar': (context) {
+              final args = ModalRoute.of(context)?.settings.arguments;
+              String? richiestaId;
+              if (args is Map) {
+                richiestaId = args['richiesta_id']?.toString();
+              }
+              return MainScreen(
+                initialIndex: MainTab.calendar,
+                initialRichiestaId: richiestaId,
+              );
+            },
             '/notifications': (context) => const NotificheScreen(),
             '/login': (context) => const LoginScreen(),
             '/forgot-password': (context) => const ForgotPasswordScreen(),

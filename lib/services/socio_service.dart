@@ -756,7 +756,7 @@ class SocioService {
   }
 
   /// ===========================================================
-  /// STORICO PRATICHE (730, ISEE, ...)
+  /// STORICO PRATICHE (730, CU, ISEE, ...)
   /// ===========================================================
 
   /// Elenco dei documenti dello storico pratiche del cliente loggato.

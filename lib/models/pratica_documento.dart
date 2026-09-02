@@ -1,4 +1,4 @@
-/// Modello per un documento dello "Storico pratiche" (730, ISEE, ...).
+/// Modello per un documento dello "Storico pratiche" (730, CU, ISEE, ...).
 ///
 /// Corrisponde alla risposta dell'endpoint REST WordPress:
 /// GET /wp-json/wecoop/v1/pratiche/me

@@ -10,7 +10,7 @@ import '../../models/pratica_documento.dart';
 import '../../services/app_localizations.dart';
 import '../../services/socio_service.dart';
 
-/// Schermata "Storico pratiche": elenca i documenti (730, ISEE, ...) caricati
+/// Schermata "Storico pratiche": elenca i documenti (730, CU, ISEE, ...) caricati
 /// dagli operatori e li rende consultabili/scaricabili dal cliente.
 class StoricoPraticheScreen extends StatefulWidget {
   const StoricoPraticheScreen({super.key});

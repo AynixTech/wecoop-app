@@ -11,6 +11,7 @@ import 'package:wecoop_app/screens/onboarding/first_access_screen.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
 import '../../widgets/language_selector.dart';
 import '../../utils/html_utils.dart';
+import '../../utils/italian_validators.dart';
 import '../../widgets/design_system/design_system.dart';
 import '../../config/api_config.dart';
 
@@ -378,7 +379,11 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
         if (data['data_nascita'] != null) {
-          await storage.write(key: 'data_nascita', value: data['data_nascita']);
+          final normalized = ItalianValidators.normalizeIsoDate(
+                data['data_nascita'].toString(),
+              ) ??
+              data['data_nascita'].toString();
+          await storage.write(key: 'data_nascita', value: normalized);
         }
         if (data['luogo_nascita'] != null) {
           await storage.write(

@@ -7,6 +7,7 @@ import 'package:wecoop_app/widgets/help_button_widget.dart';
 import '../../services/socio_service.dart';
 import '../../services/documento_service.dart';
 import '../../models/documento.dart';
+import '../../utils/italian_validators.dart';
 import '../main_screen.dart';
 import '../profilo/documenti_screen.dart';
 import 'pagamento_screen.dart';
@@ -1227,15 +1228,10 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         prefilledData['Código Fiscal'] = codiceFiscale;
       }
 
-      // Data di nascita - Converti da YYYY-MM-DD a DD/MM/YYYY
+      // Data di nascita - gestisce YYYY-MM-DD e ISO con ora (...T00:00:00.000Z)
       if (dataNascita != null && dataNascita.isNotEmpty) {
-        String dataFormattata = dataNascita;
-        if (dataNascita.contains('-')) {
-          final parts = dataNascita.split('-');
-          if (parts.length == 3) {
-            dataFormattata = '${parts[2]}/${parts[1]}/${parts[0]}';
-          }
-        }
+        final dataFormattata =
+            ItalianValidators.formatBirthDateForDisplay(dataNascita);
         prefilledData['Data di nascita'] = dataFormattata;
         prefilledData['Date of birth'] = dataFormattata;
         prefilledData['Fecha de nacimiento'] = dataFormattata;

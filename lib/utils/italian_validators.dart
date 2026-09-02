@@ -106,6 +106,38 @@ class ItalianValidators {
     return '$y-$m-$d';
   }
 
+  /// Normalizza date API a YYYY-MM-DD.
+  /// Accetta `YYYY-MM-DD`, ISO con ora (`...T00:00:00.000Z`) o già `DD/MM/YYYY`.
+  static String? normalizeIsoDate(String? value) {
+    if (value == null) return null;
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return null;
+
+    final italian = tryParseItalianDate(trimmed);
+    if (italian != null) {
+      final y = italian.year.toString().padLeft(4, '0');
+      final m = italian.month.toString().padLeft(2, '0');
+      final d = italian.day.toString().padLeft(2, '0');
+      return '$y-$m-$d';
+    }
+
+    // YYYY-MM-DD o prefisso di un ISO datetime.
+    final match = RegExp(r'^(\d{4})-(\d{2})-(\d{2})').firstMatch(trimmed);
+    if (match != null) {
+      return '${match.group(1)}-${match.group(2)}-${match.group(3)}';
+    }
+    return null;
+  }
+
+  /// Converte una data API (YYYY-MM-DD o ISO) in DD/MM/YYYY per i form.
+  static String formatBirthDateForDisplay(String? value) {
+    final iso = normalizeIsoDate(value);
+    if (iso == null) return (value ?? '').trim();
+    final parts = iso.split('-');
+    if (parts.length != 3) return iso;
+    return '${parts[2]}/${parts[1]}/${parts[0]}';
+  }
+
   /// Restituisce una chiave i18n se non valida, altrimenti null.
   static String? validateBirthDate(String value, {bool required = false}) {
     final trimmed = value.trim();

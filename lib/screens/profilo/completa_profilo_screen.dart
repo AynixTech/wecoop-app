@@ -56,19 +56,10 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
             _emailController.text = data['email'] ?? '';
             _codiceFiscaleController.text = data['codice_fiscale'] ?? '';
 
-            // Converti data da YYYY-MM-DD a DD/MM/YYYY se presente
-            final dataNascita = data['data_nascita'] ?? '';
-            if (dataNascita.isNotEmpty && dataNascita.contains('-')) {
-              final parts = dataNascita.split('-');
-              if (parts.length == 3) {
-                _dataNascitaController.text =
-                    '${parts[2]}/${parts[1]}/${parts[0]}';
-              } else {
-                _dataNascitaController.text = dataNascita;
-              }
-            } else {
-              _dataNascitaController.text = dataNascita;
-            }
+            // YYYY-MM-DD / ISO datetime → DD/MM/YYYY
+            final dataNascita = data['data_nascita']?.toString() ?? '';
+            _dataNascitaController.text =
+                ItalianValidators.formatBirthDateForDisplay(dataNascita);
 
             _luogoNascitaController.text = data['luogo_nascita'] ?? '';
             _indirizzoController.text = data['indirizzo'] ?? '';

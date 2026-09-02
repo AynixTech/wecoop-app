@@ -13,6 +13,7 @@ import 'package:wecoop_app/utils/phone_prefixes.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../config/api_config.dart';
+import '../../utils/italian_validators.dart';
 
 class CvAiScreen extends StatefulWidget {
   const CvAiScreen({super.key});
@@ -881,11 +882,9 @@ class _CvAiScreenState extends State<CvAiScreen> {
     _indirizzoController.text = personalInfo['address']?.toString() ?? '';
 
     final birthDate = personalInfo['birthDate']?.toString();
-    if (birthDate != null && birthDate.contains('-')) {
-      final parts = birthDate.split('-');
-      if (parts.length == 3) {
-        _dataNascitaController.text = '${parts[2]}/${parts[1]}/${parts[0]}';
-      }
+    if (birthDate != null && birthDate.isNotEmpty) {
+      _dataNascitaController.text =
+          ItalianValidators.formatBirthDateForDisplay(birthDate);
     }
 
     _educations
@@ -951,11 +950,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
   }
 
   String _displayDateFromIso(String? value) {
-    if (value == null || value.isEmpty) return '';
-    if (!value.contains('-')) return value;
-    final parts = value.split('-');
-    if (parts.length != 3) return value;
-    return '${parts[2]}/${parts[1]}/${parts[0]}';
+    return ItalianValidators.formatBirthDateForDisplay(value);
   }
 
   Future<void> _editExistingCv(Map<String, dynamic> entry) async {

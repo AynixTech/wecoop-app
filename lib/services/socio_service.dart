@@ -9,6 +9,7 @@ import 'package:wecoop_app/utils/response_utils.dart';
 import 'dart:async';
 import 'dart:io';
 import '../utils/html_utils.dart';
+import '../utils/italian_validators.dart';
 import '../models/pratica_documento.dart';
 import '../config/api_config.dart';
 
@@ -1116,7 +1117,9 @@ class SocioService {
           await storage.write(key: 'codice_fiscale', value: codiceFiscale);
         }
         if (dataNascita != null) {
-          await storage.write(key: 'data_nascita', value: dataNascita);
+          final normalized =
+              ItalianValidators.normalizeIsoDate(dataNascita) ?? dataNascita;
+          await storage.write(key: 'data_nascita', value: normalized);
         }
         if (luogoNascita != null) {
           await storage.write(key: 'luogo_nascita', value: luogoNascita);

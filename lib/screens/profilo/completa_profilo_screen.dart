@@ -247,11 +247,10 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
 
   String? _validateCodiceFiscaleField(String? value) {
     final l10n = AppLocalizations.of(context)!;
-    final trimmed = (value ?? '').trim();
-    if (trimmed.isEmpty) return l10n.fiscalCodeMustBe16Chars;
-    if (trimmed.length != 16) return l10n.fiscalCodeMustBe16Chars;
+    final trimmed = ItalianValidators.normalizeCodiceFiscale(value ?? '');
+    if (trimmed.isEmpty) return l10n.translate('fieldRequired');
     if (!ItalianValidators.isValidCodiceFiscale(trimmed)) {
-      return l10n.translate('invalidFiscalCode');
+      return l10n.translate('fieldRequired');
     }
     return null;
   }
@@ -762,7 +761,7 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
             label: '${l10n.fiscalCode} *',
             icon: Icons.badge_outlined,
           ),
-          maxLength: 16,
+          maxLength: ItalianValidators.codiceFiscaleMaxLength,
           textCapitalization: TextCapitalization.characters,
           validator: _validateCodiceFiscaleField,
         ),

@@ -601,14 +601,15 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                     labelText: l10n.fiscalCode,
                                     border: const OutlineInputBorder(),
                                   ),
+                                  maxLength: ItalianValidators.codiceFiscaleMaxLength,
                                   textCapitalization: TextCapitalization.characters,
+                                  // Opzionale e libero (anche CF/ID fiscali stranieri).
                                   validator: (value) {
-                                    if (value == null || value.isEmpty) return null;
-                                    if (value.length != 16) {
-                                      return l10n.translate('fiscalCodeMustBe16Chars');
+                                    if (value == null || value.trim().isEmpty) {
+                                      return null;
                                     }
                                     if (!ItalianValidators.isValidCodiceFiscale(value)) {
-                                      return l10n.translate('invalidFiscalCode');
+                                      return l10n.translate('fieldRequired');
                                     }
                                     return null;
                                   },

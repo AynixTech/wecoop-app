@@ -3,69 +3,17 @@ class ItalianValidators {
   ItalianValidators._();
 
   static String normalizeCodiceFiscale(String value) =>
-      value.trim().toUpperCase().replaceAll(' ', '');
+      value.trim().toUpperCase().replaceAll(RegExp(r'\s+'), '');
 
-  /// Verifica formato e carattere di controllo del codice fiscale italiano.
+  /// Accetta CF italiano o identificativo fiscale straniero (testo libero).
+  /// Nessun check digit / formato IT: WeCoop è pensata anche per utenti esteri.
+  static const int codiceFiscaleMaxLength = 32;
+
   static bool isValidCodiceFiscale(String value) {
     final cf = normalizeCodiceFiscale(value);
-    if (cf.length != 16) return false;
-    if (!RegExp(r'^[A-Z0-9]{16}$').hasMatch(cf)) return false;
-
-    const checkChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const evenChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const oddValues = <String, int>{
-      '0': 1,
-      '1': 0,
-      '2': 5,
-      '3': 7,
-      '4': 9,
-      '5': 13,
-      '6': 15,
-      '7': 17,
-      '8': 19,
-      '9': 21,
-      'A': 1,
-      'B': 0,
-      'C': 5,
-      'D': 7,
-      'E': 9,
-      'F': 13,
-      'G': 15,
-      'H': 17,
-      'I': 19,
-      'J': 21,
-      'K': 2,
-      'L': 4,
-      'M': 18,
-      'N': 20,
-      'O': 11,
-      'P': 3,
-      'Q': 6,
-      'R': 8,
-      'S': 12,
-      'T': 14,
-      'U': 16,
-      'V': 10,
-      'W': 22,
-      'X': 25,
-      'Y': 24,
-      'Z': 23,
-    };
-
-    var sum = 0;
-    for (var i = 0; i < 15; i++) {
-      final c = cf[i];
-      if (i.isEven) {
-        final odd = oddValues[c];
-        if (odd == null) return false;
-        sum += odd;
-      } else {
-        final idx = evenChars.indexOf(c);
-        if (idx < 0) return false;
-        sum += idx;
-      }
-    }
-    return cf[15] == checkChars[sum % 26];
+    if (cf.isEmpty) return false;
+    if (cf.length > codiceFiscaleMaxLength) return false;
+    return true;
   }
 
   static bool isValidEmail(String value) {

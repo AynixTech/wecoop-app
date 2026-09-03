@@ -30,7 +30,7 @@ class AnnunciSubmissionService {
   }
 
   /// Invia un nuovo annuncio proposto dall'utente
-  /// 
+  ///
   /// [submissionType]: Tipo di annuncio ('Lavoro' o 'Servizio')
   /// [titleOffer]: Titolo/mansione dell'annuncio
   /// [city]: Città
@@ -66,14 +66,15 @@ class AnnunciSubmissionService {
           description.trim().length < 20) {
         return {
           'success': false,
-          'message': 'Compila tutti i campi correttamente (descrizione min 20 caratteri)'
+          'message':
+              'Compila tutti i campi correttamente (descrizione min 20 caratteri)',
         };
       }
 
       if (!consentPrivacy) {
         return {
           'success': false,
-          'message': 'Devi accettare il consenso sulla privacy'
+          'message': 'Devi accettare il consenso sulla privacy',
         };
       }
 
@@ -111,7 +112,8 @@ class AnnunciSubmissionService {
       if (response.statusCode == 201 && body['success'] == true) {
         return {
           'success': true,
-          'message': (body['message'] ?? 'Annuncio inviato con successo').toString(),
+          'message':
+              (body['message'] ?? 'Annuncio inviato con successo').toString(),
           'data': body['data'] ?? const <String, dynamic>{},
         };
       }
@@ -120,8 +122,7 @@ class AnnunciSubmissionService {
       if (response.statusCode == 429) {
         return {
           'success': false,
-          'message':
-              'Hai inviato troppi annunci oggi. Riprova domani.'
+          'message': 'Hai inviato troppi annunci oggi. Riprova domani.',
         };
       }
 
@@ -141,7 +142,8 @@ class AnnunciSubmissionService {
 
       return {
         'success': false,
-        'message': (body['message'] ?? 'Errore nell\'invio dell\'annuncio').toString(),
+        'message':
+            (body['message'] ?? 'Errore nell\'invio dell\'annuncio').toString(),
       };
     } catch (e) {
       return {'success': false, 'message': 'Errore di connessione: $e'};
@@ -153,8 +155,7 @@ class AnnunciSubmissionService {
     String status = 'generated',
   }) async {
     try {
-      final uri = Uri.parse('$baseUrl/annunci/cv')
-          .replace(
+      final uri = Uri.parse('$baseUrl/annunci/cv').replace(
         queryParameters: {
           'limit': limit.toString(),
           if (status.trim().isNotEmpty) 'status': status.trim(),
@@ -229,7 +230,9 @@ class AnnunciSubmissionService {
         body: jsonEncode(payload),
       );
 
-      final body = _parseMapResponse(HttpClientService.decodeJsonResponse(response));
+      final body = _parseMapResponse(
+        HttpClientService.decodeJsonResponse(response),
+      );
 
       if (response.statusCode == 200 && body['success'] == true) {
         final data = body['data'];
@@ -248,7 +251,8 @@ class AnnunciSubmissionService {
 
       return {
         'success': false,
-        'message': (body['message'] ?? 'Suggerimento non disponibile').toString(),
+        'message':
+            (body['message'] ?? 'Suggerimento non disponibile').toString(),
       };
     } catch (e) {
       return {'success': false, 'message': 'Errore di connessione: $e'};
@@ -289,7 +293,9 @@ class AnnunciSubmissionService {
         body: jsonEncode(payload),
       );
 
-      final body = _parseMapResponse(HttpClientService.decodeJsonResponse(response));
+      final body = _parseMapResponse(
+        HttpClientService.decodeJsonResponse(response),
+      );
       if (response.statusCode == 200 && body['success'] == true) {
         final data = body['data'];
         if (data is Map<String, dynamic>) {
@@ -304,7 +310,8 @@ class AnnunciSubmissionService {
 
       return {
         'success': false,
-        'message': (body['message'] ?? 'Descrizione AI non disponibile').toString(),
+        'message':
+            (body['message'] ?? 'Descrizione AI non disponibile').toString(),
       };
     } catch (e) {
       return {'success': false, 'message': 'Errore di connessione: $e'};
@@ -321,19 +328,21 @@ class AnnunciSubmissionService {
           'category_direction': categoryDirection.trim(),
       };
 
-      final uri = Uri.parse('$baseUrl/annunci/miei').replace(queryParameters: query);
+      final uri = Uri.parse(
+        '$baseUrl/annunci/miei',
+      ).replace(queryParameters: query);
       final response = await HttpClientService.get(
         uri,
         headers: await _getHeaders(),
       );
 
-      final body = _parseMapResponse(HttpClientService.decodeJsonResponse(response));
-      if (response.statusCode == 200 && body['success'] == true) {
-        final data = body['data'];
-        return {
-          'success': true,
-          'items': data is List ? data : <dynamic>[],
-        };
+      final body = _parseMapResponse(
+        HttpClientService.decodeJsonResponse(response),
+      );
+      if (response.statusCode == 200) {
+        // Il backend risponde con { annunci: [...] }
+        final data = body['annunci'] ?? body['data'];
+        return {'success': true, 'items': data is List ? data : <dynamic>[]};
       }
 
       if (response.statusCode == 401 || response.statusCode == 403) {
@@ -345,7 +354,8 @@ class AnnunciSubmissionService {
 
       return {
         'success': false,
-        'message': (body['message'] ?? 'Errore nel recupero annunci').toString(),
+        'message':
+            (body['message'] ?? 'Errore nel recupero annunci').toString(),
       };
     } catch (e) {
       return {'success': false, 'message': 'Errore di connessione: $e'};
@@ -355,13 +365,16 @@ class AnnunciSubmissionService {
   /// Elimina un annuncio inserito dall'utente autenticato
   static Future<Map<String, dynamic>> deleteMyAnnouncement(int id) async {
     try {
-      final uri = Uri.parse('$baseUrl/annunci/miei/$id');
+      // Backend route: DELETE /api/lavoro/annunci/:id (non /miei/:id)
+      final uri = Uri.parse('$baseUrl/annunci/$id');
       final response = await HttpClientService.delete(
         uri,
         headers: await _getHeaders(),
       );
 
-      final body = _parseMapResponse(HttpClientService.decodeJsonResponse(response));
+      final body = _parseMapResponse(
+        HttpClientService.decodeJsonResponse(response),
+      );
       if (response.statusCode == 200 && body['success'] == true) {
         return {
           'success': true,
@@ -378,7 +391,8 @@ class AnnunciSubmissionService {
 
       return {
         'success': false,
-        'message': (body['message'] ?? 'Errore eliminazione annuncio').toString(),
+        'message':
+            (body['message'] ?? 'Errore eliminazione annuncio').toString(),
       };
     } catch (e) {
       return {'success': false, 'message': 'Errore di connessione: $e'};

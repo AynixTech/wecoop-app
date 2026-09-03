@@ -78,10 +78,17 @@ class PagamentoService {
       final headers = await _getHeaders();
       final response = await HttpClientService.get(url, headers: headers);
 
-      AppLogger.d('📥 GET /payments/user/$userId status: ${response.statusCode}');
+      AppLogger.d(
+        '📥 GET /payments/user/$userId status: ${response.statusCode}',
+      );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = ResponseUtils.decodeJson(response);
+        // Il backend risponde con { payments: [...] }
+        final decoded = ResponseUtils.decodeJson(response);
+        final List<dynamic> data =
+            decoded is Map
+                ? (decoded['payments'] ?? [])
+                : (decoded is List ? decoded : []);
         return data.map((json) => Pagamento.fromJson(json)).toList();
       }
 
@@ -202,9 +209,7 @@ class PagamentoService {
   }) async {
     try {
       // Nota: questo endpoint deve essere creato sul backend WordPress
-      final url = Uri.parse(
-        '$baseUrl/create-payment-intent',
-      );
+      final url = Uri.parse('$baseUrl/create-payment-intent');
       AppLogger.d(
         '🔄 Chiamata POST /create-payment-intent (importo: €$importo, paymentId: $paymentId)...',
       );
@@ -224,7 +229,9 @@ class PagamentoService {
         body: jsonEncode(body),
       );
 
-      AppLogger.d('📥 POST /create-payment-intent status: ${response.statusCode}');
+      AppLogger.d(
+        '📥 POST /create-payment-intent status: ${response.statusCode}',
+      );
       AppLogger.d('📥 Response body: ${response.body}');
 
       if (response.statusCode == 200) {

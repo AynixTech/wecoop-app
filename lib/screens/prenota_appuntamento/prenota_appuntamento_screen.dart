@@ -321,7 +321,7 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
                                                         },
                                               ),
                                             );
-                                          }).toList(),
+                                          }).toList()),
                                         ],
                                       ),
                                     );

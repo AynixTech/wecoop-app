@@ -293,6 +293,30 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                                   ),
                         ),
 
+                        const SizedBox(height: 12),
+
+                        // Utenti creati dalla piattaforma cloud hanno già
+                        // username/password: devono poter andare al login.
+                        TextButton(
+                          onPressed:
+                              _isLoading
+                                  ? null
+                                  : () {
+                                    Navigator.of(
+                                      context,
+                                    ).pushReplacementNamed('/login');
+                                  },
+                          child: Text(
+                            AppLocalizations.of(context)!.alreadyHaveAccount,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: scheme.primary,
+                            ),
+                          ),
+                        ),
+
                         const SizedBox(height: 24),
 
                         Container(
@@ -452,24 +476,23 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Pulisci il telefono (solo numeri)
-      var cleanPhone = _telefonoController.text.replaceAll(
-        RegExp(r'[^\d]'),
-        '',
+      // Pulisci il telefono (solo numeri), allineato al backend normalizePhone.
+      final cleanPhone = PhonePrefixes.normalizeForLogin(
+        prefix: _prefixController.text,
+        phone: _telefonoController.text,
       );
+      // Prefisso solo cifre per il body; telefono locale senza prefisso.
       final prefix = _prefixController.text.replaceAll('+', '');
-      // Rimuovi lo "0" troncale nazionale iniziale (es. Ecuador 09... -> 9...)
-      // per evitare numeri non validi come +5930939825935.
-      if (prefix.isNotEmpty) {
-        cleanPhone = cleanPhone.replaceFirst(RegExp(r'^0+'), '');
-      }
-      final telefonoCompleto = '+$prefix$cleanPhone';
+      final telefonoLocale = cleanPhone.startsWith(prefix)
+          ? cleanPhone.substring(prefix.length)
+          : _telefonoController.text.replaceAll(RegExp(r'[^\d]'), '');
+      final telefonoCompleto = '+$cleanPhone';
 
       AppLogger.d('📝 Dati raccolti:');
       AppLogger.d('   - Nome: ${_nomeController.text.trim()}');
       AppLogger.d('   - Cognome: ${_cognomeController.text.trim()}');
       AppLogger.d('   - Prefisso: ${_prefixController.text}');
-      AppLogger.d('   - Telefono pulito: $cleanPhone');
+      AppLogger.d('   - Telefono pulito: $telefonoLocale');
       AppLogger.d('   - Telefono completo: $telefonoCompleto');
       AppLogger.d('\n🔄 Invio richiesta HTTP a backend...');
 
@@ -479,7 +502,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
         'nome': _nomeController.text.trim(),
         'cognome': _cognomeController.text.trim(),
         'prefix': _prefixController.text,
-        'telefono': cleanPhone,
+        'telefono': telefonoLocale,
       };
 
       AppLogger.d('🌐 URL: $url');

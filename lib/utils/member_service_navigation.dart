@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../screens/onboarding/first_access_screen.dart';
+import '../screens/login/login_screen.dart';
 import '../screens/servizi/servizi_gate_screen.dart';
 import '../services/auth_helper.dart';
 
 /// Apre un servizio riservato ai soci con gate coerente.
+///
+/// Utenti creati dalla piattaforma cloud hanno già credenziali: se non sono
+/// loggati vanno al **login**, non alla registrazione (primo accesso).
 Future<void> openMemberService(
   BuildContext context, {
   required Widget destination,
@@ -18,7 +21,7 @@ Future<void> openMemberService(
   if (!loggedIn) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const FirstAccessScreen()),
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
     );
     return;
   }

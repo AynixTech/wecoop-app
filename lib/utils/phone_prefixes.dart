@@ -31,6 +31,7 @@ class PhonePrefixes {
     '+62', // Indonesia
     '+65', // Singapore
     '+66', // Thailandia
+    '+230', // Mauritius
   ];
 
   static const Map<String, String> flags = {
@@ -65,9 +66,32 @@ class PhonePrefixes {
     '+62': '🇮🇩',
     '+65': '🇸🇬',
     '+66': '🇹🇭',
+    '+230': '🇲🇺',
   };
 
   static String flagFor(String prefix) {
     return flags[prefix] ?? '🌐';
+  }
+
+  /// Username di login = prefisso + numero in sole cifre, allineato al backend
+  /// (`normalizePhone`): rimuove lo "0" troncale nazionale prima del prefisso.
+  ///
+  /// Esempi: `+39` + `03331234567` → `393331234567`;
+  /// `+39` + `393331234567` → `393331234567`.
+  static String normalizeForLogin({
+    required String prefix,
+    required String phone,
+  }) {
+    final prefixDigits = prefix.replaceAll(RegExp(r'[^\d]'), '');
+    var phoneDigits = phone.replaceAll(RegExp(r'[^\d]'), '');
+
+    if (prefixDigits.isNotEmpty) {
+      phoneDigits = phoneDigits.replaceFirst(RegExp(r'^0+'), '');
+      if (!phoneDigits.startsWith(prefixDigits)) {
+        phoneDigits = '$prefixDigits$phoneDigits';
+      }
+    }
+
+    return phoneDigits;
   }
 }

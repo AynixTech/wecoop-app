@@ -8,6 +8,7 @@ import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/services/push_notification_service.dart';
 import 'package:wecoop_app/screens/onboarding/first_access_screen.dart';
+import 'package:wecoop_app/screens/profilo/change_password_screen.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
 import '../../widgets/language_selector.dart';
 import '../../utils/html_utils.dart';
@@ -82,19 +83,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
-    // El username es el número de teléfono completo (solo números)
-    // Ejemplo: +39 333 1234567 → 393331234567
-    var phone = phoneController.text.trim().replaceAll(RegExp(r'[^\d]'), '');
-    final prefix = prefixController.text.trim().replaceAll(
-      RegExp(r'[^\d]'),
-      '',
-    ); // Ej: +39 → 39
-
-    // Si el número no empieza con el prefijo, lo agregamos
-    if (prefix.isNotEmpty && !phone.startsWith(prefix)) {
-      phone = prefix + phone;
-    }
-
+    // Username = prefisso + numero (solo cifre), allineato al backend.
+    // Esempio: +39 + 333 1234567 → 393331234567
+    final phone = PhonePrefixes.normalizeForLogin(
+      prefix: prefixController.text,
+      phone: phoneController.text,
+    );
     final password = passwordController.text;
 
     await _loginWithCredentials(phone: phone, password: password);
@@ -266,12 +260,29 @@ class _LoginScreenState extends State<LoginScreen> {
           AppLogger.d('⚠️ Push init fallita (non bloccante): $e');
         }
 
-        AppLogger.d('🎉 Navigazione a /home');
+        // Utenti creati dalla piattaforma cloud hanno must_reset_password:
+        // forzano il cambio password prima di entrare in home (come il portale).
+        final mustResetPassword = data['must_reset_password'] == true;
+        AppLogger.d(
+          mustResetPassword
+              ? '🔐 must_reset_password=true → cambio password obbligatorio'
+              : '🎉 Navigazione a /home',
+        );
         if (mounted) {
           setState(() {
             isLoading = false;
           });
-          Navigator.pushReplacementNamed(context, '/home');
+          if (mustResetPassword) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (_) => const ChangePasswordScreen(mustResetPassword: true),
+              ),
+            );
+          } else {
+            Navigator.pushReplacementNamed(context, '/home');
+          }
         }
       } else {
         AppLogger.d('⚠️ Login NON riuscito (status ${response.statusCode}, token=${data['token'] != null})');

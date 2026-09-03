@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import '../../theme/theme.dart';
 import '../../services/app_localizations.dart';
+import '../../services/secure_storage_service.dart';
 import '../../services/socio_service.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   final String? resetToken;
 
-  const ChangePasswordScreen({super.key, this.resetToken});
+  /// Utenti creati dalla piattaforma cloud: login ok ma devono cambiare
+  /// la password temporanea prima di usare l'app (come sul portale web).
+  final bool mustResetPassword;
+
+  const ChangePasswordScreen({
+    super.key,
+    this.resetToken,
+    this.mustResetPassword = false,
+  });
 
   @override
   State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
@@ -25,6 +34,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   bool get _isResetFlow =>
       widget.resetToken != null && widget.resetToken!.isNotEmpty;
+
+  /// Nasconde il campo "password attuale" (token email oppure reset obbligatorio).
+  bool get _skipOldPassword => _isResetFlow || widget.mustResetPassword;
 
   @override
   void dispose() {
@@ -53,14 +65,30 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 newPassword: _newPasswordController.text,
               )
               : await SocioService.changePassword(
-                oldPassword: _oldPasswordController.text,
+                // Con must_reset_password il backend non richiede la vecchia.
+                oldPassword:
+                    widget.mustResetPassword
+                        ? ''
+                        : _oldPasswordController.text,
                 newPassword: _newPasswordController.text,
               );
 
       if (!mounted) return;
 
       if (result['success'] == true) {
-        // Successo
+        // Successo: aggiorna anche le credenziali biometriche se presenti.
+        if (!_isResetFlow) {
+          final storage = SecureStorageService();
+          await storage.write(
+            key: 'biometric_password',
+            value: _newPasswordController.text,
+          );
+          await storage.write(
+            key: 'auth_password',
+            value: _newPasswordController.text,
+          );
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(result['message'] ?? l10n.translate('passwordChangedSuccess')),
@@ -76,6 +104,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             Navigator.pushNamedAndRemoveUntil(
               context,
               '/login',
+              (route) => false,
+            );
+          } else if (widget.mustResetPassword) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/home',
               (route) => false,
             );
           } else {
@@ -116,23 +150,28 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.translate('changePassword'))),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [scheme.surfaceContainerLowest, scheme.surface],
+      appBar: AppBar(
+        title: Text(l10n.translate('changePassword')),
+        automaticallyImplyLeading: !widget.mustResetPassword,
+      ),
+      body: PopScope(
+        canPop: !widget.mustResetPassword,
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [scheme.surfaceContainerLowest, scheme.surface],
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+          child: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
                   _buildInfoBanner(context),
                   const SizedBox(height: 24),
                   Center(
@@ -161,7 +200,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         ],
                       ),
                       child: Icon(
-                        _isResetFlow ? Icons.lock_reset : Icons.security,
+                        _skipOldPassword ? Icons.lock_reset : Icons.security,
                         size: 46,
                         color: scheme.onPrimary,
                       ),
@@ -188,7 +227,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
-                  if (!_isResetFlow) ...[
+                  if (!_skipOldPassword) ...[
                     TextFormField(
                       controller: _oldPasswordController,
                       obscureText: !_showOldPassword,
@@ -250,7 +289,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       if (value.length < 6) {
                         return l10n.translate('passwordTooShort');
                       }
-                      if (!_isResetFlow &&
+                      if (!_skipOldPassword &&
                           value == _oldPasswordController.text) {
                         return l10n.translate('passwordMustBeDifferent');
                       }
@@ -325,19 +364,20 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                             ),
                   ),
                   const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    style: TextButton.styleFrom(
-                      foregroundColor: scheme.primary,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                  if (!widget.mustResetPassword)
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      style: TextButton.styleFrom(
+                        foregroundColor: scheme.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: Text(
+                        l10n.translate('backToLogin'),
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
                     ),
-                    child: Text(
-                      l10n.translate('backToLogin'),
-                      style: const TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                  ),
                   const SizedBox(height: 24),
                   Container(
                     padding: const EdgeInsets.all(16),
@@ -388,6 +428,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               ),
             ),
           ),
+        ),
         ),
       ),
     );

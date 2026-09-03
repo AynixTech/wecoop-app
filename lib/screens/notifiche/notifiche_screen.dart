@@ -103,6 +103,7 @@ class _NotificheScreenState extends State<NotificheScreen> {
       'screen': n.data['screen'] ?? n.type,
       'entity_type': n.entityType ?? n.data['entity_type'],
       'entity_id': n.entityId ?? n.data['entity_id'],
+      'ticket_id': n.data['ticket_id'] ?? n.entityId,
       'request_id': n.data['request_id'] ?? n.entityId,
       'event_id': n.data['event_id'] ?? n.data['evento_id'],
     });

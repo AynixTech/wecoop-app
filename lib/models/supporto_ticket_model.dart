@@ -20,6 +20,48 @@ int _parseInt(dynamic value, [int fallback = 0]) {
   return int.tryParse(value.toString()) ?? fallback;
 }
 
+/// Messaggio di conversazione su un ticket (risposta operatore o nota).
+class SupportoMessaggio {
+  final int id;
+  final int ticketId;
+  final int? authorId;
+  final String? authorName;
+  final String body;
+  final String tipo;
+  final DateTime? createdAt;
+
+  const SupportoMessaggio({
+    required this.id,
+    required this.ticketId,
+    this.authorId,
+    this.authorName,
+    required this.body,
+    required this.tipo,
+    this.createdAt,
+  });
+
+  factory SupportoMessaggio.fromJson(Map<String, dynamic> json) {
+    return SupportoMessaggio(
+      id: _parseInt(json['id']),
+      ticketId: _parseInt(json['ticket_id']),
+      authorId: json['author_id'] != null ? _parseInt(json['author_id']) : null,
+      authorName: json['author_name']?.toString(),
+      body: json['body']?.toString() ?? '',
+      tipo: json['tipo']?.toString() ?? 'operatore',
+      createdAt: _parseServerDate(json['created_at']),
+    );
+  }
+
+  bool get isOperatore => tipo == 'operatore';
+
+  String get dataFormattata {
+    final d = createdAt;
+    if (d == null) return '';
+    String two(int n) => n.toString().padLeft(2, '0');
+    return '${two(d.day)}/${two(d.month)}/${d.year} ${two(d.hour)}:${two(d.minute)}';
+  }
+}
+
 /// Ticket di supporto creato dall'app e gestito dal back-office.
 class SupportoTicket {
   final int id;
@@ -42,6 +84,9 @@ class SupportoTicket {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
+  /// Risposte operatore (senza note interne), incluse da `mie-richieste`.
+  final List<SupportoMessaggio> risposte;
+
   const SupportoTicket({
     required this.id,
     required this.numeroTicket,
@@ -58,9 +103,22 @@ class SupportoTicket {
     this.messaggio,
     this.createdAt,
     this.updatedAt,
+    this.risposte = const [],
   });
 
   factory SupportoTicket.fromJson(Map<String, dynamic> json) {
+    final rawRisposte = json['risposte'];
+    final risposte = <SupportoMessaggio>[];
+    if (rawRisposte is List) {
+      for (final item in rawRisposte) {
+        if (item is Map) {
+          risposte.add(
+            SupportoMessaggio.fromJson(Map<String, dynamic>.from(item)),
+          );
+        }
+      }
+    }
+
     return SupportoTicket(
       id: _parseInt(json['id']),
       numeroTicket: json['numero_ticket']?.toString() ?? '',
@@ -77,8 +135,14 @@ class SupportoTicket {
       messaggio: json['messaggio']?.toString(),
       createdAt: _parseServerDate(json['created_at']),
       updatedAt: _parseServerDate(json['updated_at']),
+      risposte: risposte,
     );
   }
+
+  bool get hasRisposte => risposte.isNotEmpty;
+
+  SupportoMessaggio? get ultimaRisposta =>
+      risposte.isEmpty ? null : risposte.last;
 
   /// Etichetta leggibile dello stato con emoji (come nel back-office WordPress).
   String get statusLabel {

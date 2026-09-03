@@ -91,12 +91,14 @@ abstract final class AppNavigation {
     );
   }
 
-  static void navigateToMieRichieste() {
+  static void navigateToMieRichieste({String? ticketId}) {
     final navigator = _navigator;
     if (navigator == null) return;
 
     navigator.push(
-      MaterialPageRoute(builder: (_) => const MieRichiesteScreen()),
+      MaterialPageRoute(
+        builder: (_) => MieRichiesteScreen(initialTicketId: ticketId),
+      ),
     );
   }
 
@@ -144,7 +146,12 @@ abstract final class AppNavigation {
 
       case 'support':
       case 'support_reply':
-        navigateToMieRichieste();
+        final ticketId = (data['ticket_id'] ??
+                data['entity_id'] ??
+                data['request_id'] ??
+                requestId)
+            ?.toString();
+        navigateToMieRichieste(ticketId: ticketId);
         return;
 
       case 'documenti':

@@ -126,6 +126,34 @@ class SupportoService {
     }
   }
 
+  /// GET /supporto/richiesta/:id/messaggi — risposte operatore (socio) o
+  /// conversazione completa (staff). Usato come fallback se `mie-richieste`
+  /// non include ancora `risposte`.
+  static Future<Map<String, dynamic>> getMessaggi(int ticketId) async {
+    try {
+      final uri = Uri.parse('$baseUrl/supporto/richiesta/$ticketId/messaggi');
+      final headers = await _getHeaders();
+      final response = await HttpClientService.get(uri, headers: headers);
+
+      if (response.statusCode == 200) {
+        final data = HttpClientService.decodeJsonResponse(response);
+        final list = (data['data'] as List?) ?? [];
+        final messaggi = list
+            .map((e) => SupportoMessaggio.fromJson(e as Map<String, dynamic>))
+            .where((m) => m.isOperatore)
+            .toList();
+        return {'success': true, 'data': messaggi, 'total': messaggi.length};
+      }
+      return _errorFromResponse(response);
+    } on TimeoutException {
+      return {'success': false, 'message': 'Tempo di connessione scaduto'};
+    } on SocketException {
+      return {'success': false, 'message': 'Nessuna connessione internet'};
+    } catch (e) {
+      return {'success': false, 'message': 'Errore: $e'};
+    }
+  }
+
   static Map<String, dynamic> _errorFromResponse(response) {
     try {
       final data = HttpClientService.decodeJsonResponse(response);

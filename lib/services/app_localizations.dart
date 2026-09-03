@@ -576,6 +576,10 @@ class AppLocalizations {
       'retry': 'Riprova',
       'loadRequestsError': 'Impossibile caricare le richieste',
       'noSupportRequests': 'Non hai ancora richieste di supporto.',
+      'supportOperatorReply': 'Risposta WeCoop',
+      'supportReplies': 'Risposte',
+      'supportYourRequest': 'La tua richiesta',
+      'supportNoRepliesYet': 'Nessuna risposta ancora. Ti avviseremo quando un operatore risponderà.',
       'priority': 'Priorità',
       'noEventsAvailable': 'Nessun evento disponibile',
       'enrolled': 'Iscritto',
@@ -2278,6 +2282,10 @@ class AppLocalizations {
       'retry': 'إعادة المحاولة',
       'loadRequestsError': 'تعذّر تحميل الطلبات',
       'noSupportRequests': 'ليس لديك طلبات دعم بعد.',
+      'supportOperatorReply': 'رد WeCoop',
+      'supportReplies': 'الردود',
+      'supportYourRequest': 'طلبك',
+      'supportNoRepliesYet': 'لا توجد ردود بعد. سنخطرك عندما يرد أحد المشغّلين.',
       'priority': 'الأولوية',
       'noEventsAvailable': 'لا توجد فعاليات متاحة',
       'enrolled': 'مسجّل',
@@ -3709,6 +3717,10 @@ class AppLocalizations {
       'retry': '重试',
       'loadRequestsError': '无法加载请求',
       'noSupportRequests': '您还没有支持请求。',
+      'supportOperatorReply': 'WeCoop 回复',
+      'supportReplies': '回复',
+      'supportYourRequest': '您的请求',
+      'supportNoRepliesYet': '暂无回复。工作人员回复后我们会通知您。',
       'priority': '优先级',
       'noEventsAvailable': '暂无可用活动',
       'enrolled': '已报名',
@@ -5021,6 +5033,10 @@ class AppLocalizations {
       'retry': 'Retry',
       'loadRequestsError': 'Unable to load requests',
       'noSupportRequests': 'You have no support requests yet.',
+      'supportOperatorReply': 'WeCoop reply',
+      'supportReplies': 'Replies',
+      'supportYourRequest': 'Your request',
+      'supportNoRepliesYet': 'No replies yet. We will notify you when an operator responds.',
       'priority': 'Priority',
       'noEventsAvailable': 'No events available',
       'enrolled': 'Enrolled',
@@ -6612,6 +6628,10 @@ class AppLocalizations {
       'retry': 'Reintentar',
       'loadRequestsError': 'No se pudieron cargar las solicitudes',
       'noSupportRequests': 'Aún no tienes solicitudes de soporte.',
+      'supportOperatorReply': 'Respuesta de WeCoop',
+      'supportReplies': 'Respuestas',
+      'supportYourRequest': 'Tu solicitud',
+      'supportNoRepliesYet': 'Aún no hay respuestas. Te avisaremos cuando un operador responda.',
       'priority': 'Prioridad',
       'noEventsAvailable': 'No hay eventos disponibles',
       'enrolled': 'Inscrito',
@@ -7721,6 +7741,10 @@ class AppLocalizations {
   String get priorityLow => translate('priorityLow');
   String get loadRequestsError => translate('loadRequestsError');
   String get noSupportRequests => translate('noSupportRequests');
+  String get supportOperatorReply => translate('supportOperatorReply');
+  String get supportReplies => translate('supportReplies');
+  String get supportYourRequest => translate('supportYourRequest');
+  String get supportNoRepliesYet => translate('supportNoRepliesYet');
   String get priority => translate('priority');
   String get interestThankYou => translate('interestThankYou');
   String get searchAddress => translate('searchAddress');

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../widgets/design_system/design_system.dart';
+import '../../widgets/whatsapp_contact_button.dart';
 import '../../services/app_localizations.dart';
 import '../../models/documento.dart';
 import 'richiesta_form_screen.dart';
@@ -353,6 +354,10 @@ class MediazioneFiscaleScreen extends StatelessWidget {
                     ),
                   );
                 },
+              ),
+              const WhatsappContactButton(
+                labelKey: 'parlaConNoi',
+                margin: EdgeInsets.only(top: 24),
               ),
             ],
           ),

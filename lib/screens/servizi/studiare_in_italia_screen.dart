@@ -9,6 +9,7 @@ import '../../services/socio_service.dart';
 import '../../models/offerta_formativa_model.dart';
 import '../../models/partner_model.dart';
 import '../../models/partner_dettaglio_model.dart';
+import '../../widgets/whatsapp_contact_button.dart';
 
 // ─────────────────────────────────────────────────────────────
 // ENTRY POINT – Schermata intro con CTA e tab "Percorsi"
@@ -182,6 +183,10 @@ class _IntroTab extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
             ),
+          ),
+          const WhatsappContactButton(
+            labelKey: 'parlaConNoi',
+            margin: EdgeInsets.only(top: 24),
           ),
         ],
       ),

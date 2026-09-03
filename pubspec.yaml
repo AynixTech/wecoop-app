@@ -83,6 +83,7 @@ flutter:
 
   assets:
     - assets/icons/app_icon.png
+    - assets/icons/whatsapp.svg
     - assets/icons/menu/
     - assets/icons/offerte-lavoro/
     - assets/images/wecoop_logo.png

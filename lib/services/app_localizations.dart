@@ -16,6 +16,7 @@ class AppLocalizations {
     'it': {
       'appTitle': 'WECOOP',
       'contactWhatsapp': 'Contatta su WhatsApp',
+      'parlaConNoi': 'Parla con noi',
       'whatsappNotAvailable': 'WhatsApp non disponibile su questo dispositivo',
       'membershipExpiringTitle': 'Tesseramento in scadenza',
       'membershipExpiredTitle': 'Tesseramento scaduto',
@@ -1575,6 +1576,7 @@ class AppLocalizations {
     'ar': {
       'appTitle': 'WECOOP',
       'contactWhatsapp': 'تواصل عبر واتساب',
+      'parlaConNoi': 'تحدث معنا',
       'whatsappNotAvailable': 'واتساب غير متاح على هذا الجهاز',
       'membershipExpiringTitle': 'العضوية على وشك الانتهاء',
       'membershipExpiredTitle': 'انتهت العضوية',
@@ -2990,6 +2992,7 @@ class AppLocalizations {
     'zh': {
       'appTitle': 'WECOOP',
       'contactWhatsapp': '通过 WhatsApp 联系',
+      'parlaConNoi': '与我们交谈',
       'whatsappNotAvailable': '此设备上无法使用 WhatsApp',
       'membershipExpiringTitle': '会员即将到期',
       'membershipExpiredTitle': '会员已到期',
@@ -4374,6 +4377,7 @@ class AppLocalizations {
     'en': {
       'appTitle': 'WECOOP',
       'contactWhatsapp': 'Contact us on WhatsApp',
+      'parlaConNoi': 'Talk to us',
       'whatsappNotAvailable': 'WhatsApp is not available on this device',
       'membershipExpiringTitle': 'Membership expiring',
       'membershipExpiredTitle': 'Membership expired',
@@ -5917,6 +5921,7 @@ class AppLocalizations {
     'es': {
       'appTitle': 'WECOOP',
       'contactWhatsapp': 'Contáctanos por WhatsApp',
+      'parlaConNoi': 'Habla con nosotros',
       'whatsappNotAvailable': 'WhatsApp no está disponible en este dispositivo',
       'membershipExpiringTitle': 'Membresía por vencer',
       'membershipExpiredTitle': 'Membresía vencida',

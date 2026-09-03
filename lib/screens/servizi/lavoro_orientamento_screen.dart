@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../services/app_localizations.dart';
 import '../../services/lavoro_service.dart';
 import '../../services/secure_storage_service.dart';
+import '../../widgets/whatsapp_contact_button.dart';
 import 'cv_ai_screen.dart';
 
 class LavoroOrientamentoScreen extends StatefulWidget {
@@ -195,6 +196,10 @@ class _LavoroOrientamentoScreenState extends State<LavoroOrientamentoScreen> {
                       : () {
                         _handleActivateWorkServiceTap(context);
                       },
+            ),
+            const WhatsappContactButton(
+              labelKey: 'parlaConNoi',
+              margin: EdgeInsets.only(top: 24),
             ),
           ],
         ),

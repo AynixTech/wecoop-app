@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/app_settings_service.dart';
 import '../services/app_localizations.dart';
@@ -6,12 +7,20 @@ import '../services/app_localizations.dart';
 /// Colore ufficiale WhatsApp.
 const Color kWhatsappGreen = Color(0xFF25D366);
 
-/// Bottone "Contatta su WhatsApp" a larghezza piena. Carica il numero da
+/// Bottone di contatto WhatsApp a larghezza piena. Carica il numero da
 /// /settings/public; se non configurato, non mostra nulla.
 class WhatsappContactButton extends StatefulWidget {
-  const WhatsappContactButton({super.key, this.margin});
+  const WhatsappContactButton({
+    super.key,
+    this.margin,
+    this.labelKey = 'contactWhatsapp',
+  });
 
   final EdgeInsetsGeometry? margin;
+
+  /// Chiave i18n del testo (default: "Contatta su WhatsApp").
+  /// Usa `parlaConNoi` nelle liste dei macro-servizi.
+  final String labelKey;
 
   @override
   State<WhatsappContactButton> createState() => _WhatsappContactButtonState();
@@ -57,7 +66,10 @@ class _WhatsappContactButtonState extends State<WhatsappContactButton> {
       return const SizedBox.shrink();
     }
     final l10n = AppLocalizations.of(context);
-    final label = l10n?.translate('contactWhatsapp') ?? 'Contatta su WhatsApp';
+    final label = l10n?.translate(widget.labelKey) ??
+        (widget.labelKey == 'parlaConNoi'
+            ? 'Parla con noi'
+            : 'Contatta su WhatsApp');
 
     return Padding(
       padding: widget.margin ?? EdgeInsets.zero,
@@ -65,7 +77,15 @@ class _WhatsappContactButtonState extends State<WhatsappContactButton> {
         width: double.infinity,
         child: ElevatedButton.icon(
           onPressed: _open,
-          icon: const Icon(Icons.chat, size: 20, color: Colors.white),
+          icon: SvgPicture.asset(
+            'assets/icons/whatsapp.svg',
+            width: 22,
+            height: 22,
+            colorFilter: const ColorFilter.mode(
+              Colors.white,
+              BlendMode.srcIn,
+            ),
+          ),
           label: Text(
             label,
             style: const TextStyle(

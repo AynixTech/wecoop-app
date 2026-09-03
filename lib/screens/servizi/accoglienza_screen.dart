@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import '../../theme/theme.dart';
 import '../../widgets/design_system/design_system.dart';
+import '../../widgets/whatsapp_contact_button.dart';
 import 'permesso_soggiorno_screen.dart';
 import 'cittadinanza_screen.dart';
 import 'ricongiungimento_familiare_screen.dart';
@@ -78,6 +79,10 @@ class AccoglienzaScreen extends StatelessWidget {
                 title: l10n.touristVisa,
                 subtitle: l10n.touristVisaDesc,
                 onTap: () => go(const VisaTurismoScreen()),
+              ),
+              const WhatsappContactButton(
+                labelKey: 'parlaConNoi',
+                margin: EdgeInsets.only(top: AppSpacing.xxl),
               ),
             ],
           ),

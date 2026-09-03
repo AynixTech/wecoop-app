@@ -5,6 +5,7 @@ import '../services/user_avatar_store.dart';
 import '../services/socio_service.dart';
 import '../services/secure_storage_service.dart';
 import '../services/app_localizations.dart';
+import '../utils/app_navigation.dart';
 import 'annunci/annunci_screen.dart';
 import 'home/home_screen.dart';
 import 'calendar/calendar_screen.dart';
@@ -31,6 +32,8 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   late int _selectedIndex;
   late final List<Widget> _tabScreens;
+  final GlobalKey<NavigatorState> _calendarNavigatorKey =
+      GlobalKey<NavigatorState>();
   int _profileScreenVersion = 0;
   bool _profileCheckDone = false;
 
@@ -42,7 +45,14 @@ class _MainScreenState extends State<MainScreen> {
       const HomeScreen(),
       const EventiScreen(),
       const AnnunciScreen(),
-      CalendarScreen(initialRichiestaId: widget.initialRichiestaId),
+      Navigator(
+        key: _calendarNavigatorKey,
+        onGenerateRoute: (_) => MaterialPageRoute(
+          builder: (_) => CalendarScreen(
+            initialRichiestaId: widget.initialRichiestaId,
+          ),
+        ),
+      ),
       const OfferteLavoroScreen(),
       const SportelloScreen(),
       const SizedBox.shrink(),
@@ -122,14 +132,25 @@ class _MainScreenState extends State<MainScreen> {
     ProfiloScreen(key: ValueKey('profile-$_profileScreenVersion')),
   ];
 
-  void _onItemTapped(int index) {
+  void _closeCalendarOverlays() {
+    final nav = _calendarNavigatorKey.currentState;
+    if (nav == null) return;
+    nav.popUntil((route) => route.isFirst);
+  }
+
+  void _selectTab(int index) {
+    if (_selectedIndex == MainTab.calendar && index != MainTab.calendar) {
+      _closeCalendarOverlays();
+    }
     setState(() {
-      if (index == 6 && _selectedIndex != 6) {
+      if (index == MainTab.profilo && _selectedIndex != MainTab.profilo) {
         _profileScreenVersion++;
       }
       _selectedIndex = index;
     });
   }
+
+  void _onItemTapped(int index) => _selectTab(index);
 
   Widget _buildMenuIcon(
     String assetPath, {
@@ -352,12 +373,10 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: _selectedIndex == 0,
+      canPop: _selectedIndex == MainTab.home,
       onPopInvokedWithResult: (didPop, result) {
-        if (!didPop && _selectedIndex != 0) {
-          setState(() {
-            _selectedIndex = 0;
-          });
+        if (!didPop && _selectedIndex != MainTab.home) {
+          _selectTab(MainTab.home);
         }
       },
       child: Scaffold(

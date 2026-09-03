@@ -115,21 +115,26 @@ class _CalendarScreenState extends State<CalendarScreen>
       _hasLoadedOnLanding = true;
       _caricaRichieste();
     }
-    
-    // Controlla se c'è un ID richiesta da aprire (da deep link)
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    if (args != null && args['richiesta_id'] != null && _richiestaIdToOpen == null) {
-      _richiestaIdToOpen = args['richiesta_id'].toString();
-      AppLogger.d('📋 Richiesta da aprire: $_richiestaIdToOpen');
-      
-      // Apri il dettaglio dopo che le richieste sono caricate
-      if (!_isLoading && _tutteRichieste.isNotEmpty) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _apriRichiestaById(_richiestaIdToOpen!);
-          _richiestaIdToOpen = null; // Reset per evitare aperture multiple
-        });
-      }
+
+    _scheduleOpenPendingRichiesta();
+  }
+
+  bool get _isCalendarTabVisible => TickerMode.of(context);
+
+  void _scheduleOpenPendingRichiesta() {
+    if (_richiestaIdToOpen == null || _isLoading || _tutteRichieste.isEmpty) {
+      return;
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _tryOpenPendingRichiesta();
+    });
+  }
+
+  void _tryOpenPendingRichiesta() {
+    final id = _richiestaIdToOpen;
+    if (id == null || !mounted || !_isCalendarTabVisible) return;
+    _richiestaIdToOpen = null;
+    _apriRichiestaById(id);
   }
 
   String _resolveCalendarLocale(Locale locale) {
@@ -188,13 +193,7 @@ class _CalendarScreenState extends State<CalendarScreen>
             _isLoading = false;
           });
           
-          // Se c'è una richiesta da aprire, aprila dopo il caricamento
-          if (_richiestaIdToOpen != null) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _apriRichiestaById(_richiestaIdToOpen!);
-              _richiestaIdToOpen = null;
-            });
-          }
+          _scheduleOpenPendingRichiesta();
         }
       } else {
         if (mounted) {
@@ -610,10 +609,17 @@ class _CalendarScreenState extends State<CalendarScreen>
     }
 
     if (!mounted) return;
+    if (!_isCalendarTabVisible) {
+      AppLogger.d(
+        'ℹ️ [Dettaglio] calendar non visibile, non apro bottom sheet',
+      );
+      return;
+    }
 
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useRootNavigator: false,
       backgroundColor: Colors.transparent,
       builder: (context) => _buildDettaglioSheet(richiestaDettaglio),
     );

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../theme/theme.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../services/user_avatar_store.dart';
 import '../services/socio_service.dart';
 import '../services/secure_storage_service.dart';
 import '../services/app_localizations.dart';
+import '../services/app_settings_service.dart';
 import '../utils/app_navigation.dart';
 import 'annunci/annunci_screen.dart';
 import 'home/home_screen.dart';
@@ -37,10 +39,17 @@ class _MainScreenState extends State<MainScreen> {
   int _profileScreenVersion = 0;
   bool _profileCheckDone = false;
 
+  /// Fallback WhatsApp WeCoop (stesso numero di Contatti).
+  static const String _fallbackWhatsappDigits = '393515112113';
+
   @override
   void initState() {
     super.initState();
-    _selectedIndex = widget.initialIndex;
+    // Assistenza & FAQ apre WhatsApp, non una tab interna.
+    final initial = widget.initialIndex == MainTab.sportello
+        ? MainTab.home
+        : widget.initialIndex;
+    _selectedIndex = initial;
     _tabScreens = [
       const HomeScreen(),
       const EventiScreen(),
@@ -58,7 +67,32 @@ class _MainScreenState extends State<MainScreen> {
       const SizedBox.shrink(),
     ];
     UserAvatarStore.hydrate();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _checkProfiloCompleto());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkProfiloCompleto();
+      if (widget.initialIndex == MainTab.sportello) {
+        _openWhatsAppSupport();
+      }
+    });
+  }
+
+  Future<void> _openWhatsAppSupport() async {
+    final contact = await AppSettingsService.getWhatsappContact();
+    final uri = contact.waUri ??
+        Uri.parse('https://wa.me/$_fallbackWhatsappDigits');
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else if (mounted) {
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            l10n?.translate('whatsappNotAvailable') ??
+                'WhatsApp non disponibile su questo dispositivo',
+          ),
+        ),
+      );
+    }
   }
 
   Future<void> _checkProfiloCompleto() async {
@@ -150,7 +184,13 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  void _onItemTapped(int index) => _selectTab(index);
+  void _onItemTapped(int index) {
+    if (index == MainTab.sportello) {
+      _openWhatsAppSupport();
+      return;
+    }
+    _selectTab(index);
+  }
 
   Widget _buildMenuIcon(
     String assetPath, {

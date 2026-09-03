@@ -7,6 +7,7 @@ import '../../services/pagamento_service.dart';
 import '../../services/app_localizations.dart';
 import '../../services/push_notification_service.dart';
 import '../../config/stripe_config.dart';
+import '../../utils/service_request_labels.dart';
 
 class PagamentoScreen extends StatefulWidget {
   final int paymentId;
@@ -65,14 +66,14 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
         AppLogger.d('❌ [PagamentoScreen] Pagamento non trovato o non esiste');
         
         String errorMsg;
+        final l10n = AppLocalizations.of(context);
         if (widget.richiestaId != null) {
-          errorMsg = 'Nessun pagamento richiesto per questa richiesta.\n\n'
-              'Questa richiesta potrebbe non richiedere un pagamento o il pagamento '
-              'non è ancora stato creato dal sistema.\n\n'
-              'Richiesta ID: ${widget.richiestaId}';
+          errorMsg = (l10n?.translate('paymentNotRequired') ??
+                  'Nessun pagamento richiesto per questa richiesta.\n\nRichiesta ID: {id}')
+              .replaceAll('{id}', '${widget.richiestaId}');
         } else {
-          errorMsg = 'Pagamento non trovato.\n\n'
-              'Il pagamento richiesto non esiste o non hai i permessi per visualizzarlo.';
+          errorMsg = l10n?.translate('paymentNotFoundDetail') ??
+              (l10n?.paymentNotFound ?? 'Pagamento non trovato');
         }
         
         setState(() {
@@ -91,7 +92,8 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
     } catch (e) {
       AppLogger.d('❌ [PagamentoScreen] Errore caricamento: $e');
       setState(() {
-        _errorMessage = 'Errore durante il caricamento del pagamento';
+        _errorMessage = AppLocalizations.of(context)?.translate('paymentLoadError') ??
+            'Errore durante il caricamento del pagamento';
         _isLoading = false;
       });
     }
@@ -136,9 +138,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
     if (!StripeConfig.isConfigured) {
       AppLogger.d('❌ [PagamentoScreen] Stripe non configurato');
       _showErrorDialog(
-        'Stripe non disponibile!\n\n'
-        'I pagamenti con carta non sono al momento disponibili. '
-        'Riprova più tardi o usa un metodo di pagamento alternativo.'
+        AppLocalizations.of(context)!.translate('stripeUnavailable'),
       );
       return;
     }
@@ -178,9 +178,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
 
       if (clientSecret == null) {
         _showErrorDialog(
-          'Impossibile creare il pagamento.\n\n'
-          'Il server non è riuscito a processare la richiesta. '
-          'Verifica la tua connessione e riprova.'
+          AppLocalizations.of(context)!.translate('paymentCreateFailed'),
         );
         return;
       }
@@ -227,11 +225,16 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
         await _loadPagamento();
 
         _showSuccessDialog(
-          'Pagamento Completato!',
-          'Il tuo pagamento di €${_pagamento!.importo.toStringAsFixed(2)} è stato processato con successo.',
+          AppLocalizations.of(context)!.translate('paymentCompletedTitle'),
+          AppLocalizations.of(context)!
+              .translate('paymentCompletedBody')
+              .replaceAll('{amount}', _pagamento!.importo.toStringAsFixed(2)),
         );
       } else {
-        _showErrorDialog(result['message'] ?? 'Errore durante la conferma del pagamento');
+        _showErrorDialog(
+          result['message'] ??
+              AppLocalizations.of(context)!.translate('paymentConfirmError'),
+        );
       }
     } on StripeException catch (e) {
       AppLogger.d('❌ StripeException: ${e.error.code} - ${e.error.message}');
@@ -250,7 +253,11 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
         return;
       }
 
-      _showErrorDialog('Errore Stripe: ${e.error.localizedMessage ?? e.error.message}');
+      _showErrorDialog(
+        AppLocalizations.of(context)!
+            .translate('stripeErrorPrefix')
+            .replaceAll('{detail}', '${e.error.localizedMessage ?? e.error.message}'),
+      );
     } catch (e) {
       AppLogger.d('❌ Errore generico: $e');
       if (!mounted) return;
@@ -259,7 +266,11 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
         Navigator.of(context, rootNavigator: true).pop();
         _isStripeLoadingDialogVisible = false;
       }
-      _showErrorDialog('Errore imprevisto: $e');
+      _showErrorDialog(
+        AppLocalizations.of(context)!
+            .translate('unexpectedErrorPrefix')
+            .replaceAll('{detail}', '$e'),
+      );
     }
   }
 
@@ -311,40 +322,14 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
     );
   }
 
-  String _localizedLegalText({
-    required String it,
-    required String en,
-    required String es,
-  }) {
-    final languageCode = AppLocalizations.of(context)?.locale.languageCode;
-
-    switch (languageCode) {
-      case 'en':
-        return en;
-      case 'es':
-        return es;
-      case 'it':
-      default:
-        return it;
-    }
+  String _legal(String key) {
+    return AppLocalizations.of(context)!.translate(key);
   }
 
   String _getServizioLabelTradotto(String servizio) {
     final l10n = AppLocalizations.of(context);
     if (l10n == null) return servizio;
-    
-    switch (servizio) {
-      case 'caf_tax_assistance':
-        return l10n.cafTaxAssistance;
-      case 'immigration_desk':
-        return l10n.immigrationDesk;
-      case 'tax_mediation':
-        return l10n.taxMediation;
-      case 'accounting_support':
-        return l10n.accountingSupport;
-      default:
-        return servizio;
-    }
+    return ServiceRequestLabels.servizio(l10n, servizio);
   }
 
   @override
@@ -420,11 +405,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  _localizedLegalText(
-                                    it: 'Prezzo finale IVA inclusa',
-                                    en: 'Final price VAT included',
-                                    es: 'Precio final IVA incluida',
-                                  ),
+                                  _legal('finalPriceVatIncluded'),
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
@@ -495,11 +476,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                       _formatDate(_pagamento!.createdAt),
                                     ),
                                     _buildDetailRow(
-                                      _localizedLegalText(
-                                        it: 'Gestione pagamento e fattura',
-                                        en: 'Payment and invoice entity',
-                                        es: 'Entidad de pago y factura',
-                                      ),
+                                      _legal('paymentInvoiceEntity'),
                                       'KINTI SRL',
                                     ),
                                     if (_pagamento!.paidAt != null)
@@ -530,11 +507,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        _localizedLegalText(
-                                          it: 'Nota legale pagamento',
-                                          en: 'Payment legal notice',
-                                          es: 'Aviso legal del pago',
-                                        ),
+                                        _legal('paymentLegalNoticeTitle'),
                                         style: const TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -542,11 +515,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        _localizedLegalText(
-                                          it: 'Il pagamento e la fatturazione sono gestiti da KINTI SRL nell\'ambito del progetto WECOOP.',
-                                          en: 'Payment and invoicing are managed by KINTI SRL within the WECOOP project.',
-                                          es: 'El pago y la facturacion son gestionados por KINTI SRL en el marco del proyecto WECOOP.',
-                                        ),
+                                        _legal('paymentLegalNoticeBody'),
                                         style: const TextStyle(height: 1.4),
                                       ),
                                     ],
@@ -559,11 +528,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                                 child: Text(
-                                  _localizedLegalText(
-                                    it: 'Procedendo al pagamento confermi un prezzo finale comprensivo di IVA.',
-                                    en: 'By proceeding with the payment you confirm a final price inclusive of VAT.',
-                                    es: 'Al continuar con el pago confirmas un precio final con IVA incluida.',
-                                  ),
+                                  _legal('paymentVatConfirm'),
                                   style: TextStyle(
                                     fontSize: 13,
                                     color: Colors.grey.shade700,
@@ -591,11 +556,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                   _buildPaymentButton(
                                     icon: Icons.credit_card,
                                     label: AppLocalizations.of(context)!.payWithCard,
-                                    subtitle: _localizedLegalText(
-                                      it: 'Stripe collegato a KINTI SRL',
-                                      en: 'Stripe connected to KINTI SRL',
-                                      es: 'Stripe conectado a KINTI SRL',
-                                    ),
+                                    subtitle: _legal('stripeConnectedToKinti'),
                                     color: const Color(0xFF635BFF),
                                     onTap: _handleStripePayment,
                                   ),

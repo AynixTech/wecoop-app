@@ -16,6 +16,7 @@ import '../servizi/pagamento_screen.dart';
 import '../firma_digitale/firma_documento_screen.dart';
 import '../prenota_appuntamento/seleziona_slot_screen.dart';
 import '../profilo/completa_profilo_screen.dart';
+import '../../utils/service_request_labels.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
@@ -410,84 +411,13 @@ class _CalendarScreenState extends State<CalendarScreen>
   String _getCategoriaLabelTradotta(String categoria) {
     final l10n = AppLocalizations.of(context);
     if (l10n == null) return categoria;
-    
-    switch (categoria) {
-      case '730':
-      case 'tax_return_730':
-        return l10n.taxReturn730;
-      case 'form_compilation':
-        return l10n.formCompilation;
-      case 'residence_permit':
-        return l10n.residencePermit;
-      case 'study_italy':
-        return l10n.forStudy;
-      case 'waiting_employment':
-        return l10n.translate('waitingEmployment');
-      case 'family_reunification_permit':
-        return l10n.translate('familyReunificationPermit');
-      case 'duplicate_permit':
-        return l10n.translate('duplicatePermit');
-      case 'long_term_permit_update':
-        return l10n.translate('longTermPermitUpdate');
-      case 'citizenship':
-        return l10n.citizenship;
-      case 'tourist_visa':
-        return l10n.touristVisa;
-      case 'asylum_request':
-        return l10n.asylumRequest;
-      case 'income_tax_return':
-        return l10n.incomeTaxReturn;
-      case 'vat_number_opening':
-        return l10n.vatNumberOpening;
-      case 'accounting_management':
-        return l10n.accountingManagement;
-      case 'tax_compliance':
-        return l10n.taxCompliance;
-      case 'tax_consultation':
-        return l10n.taxConsultation;
-      case 'tax_debt_management':
-        return l10n.taxDebtManagement;
-      case 'tax_mediation':
-        return l10n.taxMediation;
-      case 'tax_guidance_clarifications':
-        return l10n.translate('taxGuidanceAndClarifications');
-      case 'taxes_and_contributions':
-        return l10n.translate('taxesAndContributions');
-      case 'clarifications_consulting':
-        return l10n.clarificationsConsulting;
-      case 'close_change_activity':
-        return l10n.closeChangeActivity;
-      case 'spouse':
-        return l10n.spouse;
-      case 'minor_children':
-        return l10n.translate('minorChildren');
-      case 'dependent_parents':
-        return l10n.translate('dependentParents');
-      default:
-        return categoria;
-    }
+    return ServiceRequestLabels.categoria(l10n, categoria);
   }
 
   String _getServizioLabelTradotto(String servizio) {
     final l10n = AppLocalizations.of(context);
     if (l10n == null) return servizio;
-    
-    switch (servizio) {
-      case 'caf_tax_assistance':
-        return l10n.cafTaxAssistance;
-      case 'immigration_desk':
-        return l10n.immigrationDesk;
-      case 'tax_mediation':
-        return l10n.taxMediation;
-      case 'accounting_support':
-        return l10n.accountingSupport;
-      case 'tax_guidance_clarifications':
-        return l10n.translate('taxGuidanceAndClarifications');
-      case 'family_reunification':
-        return l10n.translate('familyReunification');
-      default:
-        return servizio;
-    }
+    return ServiceRequestLabels.servizio(l10n, servizio);
   }
 
   /// Se il profilo non ha email, suggerisce (una volta) di completarlo per
@@ -506,24 +436,25 @@ class _CalendarScreenState extends State<CalendarScreen>
       await showDialog(
         context: context,
         barrierDismissible: true,
-        builder: (ctx) => AlertDialog(
+        builder: (ctx) {
+          final l10n = AppLocalizations.of(context)!;
+          return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(
-            children: const [
-              Icon(Icons.mark_email_unread_rounded, color: AppColors.primary, size: 26),
-              SizedBox(width: 10),
-              Expanded(child: Text('Vuoi ricevere le email?')),
+            children: [
+              const Icon(Icons.mark_email_unread_rounded, color: AppColors.primary, size: 26),
+              const SizedBox(width: 10),
+              Expanded(child: Text(l10n.translate('wantEmailsTitle'))),
             ],
           ),
-          content: const Text(
-            'Completa il tuo profilo con un indirizzo email per ricevere aggiornamenti '
-            'e notifiche sulle tue richieste di servizio.',
-            style: TextStyle(height: 1.4),
+          content: Text(
+            l10n.translate('wantEmailsMessage'),
+            style: const TextStyle(height: 1.4),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('No, grazie'),
+              child: Text(l10n.noThanks),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -537,10 +468,11 @@ class _CalendarScreenState extends State<CalendarScreen>
                   MaterialPageRoute(builder: (_) => const CompletaProfiloScreen()),
                 );
               },
-              child: const Text('Completa profilo'),
+              child: Text(l10n.completeProfile),
             ),
           ],
-        ),
+        );
+        },
       );
     } catch (_) {
       // Silenzioso.
@@ -771,7 +703,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     if (paymentId == null && richiestaId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('❌ ${l10n.errorDownloadingReceipt}: ID pagamento mancante'),
+          content: Text('❌ ${l10n.errorDownloadingReceipt}: ${l10n.translate('paymentIdMissing')}'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -856,8 +788,8 @@ class _CalendarScreenState extends State<CalendarScreen>
                   SnackBar(
                     content: Text(
                       opened
-                          ? '⚠️ PDF ricevuta non valido, aperto fallback web'
-                          : '❌ PDF ricevuta non valido e fallback non disponibile',
+                          ? '⚠️ ${AppLocalizations.of(context)!.translate('receiptPdfInvalidOpenedFallback')}'
+                          : '❌ ${AppLocalizations.of(context)!.translate('receiptPdfInvalidNoFallback')}',
                     ),
                     backgroundColor: opened ? Colors.orange : AppColors.error,
                   ),
@@ -909,7 +841,7 @@ class _CalendarScreenState extends State<CalendarScreen>
               AppLogger.d('❌ [$traceId] savedFile null dopo _salvaPdfLocale');
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text('⚠️ PDF ricevuto ma impossibile salvarlo'),
+                  content: Text('⚠️ ${AppLocalizations.of(context)!.translate('receiptPdfSaveFailed')}'),
                   backgroundColor: Colors.orange,
                 ),
               );
@@ -919,7 +851,7 @@ class _CalendarScreenState extends State<CalendarScreen>
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('❌ Errore: $e'),
+                  content: Text('❌ ${AppLocalizations.of(context)!.error}: $e'),
                   backgroundColor: AppColors.error,
                   duration: const Duration(seconds: 5),
                 ),
@@ -1316,7 +1248,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       MaterialPageRoute(
         builder: (context) => Scaffold(
           appBar: AppBar(
-            title: Text(title ?? 'Documento PDF'),
+            title: Text(title ?? AppLocalizations.of(context)!.translate('pdfDocumentTitle')),
           ),
           body: PDFView(
             filePath: file.path,
@@ -1699,9 +1631,9 @@ class _CalendarScreenState extends State<CalendarScreen>
       AppLogger.d('❌ Richiesta non trovata: $id');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Richiesta non trovata'),
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.translate('requestNotFound')),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -2565,7 +2497,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                         Icons.confirmation_number,
                       ),
                       _buildInfoRow(
-                        'ID Richiesta',
+                        AppLocalizations.of(context)!.translate('requestIdLabel'),
                         richiestaId?.toString() ?? 'N/A',
                         Icons.badge_outlined,
                       ),
@@ -2634,7 +2566,7 @@ class _CalendarScreenState extends State<CalendarScreen>
 
                         if (pagamento['transazione_id'] != null)
                           _buildInfoRow(
-                            'ID Transazione',
+                            AppLocalizations.of(context)!.translate('transactionIdLabel'),
                             pagamento['transazione_id'],
                             Icons.receipt,
                           ),
@@ -2968,21 +2900,21 @@ class _CalendarScreenState extends State<CalendarScreen>
                                         const SizedBox(height: 16),
                                         Text(AppLocalizations.of(context)!.translate('paymentDetailsLabel')),
                                         const SizedBox(height: 8),
-                                        Text('• Pratica: ${richiesta['numero_pratica']}'),
+                                        Text('• ${AppLocalizations.of(context)!.fileNumber}: ${richiesta['numero_pratica']}'),
                                         if (transactionId != null) ...[
                                           const SizedBox(height: 4),
                                           Text(
-                                            '• ID Transazione: ${transactionId.substring(0, 20)}...',
+                                            '• ${AppLocalizations.of(context)!.translate('transactionIdLabel')}: ${transactionId.substring(0, 20)}...',
                                             style: const TextStyle(fontSize: 12),
                                           ),
                                         ],
                                         if (pagamento['metodo'] != null) ...[
                                           const SizedBox(height: 4),
-                                          Text('• Metodo: ${pagamento['metodo']}'),
+                                          Text('• ${AppLocalizations.of(context)!.paymentMethod}: ${pagamento['metodo']}'),
                                         ],
                                         if (pagamento['data'] != null) ...[
                                           const SizedBox(height: 4),
-                                          Text('• Data: ${_formatData(pagamento['data'])}'),
+                                          Text('• ${AppLocalizations.of(context)!.date}: ${_formatData(pagamento['data'])}'),
                                         ],
                                         const SizedBox(height: 16),
                                         Container(
@@ -2991,14 +2923,14 @@ class _CalendarScreenState extends State<CalendarScreen>
                                             color: AppColors.infoBg,
                                             borderRadius: BorderRadius.circular(8),
                                           ),
-                                          child: const Row(
+                                          child: Row(
                                             children: [
-                                              Icon(Icons.lightbulb_outline, size: 20, color: AppColors.info),
-                                              SizedBox(width: 8),
+                                              const Icon(Icons.lightbulb_outline, size: 20, color: AppColors.info),
+                                              const SizedBox(width: 8),
                                               Expanded(
                                                 child: Text(
-                                                  'La ricevuta sarà disponibile a breve. Riprova tra qualche minuto o contatta il supporto.',
-                                                  style: TextStyle(fontSize: 12),
+                                                  AppLocalizations.of(context)!.translate('receiptAvailableSoonTip'),
+                                                  style: const TextStyle(fontSize: 12),
                                                 ),
                                               ),
                                             ],
@@ -3009,7 +2941,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                                     actions: [
                                       TextButton(
                                         onPressed: () => Navigator.pop(context),
-                                        child: const Text('Chiudi'),
+                                        child: Text(AppLocalizations.of(context)!.close),
                                       ),
                                       ElevatedButton.icon(
                                         onPressed: () {
@@ -3017,7 +2949,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                                           _caricaRichieste(); // Ricarica per vedere se ora c'è l'ID
                                         },
                                         icon: const Icon(Icons.refresh),
-                                        label: const Text('Ricarica'),
+                                        label: Text(AppLocalizations.of(context)!.reload),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: AppColors.info,
                                           foregroundColor: Colors.white,
@@ -3158,7 +3090,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         title: Text(l10n.myRequests),
         actions: [
           IconButton(
-            tooltip: 'Aggiorna',
+            tooltip: l10n.reload,
             icon: const Icon(Icons.refresh),
             onPressed: _isLoading ? null : _caricaRichieste,
           ),
@@ -3623,14 +3555,14 @@ class _CalendarScreenState extends State<CalendarScreen>
           color: AppColors.error,
           alignment: Alignment.centerRight,
           padding: const EdgeInsets.only(right: 20),
-          child: const Column(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.delete, color: Colors.white, size: 32),
-              SizedBox(height: 4),
+              const Icon(Icons.delete, color: Colors.white, size: 32),
+              const SizedBox(height: 4),
               Text(
-                'Elimina',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                AppLocalizations.of(context)!.deleteLabel,
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ],
           ),

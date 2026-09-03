@@ -98,7 +98,9 @@ class RisultatoFirmaWidget extends StatelessWidget {
                         const Divider(height: 16),
                         _buildDetailRow(
                           '🔐 ${l10n.translate('hashVerifiedLabel')}',
-                          firma?.hashVerificato ?? false ? '✅ ${l10n.translate('yesSimple')}' : '❌ No',
+                          firma?.hashVerificato ?? false
+                              ? '✅ ${l10n.translate('yesSimple')}'
+                              : '❌ ${l10n.translate('noSimple')}',
                         ),
                       ],
                     ),

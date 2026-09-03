@@ -91,7 +91,9 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
         if (mounted) {
           setState(() {
             _isLoading = false;
-            _loadError = 'Impossibile caricare gli appuntamenti.';
+            _loadError = AppLocalizations.of(context)
+                    ?.translate('cannotLoadAppointments') ??
+                'Impossibile caricare gli appuntamenti.';
           });
         }
       }
@@ -100,7 +102,9 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _loadError = 'Errore di rete. Riprova più tardi.';
+          _loadError = AppLocalizations.of(context)
+                  ?.translate('networkUnavailableRetry') ??
+              'Errore di rete. Riprova più tardi.';
         });
       }
     }
@@ -108,10 +112,16 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
 
   Map<String, Map<String, List>> raggruppaPerSedeEServizio(List appuntamenti) {
     final Map<String, Map<String, List>> mappa = {};
+    final l10n = AppLocalizations.of(context);
     for (var app in appuntamenti) {
       if (app is! Map) continue;
-      final sede = app['sede'] ?? 'Sede sconosciuta';
-      final servizio = app['sportello'] ?? app['servizio'] ?? 'Servizio sconosciuto';
+      final sede = app['sede'] ??
+          l10n?.translate('unknownSede') ??
+          'Sede sconosciuta';
+      final servizio = app['sportello'] ??
+          app['servizio'] ??
+          l10n?.translate('unknownService') ??
+          'Servizio sconosciuto';
 
       mappa.putIfAbsent(sede, () => {});
       mappa[sede]!.putIfAbsent(servizio, () => []);
@@ -160,7 +170,7 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '${l10n.error}: ${result['message'] ?? 'Impossibile prenotare'}',
+              '${l10n.error}: ${result['message'] ?? l10n.translate('cannotBookAppointment')}',
             ),
           ),
         );
@@ -170,7 +180,11 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
       if (mounted) {
         setState(() => _isSubmitting = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: rete non disponibile')),
+          SnackBar(
+            content: Text(
+              '${l10n.error}: ${l10n.translate('networkUnavailableRetry')}',
+            ),
+          ),
         );
       }
     }
@@ -181,14 +195,15 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
     final appuntamentiPerSedeEServizio = raggruppaPerSedeEServizio(
       appuntamenti,
     );
-    const giorniSettimana = {
-      DateTime.monday: 'LUN',
-      DateTime.tuesday: 'MAR',
-      DateTime.wednesday: 'MER',
-      DateTime.thursday: 'GIO',
-      DateTime.friday: 'VEN',
-      DateTime.saturday: 'SAB',
-      DateTime.sunday: 'DOM',
+    final l10n = AppLocalizations.of(context)!;
+    final giorniSettimana = {
+      DateTime.monday: l10n.monday,
+      DateTime.tuesday: l10n.tuesday,
+      DateTime.wednesday: l10n.wednesday,
+      DateTime.thursday: l10n.thursday,
+      DateTime.friday: l10n.friday,
+      DateTime.saturday: l10n.saturday,
+      DateTime.sunday: l10n.sunday,
     };
 
     return Scaffold(
@@ -216,7 +231,7 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
                                 const SizedBox(height: 12),
                                 OutlinedButton(
                                   onPressed: fetchAppuntamenti,
-                                  child: const Text('Riprova'),
+                                  child: Text(AppLocalizations.of(context)!.retry),
                                 ),
                               ],
                             ),

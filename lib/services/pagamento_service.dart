@@ -255,8 +255,10 @@ class PagamentoService {
     }
   }
 
-  /// Recupera la publishable key Stripe dal backend (wp-config-stripe.php)
+  /// Recupera la publishable key Stripe dal backend Node
   /// GET /stripe-config
+  ///
+  /// Ritorna null se la chiave non è configurata (pagamenti carta non disponibili).
   static Future<String?> getStripePublishableKey() async {
     try {
       final url = Uri.parse('$baseUrl/stripe-config');
@@ -268,10 +270,12 @@ class PagamentoService {
       if (response.statusCode == 200) {
         final data = ResponseUtils.decodeJson(response) as Map<String, dynamic>;
         final key = data['publishable_key'] as String?;
-        if (key != null && key.isNotEmpty) {
+        final configured = data['configured'] == true ||
+            (key != null && key.isNotEmpty);
+        if (configured && key != null && key.isNotEmpty) {
           return key;
         }
-        AppLogger.d('⚠️ publishable_key non presente nella risposta');
+        AppLogger.d('⚠️ Stripe non configurato sul backend (publishable_key vuota)');
       }
 
       return null;

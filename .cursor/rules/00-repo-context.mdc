@@ -11,4 +11,4 @@ Repo: `AynixTech/wecoop-app`. Flutter/Dart, bundle `org.wecoop.app` (`pubspec.ya
 - State: `provider` (`LocaleProvider`, `FirmaDigitaleProvider`).
 - Native: Firebase Messaging, Stripe, `app_links`, `flutter_secure_storage`.
 
-`lib/services/wordpress_service.dart` chiama il backend Node (`ApiConfig.baseUrl`), non WordPress REST.
+`lib/services/contenuti_service.dart` (ex-`wordpress_service.dart`) chiama il backend Node (`ApiConfig.baseUrl`), non WordPress REST.

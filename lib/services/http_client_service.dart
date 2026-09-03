@@ -200,6 +200,35 @@ class HttpClientService {
     );
   }
 
+  /// Invia una richiesta multipart con refresh JWT automatico.
+  ///
+  /// [buildRequest] viene invocato ad ogni tentativo perché un
+  /// [http.MultipartRequest] non è riusabile dopo `send()`.
+  static Future<http.Response> sendMultipart(
+    Uri url,
+    Future<http.MultipartRequest> Function() buildRequest, {
+    Duration timeout = const Duration(seconds: 60),
+  }) async {
+    return _makeRequestWithRefresh(
+      () async {
+        final request = await buildRequest();
+        // Multipart gestisce da solo Content-Type (boundary).
+        request.headers.removeWhere(
+          (k, _) =>
+              k.toLowerCase() == 'content-type' ||
+              k.toLowerCase() == 'authorization',
+        );
+        final token = await storage.read(key: 'jwt_token');
+        if (token != null && token.isNotEmpty) {
+          request.headers['Authorization'] = 'Bearer $token';
+        }
+        final streamed = await request.send().timeout(timeout);
+        return http.Response.fromStream(streamed);
+      },
+      url.toString(),
+    );
+  }
+
   /// Reinietta sempre il JWT attuale dallo storage (se presente).
   /// Così il retry dopo refresh usa il token nuovo anche se la richiesta
   /// originale non aveva (o aveva scaduto) l'header Authorization.

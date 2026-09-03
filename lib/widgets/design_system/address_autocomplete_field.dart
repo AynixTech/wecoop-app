@@ -1,7 +1,7 @@
 /// WeCoop Design System — Campo indirizzo con autocompletamento
 ///
-/// Usa [AddressAutocompleteService] (Nominatim/OpenStreetMap, gratuito) per
-/// suggerire indirizzi nella lingua dell'app. Alla selezione, restituisce il
+/// Usa [AddressAutocompleteService] (`/api/geo` se configurato, altrimenti
+/// Nominatim) per suggerire indirizzi. Alla selezione, restituisce il
 /// suggerimento completo così lo schermo può auto-compilare città/CAP/provincia.
 library;
 
@@ -83,11 +83,15 @@ class _AddressAutocompleteFieldState extends State<AddressAutocompleteField> {
           },
           displayStringForOption: (o) =>
               o.street.isNotEmpty ? o.street : o.displayName,
-          onSelected: (o) {
-            if (o.street.isNotEmpty) {
-              widget.controller.text = o.street;
+          onSelected: (o) async {
+            final resolved = await AddressAutocompleteService.resolve(o);
+            if (resolved.street.isNotEmpty) {
+              widget.controller.text = resolved.street;
+            } else if (resolved.displayName.isNotEmpty) {
+              widget.controller.text =
+                  resolved.displayName.split(',').first.trim();
             }
-            widget.onSelected?.call(o);
+            widget.onSelected?.call(resolved);
           },
           fieldViewBuilder:
               (context, textController, focusNode, onFieldSubmitted) {

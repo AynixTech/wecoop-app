@@ -13,7 +13,8 @@ class StripeConfig {
     defaultValue: '',
   );
 
-  /// Publishable key recuperata a runtime dal backend (wp-config-stripe.php).
+  /// Publishable key recuperata a runtime dal backend Node (`GET /stripe-config`),
+  /// che legge https://cloud.wecoop.org/integrazioni (`stripe_publishable_key`).
   /// Ha priorita' sulla chiave passata via dart-define.
   static String? runtimePublishableKey;
 

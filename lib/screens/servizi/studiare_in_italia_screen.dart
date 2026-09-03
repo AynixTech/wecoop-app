@@ -4,7 +4,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
 import '../../services/app_localizations.dart';
 import '../../services/secure_storage_service.dart';
-import '../../services/wordpress_service.dart';
+import '../../services/contenuti_service.dart';
 import '../../services/socio_service.dart';
 import '../../models/offerta_formativa_model.dart';
 import '../../models/partner_model.dart';
@@ -24,7 +24,7 @@ class StudiareInItaliaScreen extends StatefulWidget {
 class _StudiareInItaliaScreenState extends State<StudiareInItaliaScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
-  final _wpService = WordpressService();
+  final _contenutiService = ContenutiService();
 
   @override
   void initState() {
@@ -75,7 +75,7 @@ class _StudiareInItaliaScreenState extends State<StudiareInItaliaScreen>
               ),
             );
           }),
-          _PartnerAccademiciTab(wpService: _wpService),
+          _PartnerAccademiciTab(contenutiService: _contenutiService),
         ],
       ),
     );
@@ -238,8 +238,8 @@ class _SupportItem extends StatelessWidget {
 // TAB 2 – Partner Accademici (vetrina delle università partner WECOOP)
 // ─────────────────────────────────────────────────────────────
 class _PartnerAccademiciTab extends StatefulWidget {
-  final WordpressService wpService;
-  const _PartnerAccademiciTab({required this.wpService});
+  final ContenutiService contenutiService;
+  const _PartnerAccademiciTab({required this.contenutiService});
 
   @override
   State<_PartnerAccademiciTab> createState() => _PartnerAccademiciTabState();
@@ -262,7 +262,7 @@ class _PartnerAccademiciTabState extends State<_PartnerAccademiciTab>
 
   Future<void> _loadPartners() async {
     try {
-      final data = await widget.wpService.getPartnerAccademici();
+      final data = await widget.contenutiService.getPartnerAccademici();
       if (mounted) setState(() { _partners = data; _isLoading = false; });
     } catch (e) {
       if (mounted) setState(() { _error = e.toString(); _isLoading = false; });
@@ -340,7 +340,7 @@ class _PartnerAccademiciTabState extends State<_PartnerAccademiciTab>
                         MaterialPageRoute(
                           builder: (_) => _PartnerDettaglioScreen(
                             partner: p,
-                            wpService: widget.wpService,
+                            contenutiService: widget.contenutiService,
                           ),
                         ),
                       );
@@ -580,8 +580,8 @@ class _Chip extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────
 class _PartnerDettaglioScreen extends StatefulWidget {
   final Partner partner;
-  final WordpressService wpService;
-  const _PartnerDettaglioScreen({required this.partner, required this.wpService});
+  final ContenutiService contenutiService;
+  const _PartnerDettaglioScreen({required this.partner, required this.contenutiService});
 
   @override
   State<_PartnerDettaglioScreen> createState() => _PartnerDettaglioScreenState();
@@ -599,7 +599,7 @@ class _PartnerDettaglioScreenState extends State<_PartnerDettaglioScreen> {
   }
 
   Future<void> _load() async {
-    final data = await widget.wpService.getPartnerDettaglio(widget.partner.id);
+    final data = await widget.contenutiService.getPartnerDettaglio(widget.partner.id);
     if (mounted) setState(() { _dettaglio = data; _isLoading = false; });
   }
 
@@ -922,7 +922,7 @@ class _StudiareItaliaFormScreenState extends State<_StudiareItaliaFormScreen> {
   bool _helpOrientamento = false;
 
   final _formKeys = List.generate(4, (_) => GlobalKey<FormState>());
-  final _wpService = WordpressService();
+  final _contenutiService = ContenutiService();
 
   @override
   void initState() {
@@ -988,7 +988,7 @@ class _StudiareItaliaFormScreenState extends State<_StudiareItaliaFormScreen> {
       'aiuto_richiesto':  aiutoList.join(', '),
     };
 
-    final result = await _wpService.submitStudiareItalia(data);
+    final result = await _contenutiService.submitStudiareItalia(data);
     setState(() => _isSubmitting = false);
 
     if (!mounted) return;

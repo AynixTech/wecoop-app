@@ -1213,38 +1213,25 @@ class SocioService {
     String soggetto = 'richiedente',
   }) async {
     try {
-      final headers = await _getHeaders(includeAuth: true);
-      headers.remove(
-        'Content-Type',
-      ); // MultipartRequest gestisce il Content-Type
-
       final url = '$baseUrl/soci/me/upload-documento';
-      final request = http.MultipartRequest('POST', Uri.parse(url));
-
-      // Aggiungi headers
-      headers.forEach((key, value) {
-        request.headers[key] = value;
-      });
-
-      // Aggiungi file
-      request.files.add(await http.MultipartFile.fromPath('file', file.path));
-
-      // Aggiungi tipo documento
-      request.fields['tipo_documento'] = tipoDocumento;
-
-      // Aggiungi soggetto (nuovo, supportato dal backend)
-      request.fields['soggetto'] = soggetto;
+      final uri = Uri.parse(url);
 
       AppLogger.d('📤 Upload documento: ${file.path.split('/').last}');
       AppLogger.d('📝 Tipo: $tipoDocumento');
       AppLogger.d('📝 Soggetto: $soggetto');
 
-      final streamedResponse = await request.send().timeout(
-        const Duration(seconds: 60),
-      );
-      final response = await HttpClientService.processResponse(
-        await http.Response.fromStream(streamedResponse),
-      );
+      final response = await HttpClientService.sendMultipart(uri, () async {
+        final headers = await _getHeaders(includeAuth: true);
+        headers.remove('Content-Type');
+        final request = http.MultipartRequest('POST', uri);
+        headers.forEach((key, value) {
+          request.headers[key] = value;
+        });
+        request.files.add(await http.MultipartFile.fromPath('file', file.path));
+        request.fields['tipo_documento'] = tipoDocumento;
+        request.fields['soggetto'] = soggetto;
+        return request;
+      });
 
       AppLogger.d('📥 Response status: ${response.statusCode}');
 
@@ -1270,45 +1257,39 @@ class SocioService {
     required File file,
   }) async {
     try {
-      final headers = await _getHeaders(includeAuth: true);
-      headers.remove('Content-Type'); // MultipartRequest gestisce il Content-Type
-
       final url = '$baseUrl/richiesta-servizio/$richiestaId/integrazione-documenti';
-      final request = http.MultipartRequest('POST', Uri.parse(url));
-
-      headers.forEach((key, value) {
-        request.headers[key] = value;
-      });
-
-      // Determina il content-type corretto in base all'estensione
-      final ext = file.path.split('.').last.toLowerCase();
-      MediaType? contentType;
-      if (ext == 'jpg' || ext == 'jpeg') {
-        contentType = MediaType('image', 'jpeg');
-      } else if (ext == 'png') {
-        contentType = MediaType('image', 'png');
-      } else if (ext == 'pdf') {
-        contentType = MediaType('application', 'pdf');
-      }
-
-      // Il backend riconosce i file con prefisso 'documento_'
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'documento_$tipo',
-          file.path,
-          contentType: contentType,
-        ),
-      );
+      final uri = Uri.parse(url);
 
       AppLogger.d('📤 Upload integrazione documento: ${file.path.split('/').last}');
       AppLogger.d('📝 Richiesta: $richiestaId | Tipo: $tipo');
 
-      final streamedResponse = await request.send().timeout(
-        const Duration(seconds: 60),
-      );
-      final response = await HttpClientService.processResponse(
-        await http.Response.fromStream(streamedResponse),
-      );
+      final response = await HttpClientService.sendMultipart(uri, () async {
+        final headers = await _getHeaders(includeAuth: true);
+        headers.remove('Content-Type');
+        final request = http.MultipartRequest('POST', uri);
+        headers.forEach((key, value) {
+          request.headers[key] = value;
+        });
+
+        final ext = file.path.split('.').last.toLowerCase();
+        MediaType? contentType;
+        if (ext == 'jpg' || ext == 'jpeg') {
+          contentType = MediaType('image', 'jpeg');
+        } else if (ext == 'png') {
+          contentType = MediaType('image', 'png');
+        } else if (ext == 'pdf') {
+          contentType = MediaType('application', 'pdf');
+        }
+
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'documento_$tipo',
+            file.path,
+            contentType: contentType,
+          ),
+        );
+        return request;
+      });
 
       AppLogger.d('📥 Response status: ${response.statusCode}');
 
@@ -1335,24 +1316,19 @@ class SocioService {
   /// POST /soci/me/avatar
   static Future<Map<String, dynamic>> uploadAvatar({required File file}) async {
     try {
-      final headers = await _getHeaders(includeAuth: true);
-      headers.remove('Content-Type');
-
       final url = '$baseUrl/soci/me/avatar';
-      final request = http.MultipartRequest('POST', Uri.parse(url));
+      final uri = Uri.parse(url);
 
-      headers.forEach((key, value) {
-        request.headers[key] = value;
+      final response = await HttpClientService.sendMultipart(uri, () async {
+        final headers = await _getHeaders(includeAuth: true);
+        headers.remove('Content-Type');
+        final request = http.MultipartRequest('POST', uri);
+        headers.forEach((key, value) {
+          request.headers[key] = value;
+        });
+        request.files.add(await http.MultipartFile.fromPath('file', file.path));
+        return request;
       });
-
-      request.files.add(await http.MultipartFile.fromPath('file', file.path));
-
-      final streamedResponse = await request.send().timeout(
-        const Duration(seconds: 60),
-      );
-      final response = await HttpClientService.processResponse(
-        await http.Response.fromStream(streamedResponse),
-      );
 
       if (response.statusCode == 200) {
         return jsonDecode(response.body) as Map<String, dynamic>;

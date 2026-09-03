@@ -10,7 +10,7 @@ import '../../models/evento_model.dart';
 import '../../models/documento.dart';
 import '../../models/partner_model.dart';
 import '../../models/project_opportunity_catalog.dart';
-import '../../services/wordpress_service.dart';
+import '../../services/contenuti_service.dart';
 import '../../services/eventi_service.dart';
 import '../../services/documento_service.dart';
 import '../../services/user_avatar_store.dart';
@@ -984,13 +984,13 @@ class _LatestPostsSection extends StatefulWidget {
 }
 
 class _LatestPostsSectionState extends State<_LatestPostsSection> {
-  final WordpressService wpService = WordpressService();
+  final ContenutiService contenutiService = ContenutiService();
   late Future<List<Post>> postsFuture;
 
   @override
   void initState() {
     super.initState();
-    postsFuture = wpService.getPosts(perPage: 5);
+    postsFuture = contenutiService.getPosts(perPage: 5);
   }
 
   @override
@@ -1352,13 +1352,13 @@ class _PartnersSection extends StatefulWidget {
 }
 
 class _PartnersSectionState extends State<_PartnersSection> {
-  final WordpressService _wpService = WordpressService();
+  final ContenutiService _contenutiService = ContenutiService();
   late Future<List<Partner>> _partnersFuture;
 
   @override
   void initState() {
     super.initState();
-    _partnersFuture = _wpService.getPartners();
+    _partnersFuture = _contenutiService.getPartners();
   }
 
   @override

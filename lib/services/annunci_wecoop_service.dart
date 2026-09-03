@@ -142,14 +142,11 @@ class AnnunciWecoopService {
       return {'success': false, 'message': 'Devi effettuare il login.'};
     }
     final uri = Uri.parse('$_baseUrl/$id/upload-copertina');
-    final request = http.MultipartRequest('POST', uri)
-      ..headers['Authorization'] = 'Bearer $token'
-      ..files.add(await http.MultipartFile.fromPath('file', file.path));
-
-    final streamed = await request.send().timeout(const Duration(seconds: 60));
-    final response = await HttpClientService.processResponse(
-      await http.Response.fromStream(streamed),
-    );
+    final response = await HttpClientService.sendMultipart(uri, () async {
+      return http.MultipartRequest('POST', uri)
+        ..headers['Authorization'] = 'Bearer ${await _token ?? token}'
+        ..files.add(await http.MultipartFile.fromPath('file', file.path));
+    });
     final body = jsonDecode(response.body);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return {'success': true, ...body};
@@ -169,14 +166,11 @@ class AnnunciWecoopService {
       return {'success': false, 'message': 'Devi effettuare il login.'};
     }
     final uri = Uri.parse('$_baseUrl/$id/upload-foto');
-    final request = http.MultipartRequest('POST', uri)
-      ..headers['Authorization'] = 'Bearer $token'
-      ..files.add(await http.MultipartFile.fromPath('file', file.path));
-
-    final streamed = await request.send().timeout(const Duration(seconds: 60));
-    final response = await HttpClientService.processResponse(
-      await http.Response.fromStream(streamed),
-    );
+    final response = await HttpClientService.sendMultipart(uri, () async {
+      return http.MultipartRequest('POST', uri)
+        ..headers['Authorization'] = 'Bearer ${await _token ?? token}'
+        ..files.add(await http.MultipartFile.fromPath('file', file.path));
+    });
     final body = jsonDecode(response.body);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return {'success': true, ...body};

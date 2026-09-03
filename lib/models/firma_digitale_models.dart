@@ -153,7 +153,7 @@ class FirmaDigitale {
       richiestaId: _fdParseInt(json['richiesta_id']),
       firmaTimestamp: _fdParseDate(json['firma_timestamp']),
       metodoFirma: (json['metodo_firma'] ?? 'FES').toString(),
-      status: (json['status'] ?? '').toString(),
+      status: (json['status'] ?? json['stato'] ?? '').toString(),
       hashVerificato: json['hash_verificato'] == true,
     );
   }
@@ -211,7 +211,7 @@ class FirmaStatus {
       firmato: json['firmato'] == true,
       id: (json['id'] ?? json['firma_id'])?.toString(),
       richiestaId: (json['richiesta_id'] as num?)?.toInt() ?? 0,
-      status: json['status']?.toString(),
+      status: (json['status'] ?? json['stato'])?.toString(),
       dataFirma: parsedDataFirma,
       metodo: (json['metodo'] ?? json['firma_tipo'])?.toString(),
       deviceFirma: json['device_firma']?.toString(),

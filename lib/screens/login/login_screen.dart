@@ -360,6 +360,9 @@ class _LoginScreenState extends State<LoginScreen> {
           // 'id' in /soci/me è il WordPress user ID (wp_get_current_user()->ID)
           await storage.write(key: 'user_id', value: data['id'].toString());
         }
+        if (data['socio_id'] != null) {
+          await storage.write(key: 'socio_id', value: data['socio_id'].toString());
+        }
         if (data['user_id'] != null) {
           await storage.write(
             key: 'user_id',
@@ -418,13 +421,19 @@ class _LoginScreenState extends State<LoginScreen> {
         if (data['nazionalita'] != null) {
           await storage.write(key: 'nazionalita', value: data['nazionalita']);
         }
-        if (data['status_socio'] != null) {
-          await storage.write(key: 'stato_socio', value: data['status_socio']);
+        if (data['status_socio'] != null ||
+            data['status'] != null ||
+            data['stato'] != null) {
+          await storage.write(
+            key: 'stato_socio',
+            value: (data['status_socio'] ?? data['status'] ?? data['stato'])
+                .toString(),
+          );
         }
-        if (data['data_adesione'] != null) {
+        if (data['data_adesione'] != null || data['created_at'] != null) {
           await storage.write(
             key: 'data_iscrizione',
-            value: data['data_adesione'],
+            value: (data['data_adesione'] ?? data['created_at']).toString(),
           );
         }
         if (data['numero_tessera'] != null) {

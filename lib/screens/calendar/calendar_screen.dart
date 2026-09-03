@@ -224,7 +224,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     if (_filtroStato == null) return _tutteRichieste;
 
     return _tutteRichieste.where((richiesta) {
-      final stato = (richiesta['stato'] ?? '').toString();
+      final stato = (richiesta['stato'] ?? richiesta['status'] ?? '').toString();
       final canonical = _canonicalStato(stato);
       return canonical == _filtroStato;
     }).toList();
@@ -624,7 +624,7 @@ class _CalendarScreenState extends State<CalendarScreen>
 
   Future<void> _confermaEliminaRichiesta(Map<String, dynamic> richiesta, {bool fromBottomSheet = false}) async {
     final l10n = AppLocalizations.of(context)!;
-    final stato = richiesta['stato'] ?? '';
+    final stato = richiesta['stato'] ?? richiesta['status'] ?? '';
     
     // Verifica se eliminabile
     if (stato != 'pending') {
@@ -1707,7 +1707,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       return true;
     }
 
-    final stato = (richiesta['stato'] ?? '').toString().toLowerCase();
+    final stato = (richiesta['stato'] ?? richiesta['status'] ?? '').toString().toLowerCase();
     return stato == 'pending_firma' ||
         stato == 'awaiting_signature' ||
         stato == 'in_attesa_firma' ||
@@ -1979,13 +1979,22 @@ class _CalendarScreenState extends State<CalendarScreen>
         return;
       }
 
-      final statusSocio = (meData['status_socio'] ?? '').toString().trim();
+      final statusSocio =
+          (meData['status_socio'] ?? meData['status'] ?? meData['stato'] ?? '')
+              .toString()
+              .trim();
       final isSocio = meData['is_socio'] == true || statusSocio == 'attivo';
       final numeroTessera = (meData['numero_tessera'] ?? '').toString().trim();
-      final dataAdesione = (meData['data_adesione'] ?? '').toString().trim();
+      final dataAdesione =
+          (meData['data_adesione'] ?? meData['created_at'] ?? '')
+              .toString()
+              .trim();
 
       await storage.write(key: 'stato_socio', value: statusSocio.isNotEmpty ? statusSocio : 'attivo');
-      await storage.write(key: 'socio_id', value: (meData['id'] ?? '').toString());
+      await storage.write(
+        key: 'socio_id',
+        value: (meData['socio_id'] ?? meData['id'] ?? '').toString(),
+      );
 
       if (numeroTessera.isNotEmpty) {
         await storage.write(key: 'tessera_numero', value: numeroTessera);
@@ -2189,8 +2198,8 @@ class _CalendarScreenState extends State<CalendarScreen>
                   richiesta['integrazione_documentale'] =
                       fresh['integrazione_documentale'];
                 }
-                if (fresh['stato'] != null) {
-                  richiesta['stato'] = fresh['stato'];
+                if (fresh['stato'] != null || fresh['status'] != null) {
+                  richiesta['stato'] = fresh['stato'] ?? fresh['status'];
                 }
               }
             } catch (e) {
@@ -2443,7 +2452,7 @@ class _CalendarScreenState extends State<CalendarScreen>
   }
 
   Widget _buildDettaglioSheet(Map<String, dynamic> richiesta) {
-    final stato = richiesta['stato'] ?? '';
+    final stato = richiesta['stato'] ?? richiesta['status'] ?? '';
     final statoLabel = _getStatoLabelTradotto(stato);
     final pagamento = richiesta['pagamento'] ?? {};
     final puoPagare = richiesta['puo_pagare'] == true;
@@ -3320,7 +3329,7 @@ class _CalendarScreenState extends State<CalendarScreen>
   }
 
   Widget _buildRichiestaCard(Map<String, dynamic> richiesta) {
-    final stato = richiesta['stato'] ?? '';
+    final stato = richiesta['stato'] ?? richiesta['status'] ?? '';
     final statoLabel = _getStatoLabelTradotto(stato);
     final pagamento = richiesta['pagamento'] ?? {};
     final puoPagare = richiesta['puo_pagare'] == true;

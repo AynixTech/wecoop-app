@@ -275,7 +275,8 @@ class DocumentoService {
 
       AppLogger.d('✅ Fronte e retro caricati!');
 
-      final backendId = uploadFrente['data']?['id'];
+      final backendId =
+          uploadFrente['data']?['id'] ?? uploadFrente['documento']?['id'];
       final documento = Documento(
         id: backendId?.toString() ?? timestamp.toString(),
         soggetto: soggetto,
@@ -383,7 +384,8 @@ class DocumentoService {
       AppLogger.d('✅ Documento caricato sul backend!');
 
       // 3. Crea documento locale con ID dal backend
-      final backendId = uploadResult['data']?['id'];
+      final backendId =
+          uploadResult['data']?['id'] ?? uploadResult['documento']?['id'];
       final documento = Documento(
         id: backendId?.toString() ?? timestamp.toString(),
         soggetto: soggetto,

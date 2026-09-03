@@ -19,13 +19,9 @@ class SocioService {
   /// Nuovo backend WeCoop (Node/Express) per la gestione delle richieste servizi.
   static const String platformBaseUrl = ApiConfig.baseUrl;
 
-  /// API key condivisa per autorizzare l'app verso il nuovo backend.
-  /// Passata in compilazione via --dart-define=WECOOP_API_KEY=... (mai hardcoded).
-  static const String platformApiKey = ApiConfig.apiKey;
-
   static final storage = SecureStorageService();
 
-  /// Ottiene gli headers comuni per tutte le richieste
+  /// Headers comuni per tutte le richieste
   static Future<Map<String, String>> _getHeaders({
     bool includeAuth = true,
   }) async {
@@ -45,13 +41,41 @@ class SocioService {
     return headers;
   }
 
+  static String? _membershipStatus(Map<String, dynamic> data) {
+    final v = data['status_socio'] ?? data['status'] ?? data['stato'];
+    final s = v?.toString().trim();
+    return (s == null || s.isEmpty) ? null : s;
+  }
+
+  static bool _isSocioAttivoFromMap(Map<String, dynamic> data) {
+    final status = _membershipStatus(data);
+    if (data['is_attivo'] == true || status == 'attivo') return true;
+    if (data['is_socio'] != true) return false;
+    // WordPress: is_socio=true anche se status manca; Node: is_socio già implica attivo.
+    return status == null;
+  }
+
+  static bool _hasRichiestaInAttesaFromMap(Map<String, dynamic> data) {
+    if (data['has_richiesta_in_attesa'] == true) return true;
+    return _membershipStatus(data) == 'in_attesa';
+  }
+
   /// Verifica se l'utente è un socio attivo (PUBBLICO)
   /// GET /soci/verifica/{email}
   static Future<bool> isSocio() async {
     try {
+      // JWT: /soci/me è la fonte di verità (non dipende da email in storage).
+      final token = await storage.read(key: 'jwt_token');
+      if (token != null && token.isNotEmpty) {
+        final me = await getMe();
+        if (me != null) {
+          return _isSocioAttivoFromMap(me);
+        }
+      }
+
       final email = await storage.read(key: 'user_email');
 
-      if (email == null) {
+      if (email == null || email.trim().isEmpty) {
         AppLogger.d('Nessuna email trovata');
         return false;
       }
@@ -77,8 +101,7 @@ class SocioService {
 
         final rawData = ResponseUtils.decodeJson(response);
         final data = decodeHtmlInMap(rawData);
-        // Nuova API ritorna: {"success": true, "is_socio": true, "status": "attivo", "data_adesione": "2024-01-10"}
-        return data['is_socio'] == true && data['status'] == 'attivo';
+        return _isSocioAttivoFromMap(data);
       }
       return false;
     } catch (e) {
@@ -100,6 +123,14 @@ class SocioService {
   /// Ritorna true se is_socio è false (richiesta non ancora approvata ma presente)
   static Future<bool> hasRichiestaInAttesa() async {
     try {
+      final token = await storage.read(key: 'jwt_token');
+      if (token != null && token.isNotEmpty) {
+        final me = await getMe();
+        if (me != null) {
+          return _hasRichiestaInAttesaFromMap(me);
+        }
+      }
+
       final email = await storage.read(key: 'user_email');
 
       if (email == null) return false;
@@ -118,9 +149,7 @@ class SocioService {
 
         final rawData = ResponseUtils.decodeJson(response);
         final data = decodeHtmlInMap(rawData);
-        // Se success è true ma is_socio è false, significa che c'è una richiesta pending
-        // Quando approvata: is_socio=true, status=attivo
-        return data['success'] == true && data['is_socio'] == false;
+        return _hasRichiestaInAttesaFromMap(data);
       }
       return false;
     } catch (e) {
@@ -290,13 +319,8 @@ class SocioService {
 
       AppLogger.d('Body: $body');
 
-      // JWT se l'utente è loggato + API key (se presente in build).
-      // Il backend accetta entrambi: evita 401 "non autenticato" quando
-      // WECOOP_API_KEY manca nella build ma la sessione JWT è valida.
+      // Solo JWT: niente API key / dart-define (bloccante se assente in build).
       final headers = await _getHeaders(includeAuth: true);
-      if (platformApiKey.isNotEmpty) {
-        headers['x-api-key'] = platformApiKey;
-      }
 
       final response = await HttpClientService.post(
         Uri.parse(url),
@@ -352,6 +376,7 @@ class SocioService {
           'message': errorData['message'] ?? 'Campo obbligatorio mancante',
         };
       } else if (response.statusCode == 401) {
+        // Dopo refresh automatico fallito (o senza sessione): chiedi il login.
         return {
           'success': false,
           'message': 'Devi essere autenticato. Effettua il login.',
@@ -465,6 +490,9 @@ class SocioService {
         if (responseData['success'] == true && responseData['data'] != null) {
           return List<Map<String, dynamic>>.from(responseData['data']);
         }
+        if (responseData['soci'] is List) {
+          return List<Map<String, dynamic>>.from(responseData['soci']);
+        }
       }
 
       return [];
@@ -509,11 +537,21 @@ class SocioService {
         final rawData = jsonDecode(response.body);
         final responseData = decodeHtmlInMap(rawData);
         if (responseData['success'] == true) {
+          final rawList =
+              responseData['richieste'] ?? responseData['data'] ?? [];
+          final list = <Map<String, dynamic>>[];
+          if (rawList is List) {
+            for (final item in rawList) {
+              if (item is! Map) continue;
+              final m = Map<String, dynamic>.from(item);
+              m['stato'] ??= m['status'];
+              m['status'] ??= m['stato'];
+              list.add(m);
+            }
+          }
           return {
             'success': true,
-            'data':
-                responseData['richieste'] ??
-                [], // Backend usa 'richieste' non 'data'
+            'data': list,
             'pagination': responseData['pagination'] ?? {},
           };
         }

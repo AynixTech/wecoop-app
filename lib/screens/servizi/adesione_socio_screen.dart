@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
 import 'package:wecoop_app/utils/italian_validators.dart';
+import 'package:wecoop_app/widgets/country_picker_field.dart';
 import '../../services/socio_service.dart';
 import '../login/login_screen.dart';
 
@@ -37,32 +38,6 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
   final _provinciaController = TextEditingController();
   final _professioneController = TextEditingController();
   
-  // Lista nazionalità (ISO 3166-1 alpha-2)
-  static const List<Map<String, String>> _nazionalita = [
-    {'code': 'EC', 'name': '🇪🇨 Ecuador'},
-    {'code': 'PE', 'name': '🇵🇪 Perù'},
-    {'code': 'IT', 'name': '🇮🇹 Italia'},
-    {'code': 'ES', 'name': '🇪🇸 Spagna'},
-    {'code': 'FR', 'name': '🇫🇷 Francia'},
-    {'code': 'DE', 'name': '🇩🇪 Germania'},
-    {'code': 'GB', 'name': '🇬🇧 Regno Unito'},
-    {'code': 'US', 'name': '🇺🇸 Stati Uniti'},
-    {'code': 'BR', 'name': '🇧🇷 Brasile'},
-    {'code': 'AR', 'name': '🇦🇷 Argentina'},
-    {'code': 'CO', 'name': '🇨🇴 Colombia'},
-    {'code': 'VE', 'name': '🇻🇪 Venezuela'},
-    {'code': 'RO', 'name': '🇷🇴 Romania'},
-    {'code': 'PL', 'name': '🇵🇱 Polonia'},
-    {'code': 'UA', 'name': '🇺🇦 Ucraina'},
-    {'code': 'MA', 'name': '🇲🇦 Marocco'},
-    {'code': 'AL', 'name': '🇦🇱 Albania'},
-    {'code': 'PH', 'name': '🇵🇭 Filippine'},
-    {'code': 'CN', 'name': '🇨🇳 Cina'},
-    {'code': 'IN', 'name': '🇮🇳 India'},
-  ];
-
-
-
   @override
   void dispose() {
     _nomeController.dispose();
@@ -506,20 +481,10 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                       ),
                       const SizedBox(height: 12),
 
-                      DropdownButtonFormField<String>(
+                      CountryPickerField(
                         initialValue: _selectedNazionalita,
-                        decoration: InputDecoration(
-                          labelText: '${l10n.translate('nationality')} *',
-                          border: const OutlineInputBorder(),
-                          prefixIcon: const Icon(Icons.public),
-                          helperText: l10n.translate('selectYourCountryOfOrigin'),
-                        ),
-                        items: _nazionalita.map((country) {
-                          return DropdownMenuItem<String>(
-                            value: country['code'],
-                            child: Text(country['name']!),
-                          );
-                        }).toList(),
+                        labelText: '${l10n.translate('nationality')} *',
+                        helperText: l10n.translate('selectYourCountryOfOrigin'),
                         onChanged: (value) {
                           setState(() {
                             _selectedNazionalita = value;

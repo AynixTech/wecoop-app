@@ -8,46 +8,16 @@ import '../../services/socio_service.dart';
 import '../../services/documento_service.dart';
 import '../../models/documento.dart';
 import '../../utils/italian_validators.dart';
+import '../../utils/countries.dart';
 import '../main_screen.dart';
 import '../profilo/documenti_screen.dart';
 import 'pagamento_screen.dart';
 
-/// Mappa dei codici ISO paese -> nome completo
-const Map<String, String> countryNames = {
-  'IT': 'Italia',
-  'EC': 'Ecuador',
-  'ES': 'España',
-  'CO': 'Colombia',
-  'PE': 'Perú',
-  'VE': 'Venezuela',
-  'AR': 'Argentina',
-  'BR': 'Brasil',
-  'CL': 'Chile',
-  'MX': 'México',
-  'US': 'United States',
-  'GB': 'United Kingdom',
-  'FR': 'France',
-  'DE': 'Germany',
-  'RO': 'Romania',
-  'PL': 'Polonia',
-  'UA': 'Ucraina',
-  'MA': 'Marocco',
-  'EG': 'Egitto',
-  'NG': 'Nigeria',
-  'GH': 'Ghana',
-  'SN': 'Senegal',
-  'CN': 'China',
-  'IN': 'India',
-  'PH': 'Filippine',
-  'BD': 'Bangladesh',
-  'PK': 'Pakistan',
-};
+/// Alias per compatibilità con i call site esistenti.
+Map<String, String> get countryNames => Countries.names;
 
 /// Convierte código ISO a nombre completo del país
-String getCountryName(String? isoCode) {
-  if (isoCode == null || isoCode.isEmpty) return '';
-  return countryNames[isoCode.toUpperCase()] ?? isoCode;
-}
+String getCountryName(String? isoCode) => Countries.nameFor(isoCode);
 
 /// Mappa servizi multilingua -> chiave standardizzata (inglese)
 const Map<String, String> servizioStandardMap = {

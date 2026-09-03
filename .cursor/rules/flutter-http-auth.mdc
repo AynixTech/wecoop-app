@@ -1,0 +1,29 @@
+---
+description: HTTP centralizzato, JWT e refresh token
+globs: lib/services/http_client_service.dart,lib/services/secure_storage_service.dart,lib/config/api_config.dart
+alwaysApply: false
+---
+
+# HTTP e autenticazione
+
+## Client unico
+
+Tutte le chiamate API passano da `HttpClientService`.
+
+## Token
+
+- JWT + refresh in `SecureStorageService` (`jwt_token`, `refresh_token`).
+- Refresh: `POST ${ApiConfig.baseUrl}/auth/refresh` — una richiesta concorrente (`_refreshFuture`).
+- Su 401/403 auth-like con refresh token in storage: refresh + retry con JWT fresco (`_withFreshToken`).
+- Sessione scaduta: `_clearSession()` + `onSessionExpired` → `/login` (impostato in `app.dart`).
+
+## JSON
+
+- `decodeJsonResponse()` su `bodyBytes` UTF-8.
+- Parse fallito → `ErrorReporter.reportHttp()`.
+
+## Auth sulle API
+
+Login: `ApiConfig.loginUrl` → `$baseUrl/auth/login`.
+
+Service-requests e flussi utente: solo `Authorization: Bearer <jwt>` (niente API key / dart-define bloccante).

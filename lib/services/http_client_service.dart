@@ -200,20 +200,19 @@ class HttpClientService {
     );
   }
 
-  /// Se gli headers contengono un Authorization Bearer, lo rimpiazza con il
-  /// token JWT attuale dallo storage (così i retry dopo il refresh usano il
-  /// token nuovo invece di quello scaduto).
+  /// Reinietta sempre il JWT attuale dallo storage (se presente).
+  /// Così il retry dopo refresh usa il token nuovo anche se la richiesta
+  /// originale non aveva (o aveva scaduto) l'header Authorization.
   static Future<Map<String, String>?> _withFreshToken(
     Map<String, String>? headers,
   ) async {
     if (headers == null) return null;
-    final hasAuth = headers.keys.any((k) => k.toLowerCase() == 'authorization');
-    if (!hasAuth) return headers;
-    final token = await storage.read(key: 'jwt_token');
-    if (token == null) return headers;
     final updated = Map<String, String>.from(headers);
     updated.removeWhere((k, v) => k.toLowerCase() == 'authorization');
-    updated['Authorization'] = 'Bearer $token';
+    final token = await storage.read(key: 'jwt_token');
+    if (token != null && token.isNotEmpty) {
+      updated['Authorization'] = 'Bearer $token';
+    }
     return updated;
   }
 
@@ -253,33 +252,25 @@ class HttpClientService {
 
       // Se il token è scaduto, tenta il refresh.
       // WordPress restituisce 403 con code 'jwt_auth_invalid_token';
-      // il nuovo backend Node restituisce 401 con "Invalid or expired token".
+      // il backend Node restituisce 401 con "Invalid or expired token" /
+      // "Missing or invalid Authorization header".
       if (!isAuthEndpoint && (response.statusCode == 403 || response.statusCode == 401)) {
         try {
           final body = decodeJsonResponse(response);
           final message = (body['message'] ?? '').toString().toLowerCase();
-          // Non trattare i 401 di sola API key come sessione scaduta.
-          // Eccezione: se abbiamo un JWT in storage, un 401 "API key" su
-          // POST /service-requests è spesso un JWT scaduto mascherato
-          // (optionalAuth lo ignora): conviene tentare il refresh.
-          final isApiKeyError =
-              message.contains('api key') || message.contains('api-key');
-          final storedJwt = await storage.read(key: 'jwt_token');
-          final hasJwt = storedJwt != null && storedJwt.isNotEmpty;
-          final looksLikeExpiredJwt =
+          final hasRefresh =
+              (await storage.read(key: 'refresh_token'))?.isNotEmpty == true;
+          final looksLikeAuthError =
               body['code'] == 'jwt_auth_invalid_token' ||
               message.contains('expired') ||
               message.contains('invalid token') ||
               message.contains('authorization') ||
-              (response.statusCode == 401 &&
-                  (message.contains('token') ||
-                      message.contains('authenticated') ||
-                      message.contains('authorization')));
-          // API-key 401 + JWT in storage → prova refresh (flussi lunghi es. fiscali).
-          final isTokenError =
-              (isApiKeyError && hasJwt) || (!isApiKeyError && looksLikeExpiredJwt);
+              message.contains('authenticated') ||
+              message.contains('not authenticated') ||
+              (response.statusCode == 401 && message.contains('token'));
 
-          if (isTokenError) {
+          // Con refresh token in storage, qualsiasi 401/403 auth-like merita un retry.
+          if (hasRefresh && looksLikeAuthError) {
             AppLogger.d('⚠️ Token scaduto rilevato in: $requestUrl (status ${response.statusCode})');
             AppLogger.d('🔄 Tentativo di refresh...');
 
@@ -289,7 +280,7 @@ class HttpClientService {
               AppLogger.d('✅ Refresh completato - Ritentativo della richiesta...');
               response = await processResponse(await request());
 
-              if (response.statusCode == 200) {
+              if (response.statusCode == 200 || response.statusCode == 201) {
                 AppLogger.d('✅ Richiesta riuscita dopo refresh!');
               }
             } else {

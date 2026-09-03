@@ -16,13 +16,13 @@ flutter pub get
 ## Run (development)
 
 ```bash
+# Auth = JWT (login). WECOOP_API_URL è opzionale (default = prod).
 flutter run \
-  --dart-define=WECOOP_API_URL=https://your-backend.example.com/api \
-  --dart-define=WECOOP_API_KEY=your-api-key \
   --dart-define=STRIPE_PUBLISHABLE_KEY=pk_test_xxx \
   --dart-define=STRIPE_URL_SCHEME=wecoop \
   --dart-define=STRIPE_MERCHANT_IDENTIFIER=merchant.org.wecoop
 ```
+
 
 ## Quality checks
 
@@ -45,12 +45,11 @@ cp android/key.properties.example android/key.properties
 flutter clean
 flutter pub get
 flutter build appbundle --release \
-  --dart-define=WECOOP_API_URL=https://your-backend.example.com/api \
-  --dart-define=WECOOP_API_KEY=your-api-key \
   --dart-define=STRIPE_PUBLISHABLE_KEY=pk_live_xxx \
   --dart-define=STRIPE_URL_SCHEME=wecoop \
   --dart-define=STRIPE_MERCHANT_IDENTIFIER=merchant.org.wecoop
 ```
+
 
 Output: `build/app/outputs/bundle/release/app-release.aab`
 

@@ -1,0 +1,14 @@
+---
+description: Contesto app mobile Flutter iOS/Android
+alwaysApply: true
+---
+
+# WeCoop App
+
+Repo: `AynixTech/wecoop-app`. Flutter/Dart, bundle `org.wecoop.app` (`pubspec.yaml` version `1.5.5+26`).
+
+- API: backend Node via `lib/config/api_config.dart` (default prod `https://wecoop-backend-s9gl.onrender.com/api`).
+- State: `provider` (`LocaleProvider`, `FirmaDigitaleProvider`).
+- Native: Firebase Messaging, Stripe, `app_links`, `flutter_secure_storage`.
+
+`lib/services/wordpress_service.dart` chiama il backend Node (`ApiConfig.baseUrl`), non WordPress REST.

@@ -1,0 +1,26 @@
+---
+description: Struttura lib/ — screen, service, model
+globs: lib/**
+alwaysApply: false
+---
+
+# Architettura Flutter
+
+| Cartella | Ruolo |
+|----------|-------|
+| `screens/` | UI per flusso (sotto-cartelle per dominio) |
+| `services/` | HTTP, storage, push, deep link |
+| `models/` | Parsing JSON |
+| `widgets/` | UI riusabile, `design_system/` |
+| `config/` | API, Stripe |
+| `theme/` | Tema Material |
+| `l10n/` | IT, EN, ES, AR, ZH |
+
+## Regole
+
+- Screen → service → model. HTTP solo via `HttpClientService`.
+- Navigazione tab: `MainScreen`. Route named in `app.dart`.
+- Bootstrap in `main.dart` (Firebase, Stripe, `ErrorReporter`).
+- Logging: `utils/app_logger.dart`.
+
+Nuova feature: endpoint backend prima di screen/service Flutter.

@@ -1,0 +1,32 @@
+---
+description: Build, dart-define, Stripe e Firebase
+globs: pubspec.yaml,lib/config/**,android/**,ios/**
+alwaysApply: false
+---
+
+# Config e build
+
+## API (`api_config.dart`)
+
+```bash
+# Opzionale: solo per puntare a staging/local (prod è il default)
+flutter run --dart-define=WECOOP_API_URL=https://.../api
+```
+
+Default `baseUrl`: prod Render. Auth solo JWT (niente `WECOOP_API_KEY`).
+Non committare chiavi reali.
+
+## Stripe (`stripe_config.dart`)
+
+- Publishable key: `STRIPE_PUBLISHABLE_KEY` via dart-define, oppure `runtimePublishableKey` dal backend.
+- `effectivePublishableKey`: runtime backend ha priorità su dart-define.
+- Release: `main.dart` init Stripe solo se `StripeConfig.isConfigured` e `canEnablePaymentsInRelease`.
+- iOS: `merchantIdentifier` default `merchant.org.wecoop`, `urlScheme` default `wecoop`.
+
+## Firebase
+
+- Config nativa richiesta per push. Se assente, app continua senza FCM (`main.dart`).
+
+## Versione
+
+`pubspec.yaml` `version` — allineare con backend `/api/app-versions` se si forza update obbligatorio.

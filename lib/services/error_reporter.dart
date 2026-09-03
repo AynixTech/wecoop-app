@@ -114,13 +114,18 @@ class ErrorReporter {
         if (userLabel != null) 'user_label': userLabel,
       });
 
+      final headers = <String, String>{
+        'Content-Type': 'application/json',
+      };
+      final jwt = await _storage.read(key: 'jwt_token');
+      if (jwt != null && jwt.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $jwt';
+      }
+
       await http
           .post(
             Uri.parse(_endpoint),
-            headers: {
-              'Content-Type': 'application/json',
-              'x-api-key': ApiConfig.apiKey,
-            },
+            headers: headers,
             body: body,
           )
           .timeout(const Duration(seconds: 10));

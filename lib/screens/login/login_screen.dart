@@ -189,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'User-Agent': 'WeCoop/1.6.0',
+          'User-Agent': 'WeCoop/1.6.2',
         },
         body: requestBody,
       );

@@ -37,13 +37,16 @@ class SupportoAiService {
 
       final body = HttpClientService.decodeJsonResponse(response);
       if (response.statusCode == 200 && body is Map<String, dynamic>) {
-        final data = body['data'];
-        if (data is Map<String, dynamic>) {
+        final nested = body['data'];
+        final data = nested is Map<String, dynamic> ? nested : body;
+        final reply = (data['reply'] ?? body['reply'] ?? '').toString();
+        if (body['success'] == true || reply.trim().isNotEmpty) {
           return {
-            'success': body['success'] == true,
-            'reply': (data['reply'] ?? '').toString(),
-            'action_key': (data['action_key'] ?? '').toString(),
-            'action_label': (data['action_label'] ?? '').toString(),
+            'success': true,
+            'reply': reply,
+            'action_key': (data['action_key'] ?? body['action_key'] ?? '').toString(),
+            'action_label':
+                (data['action_label'] ?? body['action_label'] ?? '').toString(),
           };
         }
       }

@@ -1383,7 +1383,12 @@ class SocioService {
       AppLogger.d('📥 Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        final data = jsonDecode(response.body);
+        if (data is Map<String, dynamic>) {
+          final exists = data['exists'] == true || data['esiste'] == true;
+          return {...data, 'exists': exists, 'esiste': exists};
+        }
+        return {'esiste': false, 'exists': false};
       } else {
         return {
           'esiste': false,

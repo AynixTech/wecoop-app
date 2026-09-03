@@ -120,6 +120,8 @@ class LavoroService {
       'cv_generato': 'cv_generated',
       'service_activated': 'service_activated',
       'servizio_attivato': 'service_activated',
+      'attivo': 'service_activated',
+      'active': 'service_activated',
       'consent_signed': 'consent_signed',
       'consenso_firmato': 'consent_signed',
       'in_review': 'in_review',

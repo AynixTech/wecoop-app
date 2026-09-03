@@ -62,13 +62,21 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
         Uri.parse('${ApiConfig.baseUrl}/appuntamenti'),
       );
       if (response.statusCode == 200) {
-        final dati = json.decode(response.body);
+        final decoded = json.decode(response.body);
+        final List dati;
+        if (decoded is List) {
+          dati = List.from(decoded);
+        } else if (decoded is Map && decoded['appuntamenti'] is List) {
+          dati = List.from(decoded['appuntamenti'] as List);
+        } else {
+          dati = [];
+        }
         dati.sort((a, b) {
-          final daStr = a['data'];
-          final dbStr = b['data'];
+          final daStr = a is Map ? (a['data'] ?? a['data_ora']) : null;
+          final dbStr = b is Map ? (b['data'] ?? b['data_ora']) : null;
           if (daStr == null || dbStr == null) return 0;
-          final da = DateTime.tryParse(daStr);
-          final db = DateTime.tryParse(dbStr);
+          final da = DateTime.tryParse(daStr.toString());
+          final db = DateTime.tryParse(dbStr.toString());
           if (da == null || db == null) return 0;
           return da.compareTo(db);
         });
@@ -101,8 +109,9 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
   Map<String, Map<String, List>> raggruppaPerSedeEServizio(List appuntamenti) {
     final Map<String, Map<String, List>> mappa = {};
     for (var app in appuntamenti) {
+      if (app is! Map) continue;
       final sede = app['sede'] ?? 'Sede sconosciuta';
-      final servizio = app['sportello'] ?? 'Servizio sconosciuto';
+      final servizio = app['sportello'] ?? app['servizio'] ?? 'Servizio sconosciuto';
 
       mappa.putIfAbsent(sede, () => {});
       mappa[sede]!.putIfAbsent(servizio, () => []);
@@ -251,8 +260,8 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
                                     ),
                                   ),
                                   ...listaApp.map<Widget>((app) {
-                                    final rawData = app['data'] ?? '';
-                                    final data = DateTime.tryParse(rawData);
+                                    final rawData = app['data'] ?? app['data_ora'] ?? '';
+                                    final data = DateTime.tryParse(rawData.toString());
                                     String dataFormattata = rawData;
                                     if (data != null) {
                                       final giorno =
@@ -266,10 +275,12 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
                                       child: ExpansionTile(
                                         title: Text(dataFormattata),
                                         children: [
-                                          ...app['orari'].map<Widget>((o) {
+                                          ...(((app['orari'] as List?) ?? const [])
+                                              .whereType<Map>()
+                                              .map<Widget>((o) {
                                             final posti =
                                                 o['posti_disponibili'];
-                                            final orario = o['orario'];
+                                            final orario = (o['orario'] ?? '').toString();
                                             final isDisabled = posti == 0;
                                             return ListTile(
                                               title: Text(

@@ -2756,27 +2756,29 @@ class _CalendarScreenState extends State<CalendarScreen>
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(color: AppColors.info),
                           ),
-                          child: Theme(
-                            data: Theme.of(context).copyWith(
-                              dividerColor: Colors.transparent,
-                            ),
-                            child: ExpansionTile(
-                              initiallyExpanded: false,
-                              tilePadding: EdgeInsets.zero,
-                              childrenPadding: const EdgeInsets.only(bottom: 8),
-                              leading: const Icon(Icons.badge, color: AppColors.info),
-                              title: Text(
-                                AppLocalizations.of(context)!.translate('digitalSignatureDetails'),
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                dividerColor: Colors.transparent,
+                              ),
+                              child: ExpansionTile(
+                                initiallyExpanded: false,
+                                tilePadding: EdgeInsets.zero,
+                                childrenPadding: const EdgeInsets.only(bottom: 8),
+                                leading: const Icon(Icons.badge, color: AppColors.info),
+                                title: Text(
+                                  AppLocalizations.of(context)!.translate('digitalSignatureDetails'),
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                              subtitle: Text(
-                                AppLocalizations.of(context)!.translate('tapToExpand'),
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                              children: [
+                                subtitle: Text(
+                                  AppLocalizations.of(context)!.translate('tapToExpand'),
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                                children: [
                                 _buildInfoRow(
                                   AppLocalizations.of(context)!.translate('signedLabel'),
                                   (firmaStatus?.firmato == true)
@@ -2847,6 +2849,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                                   ),
                               ],
                             ),
+                          ),
                           ),
                         ),
                       ],

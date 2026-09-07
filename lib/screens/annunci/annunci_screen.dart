@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../theme/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:share_plus/share_plus.dart';
+import '../../utils/share_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
 import '../../services/annunci_wecoop_service.dart';
@@ -615,7 +615,7 @@ class _AnnuncioDetailSheetState
     final titolo = _data?['titolo'] as String? ?? 'Annuncio WeCoop';
     final url = 'https://www.wecoop.org/annunci/${widget.id}';
     final testo = '$titolo\n\nGuarda questo annuncio su WeCoop:\n$url';
-    await Share.share(testo, subject: titolo);
+    await shareText(context, text: testo, subject: titolo);
   }
 
   @override

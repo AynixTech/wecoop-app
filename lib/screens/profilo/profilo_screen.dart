@@ -1627,18 +1627,22 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                       color: scheme.surfaceContainerLowest,
                       borderRadius: BorderRadius.circular(18),
                     ),
-                    child: SwitchListTile.adaptive(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
+                    clipBehavior: Clip.antiAlias,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: SwitchListTile.adaptive(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
+                        value: _biometricLoginEnabled,
+                        onChanged: _toggleBiometricLogin,
+                        title: Text(l10n.translate('useBiometricLoginSetting')),
+                        subtitle: Text(
+                          l10n.translate('useBiometricLoginSettingDescription'),
+                        ),
+                        secondary: const Icon(Icons.fingerprint),
                       ),
-                      value: _biometricLoginEnabled,
-                      onChanged: _toggleBiometricLogin,
-                      title: Text(l10n.translate('useBiometricLoginSetting')),
-                      subtitle: Text(
-                        l10n.translate('useBiometricLoginSettingDescription'),
-                      ),
-                      secondary: const Icon(Icons.fingerprint),
                     ),
                   ),
                 ],

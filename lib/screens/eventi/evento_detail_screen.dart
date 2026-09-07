@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:share_plus/share_plus.dart';
+import '../../utils/share_helper.dart';
 import '../../models/evento_model.dart';
 import '../../services/eventi_service.dart';
 import '../../services/app_localizations.dart';
@@ -133,7 +133,7 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
     if (_evento == null) return;
     final titolo = _evento!.titolo;
     final url = 'https://www.wecoop.org/eventi/${_evento!.id}';
-    await Share.share('$titolo\n\n$url', subject: titolo);
+    await shareText(context, text: '$titolo\n\n$url', subject: titolo);
   }
 
   @override

@@ -5,7 +5,6 @@ import '../../theme/theme.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:wecoop_app/models/offerta_lavoro_model.dart';
 import 'package:wecoop_app/screens/servizi/lavoro_orientamento_screen.dart';
 import 'package:wecoop_app/services/offerte_lavoro_service.dart';
@@ -13,6 +12,7 @@ import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/annunci_submission_service.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
+import 'package:wecoop_app/utils/share_helper.dart';
 
 class _OfferteLavoroText {
   static const Map<String, Map<String, String>> _values = {
@@ -4321,10 +4321,10 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
   }
 
   /// Condivide l'offerta di lavoro tramite il foglio di sistema (WhatsApp, ecc.).
-  Future<void> _shareOfferta() async {
+  Future<void> _shareOfferta(BuildContext context) async {
     final titolo = offerta.title;
     final url = 'https://www.wecoop.org/offerte-lavoro/${offerta.id}';
-    await Share.share('$titolo\n\n$url', subject: titolo);
+    await shareText(context, text: '$titolo\n\n$url', subject: titolo);
   }
 
   Future<void> _openWhatsApp(String value) async {
@@ -4402,7 +4402,7 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.share),
             tooltip: AppLocalizations.of(context)!.translate('annunciShareBtn'),
-            onPressed: _shareOfferta,
+            onPressed: () => _shareOfferta(context),
           ),
         ],
       ),

@@ -578,11 +578,13 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
           ),
         ],
       ),
-      child: SingleChildScrollView(
-        child: ExpansionTile(
-          title: Text(l10n.translate('chatbotFAQTitle'), style: const TextStyle(fontWeight: FontWeight.bold)),
-          initiallyExpanded: false,
-          children: [
+      child: Material(
+        color: Colors.transparent,
+        child: SingleChildScrollView(
+          child: ExpansionTile(
+            title: Text(l10n.translate('chatbotFAQTitle'), style: const TextStyle(fontWeight: FontWeight.bold)),
+            initiallyExpanded: false,
+            children: [
             _buildFAQItem(
               l10n.translate('chatbotFAQ1Question'),
               l10n.translate('chatbotFAQ1Answer'),
@@ -625,6 +627,7 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
               },
             ),
           ],
+        ),
         ),
       ),
     );

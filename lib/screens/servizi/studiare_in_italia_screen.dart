@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
 import '../../services/app_localizations.dart';
 import '../../services/secure_storage_service.dart';
@@ -9,6 +8,7 @@ import '../../services/socio_service.dart';
 import '../../models/offerta_formativa_model.dart';
 import '../../models/partner_model.dart';
 import '../../models/partner_dettaglio_model.dart';
+import '../../utils/share_helper.dart';
 import '../../widgets/whatsapp_contact_button.dart';
 
 // ─────────────────────────────────────────────────────────────
@@ -514,8 +514,11 @@ class _OffertaCard extends StatelessWidget {
                   onPressed: () {
                     final url =
                         'https://www.wecoop.org/offerte-formative/${offerta.id}';
-                    Share.share('${offerta.titolo}\n\n$url',
-                        subject: offerta.titolo);
+                    shareText(
+                      context,
+                      text: '${offerta.titolo}\n\n$url',
+                      subject: offerta.titolo,
+                    );
                   },
                   icon: const Icon(Icons.share_outlined, size: 20),
                   tooltip: l10n.translate('annunciShareBtn'),

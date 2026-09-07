@@ -4,10 +4,10 @@ import '../screens/login/login_screen.dart';
 import '../screens/servizi/servizi_gate_screen.dart';
 import '../services/auth_helper.dart';
 
-/// Apre un servizio riservato ai soci con gate coerente.
+/// Apre un servizio per utenti autenticati (socio o utente).
 ///
-/// Utenti creati dalla piattaforma cloud hanno già credenziali: se non sono
-/// loggati vanno al **login**, non alla registrazione (primo accesso).
+/// La membership (socio) si attiva alla firma del documento unico lato backend.
+/// Qui si richiede solo il login: nessun blocco "riservato ai soci".
 Future<void> openMemberService(
   BuildContext context, {
   required Widget destination,

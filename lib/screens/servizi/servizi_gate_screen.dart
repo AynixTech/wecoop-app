@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
-import '../../services/socio_service.dart';
-import 'adesione_socio_screen.dart';
+import '../../services/auth_helper.dart';
 import '../login/login_screen.dart';
 
-/// Middleware che verifica se l'utente è socio prima di accedere ai servizi
+/// Gate di accesso ai servizi: richiede solo login.
+///
+/// Diventare socio avviene alla firma del documento unico (backend),
+/// non qui: qualsiasi utente autenticato può aprire e inviare richieste.
 class ServiziGateScreen extends StatefulWidget {
   final Widget destinationScreen;
   final String serviceName;
@@ -21,66 +22,31 @@ class ServiziGateScreen extends StatefulWidget {
 }
 
 class _ServiziGateScreenState extends State<ServiziGateScreen> {
-  final _storage = SecureStorageService();
   bool _isLoading = true;
-  bool _hasRichiestaInAttesa = false;
   bool _shouldShowLogin = false;
 
   @override
   void initState() {
     super.initState();
-    _checkSocioStatus();
+    _checkAccess();
   }
 
-  Future<void> _checkSocioStatus() async {
-    // 1. Controlla se c'è una email salvata da una richiesta precedente
-    final savedEmail = await _storage.read(key: 'pending_socio_email');
+  Future<void> _checkAccess() async {
+    final loggedIn = await AuthHelper.isLoggedIn();
+    if (!mounted) return;
 
-    // 2. Verifica se l'utente è già socio
-    final isSocio = await SocioService.isSocio();
-
-    // 3. Se non è socio ma ha una email salvata, controlla se è stato approvato
-    if (!isSocio && savedEmail != null && savedEmail.isNotEmpty) {
-      final hasRichiesta = await SocioService.hasRichiestaInAttesa();
-
-      // Se non ha più richiesta in attesa, potrebbe essere stato approvato
-      // Mostra il prompt per il login
-      if (!hasRichiesta) {
-        if (mounted) {
-          setState(() {
-            _shouldShowLogin = true;
-            _isLoading = false;
-          });
-        }
-        return;
-      }
-
-      if (mounted) {
-        setState(() {
-          _hasRichiestaInAttesa = hasRichiesta;
-          _isLoading = false;
-        });
-      }
+    if (!loggedIn) {
+      setState(() {
+        _shouldShowLogin = true;
+        _isLoading = false;
+      });
       return;
     }
 
-    // 4. Controllo standard
-    final hasRichiesta = await SocioService.hasRichiestaInAttesa();
-
-    if (mounted) {
-      setState(() {
-        _hasRichiestaInAttesa = hasRichiesta;
-        _isLoading = false;
-      });
-    }
-
-    // Se è già socio, naviga direttamente al servizio
-    if (isSocio && mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => widget.destinationScreen),
-      );
-    }
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => widget.destinationScreen),
+    );
   }
 
   @override
@@ -96,11 +62,11 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
       return _buildLoginPromptScreen();
     }
 
-    if (_hasRichiestaInAttesa) {
-      return _buildRichiestaInAttesaScreen();
-    }
-
-    return _buildAdesioneRequiredScreen();
+    // In attesa del pushReplacement verso la destinazione.
+    return Scaffold(
+      appBar: AppBar(title: Text(widget.serviceName)),
+      body: const Center(child: CircularProgressIndicator()),
+    );
   }
 
   Widget _buildLoginPromptScreen() {
@@ -114,14 +80,10 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.check_circle_outline,
-                size: 80,
-                color: scheme.secondary,
-              ),
+              Icon(Icons.login, size: 80, color: scheme.primary),
               const SizedBox(height: 24),
               Text(
-                l10n.requestSent,
+                l10n.goToLogin,
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -130,8 +92,7 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                '${l10n.requestReceived}\n\n'
-                '${l10n.loginToAccessServices}',
+                l10n.loginToAccessServices,
                 style: TextStyle(fontSize: 16, color: scheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
@@ -148,8 +109,8 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
                 icon: const Icon(Icons.login),
                 label: Text(l10n.goToLogin),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: scheme.secondary,
-                  foregroundColor: scheme.onSecondary,
+                  backgroundColor: scheme.primary,
+                  foregroundColor: scheme.onPrimary,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 32,
                     vertical: 16,
@@ -159,147 +120,6 @@ class _ServiziGateScreenState extends State<ServiziGateScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              OutlinedButton.icon(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.arrow_back),
-                label: Text(l10n.goBack),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRichiestaInAttesaScreen() {
-    final l10n = AppLocalizations.of(context)!;
-    final scheme = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.serviceName)),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.pending_actions, size: 80, color: scheme.tertiary),
-              const SizedBox(height: 24),
-              Text(
-                l10n.pending,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                '${l10n.membershipPendingApproval}\n\n'
-                '${l10n.confirmationWithin24to48Hours}\n\n'
-                '${l10n.onceApprovedAccessAllServices}',
-                style: TextStyle(fontSize: 16, color: scheme.onSurfaceVariant),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-              OutlinedButton.icon(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.arrow_back),
-                label: Text(l10n.backToHome),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAdesioneRequiredScreen() {
-    final l10n = AppLocalizations.of(context)!;
-    final scheme = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.serviceName)),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.card_membership, size: 80, color: scheme.primary),
-              const SizedBox(height: 24),
-              Text(
-                l10n.needLogin,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                '${l10n.toAccessServicesBecomeMember.replaceAll('{serviceName}', widget.serviceName.toLowerCase())}\n\n'
-                '${l10n.becomeMemberToAccess}\n'
-                '• Assistenza dedicata\n'
-                '• Consulenze gratuite\n'
-                '• Eventi e networking\n'
-                '• Supporto personalizzato',
-                style: TextStyle(fontSize: 16, color: scheme.onSurfaceVariant),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AdesioneSocioScreen(),
-                    ),
-                  ).then((_) {
-                    // Ricontrolla lo stato quando torna
-                    _checkSocioStatus();
-                  });
-                },
-                icon: const Icon(Icons.how_to_reg),
-                label: Text(l10n.becomeMember),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: scheme.primary,
-                  foregroundColor: scheme.onPrimary,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
-                  ),
-                  textStyle: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.login),
-                label: Text(l10n.translate('alreadyRegisteredLogin')),
-                style: TextButton.styleFrom(foregroundColor: scheme.primary),
               ),
               const SizedBox(height: 16),
               OutlinedButton.icon(

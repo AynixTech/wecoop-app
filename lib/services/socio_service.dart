@@ -292,8 +292,8 @@ class SocioService {
     }
   }
 
-  /// Invia richiesta servizio (SOLO SOCI ATTIVI)
-  /// POST /richiesta-servizio
+  /// Invia richiesta servizio (utente autenticato; socio alla firma DU).
+  /// POST /service-requests
   static Future<Map<String, dynamic>> inviaRichiestaServizio({
     required String servizio,
     required String categoria,
@@ -384,8 +384,7 @@ class SocioService {
       } else if (response.statusCode == 403) {
         return {
           'success': false,
-          'message':
-              'Non hai i permessi. Solo i soci possono richiedere servizi.',
+          'message': 'Non hai i permessi per questa operazione.',
         };
       } else {
         final errorData = ResponseUtils.decodeJson(response);

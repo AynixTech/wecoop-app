@@ -246,17 +246,6 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
     return null;
   }
 
-  String? _validateCodiceFiscaleField(String? value) {
-    final l10n = AppLocalizations.of(context)!;
-    final trimmed = ItalianValidators.normalizeCodiceFiscale(value ?? '');
-    // Opzionale: chi è in attesa del CF può proseguire senza.
-    if (trimmed.isEmpty) return null;
-    if (!ItalianValidators.isValidCodiceFiscale(trimmed)) {
-      return l10n.translate('invalidFiscalCode');
-    }
-    return null;
-  }
-
   String? _validateBirthDateField(String? value) {
     final l10n = AppLocalizations.of(context)!;
     final errKey = ItalianValidators.validateBirthDate(value ?? '');
@@ -297,7 +286,6 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
   bool _validateStep0({required bool showSnackBar}) {
     final errors = [
       _validateEmailField(_emailController.text),
-      _validateCodiceFiscaleField(_codiceFiscaleController.text),
       _validateBirthDateField(_dataNascitaController.text),
     ].whereType<String>().toList();
     if (errors.isEmpty) return true;
@@ -765,7 +753,6 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
           ).copyWith(counterText: ''),
           maxLength: ItalianValidators.codiceFiscaleMaxLength,
           textCapitalization: TextCapitalization.characters,
-          validator: _validateCodiceFiscaleField,
         ),
         const SizedBox(height: 8),
         TextFormField(

@@ -569,16 +569,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                   ),
                                   maxLength: ItalianValidators.codiceFiscaleMaxLength,
                                   textCapitalization: TextCapitalization.characters,
-                                  // Opzionale e libero (anche CF/ID fiscali stranieri).
-                                  validator: (value) {
-                                    if (value == null || value.trim().isEmpty) {
-                                      return null;
-                                    }
-                                    if (!ItalianValidators.isValidCodiceFiscale(value)) {
-                                      return l10n.translate('fieldRequired');
-                                    }
-                                    return null;
-                                  },
+                                  // Opzionale, senza validazione di formato.
                                 ),
                                 const SizedBox(height: 12),
                                 TextFormField(

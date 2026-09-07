@@ -1117,6 +1117,11 @@ class AppLocalizations {
       'pensionIncome': 'Hai un reddito da pensione?',
       'requiredDocuments': 'Documenti richiesti',
       'alreadyUploaded': 'Già caricato',
+      'haveItalianCitizenship': 'Ho la cittadinanza italiana',
+      'haveItalianCitizenshipHint':
+          'Seleziona se sei cittadina/o italiana/o: il permesso di soggiorno non sarà obbligatorio.',
+      'permessoNotRequiredCitizenship':
+          'Permesso di soggiorno non richiesto.',
       'uploadMissingDocuments': 'Carica documenti mancanti',
       'familyResidencePermitType':
           'Tipo di permesso di soggiorno del familiare',
@@ -2736,6 +2741,10 @@ class AppLocalizations {
       'pensionIncome': 'هل لديك دخل من المعاش التقاعدي؟',
       'requiredDocuments': 'المستندات المطلوبة',
       'alreadyUploaded': 'تم التحميل بالفعل',
+      'haveItalianCitizenship': 'لديّ الجنسية الإيطالية',
+      'haveItalianCitizenshipHint':
+          'حدّد هذا الخيار إذا كنت مواطناً إيطالياً: لن يكون تصريح الإقامة إلزامياً.',
+      'permessoNotRequiredCitizenship': 'تصريح الإقامة غير مطلوب.',
       'uploadMissingDocuments': 'تحميل المستندات الناقصة',
       'familyResidencePermitType': 'نوع تصريح إقامة فرد الأسرة',
       'documentsManagedSeparately': 'تتم إدارة مستندات مقدّم الطلب ومستندات فرد الأسرة بشكل منفصل.',
@@ -4163,6 +4172,9 @@ class AppLocalizations {
       'pensionIncome': '您有退休金收入吗？',
       'requiredDocuments': '所需文件',
       'alreadyUploaded': '已上传',
+      'haveItalianCitizenship': '我拥有意大利国籍',
+      'haveItalianCitizenshipHint': '若您是意大利公民请勾选：将不要求居留许可。',
+      'permessoNotRequiredCitizenship': '不需要居留许可。',
       'uploadMissingDocuments': '上传缺失的文件',
       'familyResidencePermitType': '家庭成员的居留许可类型',
       'documentsManagedSeparately': '申请人和家庭成员的文件是分开管理的。',
@@ -5558,6 +5570,10 @@ class AppLocalizations {
       'pensionIncome': 'Do you have pension income?',
       'requiredDocuments': 'Required documents',
       'alreadyUploaded': 'Already uploaded',
+      'haveItalianCitizenship': 'I have Italian citizenship',
+      'haveItalianCitizenshipHint':
+          'Check this if you are an Italian citizen: the residence permit will not be required.',
+      'permessoNotRequiredCitizenship': 'Residence permit not required.',
       'uploadMissingDocuments': 'Upload missing documents',
       'familyResidencePermitType': 'Family member residence permit type',
       'documentsManagedSeparately':
@@ -7148,6 +7164,11 @@ class AppLocalizations {
       'pensionIncome': '¿Tienes ingresos de pensión?',
       'requiredDocuments': 'Documentos requeridos',
       'alreadyUploaded': 'Ya cargado',
+      'haveItalianCitizenship': 'Tengo la ciudadanía italiana',
+      'haveItalianCitizenshipHint':
+          'Marca esta opción si eres ciudadana/o italiana/o: el permesso di soggiorno no será obligatorio.',
+      'permessoNotRequiredCitizenship':
+          'Permesso di soggiorno no requerido.',
       'uploadMissingDocuments': 'Cargar documentos faltantes',
       'familyResidencePermitType': 'Tipo de permiso de residencia del familiar',
       'documentsManagedSeparately':

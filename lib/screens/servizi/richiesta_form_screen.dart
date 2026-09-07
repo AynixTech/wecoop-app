@@ -3,6 +3,7 @@ import 'package:wecoop_app/utils/app_logger.dart';
 import '../../theme/theme.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'package:wecoop_app/services/presence_service.dart';
 import 'package:wecoop_app/widgets/help_button_widget.dart';
 import '../../services/socio_service.dart';
 import '../../services/documento_service.dart';
@@ -219,6 +220,9 @@ class RichiestaFormScreen extends StatefulWidget {
   final List<Map<String, dynamic>> campi;
   final List<String>? documentiRichiesti;
   final List<String>? modalitaConsegna;
+  /// Se true e i documenti includono il permesso, mostra l'opzione
+  /// "Ho la cittadinanza italiana" che ne disattiva l'obbligatorietà.
+  final bool permessoOpzionaleSeCittadino;
 
   const RichiestaFormScreen({
     super.key,
@@ -227,10 +231,24 @@ class RichiestaFormScreen extends StatefulWidget {
     required this.campi,
     this.documentiRichiesti,
     this.modalitaConsegna,
+    this.permessoOpzionaleSeCittadino = false,
   });
 
   @override
   State<RichiestaFormScreen> createState() => _RichiestaFormScreenState();
+}
+
+/// True se la nazionalità indica cittadino italiano (codice ISO o testo).
+bool isItalianNationality(String? value) {
+  if (value == null) return false;
+  final v = value.trim().toLowerCase();
+  if (v.isEmpty) return false;
+  return v == 'it' ||
+      v == 'ita' ||
+      v == 'italia' ||
+      v == 'italy' ||
+      v == 'italiana' ||
+      v == 'italiano';
 }
 
 class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
@@ -241,9 +259,37 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   final _documentoService = DocumentoService();
   bool _isSubmitting = false;
   bool _isLoading = true;
+  String? _nazionalita;
+  /// Opzione esplicita: se true, il permesso di soggiorno non è obbligatorio.
+  bool _haCittadinanzaItaliana = false;
   List<String> _documentiMancanti = [];
   List<String> _documentiMancantiFamiliare = [];
   final Set<String> _modalitaConsegnaSelezionate = {};
+
+  /// True se questo servizio permette di saltare il permesso con cittadinanza IT.
+  bool get _offersPermessoExemption {
+    if (!widget.permessoOpzionaleSeCittadino) return false;
+    final raw = widget.documentiRichiesti;
+    return raw != null && raw.contains(TipoDocumento.permessoSoggiorno);
+  }
+
+  /// Documenti richiesti filtrati: senza permesso se l'utente dichiara
+  /// cittadinanza italiana (opzione esplicita o nazionalità IT nel profilo).
+  List<String>? get _effectiveDocumenti {
+    final raw = widget.documentiRichiesti;
+    if (raw == null || raw.isEmpty) return raw;
+    final skipPermesso = widget.permessoOpzionaleSeCittadino &&
+        (_haCittadinanzaItaliana || isItalianNationality(_nazionalita));
+    if (!skipPermesso) return raw;
+    return raw
+        .where((d) => d != TipoDocumento.permessoSoggiorno)
+        .toList(growable: false);
+  }
+
+  Future<void> _setHaCittadinanzaItaliana(bool value) async {
+    setState(() => _haCittadinanzaItaliana = value);
+    await _checkDocumenti();
+  }
 
   // Controller per campi modalità di consegna
   final _consegnaIndirizzoController = TextEditingController();
@@ -257,26 +303,37 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     super.initState();
     _loadUserData();
     _checkDocumenti();
+    // Operatori: mostra servizio/categoria in /utenti mentre l'utente compila.
+    PresenceService.instance.start();
+    PresenceService.instance.setScreen(
+      screen: '${widget.servizio} · ${widget.categoria}',
+      route: 'RichiestaFormScreen',
+    );
   }
 
-  // Controlla quali documenti mancano
+  // Controlla quali documenti mancano (rispetto alla lista filtrata per nazionalità)
   Future<void> _checkDocumenti() async {
-    if (widget.documentiRichiesti == null ||
-        widget.documentiRichiesti!.isEmpty) {
+    final richiesti = _effectiveDocumenti;
+    if (richiesti == null || richiesti.isEmpty) {
+      if (mounted) {
+        setState(() {
+          _documentiMancanti = [];
+          _documentiMancantiFamiliare = [];
+        });
+      }
       return;
     }
 
     await _documentoService.getDocumenti(); // Carica documenti
-    final mancanti = _documentoService.getDocumentiMancanti(
-      widget.documentiRichiesti!,
-    );
+    final mancanti = _documentoService.getDocumentiMancanti(richiesti);
     final mancantiFamiliare =
         _isMotiviFamiliariFlow()
             ? _documentoService.getDocumentiMancanti(
-              widget.documentiRichiesti!,
+              richiesti,
               soggetto: DocumentoSoggetto.familiare,
             )
             : <String>[];
+    if (!mounted) return;
     setState(() {
       _documentiMancanti = mancanti;
       _documentiMancantiFamiliare = mancantiFamiliare;
@@ -1298,8 +1355,16 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       }
 
       setState(() {
+        _nazionalita = nazionalita;
+        // Prefill: se il profilo è già italiano, spunta "Ho la cittadinanza italiana".
+        if (widget.permessoOpzionaleSeCittadino &&
+            isItalianNationality(nazionalita)) {
+          _haCittadinanzaItaliana = true;
+        }
         _isLoading = false;
       });
+      // Ricalcola i documenti richiesti (cittadinanza → niente permesso).
+      await _checkDocumenti();
     } catch (e) {
       AppLogger.d('Errore caricamento dati utente: $e');
       // Crea controller vuoti in caso di errore
@@ -1383,7 +1448,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                               ...widget.campi.map(
                                 (campo) => _buildField(campo),
                               ),
-                              // Sezione documenti richiesti
+                              // Sezione documenti richiesti (+ opzione cittadinanza italiana)
                               if (widget.documentiRichiesti != null &&
                                   widget.documentiRichiesti!.isNotEmpty)
                                 _buildDocumentiRichiestiSection(),
@@ -1713,8 +1778,8 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     }
 
     // Controlla se ci sono documenti mancanti e BLOCCA l'invio se presenti.
-    if (widget.documentiRichiesti != null &&
-        widget.documentiRichiesti!.isNotEmpty) {
+    final richiesti = _effectiveDocumenti;
+    if (richiesti != null && richiesti.isNotEmpty) {
       await _checkDocumenti();
       if (_documentiMancanti.isNotEmpty ||
           _documentiMancantiFamiliare.isNotEmpty) {
@@ -1729,6 +1794,12 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       if (entry.value.text.isNotEmpty) {
         _formData[entry.key] = entry.value.text;
       }
+    }
+
+    // Dichiarazione esplicita di cittadinanza (disattiva obbligo permesso).
+    if (_offersPermessoExemption) {
+      _formData['ha_cittadinanza_italiana'] =
+          _haCittadinanzaItaliana ? 'si' : 'no';
     }
 
     // Aggiungi modalità di consegna selezionate se presenti
@@ -1945,6 +2016,73 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
     }
   }
 
+  /// Opzione esplicita: "Ho la cittadinanza italiana" → disattiva obbligo permesso.
+  Widget _buildCittadinanzaItalianaOption(
+    AppLocalizations l10n,
+    ColorScheme scheme,
+  ) {
+    final label = l10n.translate('haveItalianCitizenship');
+    final hint = l10n.translate('haveItalianCitizenshipHint');
+
+    return Material(
+      color: Colors.white.withOpacity(0.85),
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => _setHaCittadinanzaItaliana(!_haCittadinanzaItaliana),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Checkbox(
+                value: _haCittadinanzaItaliana,
+                onChanged: (v) => _setHaCittadinanzaItaliana(v ?? false),
+                activeColor: scheme.primary,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 10),
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      hint,
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        height: 1.35,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    if (_haCittadinanzaItaliana) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        l10n.translate('permessoNotRequiredCitizenship'),
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                          color: scheme.secondary,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   // Costruisce la sezione documenti richiesti
   Widget _buildDocumentiRichiestiSection() {
     final l10n = AppLocalizations.of(context)!;
@@ -2035,6 +2173,10 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
             ],
           ),
           const SizedBox(height: 16),
+          if (_offersPermessoExemption) ...[
+            _buildCittadinanzaItalianaOption(l10n, scheme),
+            const SizedBox(height: 16),
+          ],
           if (_isMotiviFamiliariFlow()) ...[
             Row(
               children: [
@@ -2054,13 +2196,13 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
             _buildDocumentiBlock(
               title: l10n.documentsApplicantTitle,
               subtitle: l10n.documentsApplicantSubtitle,
-              documenti: widget.documentiRichiesti!,
+              documenti: _effectiveDocumenti ?? const [],
               documentiMancanti: _documentiMancanti,
             ),
             _buildDocumentiBlock(
               title: l10n.documentsFamilyTitle,
               subtitle: l10n.documentsFamilySubtitle,
-              documenti: widget.documentiRichiesti!,
+              documenti: _effectiveDocumenti ?? const [],
               documentiMancanti: _documentiMancantiFamiliare,
             ),
             const SizedBox(height: 12),
@@ -2093,10 +2235,10 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                 ),
               ),
             ),
-          ] else
+          ] else if ((_effectiveDocumenti ?? const []).isNotEmpty)
             _buildDocumentiBlock(
               title: l10n.requiredDocuments,
-              documenti: widget.documentiRichiesti!,
+              documenti: _effectiveDocumenti!,
               documentiMancanti: _documentiMancanti,
             ),
           if (_documentiMancanti.isNotEmpty ||

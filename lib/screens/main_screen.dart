@@ -7,6 +7,7 @@ import '../services/socio_service.dart';
 import '../services/secure_storage_service.dart';
 import '../services/app_localizations.dart';
 import '../services/app_settings_service.dart';
+import '../services/presence_service.dart';
 import '../utils/app_navigation.dart';
 import 'annunci/annunci_screen.dart';
 import 'home/home_screen.dart';
@@ -67,6 +68,8 @@ class _MainScreenState extends State<MainScreen> {
       const SizedBox.shrink(),
     ];
     UserAvatarStore.hydrate();
+    PresenceService.instance.start();
+    PresenceService.instance.setScreen(screen: 'Home', route: 'MainScreen');
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkProfiloCompleto();
       if (widget.initialIndex == MainTab.sportello) {
@@ -182,6 +185,19 @@ class _MainScreenState extends State<MainScreen> {
       }
       _selectedIndex = index;
     });
+    const labels = {
+      0: 'Home',
+      1: 'Eventi',
+      2: 'Annunci',
+      3: 'Calendario',
+      4: 'Lavoro',
+      5: 'Sportello',
+      6: 'Profilo',
+    };
+    PresenceService.instance.setScreen(
+      screen: labels[index] ?? 'App',
+      route: 'MainScreen/$index',
+    );
   }
 
   void _onItemTapped(int index) {

@@ -19,6 +19,7 @@ import 'package:wecoop_app/utils/deep_link_handler.dart';
 import 'package:wecoop_app/theme/theme.dart';
 import 'package:wecoop_app/widgets/mandatory_update_gate.dart';
 import 'package:wecoop_app/services/notification_badge_provider.dart';
+import 'package:wecoop_app/services/presence_service.dart';
 import 'package:wecoop_app/screens/notifiche/notifiche_screen.dart';
 import 'screens/main_screen.dart';
 import 'screens/login/login_screen.dart';
@@ -56,6 +57,13 @@ class _WECOOPAppState extends State<WECOOPApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _refreshBadge();
+      PresenceService.instance.setAppState('active');
+      PresenceService.instance.start();
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
+      PresenceService.instance.setAppState('background');
+    } else if (state == AppLifecycleState.detached) {
+      PresenceService.instance.stop();
     }
   }
 
@@ -153,6 +161,7 @@ class _WECOOPAppState extends State<WECOOPApp> with WidgetsBindingObserver {
       builder: (context, localeProvider, child) {
         return MaterialApp(
           navigatorKey: _navigatorKey,
+          navigatorObservers: [PresenceNavigatorObserver()],
           title: 'WECOOP',
           debugShowCheckedModeBanner: false,
           locale: localeProvider.locale,

@@ -40,6 +40,7 @@ class MediazioneFiscaleScreen extends StatelessWidget {
                           (context) => RichiestaFormScreen(
                             servizio: l10n.taxMediation,
                             categoria: '730',
+                            permessoOpzionaleSeCittadino: true,
                             documentiRichiesti: const [
                               TipoDocumento.permessoSoggiorno,
                               TipoDocumento.codiceFiscale,
@@ -124,6 +125,7 @@ class MediazioneFiscaleScreen extends StatelessWidget {
                           (context) => RichiestaFormScreen(
                             servizio: l10n.taxMediation,
                             categoria: l10n.individualPerson,
+                            permessoOpzionaleSeCittadino: true,
                             documentiRichiesti: const [
                               TipoDocumento.permessoSoggiorno,
                               TipoDocumento.codiceFiscale,

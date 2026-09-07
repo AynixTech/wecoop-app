@@ -1076,8 +1076,8 @@ class SocioService {
   /// Completa il profilo dell'utente loggato
   /// POST /soci/me/completa-profilo
   /// Tutti i campi sono opzionali
-  /// Campi obbligatori per profilo completo (9): nome, cognome, email, telefono,
-  /// citta, indirizzo, codice_fiscale, data_nascita, nazionalita
+  /// Campi obbligatori per profilo completo: nome, cognome, email, telefono,
+  /// citta, indirizzo, data_nascita, nazionalita (codice_fiscale opzionale)
   static Future<Map<String, dynamic>> completaProfilo({
     String? nome,
     String? cognome,

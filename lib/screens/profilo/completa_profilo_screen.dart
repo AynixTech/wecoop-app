@@ -140,14 +140,15 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
         _dataNascitaController.text.trim(),
       );
 
+      final cfNorm = ItalianValidators.normalizeCodiceFiscale(
+        _codiceFiscaleController.text,
+      );
       final result = await SocioService.completaProfilo(
         email:
             _emailController.text.trim().isEmpty
                 ? null
                 : _emailController.text.trim(),
-        codiceFiscale: ItalianValidators.normalizeCodiceFiscale(
-          _codiceFiscaleController.text,
-        ),
+        codiceFiscale: cfNorm.isEmpty ? null : cfNorm,
         dataNascita: dataNascitaApi,
         luogoNascita:
             _luogoNascitaController.text.trim().isEmpty
@@ -248,9 +249,10 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
   String? _validateCodiceFiscaleField(String? value) {
     final l10n = AppLocalizations.of(context)!;
     final trimmed = ItalianValidators.normalizeCodiceFiscale(value ?? '');
-    if (trimmed.isEmpty) return l10n.translate('fieldRequired');
+    // Opzionale: chi è in attesa del CF può proseguire senza.
+    if (trimmed.isEmpty) return null;
     if (!ItalianValidators.isValidCodiceFiscale(trimmed)) {
-      return l10n.translate('fieldRequired');
+      return l10n.translate('invalidFiscalCode');
     }
     return null;
   }
@@ -758,9 +760,9 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
         TextFormField(
           controller: _codiceFiscaleController,
           decoration: _fieldDecoration(
-            label: '${l10n.fiscalCode} *',
+            label: l10n.fiscalCode,
             icon: Icons.badge_outlined,
-          ),
+          ).copyWith(counterText: ''),
           maxLength: ItalianValidators.codiceFiscaleMaxLength,
           textCapitalization: TextCapitalization.characters,
           validator: _validateCodiceFiscaleField,

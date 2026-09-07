@@ -565,6 +565,7 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                                   decoration: InputDecoration(
                                     labelText: l10n.fiscalCode,
                                     border: const OutlineInputBorder(),
+                                    counterText: '',
                                   ),
                                   maxLength: ItalianValidators.codiceFiscaleMaxLength,
                                   textCapitalization: TextCapitalization.characters,

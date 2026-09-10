@@ -111,6 +111,8 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    // enableEdgeToEdge() (Android 15 / Play Console)
+    implementation("androidx.activity:activity-ktx:1.10.1")
 }
 
 tasks.withType<JavaCompile> {

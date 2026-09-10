@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'package:wecoop_app/services/locale_provider.dart';
@@ -58,8 +59,26 @@ Future<void> _initializeStripe() async {
   );
 }
 
+/// Android 15+: edge-to-edge di default. Su API più basse lo attiviamo esplicitamente
+/// e teniamo status/navigation bar trasparenti (gli inset restano gestiti da SafeArea).
+Future<void> _configureSystemUi() async {
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarDividerColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ),
+  );
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await _configureSystemUi();
 
   // Cattura crash e errori runtime e li invia al backend (pagina "Errori App").
   ErrorReporter.instance.install();

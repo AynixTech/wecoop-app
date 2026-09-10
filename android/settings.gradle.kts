@@ -18,7 +18,9 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.3.2"
-    id("com.android.application") version "8.9.1" apply false
+    // 8.11.x: allinea warning Flutter + migliora shrink risorse (Play Console R8).
+    // AGP 9.0 non ancora stabile con Flutter attuale.
+    id("com.android.application") version "8.11.1" apply false
     id("org.jetbrains.kotlin.android") version "2.1.0" apply false
 }
 

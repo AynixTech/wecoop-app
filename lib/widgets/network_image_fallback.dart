@@ -1,8 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/theme.dart';
 
-/// Immagine di rete con placeholder di caricamento e fallback icona.
+/// Immagine di rete con cache, downsampling e fallback icona.
+/// Usa CachedNetworkImage per limitare memoria (Play Console bitmap warning).
 class NetworkImageFallback extends StatelessWidget {
   final String url;
   final double? width;
@@ -29,40 +31,45 @@ class NetworkImageFallback extends StatelessWidget {
     final iconColor = fallbackIconColor ?? scheme.onSurfaceVariant;
     final bg = placeholderColor ?? AppColors.bgSubtle;
 
-    return Image.network(
-      url,
+    if (url.trim().isEmpty) {
+      return _fallback(bg, iconColor);
+    }
+
+    // Limita la decodifica bitmap alla dimensione di visualizzazione quando nota.
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    final memW = width != null && width!.isFinite ? (width! * dpr).round() : null;
+    final memH = height != null && height!.isFinite ? (height! * dpr).round() : null;
+
+    return CachedNetworkImage(
+      imageUrl: url,
       width: width,
       height: height,
       fit: fit,
-      loadingBuilder: (context, child, progress) {
-        if (progress == null) return child;
-        return Container(
-          width: width,
-          height: height,
-          color: bg,
-          alignment: Alignment.center,
-          child: SizedBox(
-            width: 24,
-            height: 24,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              value: progress.expectedTotalBytes != null
-                  ? progress.cumulativeBytesLoaded /
-                      progress.expectedTotalBytes!
-                  : null,
-            ),
-          ),
-        );
-      },
-      errorBuilder: (context, error, stackTrace) {
-        return Container(
-          width: width,
-          height: height,
-          color: bg,
-          alignment: Alignment.center,
-          child: Icon(fallbackIcon, color: iconColor, size: 32),
-        );
-      },
+      memCacheWidth: memW,
+      memCacheHeight: memH,
+      fadeInDuration: const Duration(milliseconds: 150),
+      placeholder: (context, _) => Container(
+        width: width,
+        height: height,
+        color: bg,
+        alignment: Alignment.center,
+        child: const SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+      ),
+      errorWidget: (context, _, __) => _fallback(bg, iconColor),
+    );
+  }
+
+  Widget _fallback(Color bg, Color iconColor) {
+    return Container(
+      width: width,
+      height: height,
+      color: bg,
+      alignment: Alignment.center,
+      child: Icon(fallbackIcon, color: iconColor, size: 32),
     );
   }
 }

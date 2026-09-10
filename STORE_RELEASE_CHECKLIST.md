@@ -4,7 +4,7 @@ Questa checklist copre i passaggi rimasti fuori dal codice per pubblicare WeCoop
 
 ## Gia' sistemato nel repo
 
-- Versione Flutter con build number: `1.6.2+32`
+- Versione Flutter con build number: `1.6.5+35`
 - Bundle identifier iOS allineato a `org.wecoop.app`
 - Stripe configurato via `--dart-define` invece di chiave test hardcoded
 - Avvio app tollerante se Firebase iOS non e' ancora configurato

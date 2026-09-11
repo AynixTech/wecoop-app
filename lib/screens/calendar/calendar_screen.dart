@@ -144,6 +144,8 @@ class _CalendarScreenState extends State<CalendarScreen>
         return 'es_ES';
       case 'en':
         return 'en_US';
+      case 'fr':
+        return 'fr_FR';
       case 'it':
       default:
         return 'it_IT';

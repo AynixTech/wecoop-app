@@ -20,7 +20,7 @@ class LocaleProvider extends ChangeNotifier {
     } else {
       // Rileva la lingua del sistema
       final systemLocale = ui.PlatformDispatcher.instance.locale;
-      final supportedLanguages = ['it', 'en', 'es'];
+      final supportedLanguages = ['it', 'en', 'es', 'fr'];
       
       if (supportedLanguages.contains(systemLocale.languageCode)) {
         _locale = Locale(systemLocale.languageCode);
@@ -52,6 +52,12 @@ class LocaleProvider extends ChangeNotifier {
         return 'English';
       case 'es':
         return 'Español';
+      case 'ar':
+        return 'العربية';
+      case 'zh':
+        return '中文';
+      case 'fr':
+        return 'Français';
       default:
         return 'Italiano';
     }

@@ -180,6 +180,7 @@ class _WECOOPAppState extends State<WECOOPApp> with WidgetsBindingObserver {
             Locale('es'),
             Locale('ar'),
             Locale('zh'),
+            Locale('fr'),
           ],
           theme: ThemeData(
             fontFamily: AppTypography.fontFamily,

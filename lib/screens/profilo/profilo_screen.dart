@@ -875,6 +875,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                       DropdownMenuItem(value: 'it', child: Text('Italiano')),
                       DropdownMenuItem(value: 'en', child: Text('English')),
                       DropdownMenuItem(value: 'es', child: Text('Español')),
+                      DropdownMenuItem(value: 'fr', child: Text('Français')),
                       DropdownMenuItem(value: 'ar', child: Text('العربية')),
                       DropdownMenuItem(value: 'zh', child: Text('中文')),
                     ],
@@ -1605,6 +1606,10 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                       DropdownMenuItem(
                         value: 'es',
                         child: Text(l10n.translate('languageSpanish')),
+                      ),
+                      DropdownMenuItem(
+                        value: 'fr',
+                        child: Text(l10n.translate('languageFrench')),
                       ),
                       DropdownMenuItem(
                         value: 'ar',

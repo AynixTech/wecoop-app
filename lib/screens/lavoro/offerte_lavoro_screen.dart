@@ -795,7 +795,7 @@ class _OfferteLavoroText {
     Map<String, String>? params,
   }) {
     final code = Localizations.localeOf(context).languageCode;
-    var text = _values[code]?[key] ?? _values['it']?[key] ?? key;
+    var text = _values[code]?[key] ?? _values['en']?[key] ?? _values['it']?[key] ?? key;
     if (params != null) {
       for (final entry in params.entries) {
         text = text.replaceAll('{${entry.key}}', entry.value);
@@ -1306,7 +1306,7 @@ class _CategoriaMenuHelper {
   static String macroLabel(String macroValue, String languageCode) {
     final labels = macroLabels[macroValue];
     if (labels == null) return macroValue;
-    return labels[languageCode] ?? labels['it'] ?? macroValue;
+    return labels[languageCode] ?? labels['en'] ?? labels['it'] ?? macroValue;
   }
 
   static String categoryValueFromSlug(String slug) {
@@ -1318,7 +1318,7 @@ class _CategoriaMenuHelper {
     final value = categoryValueFromSlug(category.slug);
     final labels = categoryLabels[value];
     if (labels == null) return category.name;
-    return labels[languageCode] ?? labels['it'] ?? category.name;
+    return labels[languageCode] ?? labels['en'] ?? labels['it'] ?? category.name;
   }
 
   static bool _isOtherMacro(String macroValue) {

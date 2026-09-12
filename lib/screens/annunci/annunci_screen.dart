@@ -543,6 +543,7 @@ class _AnnuncioDetailSheetState
   void initState() {
     super.initState();
     widget.service.getAnnuncio(widget.id).then((d) {
+      if (!mounted) return;
       setState(() {
         _data = d;
         _loading = false;
@@ -554,6 +555,7 @@ class _AnnuncioDetailSheetState
   Future<void> _loadCurrentUser() async {
     final storage = SecureStorageService();
     final raw = await storage.read(key: 'user_id');
+    if (!mounted) return;
     if (raw != null) {
       setState(() => _currentUserId = int.tryParse(raw));
     }

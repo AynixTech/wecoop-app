@@ -1908,7 +1908,9 @@ class _CalendarScreenState extends State<CalendarScreen>
 
     AppLogger.d('🔐 [FirmaFlow] Rientro da FirmaDocumentoScreen, ricarico richieste');
 
+    if (!mounted) return;
     await _refreshLoggedUserSocioStatus();
+    if (!mounted) return;
     _caricaRichieste();
   }
 
@@ -2788,67 +2790,68 @@ class _CalendarScreenState extends State<CalendarScreen>
                                       : AppLocalizations.of(context)!.no,
                                   Icons.verified,
                                 ),
-                                if ((firmaStatus?.id ?? '').isNotEmpty)
-                                  _buildInfoRow(
-                                    AppLocalizations.of(context)!.translate('signatureIdLabel'),
-                                    firmaStatus!.id!,
-                                    Icons.fingerprint,
-                                  ),
-                                if (firmaStatus?.dataFirma != null)
-                                  _buildInfoRow(
-                                    AppLocalizations.of(context)!.translate('signatureTimestampLabel'),
-                                    _formatData(firmaStatus!.dataFirma!.toIso8601String()),
-                                    Icons.access_time,
-                                  ),
-                                if ((firmaStatus?.metodo ?? '').isNotEmpty)
-                                  _buildInfoRow(
-                                    AppLocalizations.of(context)!.translate('signatureTypeLabel'),
-                                    firmaStatus!.metodo!,
-                                    Icons.fact_check,
-                                  ),
-                                if ((firmaStatus?.status ?? '').isNotEmpty)
-                                  _buildInfoRow(
-                                    AppLocalizations.of(context)!.translate('signatureStatusLabel'),
-                                    firmaStatus!.status!,
-                                    Icons.rule,
-                                  ),
-                                if ((firmaStatus?.firmaHash ?? '').isNotEmpty)
-                                  _buildInfoRow(
-                                    AppLocalizations.of(context)!.translate('signatureHashLabel'),
-                                    firmaStatus!.firmaHash!,
-                                    Icons.tag,
-                                  ),
-                                if ((firmaStatus?.documentoHashSha256 ?? '').isNotEmpty)
-                                  _buildInfoRow(
-                                    AppLocalizations.of(context)!.translate('documentHashSha256Label'),
-                                    firmaStatus!.documentoHashSha256!,
-                                    Icons.security,
-                                  ),
-                                if ((firmaStatus?.deviceFirma ?? '').isNotEmpty)
-                                  _buildInfoRow(
-                                    AppLocalizations.of(context)!.translate('signatureDeviceLabel'),
-                                    firmaStatus!.deviceFirma!,
-                                    Icons.devices,
-                                  ),
-                                if ((firmaStatus?.documentoUrl ?? '').isNotEmpty)
-                                  _buildInfoRow(
-                                    AppLocalizations.of(context)!.translate('documentFileNameLabel'),
-                                    _extractFileName(firmaStatus!.documentoUrl),
-                                    Icons.link,
-                                  ),
-                                if ((firmaStatus?.documentoDownloadUrl ?? '').isNotEmpty)
-                                  _buildInfoRow(
-                                    AppLocalizations.of(context)!.translate('downloadFileNameLabel'),
-                                    _extractFileName(firmaStatus!.documentoDownloadUrl),
-                                    Icons.download,
-                                  ),
-                                if (firmaStatus?.metadata != null &&
-                                    firmaStatus!.metadata!.isNotEmpty)
-                                  _buildInfoRow(
-                                    AppLocalizations.of(context)!.translate('signatureMetadataLabel'),
-                                    jsonEncode(_sanitizeMetadata(firmaStatus.metadata!)),
-                                    Icons.data_object,
-                                  ),
+                                if (firmaStatus != null) ...[
+                                  if ((firmaStatus.id ?? '').isNotEmpty)
+                                    _buildInfoRow(
+                                      AppLocalizations.of(context)!.translate('signatureIdLabel'),
+                                      firmaStatus.id!,
+                                      Icons.fingerprint,
+                                    ),
+                                  if (firmaStatus.dataFirma != null)
+                                    _buildInfoRow(
+                                      AppLocalizations.of(context)!.translate('signatureTimestampLabel'),
+                                      _formatData(firmaStatus.dataFirma!.toIso8601String()),
+                                      Icons.access_time,
+                                    ),
+                                  if ((firmaStatus.metodo ?? '').isNotEmpty)
+                                    _buildInfoRow(
+                                      AppLocalizations.of(context)!.translate('signatureTypeLabel'),
+                                      firmaStatus.metodo!,
+                                      Icons.fact_check,
+                                    ),
+                                  if ((firmaStatus.status ?? '').isNotEmpty)
+                                    _buildInfoRow(
+                                      AppLocalizations.of(context)!.translate('signatureStatusLabel'),
+                                      firmaStatus.status!,
+                                      Icons.rule,
+                                    ),
+                                  if ((firmaStatus.firmaHash ?? '').isNotEmpty)
+                                    _buildInfoRow(
+                                      AppLocalizations.of(context)!.translate('signatureHashLabel'),
+                                      firmaStatus.firmaHash!,
+                                      Icons.tag,
+                                    ),
+                                  if ((firmaStatus.documentoHashSha256 ?? '').isNotEmpty)
+                                    _buildInfoRow(
+                                      AppLocalizations.of(context)!.translate('documentHashSha256Label'),
+                                      firmaStatus.documentoHashSha256!,
+                                      Icons.security,
+                                    ),
+                                  if ((firmaStatus.deviceFirma ?? '').isNotEmpty)
+                                    _buildInfoRow(
+                                      AppLocalizations.of(context)!.translate('signatureDeviceLabel'),
+                                      firmaStatus.deviceFirma!,
+                                      Icons.devices,
+                                    ),
+                                  if ((firmaStatus.documentoUrl ?? '').isNotEmpty)
+                                    _buildInfoRow(
+                                      AppLocalizations.of(context)!.translate('documentFileNameLabel'),
+                                      _extractFileName(firmaStatus.documentoUrl),
+                                      Icons.link,
+                                    ),
+                                  if ((firmaStatus.documentoDownloadUrl ?? '').isNotEmpty)
+                                    _buildInfoRow(
+                                      AppLocalizations.of(context)!.translate('downloadFileNameLabel'),
+                                      _extractFileName(firmaStatus.documentoDownloadUrl),
+                                      Icons.download,
+                                    ),
+                                  if ((firmaStatus.metadata ?? const {}).isNotEmpty)
+                                    _buildInfoRow(
+                                      AppLocalizations.of(context)!.translate('signatureMetadataLabel'),
+                                      jsonEncode(_sanitizeMetadata(firmaStatus.metadata!)),
+                                      Icons.data_object,
+                                    ),
+                                ],
                               ],
                             ),
                           ),

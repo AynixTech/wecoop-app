@@ -45,8 +45,10 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
   }
 
   Future<void> _loadDocumenti() async {
+    if (!mounted) return;
     setState(() => _isLoading = true);
     await _documentoService.getDocumenti();
+    if (!mounted) return;
     setState(() {
       _isLoading = false;
     });

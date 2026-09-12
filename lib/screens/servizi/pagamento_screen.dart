@@ -40,6 +40,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
     AppLogger.d('📱 [PagamentoScreen] Caricamento pagamento...');
     AppLogger.d('📱 [PagamentoScreen] paymentId: ${widget.paymentId}, richiestaId: ${widget.richiestaId}');
     
+    if (!mounted) return;
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -61,6 +62,8 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       } else {
         AppLogger.d('⚠️ [PagamentoScreen] Né paymentId né richiestaId forniti!');
       }
+
+      if (!mounted) return;
 
       if (pagamento == null) {
         AppLogger.d('❌ [PagamentoScreen] Pagamento non trovato o non esiste');
@@ -91,6 +94,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       });
     } catch (e) {
       AppLogger.d('❌ [PagamentoScreen] Errore caricamento: $e');
+      if (!mounted) return;
       setState(() {
         _errorMessage = AppLocalizations.of(context)?.translate('paymentLoadError') ??
             'Errore durante il caricamento del pagamento';
@@ -123,16 +127,20 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
 
   Future<void> _handleStripePayment() async {
     AppLogger.d('💳 [PagamentoScreen] Inizio processo pagamento Stripe');
-    
-    if (_pagamento == null) {
+
+    final pagamento = _pagamento;
+    if (pagamento == null) {
       AppLogger.d('❌ [PagamentoScreen] Pagamento null, impossibile procedere');
       return;
     }
 
-    AppLogger.d('💳 [PagamentoScreen] Pagamento: ID ${_pagamento!.id}, Importo €${_pagamento!.importo}, Stato: ${_pagamento!.stato}');
+    AppLogger.d(
+      '💳 [PagamentoScreen] Pagamento: ID ${pagamento.id}, Importo €${pagamento.importo}, Stato: ${pagamento.stato}',
+    );
 
     // Assicura che Stripe sia inizializzato usando la chiave del backend (wp-config-stripe.php)
     await _ensureStripeReady();
+    if (!mounted) return;
 
     // Verifica se Stripe è configurato
     if (!StripeConfig.isConfigured) {
@@ -157,12 +165,12 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       );
       _isStripeLoadingDialogVisible = true;
 
-      AppLogger.d('🔄 Creo Payment Intent per €${_pagamento!.importo}...');
+      AppLogger.d('🔄 Creo Payment Intent per €${pagamento.importo}...');
 
       // 1. Crea Payment Intent sul backend
       final clientSecret = await PagamentoService.creaStripePaymentIntent(
-        importo: _pagamento!.importo,
-        paymentId: _pagamento!.id,
+        importo: pagamento.importo,
+        paymentId: pagamento.id,
       );
 
       AppLogger.d('✅ Client Secret ricevuto: ${clientSecret != null ? "OK" : "NULL"}');
@@ -175,6 +183,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
         // Attendi la fine dell'animazione di chiusura del dialog prima di mostrare Stripe.
         await Future<void>.delayed(const Duration(milliseconds: 220));
       }
+      if (!mounted) return;
 
       if (clientSecret == null) {
         _showErrorDialog(
@@ -198,6 +207,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
           ),
         ),
       );
+      if (!mounted) return;
 
       AppLogger.d('✅ Payment Sheet inizializzato, mostro UI...');
 
@@ -209,7 +219,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       // 4. Se arriviamo qui, il pagamento è riuscito
       // Conferma sul backend WordPress
       final result = await PagamentoService.confermaPagamento(
-        paymentId: _pagamento!.id,
+        paymentId: pagamento.id,
         metodoPagamento: 'stripe',
         transactionId: clientSecret,
         note: 'Pagato tramite Stripe in-app',
@@ -220,15 +230,18 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       if (result['success'] == true) {
         // Registra push token per email future con deep link app (non "Vai alla piattaforma").
         await PushNotificationService().syncTokenWithBackend();
+        if (!mounted) return;
 
         // Ricarica i dati del pagamento
         await _loadPagamento();
+        if (!mounted) return;
 
+        final amount = (_pagamento ?? pagamento).importo.toStringAsFixed(2);
         _showSuccessDialog(
           AppLocalizations.of(context)!.translate('paymentCompletedTitle'),
           AppLocalizations.of(context)!
               .translate('paymentCompletedBody')
-              .replaceAll('{amount}', _pagamento!.importo.toStringAsFixed(2)),
+              .replaceAll('{amount}', amount),
         );
       } else {
         _showErrorDialog(
@@ -275,6 +288,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
   }
 
   void _showErrorDialog(String message) {
+    if (!mounted) return;
     final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
@@ -298,6 +312,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
   }
 
   void _showSuccessDialog(String title, String message) {
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

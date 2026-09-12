@@ -40,9 +40,11 @@ class ErrorReporter {
     final previousOnError = FlutterError.onError;
     FlutterError.onError = (FlutterErrorDetails details) {
       previousOnError?.call(details);
+      final message = details.exceptionAsString();
       report(
-        tipo: 'crash',
-        message: details.exceptionAsString(),
+        // Assert di layout/Material non sono crash fatali: evita rumore in Errori App.
+        tipo: _isSoftFrameworkIssue(message) ? 'error' : 'crash',
+        message: message,
         stack: details.stack?.toString(),
         screen: details.library,
       );
@@ -50,9 +52,22 @@ class ErrorReporter {
 
     // Errori async non gestiti a livello di piattaforma.
     PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
-      report(tipo: 'crash', message: error.toString(), stack: stack.toString());
+      final message = error.toString();
+      report(
+        tipo: _isSoftFrameworkIssue(message) ? 'error' : 'crash',
+        message: message,
+        stack: stack.toString(),
+      );
       return true;
     };
+  }
+
+  /// Overflow, assert ListTile/Material, ancestor dispose: segnalati ma non come crash.
+  static bool _isSoftFrameworkIssue(String message) {
+    return message.contains('ListTile background color') ||
+        message.contains('A RenderFlex overflowed') ||
+        message.contains('Looking up a deactivated widget') ||
+        message.contains('No Material widget found');
   }
 
   /// Segnala un errore HTTP anomalo (es. HTML invece di JSON, 5xx).

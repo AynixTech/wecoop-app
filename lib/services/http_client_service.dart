@@ -52,10 +52,15 @@ class HttpClientService {
         final preview = response.body.length > 300
             ? response.body.substring(0, 300)
             : response.body;
+        final status = response.statusCode;
+        final isGateway =
+            status == 502 || status == 503 || status == 504;
         ErrorReporter.instance.reportHttp(
           endpoint: response.request?.url.toString() ?? 'unknown',
-          statusCode: response.statusCode,
-          message: 'Risposta non-JSON dal server (parse fallito)',
+          statusCode: status,
+          message: isGateway
+              ? 'Gateway/timeout HTML dal server (HTTP $status)'
+              : 'Risposta non-JSON dal server (parse fallito)',
           bodyPreview: preview,
         );
         rethrow;

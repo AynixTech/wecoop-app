@@ -359,6 +359,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
   }
 
   Future<void> _loadCvTemplates() async {
+    if (!mounted) return;
     setState(() {
       _isLoadingTemplates = true;
       _templatesError = null;
@@ -370,6 +371,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
         Uri.parse(_cvTemplatesEndpoint),
         headers: headers,
       );
+      if (!mounted) return;
       final rawResponseBody = utf8.decode(response.bodyBytes);
 
       _logCvTemplates(
@@ -405,6 +407,8 @@ class _CvAiScreenState extends State<CvAiScreen> {
         );
         return;
       }
+
+      if (!mounted) return;
 
       if (body is Map<String, dynamic>) {
         _logCvTemplates(
@@ -458,6 +462,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
         }
       }
 
+      if (!mounted) return;
       setState(() {
         _cvTemplates
           ..clear()
@@ -559,6 +564,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
   }
 
   void _applyFallbackTemplates(String message) {
+    if (!mounted) return;
     final selected = _normalizedTemplateId(_cvModel);
     final ids = _fallbackCvTemplates.map((e) => e['id'] as String).toSet();
     final nextSelected = ids.contains(selected)

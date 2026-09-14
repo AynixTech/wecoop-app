@@ -6,6 +6,7 @@ import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
+import 'package:wecoop_app/services/error_reporter.dart';
 import 'package:wecoop_app/services/push_notification_service.dart';
 import 'package:wecoop_app/screens/onboarding/first_access_screen.dart';
 import 'package:wecoop_app/screens/profilo/change_password_screen.dart';
@@ -184,18 +185,58 @@ class _LoginScreenState extends State<LoginScreen> {
     AppLogger.d('🔐 Payload: $requestBody');
 
     try {
-      final response = await HttpClientService.post(
-        url,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'User-Agent': 'WeCoop/1.6.2',
-        },
-        body: requestBody,
-      );
+      // Render free tier often returns HTML 502/503/504 on cold start.
+      // Retry a few times before treating it as a hard failure.
+      const maxAttempts = 3;
+      late http.Response response;
+      for (var attempt = 1; attempt <= maxAttempts; attempt++) {
+        response = await HttpClientService.post(
+          url,
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'User-Agent': 'WeCoop/1.6.2',
+          },
+          body: requestBody,
+        );
+        if (!HttpClientService.isGatewayStatus(response.statusCode) ||
+            attempt == maxAttempts) {
+          break;
+        }
+        AppLogger.d(
+          '⏳ Login gateway HTTP ${response.statusCode}, ritento $attempt/$maxAttempts...',
+        );
+        await Future.delayed(Duration(seconds: attempt * 2));
+      }
 
       AppLogger.d('📡 Response status: ${response.statusCode}');
       AppLogger.d('📡 Response body: ${response.body}');
+
+      if (HttpClientService.isGatewayStatus(response.statusCode)) {
+        // Avoid FormatException noise: gateway bodies are HTML, not JSON.
+        final preview = response.body.length > 300
+            ? response.body.substring(0, 300)
+            : response.body;
+        ErrorReporter.instance.reportHttp(
+          endpoint: url.toString(),
+          statusCode: response.statusCode,
+          message:
+              'Gateway/timeout HTML dal server (HTTP ${response.statusCode})',
+          bodyPreview: preview,
+        );
+        AppLogger.d(
+          '⚠️ Login bloccato da gateway HTTP ${response.statusCode}',
+        );
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.networkError)),
+          );
+        }
+        return;
+      }
 
       final decodedData = HttpClientService.decodeJsonResponse(response);
       AppLogger.d('📦 Decoded type: ${decodedData.runtimeType}');

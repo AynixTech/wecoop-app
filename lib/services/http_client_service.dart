@@ -20,6 +20,10 @@ class HttpClientService {
   /// Impostato una volta all'avvio (es. da main/AuthGate).
   static Future<void> Function()? onSessionExpired;
 
+  /// True for reverse-proxy / cold-start failures (HTML body, not JSON).
+  static bool isGatewayStatus(int statusCode) =>
+      statusCode == 502 || statusCode == 503 || statusCode == 504;
+
   /// Decodifica JSON dalla risposta HTTP mantenendo l'encoding UTF-8 corretto
   ///
   /// Usa utf8.decode(response.bodyBytes) invece di response.body per garantire
@@ -53,12 +57,10 @@ class HttpClientService {
             ? response.body.substring(0, 300)
             : response.body;
         final status = response.statusCode;
-        final isGateway =
-            status == 502 || status == 503 || status == 504;
         ErrorReporter.instance.reportHttp(
           endpoint: response.request?.url.toString() ?? 'unknown',
           statusCode: status,
-          message: isGateway
+          message: isGatewayStatus(status)
               ? 'Gateway/timeout HTML dal server (HTTP $status)'
               : 'Risposta non-JSON dal server (parse fallito)',
           bodyPreview: preview,

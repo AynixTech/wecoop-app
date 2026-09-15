@@ -71,12 +71,13 @@ class MaintenanceHandler {
     }
   }
 
-  static bool isPlatformUpdateStatusCode(int statusCode) => statusCode == 500;
+  /// Storicamente ogni HTTP 500 apriva "Manutenzione" e mascherava errori
+  /// di business (es. email già usata su completa-profilo). Non trattare più
+  /// i 500 generici come manutenzione: solo 503 = servizio non disponibile.
+  static bool isPlatformUpdateStatusCode(int statusCode) => false;
 
   static Future<void> handleHttpStatusCode(int statusCode) async {
-    if (isPlatformUpdateStatusCode(statusCode)) {
-      await showPlatformUpdateModal();
-    } else if (statusCode == 503) {
+    if (statusCode == 503) {
       await showMaintenanceModal();
     }
   }

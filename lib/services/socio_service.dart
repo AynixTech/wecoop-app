@@ -1130,6 +1130,14 @@ class SocioService {
       AppLogger.d('📥 Response status: ${response.statusCode}');
       final responseData = jsonDecode(response.body);
 
+      if (response.statusCode != 200) {
+        final message =
+            responseData is Map && responseData['message'] != null
+                ? responseData['message'].toString()
+                : 'Errore aggiornamento profilo (${response.statusCode})';
+        return {'success': false, 'message': message};
+      }
+
       // Salva dati aggiornati in storage se successo
       if (response.statusCode == 200) {
         if (nome != null || cognome != null) {

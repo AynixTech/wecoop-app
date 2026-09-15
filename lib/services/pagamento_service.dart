@@ -201,22 +201,20 @@ class PagamentoService {
     }
   }
 
-  /// Crea Payment Intent Stripe (backend)
-  /// POST /create-payment-intent
-  static Future<String?> creaStripePaymentIntent({
-    required double importo,
+  /// Crea Payment Intent Stripe (backend).
+  /// POST /create-payment-intent — l'importo lo decide solo il server.
+  /// Ritorna clientSecret + paymentIntentId (mai salvare il secret come transaction_id).
+  static Future<({String clientSecret, String? paymentIntentId})?> creaStripePaymentIntent({
     required int paymentId,
   }) async {
     try {
-      // Nota: questo endpoint deve essere creato sul backend WordPress
       final url = Uri.parse('$baseUrl/create-payment-intent');
       AppLogger.d(
-        '🔄 Chiamata POST /create-payment-intent (importo: €$importo, paymentId: $paymentId)...',
+        '🔄 Chiamata POST /create-payment-intent (paymentId: $paymentId)...',
       );
 
       final headers = await _getHeaders();
       final body = {
-        'amount': (importo * 100).toInt(), // Stripe usa centesimi
         'currency': 'eur',
         'payment_id': paymentId,
       };
@@ -236,11 +234,13 @@ class PagamentoService {
 
       if (response.statusCode == 200) {
         final data = ResponseUtils.decodeJson(response);
-        final clientSecret = data['clientSecret'] as String?;
+        final clientSecret =
+            (data['clientSecret'] ?? data['client_secret']) as String?;
+        final paymentIntentId = data['payment_intent_id'] as String?;
 
         if (clientSecret != null) {
           AppLogger.d('✅ Client Secret ricevuto');
-          return clientSecret;
+          return (clientSecret: clientSecret, paymentIntentId: paymentIntentId);
         } else {
           AppLogger.d('⚠️ Client Secret non presente nella risposta');
         }

@@ -167,13 +167,12 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
 
       AppLogger.d('🔄 Creo Payment Intent per €${pagamento.importo}...');
 
-      // 1. Crea Payment Intent sul backend
-      final clientSecret = await PagamentoService.creaStripePaymentIntent(
-        importo: pagamento.importo,
+      // 1. Crea Payment Intent sul backend (importo deciso server-side)
+      final intent = await PagamentoService.creaStripePaymentIntent(
         paymentId: pagamento.id,
       );
 
-      AppLogger.d('✅ Client Secret ricevuto: ${clientSecret != null ? "OK" : "NULL"}');
+      AppLogger.d('✅ Client Secret ricevuto: ${intent != null ? "OK" : "NULL"}');
 
       if (!mounted) return;
       if (_isStripeLoadingDialogVisible &&
@@ -185,7 +184,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       }
       if (!mounted) return;
 
-      if (clientSecret == null) {
+      if (intent == null) {
         _showErrorDialog(
           AppLocalizations.of(context)!.translate('paymentCreateFailed'),
         );
@@ -197,7 +196,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       // 2. Inizializza Payment Sheet
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
-          paymentIntentClientSecret: clientSecret,
+          paymentIntentClientSecret: intent.clientSecret,
           merchantDisplayName: 'KINTI SRL',
           style: ThemeMode.system,
           appearance: const PaymentSheetAppearance(
@@ -216,12 +215,12 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
 
       AppLogger.d('✅ Pagamento completato con successo!');
 
-      // 4. Se arriviamo qui, il pagamento è riuscito
-      // Conferma sul backend WordPress
+      // 4. Conferma sul backend (solo payment_intent id, mai il client_secret)
       final result = await PagamentoService.confermaPagamento(
         paymentId: pagamento.id,
         metodoPagamento: 'stripe',
-        transactionId: clientSecret,
+        transactionId: intent.paymentIntentId ??
+            intent.clientSecret.split('_secret').first,
         note: 'Pagato tramite Stripe in-app',
       );
 

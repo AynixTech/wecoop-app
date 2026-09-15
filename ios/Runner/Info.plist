@@ -37,6 +37,14 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<!--
+	  Flutter 3.27+ abilita il deep linking nativo di default.
+	  Con app_links già in uso, il router Flutter prova pushNamed sul path
+	  (es. /annunci/123) → _onUnknownRoute crash. Disabilitare e lasciare
+	  DeepLinkService / DeepLinkHandler come unica fonte di verità.
+	-->
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 	<key>ITSAppUsesNonExemptEncryption</key>

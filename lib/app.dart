@@ -360,6 +360,15 @@ class _WECOOPAppState extends State<WECOOPApp> with WidgetsBindingObserver {
             visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
           home: const MainScreen(),
+          // Fallback se il platform invia comunque un path non registrato
+          // (Universal Link / pushRouteInformation). Evita crash _onUnknownRoute.
+          onUnknownRoute: (settings) {
+            AppLogger.d('⚠️ Route sconosciuta: ${settings.name}');
+            return MaterialPageRoute(
+              settings: settings,
+              builder: (_) => const MainScreen(),
+            );
+          },
           routes: {
             '/home': (context) {
               final args = parseMainScreenRouteArgs(

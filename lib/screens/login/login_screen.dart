@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';

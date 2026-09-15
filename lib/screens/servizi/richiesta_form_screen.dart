@@ -134,7 +134,6 @@ const Map<String, String> categoriaStandardMap = {
   'Per Motivi Familiari': 'residence_permit_family',
   'For Family Reasons': 'residence_permit_family',
   'Por Motivos Familiares': 'residence_permit_family',
-  'Per Studiare in Italia': 'study_italy',
   'Per Studiare in Italia / Studente': 'study_italy',
 
   // Cittadinanza

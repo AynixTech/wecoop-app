@@ -1107,7 +1107,10 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    AppLocalizations.of(context)!.accountCreatedSuccess,
+                    data['claimed_scheda'] == true ||
+                            data['data']?['claimed_scheda'] == true
+                        ? 'Abbiamo trovato i tuoi dati WeCoop. Account attivato con successo.'
+                        : AppLocalizations.of(context)!.accountCreatedSuccess,
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,

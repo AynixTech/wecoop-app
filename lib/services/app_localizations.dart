@@ -1381,7 +1381,7 @@ class AppLocalizations {
       'myDocumentsSubtitle': 'Gestisci i tuoi documenti personali',
       'storicoPraticheTitle': 'Storico pratiche',
       'storicoPraticheSubtitle':
-          'Consulta e scarica i documenti delle tue pratiche',
+          'Consulta le tue pratiche, pagamenti, firme e documenti',
       'storicoPraticheEmpty': 'Nessun documento disponibile al momento.',
       'storicoPraticheError': 'Impossibile caricare lo storico pratiche.',
       'storicoPraticheDownloadError':

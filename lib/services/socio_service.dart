@@ -796,14 +796,21 @@ class SocioService {
   /// STORICO PRATICHE (730, CU, ISEE, ...)
   /// ===========================================================
 
-  /// Elenco dei documenti dello storico pratiche del cliente loggato.
-  /// GET /pratiche/me  -> { success: true, data: [ {...}, ... ] }
-  static Future<List<PraticaDocumento>> getStoricoPratiche({String? tipo}) async {
+  /// Elenco storico pratiche del cliente loggato.
+  /// GET /pratiche/me → { success, data/documenti, pratiche }
+  static Future<Map<String, dynamic>> getStoricoPraticheBundle({
+    String? tipo,
+  }) async {
     try {
       final token = await storage.read(key: 'jwt_token');
       if (token == null) {
         AppLogger.d('Token JWT mancante');
-        return [];
+        return {
+          'success': false,
+          'message': 'Utente non autenticato',
+          'documenti': <PraticaDocumento>[],
+          'pratiche': <Map<String, dynamic>>[],
+        };
       }
 
       var url = '$baseUrl/pratiche/me';
@@ -823,20 +830,89 @@ class SocioService {
       if (response.statusCode == 200) {
         final rawData = jsonDecode(response.body);
         final responseData = decodeHtmlInMap(rawData);
-        if (responseData['success'] == true && responseData['data'] != null) {
-          final List<dynamic> list = responseData['data'] as List<dynamic>;
-          return list
-              .whereType<Map<String, dynamic>>()
-              .map((e) => PraticaDocumento.fromJson(e))
-              .toList();
+        if (responseData['success'] == true) {
+          final docsRaw =
+              responseData['documenti'] ?? responseData['data'] ?? [];
+          final docs = <PraticaDocumento>[];
+          if (docsRaw is List) {
+            for (final item in docsRaw) {
+              if (item is Map<String, dynamic>) {
+                docs.add(PraticaDocumento.fromJson(item));
+              } else if (item is Map) {
+                docs.add(
+                  PraticaDocumento.fromJson(
+                    Map<String, dynamic>.from(item),
+                  ),
+                );
+              }
+            }
+          }
+
+          final pratiche = <Map<String, dynamic>>[];
+          final praticheRaw = responseData['pratiche'];
+          if (praticheRaw is List) {
+            for (final item in praticheRaw) {
+              if (item is! Map) continue;
+              final m = Map<String, dynamic>.from(item);
+              m['stato'] ??= m['status'];
+              m['status'] ??= m['stato'];
+              pratiche.add(m);
+            }
+          }
+
+          // Fallback: se il backend non ha ancora `pratiche`, usa mie-richieste.
+          if (pratiche.isEmpty) {
+            final fallback = await getRichiesteUtente(perPage: 100);
+            if (fallback['success'] == true) {
+              final list = fallback['data'];
+              if (list is List) {
+                for (final item in list) {
+                  if (item is Map) {
+                    pratiche.add(Map<String, dynamic>.from(item));
+                  }
+                }
+              }
+            }
+          }
+
+          return {
+            'success': true,
+            'documenti': docs,
+            'pratiche': pratiche,
+          };
         }
+      } else if (response.statusCode == 401) {
+        return {
+          'success': false,
+          'message': 'Token scaduto',
+          'documenti': <PraticaDocumento>[],
+          'pratiche': <Map<String, dynamic>>[],
+        };
       }
 
-      return [];
+      return {
+        'success': false,
+        'message': 'Impossibile caricare lo storico',
+        'documenti': <PraticaDocumento>[],
+        'pratiche': <Map<String, dynamic>>[],
+      };
     } catch (e) {
       AppLogger.d('❌ Errore durante GET /pratiche/me: $e');
-      return [];
+      return {
+        'success': false,
+        'message': e.toString(),
+        'documenti': <PraticaDocumento>[],
+        'pratiche': <Map<String, dynamic>>[],
+      };
     }
+  }
+
+  /// Elenco dei documenti fiscali (730, CU, …). Preferire [getStoricoPraticheBundle].
+  static Future<List<PraticaDocumento>> getStoricoPratiche({String? tipo}) async {
+    final bundle = await getStoricoPraticheBundle(tipo: tipo);
+    final docs = bundle['documenti'];
+    if (docs is List<PraticaDocumento>) return docs;
+    return [];
   }
 
   /// Scarica il file binario di un documento dello storico pratiche.
@@ -851,9 +927,8 @@ class SocioService {
         return {'success': false, 'message': 'Utente non autenticato'};
       }
 
-      final url = doc.downloadUrl.isNotEmpty
-          ? doc.downloadUrl
-          : '$baseUrl/pratiche/me/documento/${doc.id}/download';
+      // Sempre path relativo al backend corrente (download_url può avere host/http errati).
+      final url = '$baseUrl/pratiche/me/documento/${doc.id}/download';
 
       AppLogger.d('🔄 Download documento pratica: $url');
 

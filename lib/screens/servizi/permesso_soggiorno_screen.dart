@@ -585,6 +585,445 @@ class PermessoSoggiornoScreen extends StatelessWidget {
                   );
                 },
               ),
+
+              const SizedBox(height: 12),
+              _OptionCard(
+                title: l10n.translate('familyItalianCitizen'),
+                description: l10n.translate('familyItalianCitizenDesc'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => RichiestaFormScreen(
+                            servizio: l10n.residencePermit,
+                            categoria: l10n.translate('familyItalianCitizen'),
+                            campi: [
+                              {
+                                'label': l10n.translate('applicationType'),
+                                'type': 'select',
+                                'required': true,
+                                'options': [
+                                  l10n.translate('applicationTypeRelease'),
+                                  l10n.translate('applicationTypeRenewal'),
+                                  l10n.translate('applicationTypeConversion'),
+                                  l10n.translate('applicationTypeUpdate'),
+                                  l10n.translate('applicationTypeDuplicate'),
+                                ],
+                              },
+                              {
+                                'label': l10n.fullName,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.dateOfBirth,
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.countryOfOrigin,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.relationshipWithFamily,
+                                'type': 'select',
+                                'options': [
+                                  l10n.spouse,
+                                  l10n.translate('civilUnion'),
+                                  l10n.son,
+                                  l10n.parent,
+                                  l10n.other,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.translate('italianCitizenName'),
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.additionalNotes,
+                                'type': 'textarea',
+                                'required': false,
+                              },
+                            ],
+                            documentiRichiesti: const [
+                              TipoDocumento.permessoSoggiorno,
+                              TipoDocumento.passaporto,
+                              TipoDocumento.codiceFiscale,
+                              TipoDocumento.cartaIdentita,
+                            ],
+                            modalitaConsegna: const [
+                              'courier',
+                              'pickup',
+                              'email',
+                            ],
+                          ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              _OptionCard(
+                title: l10n.translate('familyMinor14'),
+                description: l10n.translate('familyMinor14Desc'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => RichiestaFormScreen(
+                            servizio: l10n.residencePermit,
+                            categoria: l10n.translate('familyMinor14'),
+                            campi: [
+                              {
+                                'label': l10n.translate('applicationType'),
+                                'type': 'select',
+                                'required': true,
+                                'options': [
+                                  l10n.translate('applicationTypeRelease'),
+                                  l10n.translate('applicationTypeRenewal'),
+                                  l10n.translate('applicationTypeUpdate'),
+                                  l10n.translate('applicationTypeDuplicate'),
+                                ],
+                              },
+                              {
+                                'label': l10n.fullName,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.dateOfBirth,
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.countryOfOrigin,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.translate('parentName'),
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.translate('parentPermitNumber'),
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.additionalNotes,
+                                'type': 'textarea',
+                                'required': false,
+                              },
+                            ],
+                            documentiRichiesti: const [
+                              TipoDocumento.permessoSoggiorno,
+                              TipoDocumento.passaporto,
+                              TipoDocumento.codiceFiscale,
+                              TipoDocumento.cartaIdentita,
+                            ],
+                            modalitaConsegna: const [
+                              'courier',
+                              'pickup',
+                              'email',
+                            ],
+                          ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              _OptionCard(
+                title: l10n.translate('studyMotiviArt39'),
+                description: l10n.translate('studyMotiviArt39Desc'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => RichiestaFormScreen(
+                            servizio: l10n.residencePermit,
+                            categoria: l10n.translate('studyMotiviArt39'),
+                            campi: [
+                              {
+                                'label': l10n.translate('applicationType'),
+                                'type': 'select',
+                                'required': true,
+                                'options': [
+                                  l10n.translate('applicationTypeRelease'),
+                                  l10n.translate('applicationTypeRenewal'),
+                                  l10n.translate('applicationTypeConversion'),
+                                  l10n.translate('applicationTypeUpdate'),
+                                  l10n.translate('applicationTypeDuplicate'),
+                                ],
+                              },
+                              {
+                                'label': l10n.fullName,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.dateOfBirth,
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.countryOfOrigin,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.institutionName,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.additionalNotes,
+                                'type': 'textarea',
+                                'required': false,
+                              },
+                            ],
+                            documentiRichiesti: const [
+                              TipoDocumento.permessoSoggiorno,
+                              TipoDocumento.passaporto,
+                              TipoDocumento.codiceFiscale,
+                              TipoDocumento.cartaIdentita,
+                            ],
+                            modalitaConsegna: const [
+                              'courier',
+                              'pickup',
+                              'email',
+                            ],
+                          ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              _OptionCard(
+                title: l10n.translate('studyJobSearch'),
+                description: l10n.translate('studyJobSearchDesc'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => RichiestaFormScreen(
+                            servizio: l10n.residencePermit,
+                            categoria: l10n.translate('studyJobSearch'),
+                            campi: [
+                              {
+                                'label': l10n.translate('applicationType'),
+                                'type': 'select',
+                                'required': true,
+                                'options': [
+                                  l10n.translate('applicationTypeRelease'),
+                                  l10n.translate('applicationTypeRenewal'),
+                                  l10n.translate('applicationTypeUpdate'),
+                                ],
+                              },
+                              {
+                                'label': l10n.fullName,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.dateOfBirth,
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.countryOfOrigin,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.translate('degreeObtained'),
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.translate('yearObtained'),
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.additionalNotes,
+                                'type': 'textarea',
+                                'required': false,
+                              },
+                            ],
+                            documentiRichiesti: const [
+                              TipoDocumento.permessoSoggiorno,
+                              TipoDocumento.passaporto,
+                              TipoDocumento.codiceFiscale,
+                              TipoDocumento.cartaIdentita,
+                            ],
+                            modalitaConsegna: const [
+                              'courier',
+                              'pickup',
+                              'email',
+                            ],
+                          ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              _OptionCard(
+                title: l10n.translate('waitingCitizenship'),
+                description: l10n.translate('waitingCitizenshipDesc'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => RichiestaFormScreen(
+                            servizio: l10n.residencePermit,
+                            categoria: l10n.translate('waitingCitizenship'),
+                            campi: [
+                              {
+                                'label': l10n.translate('applicationType'),
+                                'type': 'select',
+                                'required': true,
+                                'options': [
+                                  l10n.translate('applicationTypeRelease'),
+                                  l10n.translate('applicationTypeRenewal'),
+                                  l10n.translate('applicationTypeUpdate'),
+                                ],
+                              },
+                              {
+                                'label': l10n.fullName,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.email,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.phone,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.dateOfBirth,
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.countryOfOrigin,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.translate('currentPermitType'),
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.translate('permitExpiryDate'),
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.additionalNotes,
+                                'type': 'textarea',
+                                'required': false,
+                              },
+                            ],
+                            documentiRichiesti: const [
+                              TipoDocumento.permessoSoggiorno,
+                              TipoDocumento.passaporto,
+                              TipoDocumento.codiceFiscale,
+                              TipoDocumento.cartaIdentita,
+                            ],
+                            modalitaConsegna: const [
+                              'courier',
+                              'pickup',
+                              'email',
+                            ],
+                          ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              _OptionCard(
+                title: l10n.translate('conversionFamily'),
+                description: l10n.translate('conversionFamilyDesc'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => RichiestaFormScreen(
+                            servizio: l10n.residencePermit,
+                            categoria: l10n.translate('conversionFamily'),
+                            campi: [
+                              {
+                                'label': l10n.translate('currentPermitType'),
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.fullName,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.dateOfBirth,
+                                'type': 'date',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.countryOfOrigin,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.relationshipWithFamily,
+                                'type': 'select',
+                                'options': [
+                                  l10n.spouse,
+                                  l10n.son,
+                                  l10n.parent,
+                                  l10n.other,
+                                ],
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.familyNameInItaly,
+                                'type': 'text',
+                                'required': true,
+                              },
+                              {
+                                'label': l10n.additionalNotes,
+                                'type': 'textarea',
+                                'required': false,
+                              },
+                            ],
+                            documentiRichiesti: const [
+                              TipoDocumento.permessoSoggiorno,
+                              TipoDocumento.passaporto,
+                              TipoDocumento.codiceFiscale,
+                              TipoDocumento.cartaIdentita,
+                            ],
+                            modalitaConsegna: const [
+                              'courier',
+                              'pickup',
+                              'email',
+                            ],
+                          ),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),

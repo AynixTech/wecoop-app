@@ -101,12 +101,48 @@ const Map<String, String> categoriaStandardMap = {
   'Duplicate residence permit': 'duplicate_permit',
   'Duplicado permiso de residencia': 'duplicate_permit',
 
-  // Permesso - Aggiornamento permesso lungo periodo
+  // Permesso - Aggiornamento permesso / carta
   'Aggiornamento permesso lungo periodo': 'long_term_permit_update',
+  'Aggiornamento permesso / carta di soggiorno': 'long_term_permit_update',
   'Long-term Permit Update': 'long_term_permit_update',
   'Long-term permit update': 'long_term_permit_update',
+  'Permit / residence card update': 'long_term_permit_update',
   'Actualización permiso largo período': 'long_term_permit_update',
   'Actualización permiso larga duración': 'long_term_permit_update',
+
+  // Nuove categorie allineate alle Schede/SOP
+  'Familiare di cittadino italiano (FAMIT)': 'family_italian_citizen',
+  'Family member of Italian citizen (FAMIT)': 'family_italian_citizen',
+  'Famiglia — minore ultra-14': 'family_minor_14',
+  'Family — minor over 14': 'family_minor_14',
+  'Motivi di studio (art. 39 TUI)': 'study_motivi_art39',
+  'Study reasons (art. 39 TUI)': 'study_motivi_art39',
+  'Ricerca lavoro studenti (cod. 30)': 'study_job_search',
+  'Student job search (code 30)': 'study_job_search',
+  'Attesa acquisto cittadinanza': 'waiting_citizenship',
+  'Waiting for citizenship': 'waiting_citizenship',
+  'Conversione → motivi familiari': 'conversion_family',
+  'Conversion → family reasons': 'conversion_family',
+
+  // Lavoro subordinato / autonomo / famiglia (label app)
+  'Per Lavoro Subordinato': 'residence_permit_employment',
+  'For Employment': 'residence_permit_employment',
+  'Por Trabajo Subordinado': 'residence_permit_employment',
+  'Per Lavoro Autonomo': 'residence_permit_self_employment',
+  'For Self-Employment': 'residence_permit_self_employment',
+  'Por Trabajo Autónomo': 'residence_permit_self_employment',
+  'Per Motivi Familiari': 'residence_permit_family',
+  'For Family Reasons': 'residence_permit_family',
+  'Por Motivos Familiares': 'residence_permit_family',
+  'Per Studiare in Italia': 'study_italy',
+  'Per Studiare in Italia / Studente': 'study_italy',
+
+  // Cittadinanza
+  'Per residenza': 'citizenship_residence',
+  'Per matrimonio': 'citizenship_marriage',
+  'Per matrimonio o unione civile': 'citizenship_marriage',
+  'By marriage': 'citizenship_marriage',
+  'Por matrimonio': 'citizenship_marriage',
 
   // Sportello - Cittadinanza
   'Cittadinanza': 'citizenship',

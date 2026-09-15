@@ -51,7 +51,7 @@ class _CittadinanzaScreenState extends State<CittadinanzaScreen> {
                 )
               else
                 _QuestionCard(
-                  question: 'Sei sposato/a con un cittadino italiano?',
+                  question: 'Sei sposato/a o in unione civile con un cittadino italiano?',
                   onYes: () {
                     _showNextStep(context, hasResidenza: false);
                   },
@@ -73,7 +73,7 @@ class _CittadinanzaScreenState extends State<CittadinanzaScreen> {
         builder:
             (context) => RichiestaFormScreen(
               servizio: 'Cittadinanza Italiana',
-              categoria: hasResidenza ? 'Per residenza' : 'Per matrimonio',
+              categoria: hasResidenza ? 'Per residenza' : 'Per matrimonio o unione civile',
               campi: const [
                 {'label': 'Nome completo', 'type': 'text', 'required': true},
                 {'label': 'Data di nascita', 'type': 'date', 'required': true},

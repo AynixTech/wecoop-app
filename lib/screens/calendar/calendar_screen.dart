@@ -1952,11 +1952,16 @@ class _CalendarScreenState extends State<CalendarScreen>
     }
   }
 
-  /// Apre/scarica un documento risultato (caricato dall'operatore) tramite il browser/visualizzatore esterno.
-  Future<void> _apriDocumentoRisultato(String url) async {
+  /// Apre/scarica un documento risultato tramite download autenticato (signed URL).
+  Future<void> _apriDocumentoRisultato(
+    int richiestaId,
+    Map<String, dynamic> doc,
+  ) async {
     final l10n = AppLocalizations.of(context)!;
-    final uri = Uri.tryParse(url);
-    if (uri == null) {
+    final docId = doc['id'] is int
+        ? doc['id'] as int
+        : int.tryParse('${doc['id'] ?? ''}');
+    if (docId == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1968,35 +1973,93 @@ class _CalendarScreenState extends State<CalendarScreen>
       return;
     }
 
-    bool opened = false;
-    try {
-      opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } catch (_) {
-      opened = false;
+    final result = await SocioService.downloadDocumentoRichiesta(
+      richiestaId: richiestaId,
+      docId: docId,
+      fileName: (doc['file_name'] ?? doc['descrizione'] ?? '').toString(),
+    );
+
+    if (!mounted) return;
+    if (result['success'] != true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            (result['message'] as String?) ??
+                l10n.translate('cannotOpenDocument'),
+          ),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
     }
 
-    if (!opened && mounted) {
+    final List<int> bytes = (result['bytes'] as List<int>?) ?? <int>[];
+    final String filename =
+        (result['filename'] as String?) ?? 'documento_$docId.pdf';
+    if (bytes.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.translate('cannotOpenDocument')),
           backgroundColor: AppColors.error,
         ),
       );
+      return;
+    }
+
+    try {
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/$filename');
+      await file.writeAsBytes(bytes, flush: true);
+      // Preferisci visualizzatore PDF interno se disponibile; altrimenti apri esterno.
+      if (filename.toLowerCase().endsWith('.pdf') && mounted) {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => Scaffold(
+              appBar: AppBar(title: Text(filename)),
+              body: PDFView(filePath: file.path),
+            ),
+          ),
+        );
+      } else {
+        final uri = Uri.file(file.path);
+        final opened =
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+        if (!opened && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.translate('cannotOpenDocument')),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.translate('cannotOpenDocument')),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
     }
   }
 
-  /// Sezione documenti risultato: mostra i documenti caricati dall'operatore
-  /// (esito del lavoro) e permette al cliente di scaricarli/visualizzarli.
-  List<Widget> _buildDocumentiRisultatoSection(Map<String, dynamic> richiesta) {
+  /// Sezione documenti risultato: mostra i documenti pubblicati dall'operatore.
+  List<Widget> _buildDocumentiRisultatoSection(
+    Map<String, dynamic> richiesta,
+    int? richiestaId,
+  ) {
     final raw = richiesta['documenti_risultato'];
-    if (raw is! List || raw.isEmpty) {
+    if (raw is! List || raw.isEmpty || richiestaId == null) {
       return const [];
     }
 
     final documenti = raw
         .whereType<Map>()
         .map((e) => Map<String, dynamic>.from(e))
-        .where((d) => (d['url'] ?? '').toString().isNotEmpty)
+        .where((d) => d['id'] != null)
         .toList();
 
     if (documenti.isEmpty) {
@@ -2042,7 +2105,6 @@ class _CalendarScreenState extends State<CalendarScreen>
             ...documenti.map((doc) {
               final fileName = (doc['file_name'] ?? '').toString();
               final descrizione = (doc['descrizione'] ?? '').toString();
-              final url = (doc['url'] ?? '').toString();
               final isPdf = fileName.toLowerCase().endsWith('.pdf');
 
               return Container(
@@ -2065,7 +2127,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            fileName.isNotEmpty ? fileName : url,
+                            fileName.isNotEmpty ? fileName : 'Documento',
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -2073,7 +2135,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          if (descrizione.isNotEmpty) ...[
+                          if (descrizione.isNotEmpty && descrizione != fileName) ...[
                             const SizedBox(height: 2),
                             Text(
                               descrizione,
@@ -2087,7 +2149,8 @@ class _CalendarScreenState extends State<CalendarScreen>
                       ),
                     ),
                     IconButton(
-                      onPressed: () => _apriDocumentoRisultato(url),
+                      onPressed: () =>
+                          _apriDocumentoRisultato(richiestaId, doc),
                       icon: const Icon(Icons.download),
                       color: AppColors.secondary,
                       tooltip: l10n.translate('downloadDocument'),
@@ -2520,8 +2583,8 @@ class _CalendarScreenState extends State<CalendarScreen>
                       if (richiestaId != null)
                         ..._buildIntegrazioneDocumentaleSection(richiesta, richiestaId),
 
-                      // Sezione documenti risultato (caricati dall'operatore)
-                      ..._buildDocumentiRisultatoSection(richiesta),
+                      // Sezione documenti risultato (pubblicati dall'operatore)
+                      ..._buildDocumentiRisultatoSection(richiesta, richiestaId),
 
                       if (richiesta['prezzo_formattato'] != null) ...[
                         const Divider(height: 32),

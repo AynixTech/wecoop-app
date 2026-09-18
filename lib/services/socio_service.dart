@@ -915,6 +915,78 @@ class SocioService {
     return [];
   }
 
+  /// Scarica un documento del fascicolo pratica pubblicato nell'APP.
+  /// GET /richiesta-servizio/{richiestaId}/documenti/{docId}/download
+  static Future<Map<String, dynamic>> downloadDocumentoRichiesta({
+    required int richiestaId,
+    required int docId,
+    String? fileName,
+  }) async {
+    try {
+      final token = await storage.read(key: 'jwt_token');
+      if (token == null) {
+        return {'success': false, 'message': 'Utente non autenticato'};
+      }
+
+      final url =
+          '$baseUrl/richiesta-servizio/$richiestaId/documenti/$docId/download';
+      AppLogger.d('🔄 Download documento richiesta: $url');
+
+      final response = await HttpClientService.get(
+        Uri.parse(url),
+        headers: {
+          'Accept': 'application/pdf,application/octet-stream,*/*',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      AppLogger.d(
+        '📥 Download richiesta status: ${response.statusCode} (${response.bodyBytes.length} bytes)',
+      );
+
+      if (response.statusCode == 200) {
+        final contentDisposition =
+            response.headers['content-disposition'] ?? '';
+        String filename =
+            (fileName != null && fileName.isNotEmpty)
+                ? fileName
+                : 'documento_$docId.pdf';
+        final match =
+            RegExp(r'filename="(.+?)"').firstMatch(contentDisposition);
+        if (match != null) {
+          filename = match.group(1) ?? filename;
+        }
+        final mime =
+            response.headers['content-type'] ?? 'application/octet-stream';
+        return {
+          'success': true,
+          'bytes': response.bodyBytes,
+          'filename': filename,
+          'mime': mime,
+        };
+      }
+      if (response.statusCode == 401) {
+        return {'success': false, 'message': 'Utente non autenticato'};
+      }
+      if (response.statusCode == 403) {
+        return {
+          'success': false,
+          'message': 'Documento non disponibile nell\'APP',
+        };
+      }
+      if (response.statusCode == 404) {
+        return {'success': false, 'message': 'Documento non trovato'};
+      }
+      return {
+        'success': false,
+        'message': 'Errore download (${response.statusCode})',
+      };
+    } catch (e) {
+      AppLogger.d('❌ downloadDocumentoRichiesta: $e');
+      return {'success': false, 'message': e.toString()};
+    }
+  }
+
   /// Scarica il file binario di un documento dello storico pratiche.
   /// GET /pratiche/me/documento/{id}/download
   /// Ritorna { success, bytes, filename, mime } oppure { success:false, message }.

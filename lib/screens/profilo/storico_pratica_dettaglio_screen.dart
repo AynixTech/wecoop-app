@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../services/app_localizations.dart';
 import '../../services/socio_service.dart';
@@ -27,6 +31,7 @@ class _StoricoPraticaDettaglioScreenState
   bool _loading = true;
   String? _error;
   Map<String, dynamic>? _dettaglio;
+  int? _downloadingDocId;
 
   @override
   void initState() {
@@ -66,6 +71,70 @@ class _StoricoPraticaDettaglioScreenState
     }
   }
 
+  List<Map<String, dynamic>> _parseDocs(dynamic raw) {
+    if (raw is! List) return [];
+    return raw
+        .whereType<Map>()
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+  }
+
+  Future<void> _apriDocumentoPubblicato(Map<String, dynamic> doc) async {
+    final docId = doc['id'] is int
+        ? doc['id'] as int
+        : int.tryParse('${doc['id'] ?? ''}');
+    if (docId == null) return;
+
+    setState(() => _downloadingDocId = docId);
+    final result = await SocioService.downloadDocumentoRichiesta(
+      richiestaId: widget.richiestaId,
+      docId: docId,
+      fileName: (doc['file_name'] ?? doc['descrizione'] ?? '').toString(),
+    );
+    if (!mounted) return;
+    setState(() => _downloadingDocId = null);
+
+    if (result['success'] != true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            (result['message'] as String?) ?? 'Impossibile scaricare il documento',
+          ),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    final List<int> bytes = (result['bytes'] as List<int>?) ?? <int>[];
+    final String filename =
+        (result['filename'] as String?) ?? 'documento_$docId.pdf';
+    if (bytes.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('File vuoto'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    try {
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/$filename');
+      await file.writeAsBytes(bytes, flush: true);
+      await OpenFile.open(file.path);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Impossibile aprire il file: $e'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -80,12 +149,8 @@ class _StoricoPraticaDettaglioScreenState
     final pagamento = d['pagamento'] is Map
         ? Map<String, dynamic>.from(d['pagamento'] as Map)
         : <String, dynamic>{};
-    final docs = d['documenti'] is List
-        ? (d['documenti'] as List)
-            .whereType<Map>()
-            .map((e) => Map<String, dynamic>.from(e))
-            .toList()
-        : <Map<String, dynamic>>[];
+    final docsCliente = _parseDocs(d['documenti']);
+    final docsPubblicati = _parseDocs(d['documenti_risultato']);
     final puoPagare = d['puo_pagare'] == true;
     final firmato = d['firmato'] == true ||
         (d['firma_stato']?.toString().toLowerCase() == 'firmato');
@@ -157,21 +222,70 @@ class _StoricoPraticaDettaglioScreenState
                   ],
                   const SizedBox(height: 24),
                   Text(
-                    'Documenti',
+                    'Documenti disponibili',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
                   ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Documenti pubblicati da WeCoop per questa pratica.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
                   const SizedBox(height: 8),
-                  if (docs.isEmpty)
+                  if (docsPubblicati.isEmpty)
                     Text(
-                      'Nessun documento allegato a questa pratica.',
+                      'Nessun documento pubblicato al momento.',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: scheme.onSurfaceVariant,
                       ),
                     )
                   else
-                    ...docs.map((doc) {
+                    ...docsPubblicati.map((doc) {
+                      final name = (doc['file_name'] ??
+                              doc['descrizione'] ??
+                              doc['tipo'] ??
+                              'Documento')
+                          .toString();
+                      final tipo = (doc['tipo'] ?? '').toString();
+                      final docId = doc['id'] is int
+                          ? doc['id'] as int
+                          : int.tryParse('${doc['id'] ?? ''}');
+                      final busy = docId != null && _downloadingDocId == docId;
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: Icon(
+                          Icons.description_outlined,
+                          color: scheme.primary,
+                        ),
+                        title: Text(name),
+                        subtitle: tipo.isNotEmpty ? Text(tipo) : null,
+                        trailing: busy
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : IconButton(
+                                icon: const Icon(Icons.download_outlined),
+                                tooltip: 'Visualizza / Scarica',
+                                onPressed: () => _apriDocumentoPubblicato(doc),
+                              ),
+                        onTap: busy ? null : () => _apriDocumentoPubblicato(doc),
+                      );
+                    }),
+                  if (docsCliente.isNotEmpty) ...[
+                    const SizedBox(height: 24),
+                    Text(
+                      'Documenti inviati',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    ...docsCliente.map((doc) {
                       final name = (doc['file_name'] ??
                               doc['tipo'] ??
                               'Documento')
@@ -180,13 +294,16 @@ class _StoricoPraticaDettaglioScreenState
                       return ListTile(
                         contentPadding: EdgeInsets.zero,
                         leading: Icon(
-                          Icons.description_outlined,
-                          color: scheme.primary,
+                          Icons.upload_file_outlined,
+                          color: scheme.onSurfaceVariant,
                         ),
                         title: Text(name),
-                        subtitle: origine.isNotEmpty ? Text(origine) : null,
+                        subtitle: origine.isNotEmpty
+                            ? Text(origine)
+                            : const Text('Caricato da te'),
                       );
                     }),
+                  ],
                 ],
               ),
             ),

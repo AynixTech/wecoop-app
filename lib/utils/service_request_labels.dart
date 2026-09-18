@@ -1,7 +1,8 @@
 import '../services/app_localizations.dart';
+import 'operativo_service_labels.dart';
 
 /// Traduce i codici `servizio` / `categoria` del backend (catalogo WeCoop)
-/// usando le stringhe già presenti in tutti i locale dell'app.
+/// usando le stringhe già presenti in tutti i locale dell'app + catalogo operativo.
 class ServiceRequestLabels {
   ServiceRequestLabels._();
 
@@ -13,12 +14,59 @@ class ServiceRequestLabels {
     return _label(l10n, raw);
   }
 
+  /// Preferisce `servizio_label` / `categoria_label` dal payload API se presenti.
+  static String servizioFromRecord(AppLocalizations l10n, Map? record) {
+    final override = _overrideLabel(record, const [
+      'servizio_label',
+      'service_label',
+    ]);
+    if (override != null) return override;
+    return servizio(l10n, record?['servizio'] ?? record?['service']);
+  }
+
+  static String categoriaFromRecord(AppLocalizations l10n, Map? record) {
+    final override = _overrideLabel(record, const [
+      'categoria_label',
+      'category_label',
+    ]);
+    if (override != null) return override;
+    return categoria(l10n, record?['categoria'] ?? record?['category']);
+  }
+
+  static String? _overrideLabel(Map? record, List<String> keys) {
+    if (record == null) return null;
+    for (final k in keys) {
+      final v = record[k];
+      if (v is String && v.trim().isNotEmpty) return v.trim();
+    }
+    final dati = record['dati'];
+    if (dati is Map) {
+      for (final k in keys) {
+        final v = dati[k];
+        if (v is String && v.trim().isNotEmpty) return v.trim();
+      }
+    }
+    return null;
+  }
+
   static String _label(AppLocalizations l10n, Object? raw) {
     final code = _code(raw);
     if (code.isEmpty) return '';
+
+    // Catalogo CAF operativo (label IT ufficiali).
+    final op = kOperativoServiceLabels[code] ?? kOperativoCategoryLabels[code];
+    if (op != null) {
+      return _titleCaseIt(op.replaceAll('\\n', ' ').replaceAll('\n', ' '));
+    }
+
     final key = _keys[code];
-    if (key == null) return code;
-    return l10n.translate(key);
+    if (key != null) {
+      final translated = l10n.translate(key);
+      // translate() a volte restituisce la chiave se manca: evita di mostrarla.
+      if (translated.isNotEmpty && translated != key) return translated;
+    }
+
+    return _prettifyCode(code);
   }
 
   static String _code(Object? raw) {
@@ -34,6 +82,60 @@ class ServiceRequestLabels {
       return value?.toString().trim().toLowerCase() ?? '';
     }
     return raw.toString().trim().toLowerCase();
+  }
+
+  /// `op_immigrazione__richiesta_rinnovo_...` → "Richiesta rinnovo ..."
+  /// Fallback generico: snake_case → titolo leggibile.
+  static String _prettifyCode(String code) {
+    var s = code.trim();
+    if (s.startsWith('op_') && s.contains('__')) {
+      s = s.split('__').skip(1).join('__');
+    } else if (s.startsWith('op_')) {
+      // Variante senza doppio underscore: op_<categoria>_<slug...>
+      final parts = s.substring(3).split('_');
+      // tenta di togliere la prima "categoria" nota
+      if (parts.length > 1) {
+        final knownCats = kOperativoCategoryLabels.keys.toList()
+          ..sort((a, b) => b.length.compareTo(a.length));
+        final joined = parts.join('_');
+        for (final cat in knownCats) {
+          if (joined == cat) return _titleCaseIt(kOperativoCategoryLabels[cat]!);
+          if (joined.startsWith('${cat}_')) {
+            s = joined.substring(cat.length + 1);
+            break;
+          }
+        }
+      }
+    }
+    return _titleCaseIt(s.replaceAll(RegExp(r'[_-]+'), ' ').trim());
+  }
+
+  static String _titleCaseIt(String input) {
+    final s = input.trim();
+    if (s.isEmpty) return s;
+    // Se è già tutto maiuscolo (catalogo operativo), lascia leggibile in Title Case.
+    final words = s.toLowerCase().split(RegExp(r'\s+'));
+    return words
+        .map((w) {
+          if (w.isEmpty) return w;
+          // Acronimi comuni
+          const upper = {
+            'imu',
+            'iva',
+            'inps',
+            'cu',
+            'caf',
+            'naspi',
+            'isee',
+            'red',
+            'auu',
+            'p.iva',
+            'piva',
+          };
+          if (upper.contains(w.replaceAll('.', ''))) return w.toUpperCase();
+          return '${w[0].toUpperCase()}${w.substring(1)}';
+        })
+        .join(' ');
   }
 
   /// code snake_case → chiave in [AppLocalizations] (it/en/es/ar/zh).

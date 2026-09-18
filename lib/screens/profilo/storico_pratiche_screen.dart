@@ -323,7 +323,7 @@ class _StoricoPraticheScreenState extends State<StoricoPraticheScreen> {
     Map<String, dynamic> p,
   ) {
     final numero = (p['numero_pratica'] ?? '').toString();
-    final servizio = ServiceRequestLabels.servizio(l10n, p['servizio']);
+    final servizio = ServiceRequestLabels.servizioFromRecord(l10n, p);
     final stato = (p['stato'] ?? p['status'] ?? '').toString();
     final payStato = (p['payment_status'] ?? '').toString();
     final firma = (p['firma_stato'] ?? '').toString();

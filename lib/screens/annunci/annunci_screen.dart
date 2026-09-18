@@ -63,14 +63,17 @@ class _AnnunciScreenState extends State<AnnunciScreen> {
 
   Future<void> _init() async {
     final token = await _storage.read(key: 'jwt_token');
+    if (!mounted) return;
     setState(() => _isLoggedIn = token != null && token.isNotEmpty);
     final cats = await _service.getCategorie();
+    if (!mounted) return;
     setState(() => _categorie = cats);
     await _loadAnnunci(reset: true);
   }
 
   Future<void> _loadAnnunci({bool reset = false}) async {
     if (reset) {
+      if (!mounted) return;
       setState(() {
         _page = 1;
         _hasMore = true;
@@ -83,6 +86,7 @@ class _AnnunciScreenState extends State<AnnunciScreen> {
           _searchCtrl.text.trim().isEmpty ? null : _searchCtrl.text.trim(),
       page: _page,
     );
+    if (!mounted) return;
     setState(() {
       if (reset) {
         _annunci = items;
@@ -97,6 +101,7 @@ class _AnnunciScreenState extends State<AnnunciScreen> {
 
   Future<void> _loadMore() async {
     if (_loadingMore || !_hasMore) return;
+    if (!mounted) return;
     setState(() {
       _loadingMore = true;
       _page++;

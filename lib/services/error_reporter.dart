@@ -71,18 +71,58 @@ class ErrorReporter {
   }
 
   /// Segnala un errore HTTP anomalo (es. HTML invece di JSON, 5xx).
+  /// I 502/503/504 di gateway (cold start Render) non vengono inviati: sono
+  /// infrastruttura, non bug app, e riempiono Errori App di rumore.
   void reportHttp({
     required String endpoint,
     required int statusCode,
     String? message,
     String? bodyPreview,
   }) {
+    if (statusCode == 502 || statusCode == 503 || statusCode == 504) {
+      AppLogger.d(
+        '⏭️ Skip report HTTP $statusCode (gateway) su $endpoint',
+      );
+      return;
+    }
     report(
       tipo: 'http',
       message: message ?? 'Risposta HTTP inattesa ($statusCode) su $endpoint',
       endpoint: endpoint,
       statusCode: statusCode,
       stack: bodyPreview,
+    );
+  }
+
+  /// Segnala un problema sul flusso pagamento (Stripe / conferma backend).
+  /// Visibile in Errori App con tipo `payment`.
+  void reportPayment({
+    required String message,
+    int? paymentId,
+    int? richiestaId,
+    String? step,
+    String? endpoint,
+    int? statusCode,
+    Object? detail,
+  }) {
+    final parts = <String>[
+      if (paymentId != null) 'paymentId=$paymentId',
+      if (richiestaId != null) 'richiestaId=$richiestaId',
+      if (step != null && step.isNotEmpty) 'step=$step',
+    ];
+    final prefix = parts.isEmpty ? '' : '[${parts.join(' ')}] ';
+    final stack = detail == null
+        ? null
+        : detail is String
+            ? detail
+            : detail.toString();
+    report(
+      tipo: 'payment',
+      message: '$prefix$message',
+      endpoint: endpoint,
+      statusCode: statusCode,
+      stack: stack,
+      screen: 'pagamento',
     );
   }
 

@@ -3,12 +3,33 @@ import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:wecoop_app/utils/response_utils.dart';
 import 'secure_storage_service.dart';
 import 'http_client_service.dart';
+import 'error_reporter.dart';
 import '../models/pagamento_model.dart';
 import '../config/api_config.dart';
 
 class PagamentoService {
   static const String baseUrl = ApiConfig.baseUrl;
   static final storage = SecureStorageService();
+
+  static void _reportPaymentFail({
+    required String message,
+    int? paymentId,
+    int? richiestaId,
+    String? step,
+    String? endpoint,
+    int? statusCode,
+    Object? detail,
+  }) {
+    ErrorReporter.instance.reportPayment(
+      message: message,
+      paymentId: paymentId,
+      richiestaId: richiestaId,
+      step: step,
+      endpoint: endpoint,
+      statusCode: statusCode,
+      detail: detail,
+    );
+  }
 
   /// Headers comuni per le richieste
   static Future<Map<String, String>> _getHeaders() async {
@@ -31,6 +52,12 @@ class PagamentoService {
 
       if (token == null) {
         AppLogger.d('❌ Token JWT mancante');
+        _reportPaymentFail(
+          message: 'GET pagamento: JWT mancante',
+          paymentId: paymentId,
+          step: 'load',
+          endpoint: '/payment/$paymentId',
+        );
         return null;
       }
 
@@ -50,12 +77,36 @@ class PagamentoService {
         return null;
       } else if (response.statusCode == 403) {
         AppLogger.d('⚠️ Non hai i permessi per visualizzare questo pagamento');
+        _reportPaymentFail(
+          message: 'GET pagamento: non autorizzato (403)',
+          paymentId: paymentId,
+          step: 'load',
+          endpoint: '/payment/$paymentId',
+          statusCode: 403,
+        );
         return null;
       }
 
+      _reportPaymentFail(
+        message: 'GET pagamento fallito (HTTP ${response.statusCode})',
+        paymentId: paymentId,
+        step: 'load',
+        endpoint: '/payment/$paymentId',
+        statusCode: response.statusCode,
+        detail: response.body.length > 400
+            ? response.body.substring(0, 400)
+            : response.body,
+      );
       return null;
     } catch (e) {
       AppLogger.d('❌ Errore durante GET /payment/$paymentId: $e');
+      _reportPaymentFail(
+        message: 'GET pagamento: eccezione',
+        paymentId: paymentId,
+        step: 'load',
+        endpoint: '/payment/$paymentId',
+        detail: e,
+      );
       return null;
     }
   }
@@ -92,9 +143,26 @@ class PagamentoService {
         return data.map((json) => Pagamento.fromJson(json)).toList();
       }
 
+      if (response.statusCode >= 500) {
+        _reportPaymentFail(
+          message: 'Lista pagamenti utente fallita (HTTP ${response.statusCode})',
+          step: 'list_user',
+          endpoint: '/payments/user/$userId',
+          statusCode: response.statusCode,
+          detail: response.body.length > 400
+              ? response.body.substring(0, 400)
+              : response.body,
+        );
+      }
       return [];
     } catch (e) {
       AppLogger.d('❌ Errore durante GET /payments/user: $e');
+      _reportPaymentFail(
+        message: 'Lista pagamenti utente: eccezione',
+        step: 'list_user',
+        endpoint: '/payments/user',
+        detail: e,
+      );
       return [];
     }
   }
@@ -107,6 +175,12 @@ class PagamentoService {
 
       if (token == null) {
         AppLogger.d('❌ Token JWT mancante');
+        _reportPaymentFail(
+          message: 'GET pagamento per richiesta: JWT mancante',
+          richiestaId: richiestaId,
+          step: 'load_by_richiesta',
+          endpoint: '/payment/richiesta/$richiestaId',
+        );
         return null;
       }
 
@@ -133,11 +207,29 @@ class PagamentoService {
       } else {
         AppLogger.d('⚠️ Status code inatteso: ${response.statusCode}');
         AppLogger.d('📝 Response body: ${response.body}');
+        _reportPaymentFail(
+          message:
+              'GET pagamento per richiesta fallito (HTTP ${response.statusCode})',
+          richiestaId: richiestaId,
+          step: 'load_by_richiesta',
+          endpoint: '/payment/richiesta/$richiestaId',
+          statusCode: response.statusCode,
+          detail: response.body.length > 400
+              ? response.body.substring(0, 400)
+              : response.body,
+        );
       }
 
       return null;
     } catch (e) {
       AppLogger.d('❌ Errore durante GET /payment/richiesta/$richiestaId: $e');
+      _reportPaymentFail(
+        message: 'GET pagamento per richiesta: eccezione',
+        richiestaId: richiestaId,
+        step: 'load_by_richiesta',
+        endpoint: '/payment/richiesta/$richiestaId',
+        detail: e,
+      );
       return null;
     }
   }
@@ -155,6 +247,13 @@ class PagamentoService {
 
       if (token == null) {
         AppLogger.d('❌ Token JWT mancante');
+        _reportPaymentFail(
+          message: 'Conferma pagamento: JWT mancante (carta forse già addebitata)',
+          paymentId: paymentId,
+          step: 'confirm',
+          endpoint: '/payment/$paymentId/confirm',
+          detail: 'transactionId=$transactionId metodo=$metodoPagamento',
+        );
         return {'success': false, 'message': 'Token JWT mancante'};
       }
 
@@ -185,18 +284,52 @@ class PagamentoService {
           'message': data['message'] ?? 'Pagamento confermato',
         };
       } else if (response.statusCode == 404) {
+        _reportPaymentFail(
+          message: 'Conferma pagamento: pagamento non trovato (404)',
+          paymentId: paymentId,
+          step: 'confirm',
+          endpoint: '/payment/$paymentId/confirm',
+          statusCode: 404,
+          detail: 'transactionId=$transactionId',
+        );
         return {'success': false, 'message': 'Pagamento non trovato'};
       } else if (response.statusCode == 403) {
+        _reportPaymentFail(
+          message: 'Conferma pagamento: non autorizzato (403)',
+          paymentId: paymentId,
+          step: 'confirm',
+          endpoint: '/payment/$paymentId/confirm',
+          statusCode: 403,
+          detail: 'transactionId=$transactionId',
+        );
         return {'success': false, 'message': 'Non autorizzato'};
       } else {
         final errorData = ResponseUtils.decodeJson(response);
+        final msg = errorData['message'] ?? 'Errore durante la conferma';
+        _reportPaymentFail(
+          message:
+              'Conferma pagamento fallita dopo Stripe (HTTP ${response.statusCode})',
+          paymentId: paymentId,
+          step: 'confirm',
+          endpoint: '/payment/$paymentId/confirm',
+          statusCode: response.statusCode,
+          detail:
+              'transactionId=$transactionId msg=$msg body=${response.body.length > 300 ? response.body.substring(0, 300) : response.body}',
+        );
         return {
           'success': false,
-          'message': errorData['message'] ?? 'Errore durante la conferma',
+          'message': msg,
         };
       }
     } catch (e) {
       AppLogger.d('❌ Errore durante POST /payment/$paymentId/confirm: $e');
+      _reportPaymentFail(
+        message: 'Conferma pagamento: eccezione (carta forse già addebitata)',
+        paymentId: paymentId,
+        step: 'confirm',
+        endpoint: '/payment/$paymentId/confirm',
+        detail: 'transactionId=$transactionId error=$e',
+      );
       return {'success': false, 'message': 'Errore di connessione'};
     }
   }
@@ -204,7 +337,8 @@ class PagamentoService {
   /// Crea Payment Intent Stripe (backend).
   /// POST /create-payment-intent — l'importo lo decide solo il server.
   /// Ritorna clientSecret + paymentIntentId (mai salvare il secret come transaction_id).
-  static Future<({String clientSecret, String? paymentIntentId})?> creaStripePaymentIntent({
+  static Future<({String clientSecret, String? paymentIntentId})?>
+      creaStripePaymentIntent({
     required int paymentId,
   }) async {
     try {
@@ -243,14 +377,42 @@ class PagamentoService {
           return (clientSecret: clientSecret, paymentIntentId: paymentIntentId);
         } else {
           AppLogger.d('⚠️ Client Secret non presente nella risposta');
+          _reportPaymentFail(
+            message:
+                'create-payment-intent: clientSecret assente nella risposta 200',
+            paymentId: paymentId,
+            step: 'create_intent',
+            endpoint: '/create-payment-intent',
+            statusCode: 200,
+            detail: response.body.length > 400
+                ? response.body.substring(0, 400)
+                : response.body,
+          );
         }
       } else {
         AppLogger.d('❌ Errore HTTP ${response.statusCode}: ${response.body}');
+        _reportPaymentFail(
+          message: 'create-payment-intent fallito (HTTP ${response.statusCode})',
+          paymentId: paymentId,
+          step: 'create_intent',
+          endpoint: '/create-payment-intent',
+          statusCode: response.statusCode,
+          detail: response.body.length > 400
+              ? response.body.substring(0, 400)
+              : response.body,
+        );
       }
 
       return null;
     } catch (e) {
       AppLogger.d('❌ Errore durante creazione Payment Intent: $e');
+      _reportPaymentFail(
+        message: 'create-payment-intent: eccezione',
+        paymentId: paymentId,
+        step: 'create_intent',
+        endpoint: '/create-payment-intent',
+        detail: e,
+      );
       return null;
     }
   }
@@ -275,12 +437,35 @@ class PagamentoService {
         if (configured && key != null && key.isNotEmpty) {
           return key;
         }
-        AppLogger.d('⚠️ Stripe non configurato sul backend (publishable_key vuota)');
+        AppLogger.d(
+            '⚠️ Stripe non configurato sul backend (publishable_key vuota)');
+        _reportPaymentFail(
+          message: 'Stripe publishable key non configurata sul backend',
+          step: 'stripe_config',
+          endpoint: '/stripe-config',
+          statusCode: 200,
+        );
+      } else {
+        _reportPaymentFail(
+          message: 'GET stripe-config fallito (HTTP ${response.statusCode})',
+          step: 'stripe_config',
+          endpoint: '/stripe-config',
+          statusCode: response.statusCode,
+          detail: response.body.length > 300
+              ? response.body.substring(0, 300)
+              : response.body,
+        );
       }
 
       return null;
     } catch (e) {
       AppLogger.d('❌ Errore durante GET /stripe-config: $e');
+      _reportPaymentFail(
+        message: 'GET stripe-config: eccezione',
+        step: 'stripe_config',
+        endpoint: '/stripe-config',
+        detail: e,
+      );
       return null;
     }
   }

@@ -270,13 +270,26 @@ class HttpClientService {
     );
   }
 
-  /// Wrapper HTTP che gestisce il refresh token automatico
+  /// Wrapper HTTP che gestisce retry su gateway (Render cold start) e refresh JWT.
   static Future<http.Response> _makeRequestWithRefresh(
     Future<http.Response> Function() request,
     String requestUrl,
   ) async {
     try {
-      var response = await processResponse(await request());
+      // Render free tier: 502/503/504 HTML su cold start. Ritenta prima di fallire.
+      const maxGatewayAttempts = 3;
+      late http.Response response;
+      for (var attempt = 1; attempt <= maxGatewayAttempts; attempt++) {
+        response = await processResponse(await request());
+        if (!isGatewayStatus(response.statusCode) || attempt == maxGatewayAttempts) {
+          break;
+        }
+        AppLogger.d(
+          '⏳ Gateway HTTP ${response.statusCode} su $requestUrl, '
+          'ritento $attempt/$maxGatewayAttempts...',
+        );
+        await Future.delayed(Duration(seconds: attempt * 2));
+      }
 
       // Non tentare il refresh sugli endpoint di autenticazione:
       // un 401 sul login significa "credenziali errate", non "token scaduto".

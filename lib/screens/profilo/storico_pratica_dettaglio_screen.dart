@@ -143,8 +143,8 @@ class _StoricoPraticaDettaglioScreenState
     final d = _dettaglio ?? widget.initial ?? {};
 
     final numero = (d['numero_pratica'] ?? '').toString();
-    final servizio = ServiceRequestLabels.servizio(l10n, d['servizio']);
-    final categoria = ServiceRequestLabels.categoria(l10n, d['categoria']);
+    final servizio = ServiceRequestLabels.servizioFromRecord(l10n, d);
+    final categoria = ServiceRequestLabels.categoriaFromRecord(l10n, d);
     final stato = (d['stato'] ?? d['status'] ?? '').toString();
     final pagamento = d['pagamento'] is Map
         ? Map<String, dynamic>.from(d['pagamento'] as Map)

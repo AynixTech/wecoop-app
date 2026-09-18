@@ -1389,6 +1389,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         }
       }
 
+      if (!mounted) return;
       setState(() {
         _nazionalita = nazionalita;
         // Prefill: se il profilo è già italiano, spunta "Ho la cittadinanza italiana".
@@ -1407,6 +1408,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         final label = campo['label'] as String;
         _controllers[label] = TextEditingController();
       }
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });

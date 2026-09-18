@@ -6,6 +6,7 @@ import '../../models/pagamento_model.dart';
 import '../../services/pagamento_service.dart';
 import '../../services/app_localizations.dart';
 import '../../services/push_notification_service.dart';
+import '../../services/error_reporter.dart';
 import '../../config/stripe_config.dart';
 import '../../utils/service_request_labels.dart';
 
@@ -61,6 +62,10 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
         pagamento = await PagamentoService.getPagamento(widget.paymentId);
       } else {
         AppLogger.d('⚠️ [PagamentoScreen] Né paymentId né richiestaId forniti!');
+        ErrorReporter.instance.reportPayment(
+          message: 'Schermata pagamento aperta senza paymentId né richiestaId',
+          step: 'load',
+        );
       }
 
       if (!mounted) return;
@@ -77,6 +82,14 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
         } else {
           errorMsg = l10n?.translate('paymentNotFoundDetail') ??
               (l10n?.paymentNotFound ?? 'Pagamento non trovato');
+          // paymentId esplicito ma record assente → possibile blocco pratica.
+          if (widget.paymentId > 0) {
+            ErrorReporter.instance.reportPayment(
+              message: 'Pagamento non trovato in schermata (id=${widget.paymentId})',
+              paymentId: widget.paymentId,
+              step: 'load_ui',
+            );
+          }
         }
         
         setState(() {
@@ -94,6 +107,13 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       });
     } catch (e) {
       AppLogger.d('❌ [PagamentoScreen] Errore caricamento: $e');
+      ErrorReporter.instance.reportPayment(
+        message: 'Errore caricamento schermata pagamento',
+        paymentId: widget.paymentId > 0 ? widget.paymentId : null,
+        richiestaId: widget.richiestaId,
+        step: 'load_ui',
+        detail: e,
+      );
       if (!mounted) return;
       setState(() {
         _errorMessage = AppLocalizations.of(context)?.translate('paymentLoadError') ??
@@ -122,6 +142,12 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       AppLogger.d('✅ [PagamentoScreen] Stripe inizializzato da backend (${StripeConfig.isTestMode ? "TEST" : "LIVE"})');
     } catch (e) {
       AppLogger.d('❌ [PagamentoScreen] Errore applySettings Stripe: $e');
+      ErrorReporter.instance.reportPayment(
+        message: 'Stripe applySettings fallito',
+        paymentId: _pagamento?.id ?? (widget.paymentId > 0 ? widget.paymentId : null),
+        step: 'stripe_init',
+        detail: e,
+      );
     }
   }
 
@@ -145,6 +171,11 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
     // Verifica se Stripe è configurato
     if (!StripeConfig.isConfigured) {
       AppLogger.d('❌ [PagamentoScreen] Stripe non configurato');
+      ErrorReporter.instance.reportPayment(
+        message: 'Stripe non configurato: pagamento carta bloccato',
+        paymentId: pagamento.id,
+        step: 'stripe_unavailable',
+      );
       _showErrorDialog(
         AppLocalizations.of(context)!.translate('stripeUnavailable'),
       );
@@ -185,6 +216,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       if (!mounted) return;
 
       if (intent == null) {
+        // Già segnalato da PagamentoService; UI only.
         _showErrorDialog(
           AppLocalizations.of(context)!.translate('paymentCreateFailed'),
         );
@@ -243,6 +275,14 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
               .replaceAll('{amount}', amount),
         );
       } else {
+        // Critico: Stripe ha addebitato ma il backend non ha confermato.
+        ErrorReporter.instance.reportPayment(
+          message:
+              'Pagamento Stripe OK ma conferma backend fallita — pratica potenzialmente bloccata',
+          paymentId: pagamento.id,
+          step: 'confirm_after_charge',
+          detail: result['message']?.toString() ?? 'unknown',
+        );
         _showErrorDialog(
           result['message'] ??
               AppLocalizations.of(context)!.translate('paymentConfirmError'),
@@ -261,10 +301,16 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       // Gestisci errori Stripe specifici
       if (e.error.code == FailureCode.Canceled) {
         AppLogger.d('ℹ️ Utente ha annullato il pagamento');
-        // Utente ha annullato
+        // Utente ha annullato — non segnalare
         return;
       }
 
+      ErrorReporter.instance.reportPayment(
+        message: 'StripeException: ${e.error.code}',
+        paymentId: pagamento.id,
+        step: 'stripe_sheet',
+        detail: e.error.localizedMessage ?? e.error.message ?? e.toString(),
+      );
       _showErrorDialog(
         AppLocalizations.of(context)!
             .translate('stripeErrorPrefix')
@@ -272,6 +318,12 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       );
     } catch (e) {
       AppLogger.d('❌ Errore generico: $e');
+      ErrorReporter.instance.reportPayment(
+        message: 'Errore inatteso durante pagamento Stripe',
+        paymentId: pagamento.id,
+        step: 'stripe_flow',
+        detail: e,
+      );
       if (!mounted) return;
       if (_isStripeLoadingDialogVisible &&
           Navigator.of(context, rootNavigator: true).canPop()) {

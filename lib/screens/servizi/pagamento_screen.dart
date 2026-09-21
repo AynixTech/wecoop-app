@@ -364,9 +364,14 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
 
   void _showSuccessDialog(String title, String message) {
     if (!mounted) return;
+    // PagamentoScreen vive sul nested navigator del tab Calendar; showDialog
+    // di default usa il root. Due pop consecutivi sul context del dialog
+    // chiudevano il dialog e poi una route del root (es. MainScreen) → schermo nero.
+    final pageNavigator = Navigator.of(context);
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      useRootNavigator: true,
+      builder: (dialogContext) => AlertDialog(
         title: Row(
           children: [
             const Icon(Icons.check_circle, color: AppColors.secondary, size: 32),
@@ -378,10 +383,12 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Chiudi dialog
-              Navigator.pop(context); // Torna alla schermata precedente
+              Navigator.of(dialogContext).pop(); // Chiudi dialog (root)
+              if (pageNavigator.canPop()) {
+                pageNavigator.pop(); // Torna indietro sul navigator della pagina
+              }
             },
-            child: Text(AppLocalizations.of(context)!.ok),
+            child: Text(AppLocalizations.of(dialogContext)!.ok),
           ),
         ],
       ),

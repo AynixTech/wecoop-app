@@ -626,28 +626,30 @@ class _CalendarScreenState extends State<CalendarScreen>
   Future<void> _eliminaRichiesta(int richiestaId, {bool fromBottomSheet = false}) async {
     final l10n = AppLocalizations.of(context)!;
     
-    // Guarda el contexto del navigator antes de operaciones asíncronas
-    final navigator = Navigator.of(context);
+    // Nested navigator (tab Calendar) vs root (dialog di loading).
+    final nestedNavigator = Navigator.of(context);
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
     
     try {
-      // Mostra loading
+      // Mostra loading sul root navigator (default di showDialog)
       showDialog(
         context: context,
+        useRootNavigator: true,
         barrierDismissible: false,
         builder: (context) => const Center(child: CircularProgressIndicator()),
       );
 
       final result = await SocioService.deleteRichiesta(richiestaId);
 
-      // Chiudi loading - usa il navigator salvato
-      if (mounted) {
-        navigator.pop();
+      // Chiudi loading sul root, non sul navigator del tab
+      if (mounted && rootNavigator.canPop()) {
+        rootNavigator.pop();
       }
 
       if (result['success'] == true) {
-        // Chiudi bottom sheet solo se chiamato da lì
-        if (fromBottomSheet && mounted) {
-          navigator.pop();
+        // Chiudi bottom sheet solo se chiamato da lì (è sul nested navigator)
+        if (fromBottomSheet && mounted && nestedNavigator.canPop()) {
+          nestedNavigator.pop();
         }
         
         // Mostra successo
@@ -677,9 +679,9 @@ class _CalendarScreenState extends State<CalendarScreen>
         }
       }
     } catch (e) {
-      // Chiudi loading
-      if (mounted) {
-        navigator.pop();
+      // Chiudi loading sul root
+      if (mounted && rootNavigator.canPop()) {
+        rootNavigator.pop();
       }
 
       // Mostra errore
@@ -712,10 +714,24 @@ class _CalendarScreenState extends State<CalendarScreen>
       return;
     }
     
+    // Loading sul root navigator: Calendar è nested. Un pop sul context dello
+    // screen chiuderebbe il bottom sheet e lascerebbe "Descargando factura..."
+    // bloccato sopra il PDF (come nello screenshot del bug).
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
+    var loadingDialogVisible = false;
+
+    void dismissLoadingDialog() {
+      if (!loadingDialogVisible) return;
+      if (rootNavigator.canPop()) {
+        rootNavigator.pop();
+      }
+      loadingDialogVisible = false;
+    }
+
     try {
-      // Mostra loading
       showDialog(
         context: context,
+        useRootNavigator: true,
         barrierDismissible: false,
         builder: (context) => Center(
           child: Card(
@@ -734,6 +750,7 @@ class _CalendarScreenState extends State<CalendarScreen>
           ),
         ),
       );
+      loadingDialogVisible = true;
 
       // Se non abbiamo paymentId, usa richiestaId per cercare il pagamento
       int actualPaymentId = paymentId ?? 0;
@@ -750,8 +767,10 @@ class _CalendarScreenState extends State<CalendarScreen>
       final elapsedMs = DateTime.now().difference(startedAt).inMilliseconds;
       AppLogger.d('🧾 [$traceId] service result success=${result['success']} keys=${result.keys.toList()} elapsedMs=$elapsedMs');
 
-      // Chiudi loading
-      if (mounted) Navigator.pop(context);
+      // Chiudi loading PRIMA di aprire il PDF (stesso root navigator del showDialog)
+      if (mounted) {
+        dismissLoadingDialog();
+      }
 
       if (result['success'] == true) {
         AppLogger.d('🧾 [$traceId] priorità renderer locale; fallback web solo se necessario');
@@ -891,9 +910,8 @@ class _CalendarScreenState extends State<CalendarScreen>
       }
     } catch (e) {
       AppLogger.d('❌ [$traceId] eccezione: $e');
-      // Chiudi loading se aperto
       if (mounted) {
-        Navigator.of(context, rootNavigator: true).pop();
+        dismissLoadingDialog();
       }
 
       // Mostra errore
@@ -1342,13 +1360,26 @@ class _CalendarScreenState extends State<CalendarScreen>
     if (!mounted) return;
     AppLogger.d('📄 [DocMergedUI] avvio visualizzazione richiestaId=$richiestaId forceMerge=$forceMerge');
 
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
+    var loadingDialogVisible = false;
+
+    void dismissLoadingDialog() {
+      if (!loadingDialogVisible) return;
+      if (rootNavigator.canPop()) {
+        rootNavigator.pop();
+      }
+      loadingDialogVisible = false;
+    }
+
     showDialog(
       context: context,
+      useRootNavigator: true,
       barrierDismissible: false,
       builder: (context) => const Center(
         child: CircularProgressIndicator(),
       ),
     );
+    loadingDialogVisible = true;
 
     try {
       final result = await SocioService.getDocumentoUnicoMergedPdf(
@@ -1358,7 +1389,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       AppLogger.d('📄 [DocMergedUI] esito service success=${result['success']} keys=${result.keys.toList()}');
 
       if (mounted) {
-        Navigator.of(context, rootNavigator: true).pop();
+        dismissLoadingDialog();
       }
 
       if (result['success'] == true) {
@@ -1504,7 +1535,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     } catch (e) {
       AppLogger.d('❌ [DocMergedUI] eccezione imprevista: $e');
       if (mounted) {
-        Navigator.of(context, rootNavigator: true).pop();
+        dismissLoadingDialog();
       }
 
       {

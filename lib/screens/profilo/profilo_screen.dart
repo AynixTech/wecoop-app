@@ -462,15 +462,14 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
 
     // Verifica se l'utente è loggato
     final token = await storage.read(key: 'jwt_token');
+    if (!mounted) return;
     if (token == null) {
       AppLogger.d('⚠️ Utente non loggato, impossibile caricare eventi');
       // Utente non loggato, non caricare eventi
-      if (mounted) {
-        setState(() {
-          _mieiEventi = [];
-          _isLoadingEventi = false;
-        });
-      }
+      setState(() {
+        _mieiEventi = [];
+        _isLoadingEventi = false;
+      });
       return;
     }
 

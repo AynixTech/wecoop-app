@@ -157,10 +157,17 @@ class SupportoService {
   static Map<String, dynamic> _errorFromResponse(response) {
     try {
       final data = HttpClientService.decodeJsonResponse(response);
+      final raw = (data['message'] ?? 'Errore ${response.statusCode}').toString();
+      final lower = raw.toLowerCase();
+      final sessionExpired = response.statusCode == 401 ||
+          lower.contains('invalid or expired token') ||
+          lower.contains('missing or invalid authorization');
       return {
         'success': false,
-        'code': data['code'],
-        'message': data['message'] ?? 'Errore ${response.statusCode}',
+        'code': data['code'] ?? (sessionExpired ? 'session_expired' : null),
+        'message': sessionExpired
+            ? 'Sessione scaduta. Esci e accedi di nuovo.'
+            : raw,
       };
     } catch (_) {
       return {'success': false, 'message': 'Errore ${response.statusCode}'};

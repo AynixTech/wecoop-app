@@ -68,6 +68,14 @@ class LavoroService {
       if (value.isNotEmpty) return value;
     }
 
+    final profile = body['profile'];
+    if (profile is Map<String, dynamic>) {
+      for (final candidate in [profile['id'], profile['profileId'], profile['profile_id']]) {
+        final value = candidate?.toString().trim() ?? '';
+        if (value.isNotEmpty) return value;
+      }
+    }
+
     final data = body['data'];
     if (data is Map<String, dynamic>) {
       final nestedCandidates = [

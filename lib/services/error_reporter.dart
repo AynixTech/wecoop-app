@@ -96,6 +96,9 @@ class ErrorReporter {
 
   /// Segnala un problema sul flusso pagamento (Stripe / conferma backend).
   /// Visibile in Errori App con tipo `payment`.
+  ///
+  /// I 401 (token scaduto / sessione chiusa) non vengono inviati: dopo il
+  /// refresh fallito l'utente viene già portato al login — non è un bug pagamento.
   void reportPayment({
     required String message,
     int? paymentId,
@@ -105,23 +108,35 @@ class ErrorReporter {
     int? statusCode,
     Object? detail,
   }) {
+    final detailText = detail == null
+        ? ''
+        : detail is String
+            ? detail
+            : detail.toString();
+    final looksLikeSessionExpired = statusCode == 401 ||
+        message.toLowerCase().contains('jwt mancante') ||
+        detailText.toLowerCase().contains('invalid or expired token') ||
+        detailText.toLowerCase().contains('missing or invalid authorization');
+    if (looksLikeSessionExpired) {
+      AppLogger.d(
+        '⏭️ Skip report payment (sessione scaduta/401) '
+        'step=$step endpoint=$endpoint',
+      );
+      return;
+    }
+
     final parts = <String>[
       if (paymentId != null) 'paymentId=$paymentId',
       if (richiestaId != null) 'richiestaId=$richiestaId',
       if (step != null && step.isNotEmpty) 'step=$step',
     ];
     final prefix = parts.isEmpty ? '' : '[${parts.join(' ')}] ';
-    final stack = detail == null
-        ? null
-        : detail is String
-            ? detail
-            : detail.toString();
     report(
       tipo: 'payment',
       message: '$prefix$message',
       endpoint: endpoint,
       statusCode: statusCode,
-      stack: stack,
+      stack: detailText.isEmpty ? null : detailText,
       screen: 'pagamento',
     );
   }

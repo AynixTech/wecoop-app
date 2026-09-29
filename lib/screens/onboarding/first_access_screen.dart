@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:wecoop_app/utils/app_logger.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../../theme/theme.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/push_notification_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
@@ -12,6 +14,8 @@ import 'package:wecoop_app/screens/main_screen.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../config/api_config.dart';
+
+const String kGdprAppUrl = 'https://www.wecoop.org/gdpr-app/';
 
 /// Schermata di primo accesso con registrazione semplificata
 /// Solo 4 campi obbligatori: nome, cognome, prefisso, telefono
@@ -31,11 +35,21 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
   final _storage = SecureStorageService();
 
   bool _isLoading = false;
+  bool _gdprAccepted = false;
+  late final TapGestureRecognizer _gdprLinkRecognizer;
 
   @override
   void initState() {
     super.initState();
+    _gdprLinkRecognizer = TapGestureRecognizer()..onTap = _openGdprPage;
     _checkIfAlreadyLoggedIn();
+  }
+
+  Future<void> _openGdprPage() async {
+    final uri = Uri.parse(kGdprAppUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   Future<void> _checkIfAlreadyLoggedIn() async {
@@ -50,6 +64,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
 
   @override
   void dispose() {
+    _gdprLinkRecognizer.dispose();
     _nomeController.dispose();
     _cognomeController.dispose();
     _prefixController.dispose();
@@ -258,7 +273,55 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                           },
                         ),
 
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 24),
+
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Checkbox(
+                              value: _gdprAccepted,
+                              onChanged: (value) {
+                                setState(() {
+                                  _gdprAccepted = value ?? false;
+                                });
+                              },
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 12),
+                                child: Text.rich(
+                                  TextSpan(
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      height: 1.4,
+                                      color: scheme.onSurface.withOpacity(0.85),
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text:
+                                            '${AppLocalizations.of(context)!.translate('gdprConsentPrefix')} ',
+                                      ),
+                                      TextSpan(
+                                        text: AppLocalizations.of(
+                                          context,
+                                        )!.translate('gdprLinkLabel'),
+                                        style: TextStyle(
+                                          color: scheme.primary,
+                                          fontWeight: FontWeight.w700,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                        recognizer: _gdprLinkRecognizer,
+                                      ),
+                                      const TextSpan(text: ' *'),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 24),
 
                         ElevatedButton(
                           onPressed: _isLoading ? null : _completaPrimoAccesso,
@@ -471,6 +534,18 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
       return;
     }
 
+    if (!_gdprAccepted) {
+      AppLogger.d('❌ GDPR non accettato');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.translate('gdprRequired'),
+          ),
+        ),
+      );
+      return;
+    }
+
     AppLogger.d('✅ Form validato correttamente');
 
     setState(() => _isLoading = true);
@@ -503,6 +578,8 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
         'cognome': _cognomeController.text.trim(),
         'prefix': _prefixController.text,
         'telefono': telefonoLocale,
+        'privacy': true,
+        'gdprAccepted': true,
       };
 
       AppLogger.d('🌐 URL: $url');

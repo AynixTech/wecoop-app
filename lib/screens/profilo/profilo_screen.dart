@@ -89,9 +89,16 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
   }
 
   Future<void> _launchPrivacyPolicy() async {
-    final url = "https://www.wecoop.org/privacy-policy";
-    if (await canLaunch(url)) {
-      await launch(url);
+    final url = Uri.parse('https://www.wecoop.org/privacy-policy/');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  Future<void> _launchGdprApp() async {
+    final url = Uri.parse('https://www.wecoop.org/gdpr-app/');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
     }
   }
 
@@ -906,9 +913,15 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
             ),
             const SizedBox(height: 28),
             OutlinedButton.icon(
+              onPressed: _launchGdprApp,
+              icon: const Icon(Icons.gavel_outlined),
+              label: Text(l10n.translate('gdprLinkLabel')),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
               onPressed: _launchPrivacyPolicy,
               icon: const Icon(Icons.privacy_tip_outlined),
-              label: const Text('Privacy Policy'),
+              label: Text(l10n.translate('privacyPolicy')),
             ),
           ],
         ),
@@ -1786,9 +1799,15 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
 
             const SizedBox(height: 28),
             OutlinedButton.icon(
+              onPressed: _launchGdprApp,
+              icon: const Icon(Icons.gavel_outlined),
+              label: Text(l10n.translate('gdprLinkLabel')),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
               onPressed: _launchPrivacyPolicy,
               icon: const Icon(Icons.privacy_tip_outlined),
-              label: const Text('Privacy Policy'),
+              label: Text(l10n.translate('privacyPolicy')),
             ),
             const SizedBox(height: 28),
             Center(

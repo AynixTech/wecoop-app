@@ -12,6 +12,7 @@ import 'package:wecoop_app/services/push_notification_service.dart';
 import 'package:wecoop_app/screens/onboarding/first_access_screen.dart';
 import 'package:wecoop_app/screens/profilo/change_password_screen.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../widgets/language_selector.dart';
 import '../../utils/html_utils.dart';
 import '../../utils/italian_validators.dart';
@@ -713,7 +714,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     _buildRegistrationCta(),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
+
+                    TextButton.icon(
+                      onPressed: () async {
+                        final uri = Uri.parse(kGdprAppUrl);
+                        if (await canLaunchUrl(uri)) {
+                          await launchUrl(
+                            uri,
+                            mode: LaunchMode.externalApplication,
+                          );
+                        }
+                      },
+                      icon: const Icon(Icons.gavel_outlined, size: 18),
+                      label: Text(
+                        l10n.translate('gdprLinkLabel'),
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
 
                     // Password Dimenticata
                     TextButton(
@@ -778,7 +798,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         _buildRegistrationCta(),
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 8),
+
+                        TextButton.icon(
+                          onPressed: () async {
+                            final uri = Uri.parse(kGdprAppUrl);
+                            if (await canLaunchUrl(uri)) {
+                              await launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.gavel_outlined, size: 18),
+                          label: Text(
+                            l10n.translate('gdprLinkLabel'),
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        ),
+
+                        const SizedBox(height: 8),
 
                         TextButton(
                           onPressed: () {

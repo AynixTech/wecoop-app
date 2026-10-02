@@ -216,7 +216,10 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Errore: $e'),
+          content: Text(
+            AppLocalizations.of(context)?.translate('genericError') ??
+                'Errore',
+          ),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );

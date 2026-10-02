@@ -30,6 +30,7 @@ class _NotificheScreenState extends State<NotificheScreen> {
   }
 
   Future<void> _load() async {
+    if (!mounted) return;
     setState(() {
       _loading = true;
       _error = false;
@@ -63,6 +64,7 @@ class _NotificheScreenState extends State<NotificheScreen> {
     if (result['success'] == true) {
       final count = result['unread_count'] as int? ?? 0;
       await context.read<NotificationBadgeProvider>().setCount(count);
+      if (!mounted) return;
       await _load();
     }
   }
@@ -73,6 +75,7 @@ class _NotificheScreenState extends State<NotificheScreen> {
       if (mounted && result['success'] == true) {
         final count = result['unread_count'] as int? ?? 0;
         await context.read<NotificationBadgeProvider>().setCount(count);
+        if (!mounted) return;
         setState(() {
           final idx = _items.indexWhere((e) => e.id == n.id);
           if (idx >= 0) {
@@ -155,7 +158,7 @@ class _NotificheScreenState extends State<NotificheScreen> {
             TextButton(
               onPressed: _markAllRead,
               child: Text(
-                'Segna tutte',
+                l10n.translate('markAllRead'),
                 style: TextStyle(color: scheme.onPrimary),
               ),
             ),
@@ -170,11 +173,11 @@ class _NotificheScreenState extends State<NotificheScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(_errorMessage ?? 'Errore di caricamento'),
+                        Text(_errorMessage ?? l10n.errorLoadingData),
                         const SizedBox(height: AppSpacing.md),
                         ElevatedButton(
                           onPressed: _load,
-                          child: const Text('Riprova'),
+                          child: Text(l10n.retry),
                         ),
                       ],
                     ),
@@ -189,7 +192,7 @@ class _NotificheScreenState extends State<NotificheScreen> {
                               height: MediaQuery.of(context).size.height * 0.4,
                               child: Center(
                                 child: Text(
-                                  'Nessuna notifica',
+                                  l10n.translate('noNotifications'),
                                   style: TextStyle(
                                     color: scheme.onSurface.withValues(alpha: 0.6),
                                   ),

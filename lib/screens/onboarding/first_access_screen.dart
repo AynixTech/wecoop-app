@@ -8,9 +8,11 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/push_notification_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'package:wecoop_app/services/auth_helper.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/screens/main_screen.dart';
+import 'package:wecoop_app/utils/response_utils.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../config/api_config.dart';
@@ -63,9 +65,9 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
   }
 
   Future<void> _checkIfAlreadyLoggedIn() async {
-    final token = await _storage.read(key: 'jwt_token');
-    if (token != null && token.isNotEmpty && mounted) {
-      // Utente già loggato, vai direttamente ai servizi
+    final loggedIn = await AuthHelper.isLoggedIn();
+    if (loggedIn && mounted) {
+      // Utente già loggato (JWT o refresh), vai direttamente ai servizi
       Navigator.of(
         context,
       ).pushReplacement(MaterialPageRoute(builder: (_) => const MainScreen()));
@@ -624,15 +626,15 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
 
       AppLogger.d('\n📥 RISPOSTA RICEVUTA:');
       AppLogger.d('   - Status Code: ${response.statusCode}');
-      AppLogger.d('   - Headers: ${response.headers}');
-      AppLogger.d('   - Body: ${response.body}');
+      AppLogger.d('   - Body length: ${response.body.length} (redacted)');
 
       if (response.statusCode == 200) {
         AppLogger.d('✅ Status 200 OK');
         AppLogger.d('🔍 Parsing JSON...');
-        final data = jsonDecode(response.body);
-        AppLogger.d('📦 JSON decodificato completo:');
-        AppLogger.d(jsonEncode(data)); // Stampa tutto il JSON formattato
+        final decoded = ResponseUtils.decodeJson(response);
+        final data = decoded is Map<String, dynamic>
+            ? decoded
+            : <String, dynamic>{};
 
         AppLogger.d('\n🔎 VERIFICA STRUTTURA RESPONSE:');
         AppLogger.d('   - success presente? ${data.containsKey('success')}');
@@ -913,17 +915,18 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
 
       AppLogger.d('\n📥 RISPOSTA LOGIN:');
       AppLogger.d('   Status: ${response.statusCode}');
-      AppLogger.d('   Headers: ${response.headers}');
-      AppLogger.d('   Body completo: ${response.body}');
+      AppLogger.d('   Body length: ${response.body.length} (redacted)');
 
       if (response.statusCode == 200) {
         AppLogger.d('✅ Status 200 - Parsing JSON...');
-        final data = jsonDecode(response.body);
-        AppLogger.d('📦 JSON decodificato:');
-        AppLogger.d(jsonEncode(data));
+        final decoded = ResponseUtils.decodeJson(response);
+        final data = decoded is Map<String, dynamic>
+            ? decoded
+            : <String, dynamic>{};
 
         AppLogger.d('\n🔍 Verifica campi response:');
         AppLogger.d('   - token presente? ${data['token'] != null}');
+        AppLogger.d('   - refresh_token presente? ${data['refresh_token'] != null}');
         AppLogger.d('   - user_email: ${data['user_email']}');
         AppLogger.d('   - user_display_name: ${data['user_display_name']}');
         AppLogger.d('   - user_nicename: ${data['user_nicename']}');

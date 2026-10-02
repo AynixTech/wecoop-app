@@ -1952,19 +1952,20 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
           message += '\n\n${l10n.willBeContactedByEmail}';
         }
 
+        final formNavigator = Navigator.of(context);
         showDialog(
           context: context,
           barrierDismissible: false,
           builder:
-              (context) => AlertDialog(
+              (dialogContext) => AlertDialog(
                 title: Row(
                   children: [
                     Icon(
                       requiresPayment ? Icons.payment : Icons.check_circle,
                       color:
                           requiresPayment
-                              ? Theme.of(context).colorScheme.tertiary
-                              : Theme.of(context).colorScheme.secondary,
+                              ? Theme.of(dialogContext).colorScheme.tertiary
+                              : Theme.of(dialogContext).colorScheme.secondary,
                       size: 32,
                     ),
                     const SizedBox(width: 12),
@@ -1984,23 +1985,19 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
                       icon: const Icon(Icons.credit_card),
                       label: Text(l10n.payNow),
                       onPressed: () {
-                        Navigator.of(context).pop(); // Chiudi dialog
-                        Navigator.of(context).pop(); // Torna indietro
-                        // Naviga alla schermata pagamento
-                        Navigator.push(
-                          context,
+                        Navigator.of(dialogContext).pop();
+                        formNavigator.push(
                           MaterialPageRoute(
                             builder:
-                                (context) =>
-                                    PagamentoScreen(paymentId: paymentId),
+                                (_) => PagamentoScreen(paymentId: paymentId),
                           ),
                         );
                       },
                     ),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).pop(); // Chiudi dialog
-                      Navigator.of(this.context).pushAndRemoveUntil(
+                      Navigator.of(dialogContext).pop();
+                      formNavigator.pushAndRemoveUntil(
                         MaterialPageRoute(
                           builder: (_) => const MainScreen(initialIndex: 3),
                         ),

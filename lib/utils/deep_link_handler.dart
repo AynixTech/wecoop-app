@@ -54,18 +54,18 @@ class DeepLinkHandler {
     }
 
     if (path == '/richieste' || path == '/calendar') {
-      AppNavigation.navigateToMainTab(MainTab.calendar);
+      final id = queryParams['id'];
+      if (id != null && id.isNotEmpty) {
+        _navigateToRichiesta(context, id);
+      } else {
+        AppNavigation.navigateToMainTab(MainTab.calendar);
+      }
       return;
     }
 
     if (path.startsWith('/richieste/')) {
       final id = path.split('/').last;
       _navigateToRichiesta(context, id);
-      return;
-    }
-
-    if (path == '/richieste' && queryParams.containsKey('id')) {
-      _navigateToRichiesta(context, queryParams['id']!);
       return;
     }
 

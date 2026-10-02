@@ -8,6 +8,7 @@ import 'package:wecoop_app/utils/phone_prefixes.dart';
 import '../../services/annunci_wecoop_service.dart';
 import '../../services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'package:wecoop_app/utils/parse_helpers.dart';
 
 /// Formatta una data yyyy-MM-dd in dd/MM/yyyy. Restituisce la stringa originale
 /// se il formato non corrisponde.
@@ -175,8 +176,11 @@ class _AnnunciScreenState extends State<AnnunciScreen> {
                             }
                             return _AnnuncioCard(
                               annuncio: _annunci[i],
-                              onTap: () => _showDetail(
-                                  context, _annunci[i]['id'] as int),
+                              onTap: () {
+                                final id = parseIntOrNull(_annunci[i]['id']);
+                                if (id == null) return;
+                                _showDetail(context, id);
+                              },
                             );
                           },
                         ),

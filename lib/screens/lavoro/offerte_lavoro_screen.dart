@@ -1834,12 +1834,16 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
           offerteResult['pagination'] as Map<String, dynamic>? ??
           const <String, dynamic>{};
       setState(() {
-        _offerte = (offerteResult['offerte'] as List<OffertaLavoro>);
+        _offerte =
+            (offerteResult['offerte'] as List?)?.cast<OffertaLavoro>() ??
+            <OffertaLavoro>[];
         _totalPages = (pagination['total_pages'] as num?)?.toInt() ?? 1;
         _isLoading = false;
         _categorie =
             categorieResult['success'] == true
-                ? (categorieResult['categorie'] as List<OffertaCategoria>)
+                ? ((categorieResult['categorie'] as List?)
+                        ?.cast<OffertaCategoria>() ??
+                    <OffertaCategoria>[])
                 : <OffertaCategoria>[];
       });
       await _tryOpenInitialOfferta();
@@ -1854,7 +1858,9 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
               .toString();
       _categorie =
           categorieResult['success'] == true
-              ? (categorieResult['categorie'] as List<OffertaCategoria>)
+              ? ((categorieResult['categorie'] as List?)
+                      ?.cast<OffertaCategoria>() ??
+                  <OffertaCategoria>[])
               : <OffertaCategoria>[];
     });
   }
@@ -1896,7 +1902,10 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
           result['pagination'] as Map<String, dynamic>? ??
           const <String, dynamic>{};
       setState(() {
-        _offerte.addAll(result['offerte'] as List<OffertaLavoro>);
+        _offerte.addAll(
+          (result['offerte'] as List?)?.cast<OffertaLavoro>() ??
+              const <OffertaLavoro>[],
+        );
         _currentPage = nextPage;
         _totalPages =
             (pagination['total_pages'] as num?)?.toInt() ?? _totalPages;
@@ -2924,8 +2933,10 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
     final selectedCategorySlug = _resolveSelectedCategorySlug();
     if (selectedCategorySlug == null || selectedCategorySlug.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Sottocategoria non valida dopo il controllo AI'),
+        SnackBar(
+          content: Text(
+            _OfferteLavoroText.tr(context, 'invalidSubCategoryAfterAi'),
+          ),
         ),
       );
       return;
@@ -3493,8 +3504,8 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
     final description = _descrizioneCtrl.text.trim();
     if (description.length < 12) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Inserisci almeno 12 caratteri nella descrizione'),
+        SnackBar(
+          content: Text(_OfferteLavoroText.tr(context, 'min12Description')),
         ),
       );
       return;
@@ -3528,7 +3539,9 @@ class _PubblicaAnnuncioTabState extends State<_PubblicaAnnuncioTab> {
     final suggestedSlug = (result['category_slug'] ?? '').toString();
     if (macro.isEmpty || suggestedSlug.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nessun suggerimento utile trovato')),
+        SnackBar(
+          content: Text(_OfferteLavoroText.tr(context, 'noUsefulSuggestion')),
+        ),
       );
       return;
     }

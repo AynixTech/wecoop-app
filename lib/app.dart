@@ -20,6 +20,7 @@ import 'package:wecoop_app/theme/theme.dart';
 import 'package:wecoop_app/widgets/mandatory_update_gate.dart';
 import 'package:wecoop_app/services/notification_badge_provider.dart';
 import 'package:wecoop_app/services/presence_service.dart';
+import 'package:wecoop_app/services/user_avatar_store.dart';
 import 'package:wecoop_app/screens/notifiche/notifiche_screen.dart';
 import 'screens/main_screen.dart';
 import 'screens/login/login_screen.dart';
@@ -78,6 +79,15 @@ class _WECOOPAppState extends State<WECOOPApp> with WidgetsBindingObserver {
   /// Quando il refresh token fallisce (sessione scaduta), riporta al login.
   void _bindSessionExpiredHandler() {
     HttpClientService.onSessionExpired = () async {
+      try {
+        await UserAvatarStore.clear();
+      } catch (_) {}
+      final ctx = _navigatorKey.currentContext;
+      if (ctx != null) {
+        try {
+          await ctx.read<NotificationBadgeProvider>().setCount(0);
+        } catch (_) {}
+      }
       AppNavigation.navigateToLogin();
     };
   }

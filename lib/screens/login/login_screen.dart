@@ -212,7 +212,9 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       AppLogger.d('📡 Response status: ${response.statusCode}');
-      AppLogger.d('📡 Response body: ${response.body}');
+      AppLogger.d(
+        '📡 Response body length: ${response.body.length} (redacted)',
+      );
 
       if (HttpClientService.isGatewayStatus(response.statusCode)) {
         // Avoid FormatException noise: gateway bodies are HTML, not JSON.

@@ -87,7 +87,7 @@ class _CalendarScreenState extends State<CalendarScreen>
   }
 
   Future<void> _triggerAutoRefresh({required String reason}) async {
-    if (!mounted || _isLoading) return;
+    if (!mounted || _isLoading || _loadingMore) return;
 
     final now = DateTime.now();
     if (_lastAutoRefreshAt != null &&
@@ -164,10 +164,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       final result = await SocioService.getRichiesteUtente(
         page: 1,
         perPage: _perPage,
-        // "paid" è client-side (pagamento.ricevuto); gli altri stati vanno al BE.
-        stato: (_filtroStato != null && _filtroStato != 'paid')
-            ? _filtroStato
-            : null,
+        stato: _filtroStato,
       );
 
       if (!mounted) return;
@@ -235,9 +232,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       final result = await SocioService.getRichiesteUtente(
         page: next,
         perPage: _perPage,
-        stato: (_filtroStato != null && _filtroStato != 'paid')
-            ? _filtroStato
-            : null,
+        stato: _filtroStato,
       );
       if (!mounted) return;
       if (result['success'] == true) {
@@ -285,6 +280,12 @@ class _CalendarScreenState extends State<CalendarScreen>
     return _tutteRichieste.where((richiesta) {
       final stato = (richiesta['stato'] ?? richiesta['status'] ?? '').toString();
       final canonical = _canonicalStato(stato);
+      if (_filtroStato == 'awaiting_signature') {
+        // Post-pagamento lo status è spesso `paid` finché non parte il DU.
+        if (canonical == 'awaiting_signature') return true;
+        if (canonical == 'paid') return true;
+        return richiesta['puo_firmare'] == true;
+      }
       return canonical == _filtroStato;
     }).toList();
   }

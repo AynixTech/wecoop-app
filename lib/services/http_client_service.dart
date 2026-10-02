@@ -313,10 +313,11 @@ class HttpClientService {
               body['code'] == 'jwt_auth_invalid_token' ||
               message.contains('expired') ||
               message.contains('invalid token') ||
-              message.contains('authorization') ||
-              message.contains('authenticated') ||
+              message.contains('missing or invalid authorization') ||
               message.contains('not authenticated') ||
-              (response.statusCode == 401 && message.contains('token'));
+              (response.statusCode == 401 &&
+                  (message.contains('token') ||
+                      message.contains('authorization')));
 
           // Con refresh token in storage, qualsiasi 401/403 auth-like merita un retry.
           if (hasRefresh && looksLikeAuthError) {

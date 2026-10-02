@@ -104,13 +104,14 @@ class FirmaDigitaleProvider extends ChangeNotifier {
   // Step 2: Richiedi OTP
   Future<void> richiestaOTP() async {
     if (_richiestaId == null || _userId == null || _telefono == null) {
-      printDebug('❌ [Provider] richiestaOTP parametri mancanti richiestaId=$_richiestaId userId=$_userId telefono=$_telefono');
+      final maskedPhone = _maskPhone(_telefono);
+      printDebug('❌ [Provider] richiestaOTP parametri mancanti richiestaId=$_richiestaId userId=$_userId telefono=$maskedPhone');
       _setError('Parametri non inizializzati', 'INVALID_STATE');
       return;
     }
 
     try {
-      printDebug('📱 [Provider] richiestaOTP start richiestaId=$_richiestaId telefono=$_telefono');
+      printDebug('📱 [Provider] richiestaOTP start richiestaId=$_richiestaId telefono=${_maskPhone(_telefono)}');
       _step = FirmaStep.loadingDocumento;
       notifyListeners();
 
@@ -185,6 +186,11 @@ class FirmaDigitaleProvider extends ChangeNotifier {
       return;
     }
 
+    // PDF scannerizzati: contenuto_testo può essere vuoto → usa hash come payload.
+    final documentoContenuto = _documento!.contenutoTesto.trim().isNotEmpty
+        ? _documento!.contenutoTesto
+        : _documento!.hashSha256;
+
     try {
       printDebug('🔐 [Provider] firmaDocumento start otpId=${_otpGenerata?.id} richiestaId=$_richiestaId');
       _step = FirmaStep.firmando;
@@ -194,7 +200,7 @@ class FirmaDigitaleProvider extends ChangeNotifier {
       _firmaCreata = await FirmaDigitaleService.firmaDocumento(
         otpId: _otpGenerata!.id,
         richiestaId: _richiestaId!,
-        documentoContenuto: _documento!.contenutoTesto,
+        documentoContenuto: documentoContenuto,
         deviceType: deviceType,
         deviceModel: deviceModel,
         appVersion: appVersion,
@@ -271,5 +277,11 @@ class FirmaDigitaleProvider extends ChangeNotifier {
   // Debug helper
   void printDebug(String message) {
     AppLogger.d('[FirmaDigitalProvider] $message');
+  }
+
+  String _maskPhone(String? phone) {
+    if (phone == null || phone.isEmpty) return '(empty)';
+    if (phone.length <= 6) return '****';
+    return '${phone.substring(0, 3)}****${phone.substring(phone.length - 2)}';
   }
 }

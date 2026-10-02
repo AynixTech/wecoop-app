@@ -48,11 +48,13 @@ class _StoricoPraticaDettaglioScreenState
       final data = await SocioService.getDettaglioRichiesta(widget.richiestaId);
       if (!mounted) return;
       if (data == null) {
+        final l10n = AppLocalizations.of(context);
         setState(() {
           _dettaglio = widget.initial;
           _loading = false;
           _error = widget.initial == null
-              ? 'Pratica non trovata o non accessibile'
+              ? (l10n?.translate('practiceNotFound') ??
+                  'Pratica non trovata o non accessibile')
               : null;
         });
         return;
@@ -80,6 +82,7 @@ class _StoricoPraticaDettaglioScreenState
   }
 
   Future<void> _apriDocumentoPubblicato(Map<String, dynamic> doc) async {
+    final l10n = AppLocalizations.of(context)!;
     final docId = doc['id'] is int
         ? doc['id'] as int
         : int.tryParse('${doc['id'] ?? ''}');
@@ -98,7 +101,8 @@ class _StoricoPraticaDettaglioScreenState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            (result['message'] as String?) ?? 'Impossibile scaricare il documento',
+            (result['message'] as String?) ??
+                l10n.translate('cannotDownloadDocument'),
           ),
           backgroundColor: AppColors.error,
         ),
@@ -111,8 +115,8 @@ class _StoricoPraticaDettaglioScreenState
         (result['filename'] as String?) ?? 'documento_$docId.pdf';
     if (bytes.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('File vuoto'),
+        SnackBar(
+          content: Text(l10n.translate('emptyFile')),
           backgroundColor: AppColors.error,
         ),
       );
@@ -128,7 +132,11 @@ class _StoricoPraticaDettaglioScreenState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Impossibile aprire il file: $e'),
+          content: Text(
+            l10n
+                .translate('cannotOpenFile')
+                .replaceAll('{detail}', '$e'),
+          ),
           backgroundColor: AppColors.error,
         ),
       );
@@ -158,9 +166,19 @@ class _StoricoPraticaDettaglioScreenState
         ? pagamento['id'] as int
         : int.tryParse('${pagamento['id'] ?? ''}');
 
+    final firmaLabel = firmato
+        ? l10n.translate('signedLabel')
+        : (d['firma_stato']?.toString().isNotEmpty == true
+            ? d['firma_stato'].toString()
+            : (d['documento_unico_url'] != null
+                ? l10n.pending
+                : l10n.translate('notAvailable')));
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(numero.isNotEmpty ? numero : 'Pratica'),
+        title: Text(
+          numero.isNotEmpty ? numero : l10n.translate('serviceRequest'),
+        ),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -174,7 +192,9 @@ class _StoricoPraticaDettaglioScreenState
                     const SizedBox(height: 12),
                   ],
                   Text(
-                    servizio.isNotEmpty ? servizio : 'Servizio',
+                    servizio.isNotEmpty
+                        ? servizio
+                        : l10n.translate('serviceRequest'),
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -184,23 +204,22 @@ class _StoricoPraticaDettaglioScreenState
                     Text(categoria, style: theme.textTheme.bodyMedium),
                   ],
                   const SizedBox(height: 12),
-                  _chip(scheme, 'Stato', stato.isEmpty ? '—' : stato),
-                  const SizedBox(height: 8),
                   _chip(
                     scheme,
-                    'Pagamento',
-                    _pagamentoLabel(pagamento, d),
+                    l10n.translate('status'),
+                    stato.isEmpty ? '—' : stato,
                   ),
                   const SizedBox(height: 8),
                   _chip(
                     scheme,
-                    'Firma',
-                    firmato
-                        ? 'Firmato'
-                        : (d['firma_stato']?.toString() ??
-                            (d['documento_unico_url'] != null
-                                ? 'In attesa'
-                                : 'Non disponibile')),
+                    l10n.translate('payment'),
+                    _pagamentoLabel(l10n, pagamento, d),
+                  ),
+                  const SizedBox(height: 8),
+                  _chip(
+                    scheme,
+                    l10n.translate('signature'),
+                    firmaLabel,
                   ),
                   if (puoPagare) ...[
                     const SizedBox(height: 20),
@@ -210,6 +229,7 @@ class _StoricoPraticaDettaglioScreenState
                           context,
                           MaterialPageRoute(
                             builder: (_) => PagamentoScreen(
+                              // Preferisci richiestaId: evita GET /payment/0.
                               paymentId: paymentId ?? 0,
                               richiestaId: widget.richiestaId,
                             ),
@@ -217,19 +237,19 @@ class _StoricoPraticaDettaglioScreenState
                         ).then((_) => _load());
                       },
                       icon: const Icon(Icons.payment),
-                      label: Text(l10n.payNow),
+                      label: Text(l10n.translate('goToPayment')),
                     ),
                   ],
                   const SizedBox(height: 24),
                   Text(
-                    'Documenti disponibili',
+                    l10n.translate('documentsAvailable'),
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Documenti pubblicati da WeCoop per questa pratica.',
+                    l10n.translate('documentsPublishedByWecoop'),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: scheme.onSurfaceVariant,
                     ),
@@ -237,7 +257,7 @@ class _StoricoPraticaDettaglioScreenState
                   const SizedBox(height: 8),
                   if (docsPubblicati.isEmpty)
                     Text(
-                      'Nessun documento pubblicato al momento.',
+                      l10n.translate('noPublishedDocuments'),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: scheme.onSurfaceVariant,
                       ),
@@ -247,7 +267,7 @@ class _StoricoPraticaDettaglioScreenState
                       final name = (doc['file_name'] ??
                               doc['descrizione'] ??
                               doc['tipo'] ??
-                              'Documento')
+                              l10n.translate('document'))
                           .toString();
                       final tipo = (doc['tipo'] ?? '').toString();
                       final docId = doc['id'] is int
@@ -270,7 +290,7 @@ class _StoricoPraticaDettaglioScreenState
                               )
                             : IconButton(
                                 icon: const Icon(Icons.download_outlined),
-                                tooltip: 'Visualizza / Scarica',
+                                tooltip: l10n.translate('viewLabel'),
                                 onPressed: () => _apriDocumentoPubblicato(doc),
                               ),
                         onTap: busy ? null : () => _apriDocumentoPubblicato(doc),
@@ -279,7 +299,7 @@ class _StoricoPraticaDettaglioScreenState
                   if (docsCliente.isNotEmpty) ...[
                     const SizedBox(height: 24),
                     Text(
-                      'Documenti inviati',
+                      l10n.translate('documentsSent'),
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -288,7 +308,7 @@ class _StoricoPraticaDettaglioScreenState
                     ...docsCliente.map((doc) {
                       final name = (doc['file_name'] ??
                               doc['tipo'] ??
-                              'Documento')
+                              l10n.translate('document'))
                           .toString();
                       final origine = (doc['origine'] ?? '').toString();
                       return ListTile(
@@ -298,9 +318,11 @@ class _StoricoPraticaDettaglioScreenState
                           color: scheme.onSurfaceVariant,
                         ),
                         title: Text(name),
-                        subtitle: origine.isNotEmpty
-                            ? Text(origine)
-                            : const Text('Caricato da te'),
+                        subtitle: Text(
+                          origine.isNotEmpty
+                              ? origine
+                              : l10n.translate('uploadedByYou'),
+                        ),
                       );
                     }),
                   ],
@@ -310,10 +332,18 @@ class _StoricoPraticaDettaglioScreenState
     );
   }
 
-  String _pagamentoLabel(Map<String, dynamic> pagamento, Map<String, dynamic> d) {
+  String _pagamentoLabel(
+    AppLocalizations l10n,
+    Map<String, dynamic> pagamento,
+    Map<String, dynamic> d,
+  ) {
     if (pagamento['ricevuto'] == true) {
       final importo = pagamento['importo'];
-      return importo != null ? 'Pagato (€$importo)' : 'Pagato';
+      return importo != null
+          ? l10n
+              .translate('paymentStatusPaidAmount')
+              .replaceAll('{amount}', '$importo')
+          : l10n.paymentStatusPaid;
     }
     final fromList = d['payment_status']?.toString();
     final importo = d['payment_importo'] ?? pagamento['importo'];
@@ -324,7 +354,7 @@ class _StoricoPraticaDettaglioScreenState
     if (stato.isNotEmpty) {
       return importo != null ? '$stato (€$importo)' : stato;
     }
-    return 'Nessun pagamento';
+    return l10n.translate('noPayment');
   }
 
   Widget _chip(ColorScheme scheme, String label, String value) {
@@ -339,19 +369,18 @@ class _StoricoPraticaDettaglioScreenState
       child: Row(
         children: [
           Text(
-            '$label: ',
+            label,
             style: TextStyle(
               fontWeight: FontWeight.w600,
               color: scheme.onSurfaceVariant,
             ),
           ),
-          Expanded(
+          const Spacer(),
+          Flexible(
             child: Text(
               value,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: AppColors.primary,
-              ),
+              textAlign: TextAlign.end,
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
         ],

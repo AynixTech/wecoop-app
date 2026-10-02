@@ -297,17 +297,20 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
       final freshAvatar = (data['avatar_url'] ?? '').toString().trim();
       if (freshAvatar.isNotEmpty) {
         await UserAvatarStore.setAvatarUrl(freshAvatar);
+        if (!mounted) return;
         setState(() {
           avatarUrl = freshAvatar;
         });
       }
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.translate('avatarUpdatedSuccess'))),
       );
       return;
     }
 
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(

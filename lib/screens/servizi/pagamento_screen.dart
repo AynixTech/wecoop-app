@@ -32,6 +32,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
   bool _isPaying = false;
   /// Stripe ha addebitato ma la conferma BE non è ancora andata a buon fine.
   bool _chargePendingConfirm = false;
+  String? _pendingConfirmTransactionId;
 
   @override
   void initState() {
@@ -287,7 +288,13 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
 
       // Da qui la carta può essere addebitata: non permettere un nuovo intent.
       if (mounted) {
-        setState(() => _chargePendingConfirm = true);
+        setState(() {
+          _chargePendingConfirm = true;
+          _pendingConfirmTransactionId = transactionId;
+        });
+      } else {
+        _chargePendingConfirm = true;
+        _pendingConfirmTransactionId = transactionId;
       }
 
       var result = await _confirmWithRetry(
@@ -308,7 +315,10 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
 
       if (result['success'] == true) {
         if (mounted) {
-          setState(() => _chargePendingConfirm = false);
+          setState(() {
+            _chargePendingConfirm = false;
+            _pendingConfirmTransactionId = null;
+          });
         }
         await PushNotificationService().syncTokenWithBackend();
         if (!mounted) return;
@@ -716,14 +726,55 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                                     () => _isPaying = true,
                                                   );
                                                   try {
+                                                    final tx =
+                                                        _pendingConfirmTransactionId;
+                                                    final payId =
+                                                        _pagamento?.id;
+                                                    if (tx != null &&
+                                                        payId != null) {
+                                                      final result =
+                                                          await _confirmWithRetry(
+                                                        paymentId: payId,
+                                                        transactionId: tx,
+                                                      );
+                                                      if (!mounted) return;
+                                                      if (result['success'] ==
+                                                          true) {
+                                                        setState(() {
+                                                          _chargePendingConfirm =
+                                                              false;
+                                                          _pendingConfirmTransactionId =
+                                                              null;
+                                                        });
+                                                      }
+                                                    }
                                                     await _loadPagamento();
                                                     if (!mounted) return;
                                                     if (_pagamento?.isPaid ==
                                                         true) {
-                                                      setState(
-                                                        () =>
-                                                            _chargePendingConfirm =
-                                                                false,
+                                                      setState(() {
+                                                        _chargePendingConfirm =
+                                                            false;
+                                                        _pendingConfirmTransactionId =
+                                                            null;
+                                                      });
+                                                      final amount = _pagamento!
+                                                          .importo
+                                                          .toStringAsFixed(2);
+                                                      _showSuccessDialog(
+                                                        AppLocalizations.of(
+                                                                context)!
+                                                            .translate(
+                                                          'paymentCompletedTitle',
+                                                        ),
+                                                        AppLocalizations.of(
+                                                                context)!
+                                                            .translate(
+                                                          'paymentCompletedBody',
+                                                        ).replaceAll(
+                                                          '{amount}',
+                                                          amount,
+                                                        ),
                                                       );
                                                     }
                                                   } finally {
@@ -737,7 +788,9 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                                 },
                                           child: Text(
                                             AppLocalizations.of(context)!
-                                                .translate('reload'),
+                                                .translate(
+                                              'paymentRetryConfirm',
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -758,7 +811,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                     children: [
                                       const Icon(
                                         Icons.check_circle,
-                                        color: AppColors.secondary,
+                                        color: Colors.white,
                                         size: 32,
                                       ),
                                       const SizedBox(width: 16),

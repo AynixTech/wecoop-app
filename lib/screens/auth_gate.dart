@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wecoop_app/services/secure_storage_service.dart';
+import 'package:wecoop_app/services/auth_helper.dart';
 import 'login/login_screen.dart';
 
 /// Gate per schermate che richiedono autenticazione.
@@ -10,19 +10,12 @@ import 'login/login_screen.dart';
 class AuthGate extends StatelessWidget {
   final Widget protectedScreen;
 
-  AuthGate({super.key, required this.protectedScreen});
-
-  final storage = SecureStorageService();
-
-  Future<bool> _isLoggedIn() async {
-    final token = await storage.read(key: 'jwt_token');
-    return token != null && token.isNotEmpty;
-  }
+  const AuthGate({super.key, required this.protectedScreen});
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<bool>(
-      future: _isLoggedIn(),
+      future: AuthHelper.isLoggedIn(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(

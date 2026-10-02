@@ -3,6 +3,7 @@ import 'package:wecoop_app/services/app_localizations.dart';
 import '../../theme/theme.dart';
 import '../../widgets/design_system/design_system.dart';
 import '../../widgets/whatsapp_contact_button.dart';
+import '../prenota_appuntamento/prenota_appuntamento_screen.dart';
 import 'permesso_soggiorno_screen.dart';
 import 'cittadinanza_screen.dart';
 import 'ricongiungimento_familiare_screen.dart';
@@ -79,6 +80,13 @@ class AccoglienzaScreen extends StatelessWidget {
                 title: l10n.touristVisa,
                 subtitle: l10n.touristVisaDesc,
                 onTap: () => go(const VisaTurismoScreen()),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              SelectionCard(
+                icon: Icons.description_outlined,
+                title: l10n.translate('decretoFlussi'),
+                subtitle: l10n.translate('decretoFlussiDesc'),
+                onTap: () => go(const PrenotaAppuntamentoScreen()),
               ),
               const WhatsappContactButton(
                 labelKey: 'parlaConNoi',

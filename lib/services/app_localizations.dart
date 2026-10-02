@@ -4119,6 +4119,8 @@ class AppLocalizations {
       'citizenshipResidence': '通过居住',
       'citizenshipMarriage': '通过婚姻',
       'touristVisaDesc': '申请旅游签证',
+      'decretoFlussi': 'Decreto Flussi',
+      'decretoFlussiDesc': '家政与非季节性工作的咨询与资格核查',
       'loginToAccessServices': '请登录以使用所有会员专属服务。',
       'membershipPendingApproval': '您的入会申请正在审批中。',
       'confirmationWithin24to48Hours': '您将在 24-48 小时内通过电子邮件收到确认。',

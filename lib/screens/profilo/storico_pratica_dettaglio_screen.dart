@@ -202,7 +202,7 @@ class _StoricoPraticaDettaglioScreenState
                                 ? 'In attesa'
                                 : 'Non disponibile')),
                   ),
-                  if (puoPagare && paymentId != null) ...[
+                  if (puoPagare) ...[
                     const SizedBox(height: 20),
                     FilledButton.icon(
                       onPressed: () {
@@ -210,14 +210,14 @@ class _StoricoPraticaDettaglioScreenState
                           context,
                           MaterialPageRoute(
                             builder: (_) => PagamentoScreen(
-                              paymentId: paymentId,
+                              paymentId: paymentId ?? 0,
                               richiestaId: widget.richiestaId,
                             ),
                           ),
                         ).then((_) => _load());
                       },
                       icon: const Icon(Icons.payment),
-                      label: const Text('Vai al pagamento'),
+                      label: Text(l10n.payNow),
                     ),
                   ],
                   const SizedBox(height: 24),

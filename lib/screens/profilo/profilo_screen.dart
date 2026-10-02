@@ -15,6 +15,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/account_service.dart';
+import '../../services/auth_helper.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:provider/provider.dart';
 import '../../services/locale_provider.dart';
@@ -575,43 +576,9 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
       AppLogger.d('⚠️ Errore revoca refresh token: $e');
     }
 
-    // Cancella token e credenziali
-    await storage.delete(key: 'jwt_token');
-    await storage.delete(key: 'refresh_token');
-    await storage.delete(key: 'auth_username');
-    await storage.delete(key: 'auth_password');
-    await storage.delete(key: 'user_email');
-    await storage.delete(key: 'user_display_name');
-    await storage.delete(key: 'user_nicename');
-    await storage.delete(key: 'saved_phone');
-    await storage.delete(key: 'saved_password');
-    await storage.delete(key: 'carta_id');
-
-    // Cancella dati socio
-    await storage.delete(key: 'socio_id');
-    await storage.delete(key: 'user_id');
-    await storage.delete(key: 'first_name');
-    await storage.delete(key: 'last_name');
-    await storage.delete(key: 'full_name');
-    await storage.delete(key: 'codice_fiscale');
-    await storage.delete(key: 'data_nascita');
-    await storage.delete(key: 'luogo_nascita');
-    await storage.delete(key: 'indirizzo');
-    await storage.delete(key: 'citta');
-    await storage.delete(key: 'cap');
-    await storage.delete(key: 'provincia');
-    await storage.delete(key: 'telefono');
-    await storage.delete(key: 'professione');
-    await storage.delete(key: 'stato_socio');
-    await storage.delete(key: 'data_iscrizione');
-    await storage.delete(key: 'tessera_numero');
-    await storage.delete(key: 'tessera_url');
-    await storage.delete(key: 'quota_pagata');
-    await storage.delete(key: 'anni_socio');
-    await storage.delete(key: 'avatar_url');
+    // Cancella token, biometriche e PII (mantiene last_login_phone)
+    await AuthHelper.clearSessionForLogout(keepLastLoginPhone: true);
     await UserAvatarStore.clear();
-
-    // NON cancellare last_login_phone - serve per precompilare il login
 
     AppLogger.d('Utente disconnesso');
 
@@ -1370,8 +1337,9 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
               context: context,
               icon: Icons.support_agent_outlined,
               accentColor: const Color(0xFF25D366),
-              title: 'Le mie richieste',
-              subtitle: 'Consulta le tue richieste di supporto',
+              title: AppLocalizations.of(context)!.myRequests,
+              subtitle: AppLocalizations.of(context)!
+                  .translate('mySupportRequestsSubtitle'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -1770,7 +1738,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Text(
-                      l10n.translate('profileKintiCompanyDetails'),
+                      l10n.translate('profileWecoopCompanyDetails'),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: scheme.onSurface,
                         height: 1.45,
@@ -1779,7 +1747,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    l10n.translate('profileKintiBillingNotice'),
+                    l10n.translate('profileWecoopBillingNotice'),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: scheme.onSurface.withOpacity(0.82),
                       height: 1.4,
@@ -1787,7 +1755,7 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    l10n.translate('profileKintiInvoiceFlow'),
+                    l10n.translate('profileWecoopInvoiceFlow'),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: scheme.onSurface.withOpacity(0.72),
                       height: 1.4,

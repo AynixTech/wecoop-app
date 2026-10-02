@@ -1206,6 +1206,7 @@ class _DocumentiScadenzaSectionState extends State<_DocumentiScadenzaSection> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     if (_isLoading) {
       return const SizedBox.shrink();
     }
@@ -1232,10 +1233,11 @@ class _DocumentiScadenzaSectionState extends State<_DocumentiScadenzaSection> {
                   children: [
                     Icon(Icons.error, color: scheme.error),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        '⚠️ DOCUMENTI SCADUTI',
-                        style: TextStyle(
+                        l10n?.translate('documentsExpiredTitle') ??
+                            'DOCUMENTI SCADUTI',
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -1245,7 +1247,9 @@ class _DocumentiScadenzaSectionState extends State<_DocumentiScadenzaSection> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Hai ${_documentiScaduti.length} documento/i scaduto/i. Aggiornali subito!',
+                  (l10n?.translate('documentsExpiredBody') ??
+                          'Hai {count} documento/i scaduto/i. Aggiornali subito!')
+                      .replaceAll('{count}', '${_documentiScaduti.length}'),
                   style: const TextStyle(fontSize: 14),
                 ),
                 const SizedBox(height: 8),
@@ -1274,7 +1278,10 @@ class _DocumentiScadenzaSectionState extends State<_DocumentiScadenzaSection> {
                       );
                     },
                     icon: const Icon(Icons.upload),
-                    label: const Text('Aggiorna documenti'),
+                    label: Text(
+                      l10n?.translate('updateDocuments') ??
+                          'Aggiorna documenti',
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: scheme.error,
                       foregroundColor: scheme.onError,
@@ -1302,10 +1309,11 @@ class _DocumentiScadenzaSectionState extends State<_DocumentiScadenzaSection> {
                   children: [
                     Icon(Icons.warning, color: scheme.secondary),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        '📅 Documenti in scadenza',
-                        style: TextStyle(
+                        l10n?.translate('documentsExpiringTitle') ??
+                            'Documenti in scadenza',
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -1315,7 +1323,12 @@ class _DocumentiScadenzaSectionState extends State<_DocumentiScadenzaSection> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Hai ${_documentiInScadenza.length} documento/i che scadono a breve:',
+                  (l10n?.translate('documentsExpiringBody') ??
+                          'Hai {count} documento/i che scadono a breve:')
+                      .replaceAll(
+                        '{count}',
+                        '${_documentiInScadenza.length}',
+                      ),
                   style: const TextStyle(fontSize: 14),
                 ),
                 const SizedBox(height: 8),
@@ -1325,7 +1338,13 @@ class _DocumentiScadenzaSectionState extends State<_DocumentiScadenzaSection> {
                   return Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      '• ${TipoDocumento.getDisplayName(doc.tipo)} (tra $giorniRimanenti giorni)',
+                      (l10n?.translate('documentsExpiringItem') ??
+                              '• {name} (tra {days} giorni)')
+                          .replaceAll(
+                            '{name}',
+                            TipoDocumento.getDisplayName(doc.tipo),
+                          )
+                          .replaceAll('{days}', '$giorniRimanenti'),
                       style: const TextStyle(fontSize: 13),
                     ),
                   );
@@ -1343,7 +1362,10 @@ class _DocumentiScadenzaSectionState extends State<_DocumentiScadenzaSection> {
                       );
                     },
                     icon: const Icon(Icons.visibility),
-                    label: const Text('Gestisci documenti'),
+                    label: Text(
+                      l10n?.translate('manageDocuments') ??
+                          'Gestisci documenti',
+                    ),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: scheme.secondary,
                       side: BorderSide(color: scheme.secondary),

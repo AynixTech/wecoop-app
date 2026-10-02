@@ -14,7 +14,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  table_calendar: ^3.0.9
   qr_flutter: ^4.0.0
   flutter_launcher_icons: ^0.13.1
   cupertino_icons: ^1.0.8

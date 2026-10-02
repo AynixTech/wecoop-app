@@ -16,6 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../config/api_config.dart';
 
 const String kGdprAppUrl = 'https://www.wecoop.org/gdpr-app/';
+const String kPrivacyPolicyUrl = 'https://www.wecoop.org/privacy-policy/';
 
 /// Schermata di primo accesso con registrazione semplificata
 /// Solo 4 campi obbligatori: nome, cognome, prefisso, telefono
@@ -37,16 +38,25 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
   bool _isLoading = false;
   bool _gdprAccepted = false;
   late final TapGestureRecognizer _gdprLinkRecognizer;
+  late final TapGestureRecognizer _privacyLinkRecognizer;
 
   @override
   void initState() {
     super.initState();
     _gdprLinkRecognizer = TapGestureRecognizer()..onTap = _openGdprPage;
+    _privacyLinkRecognizer = TapGestureRecognizer()..onTap = _openPrivacyPage;
     _checkIfAlreadyLoggedIn();
   }
 
   Future<void> _openGdprPage() async {
     final uri = Uri.parse(kGdprAppUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  Future<void> _openPrivacyPage() async {
+    final uri = Uri.parse(kPrivacyPolicyUrl);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
@@ -65,6 +75,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
   @override
   void dispose() {
     _gdprLinkRecognizer.dispose();
+    _privacyLinkRecognizer.dispose();
     _nomeController.dispose();
     _cognomeController.dispose();
     _prefixController.dispose();
@@ -312,6 +323,22 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                                         ),
                                         recognizer: _gdprLinkRecognizer,
                                       ),
+                                      TextSpan(
+                                        text: AppLocalizations.of(
+                                          context,
+                                        )!.translate('consentAndThe'),
+                                      ),
+                                      TextSpan(
+                                        text: AppLocalizations.of(
+                                          context,
+                                        )!.translate('privacyPolicy'),
+                                        style: TextStyle(
+                                          color: scheme.primary,
+                                          fontWeight: FontWeight.w700,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                        recognizer: _privacyLinkRecognizer,
+                                      ),
                                       const TextSpan(text: ' *'),
                                     ],
                                   ),
@@ -535,11 +562,11 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
     }
 
     if (!_gdprAccepted) {
-      AppLogger.d('❌ GDPR non accettato');
+      AppLogger.d('❌ Consenso GDPR/Privacy non accettato');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            AppLocalizations.of(context)!.translate('gdprRequired'),
+            AppLocalizations.of(context)!.translate('legalConsentRequired'),
           ),
         ),
       );
@@ -860,9 +887,8 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
   Future<void> _autoLogin(String username, String password) async {
     AppLogger.d('\n🔑 === INIZIO LOGIN AUTOMATICO ===');
     AppLogger.d('   Username ricevuto: $username');
-    AppLogger.d('   Password ricevuta: $password');
+    AppLogger.d('   Password presente: ${password.isNotEmpty}');
     AppLogger.d('   Username vuoto? ${username.isEmpty}');
-    AppLogger.d('   Password vuota? ${password.isEmpty}');
 
     if (username.isEmpty || password.isEmpty) {
       AppLogger.d('❌ ERRORE: Username o password vuoti!');
@@ -874,8 +900,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
 
     try {
       AppLogger.d('🌐 Chiamata a: $url');
-      AppLogger.d('📤 Body request:');
-      AppLogger.d('   {"username": "$username", "password": "$password"}');
+      AppLogger.d('📤 Body request: {"username":"$username","password":"***"}');
       final response = await HttpClientService.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -912,8 +937,17 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
 
           // Salva token e dati utente
           await _storage.write(key: 'jwt_token', value: data['token']);
+          if (data['refresh_token'] != null) {
+            await _storage.write(
+              key: 'refresh_token',
+              value: data['refresh_token'],
+            );
+            AppLogger.d('   ✓ refresh_token');
+          }
           await _storage.write(key: 'auth_username', value: username);
           await _storage.write(key: 'auth_password', value: password);
+          await _storage.write(key: 'biometric_username', value: username);
+          await _storage.write(key: 'biometric_password', value: password);
           await _storage.write(
             key: 'user_email',
             value: data['user_email'] ?? '',

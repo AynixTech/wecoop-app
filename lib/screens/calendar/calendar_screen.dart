@@ -3,8 +3,6 @@ import 'package:wecoop_app/utils/app_logger.dart';
 import '../../theme/theme.dart';
 import 'dart:async';
 import 'dart:convert';
-import 'package:table_calendar/table_calendar.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import '../../services/firma_digitale_service.dart';
@@ -17,12 +15,15 @@ import '../firma_digitale/firma_documento_screen.dart';
 import '../prenota_appuntamento/seleziona_slot_screen.dart';
 import '../profilo/completa_profilo_screen.dart';
 import '../../utils/service_request_labels.dart';
+import '../../utils/parse_helpers.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:file_picker/file_picker.dart';
 
+/// Tab "Richieste": lista paginata delle pratiche/servizi dell'utente
+/// (ex CalendarScreen — il calendario è stato rimosso).
 class CalendarScreen extends StatefulWidget {
   final String? initialRichiestaId;
 
@@ -34,15 +35,14 @@ class CalendarScreen extends StatefulWidget {
 
 class _CalendarScreenState extends State<CalendarScreen>
   with WidgetsBindingObserver {
-  CalendarFormat _calendarFormat = CalendarFormat.week;
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
   bool _isLoading = true;
+  bool _loadingMore = false;
+  bool _hasMore = true;
+  int _page = 1;
+  static const int _perPage = 20;
   bool _hasLoadedOnLanding = false;
   List<Map<String, dynamic>> _tutteRichieste = [];
   String? _filtroStato;
-  bool _localeInitialized = false;
-  String _calendarLocale = 'it_IT';
   final storage = SecureStorageService();
   String? _richiestaIdToOpen;
   final Map<int, FirmaStatus> _firmaStatusByRichiesta = {};
@@ -58,7 +58,6 @@ class _CalendarScreenState extends State<CalendarScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _selectedDay = _focusedDay;
     if (widget.initialRichiestaId != null &&
         widget.initialRichiestaId!.isNotEmpty) {
       _richiestaIdToOpen = widget.initialRichiestaId;
@@ -98,23 +97,17 @@ class _CalendarScreenState extends State<CalendarScreen>
 
     _lastAutoRefreshAt = now;
     AppLogger.d('🔄 [CalendarAutoRefresh] start reason=$reason');
-    await _caricaRichieste();
+    await _caricaRichieste(reset: true);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    final appLocale = Localizations.localeOf(context);
-    final resolvedLocale = _resolveCalendarLocale(appLocale);
-    if (!_localeInitialized || _calendarLocale != resolvedLocale) {
-      _initializeLocale(resolvedLocale);
-    }
-
     // Aggiorna automaticamente le richieste al primo atterraggio sulla schermata.
     if (!_hasLoadedOnLanding) {
       _hasLoadedOnLanding = true;
-      _caricaRichieste();
+      _caricaRichieste(reset: true);
     }
 
     _scheduleOpenPendingRichiesta();
@@ -138,93 +131,157 @@ class _CalendarScreenState extends State<CalendarScreen>
     _apriRichiestaById(id);
   }
 
-  String _resolveCalendarLocale(Locale locale) {
-    switch (locale.languageCode) {
-      case 'es':
-        return 'es_ES';
-      case 'en':
-        return 'en_US';
-      case 'fr':
-        return 'fr_FR';
-      case 'it':
-      default:
-        return 'it_IT';
+  Future<void> _caricaRichieste({bool reset = true}) async {
+    if (!reset) {
+      await _loadNextPage();
+      return;
     }
-  }
 
-  Future<void> _initializeLocale(String localeCode) async {
-    await initializeDateFormatting(localeCode, null);
-    if (mounted) {
-      setState(() {
-        _calendarLocale = localeCode;
-        _localeInitialized = true;
-      });
-    }
-  }
-
-  Future<void> _caricaRichieste() async {
-    // Verifica se l'utente è loggato
     final token = await storage.read(key: 'jwt_token');
     if (token == null) {
-      // Utente non loggato, non caricare richieste
       if (mounted) {
         setState(() {
           _tutteRichieste = [];
           _isLoading = false;
+          _loadingMore = false;
+          _hasMore = false;
+          _page = 1;
         });
       }
       return;
     }
 
     if (mounted) {
-      setState(() => _isLoading = true);
+      setState(() {
+        _page = 1;
+        _hasMore = true;
+        _isLoading = true;
+        _loadingMore = false;
+      });
     }
 
     try {
       final result = await SocioService.getRichiesteUtente(
         page: 1,
-        perPage: 100,
-        stato: null,
+        perPage: _perPage,
+        // "paid" è client-side (pagamento.ricevuto); gli altri stati vanno al BE.
+        stato: (_filtroStato != null && _filtroStato != 'paid')
+            ? _filtroStato
+            : null,
       );
 
+      if (!mounted) return;
+
       if (result['success'] == true) {
-        if (mounted) {
-          setState(() {
-            _tutteRichieste = List<Map<String, dynamic>>.from(
-              result['data'] ?? [],
-            );
-            _isLoading = false;
-          });
-          
-          _scheduleOpenPendingRichiesta();
-        }
+        final pageItems = List<Map<String, dynamic>>.from(
+          result['data'] ?? [],
+        );
+        final pagination = result['pagination'];
+        final hasMoreApi = pagination is Map
+            ? pagination['has_more'] == true
+            : pageItems.length >= _perPage;
+
+        setState(() {
+          _tutteRichieste = pageItems;
+          _page = 1;
+          _hasMore = hasMoreApi;
+          _isLoading = false;
+          _loadingMore = false;
+        });
+        _scheduleOpenPendingRichiesta();
+        _ensureFilteredHasItems();
       } else {
-        if (mounted) {
-          setState(() => _isLoading = false);
-        }
+        setState(() {
+          _isLoading = false;
+          _loadingMore = false;
+          _hasMore = false;
+        });
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() {
+          _isLoading = false;
+          _loadingMore = false;
+        });
       }
-      // Non mostrare errore generico, l'utente potrebbe non essere loggato
       AppLogger.d('Errore caricamento richieste: $e');
     }
   }
 
-  List<Map<String, dynamic>> _getRichiesteDelGiorno(DateTime day) {
-    return _getRichiesteFiltrate().where((richiesta) {
-      final dataRichiesta = DateTime.tryParse(
-        richiesta['data_richiesta'] ?? '',
+  /// Con filtro attivo, se la pagina corrente non ha match carica la successiva.
+  void _ensureFilteredHasItems() {
+    if (_filtroStato == null || _isLoading || _loadingMore || !_hasMore) return;
+    if (_getRichiesteFiltrate().length >= 8) return;
+    _loadNextPage();
+  }
+
+  Future<void> _loadNextPage() async {
+    if (_loadingMore || !_hasMore || _isLoading) return;
+    final next = _page + 1;
+    if (mounted) setState(() => _loadingMore = true);
+
+    final token = await storage.read(key: 'jwt_token');
+    if (token == null) {
+      if (mounted) {
+        setState(() {
+          _loadingMore = false;
+          _hasMore = false;
+        });
+      }
+      return;
+    }
+
+    try {
+      final result = await SocioService.getRichiesteUtente(
+        page: next,
+        perPage: _perPage,
+        stato: (_filtroStato != null && _filtroStato != 'paid')
+            ? _filtroStato
+            : null,
       );
-      if (dataRichiesta == null) return false;
-      return isSameDay(dataRichiesta, day);
-    }).toList();
+      if (!mounted) return;
+      if (result['success'] == true) {
+        final pageItems = List<Map<String, dynamic>>.from(
+          result['data'] ?? [],
+        );
+        final pagination = result['pagination'];
+        final hasMoreApi = pagination is Map
+            ? pagination['has_more'] == true
+            : pageItems.length >= _perPage;
+        setState(() {
+          _tutteRichieste.addAll(pageItems);
+          _page = next;
+          _hasMore = hasMoreApi;
+          _loadingMore = false;
+        });
+        _ensureFilteredHasItems();
+      } else {
+        setState(() {
+          _loadingMore = false;
+          _hasMore = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _loadingMore = false);
+      AppLogger.d('Errore load more richieste: $e');
+    }
+  }
+
+  bool _isRichiestaPaid(Map<String, dynamic> richiesta) {
+    final pagamento = richiesta['pagamento'];
+    if (pagamento is Map && pagamento['ricevuto'] == true) return true;
+    final stato = (richiesta['stato'] ?? richiesta['status'] ?? '').toString();
+    return _canonicalStato(stato) == 'paid';
   }
 
   List<Map<String, dynamic>> _getRichiesteFiltrate() {
     if (_filtroStato == null) return _tutteRichieste;
 
+    if (_filtroStato == 'paid') {
+      return _tutteRichieste.where(_isRichiestaPaid).toList();
+    }
+
+    // Con filtro BE già applicato, rifiniamo lato client per alias di stato.
     return _tutteRichieste.where((richiesta) {
       final stato = (richiesta['stato'] ?? richiesta['status'] ?? '').toString();
       final canonical = _canonicalStato(stato);
@@ -416,10 +473,21 @@ class _CalendarScreenState extends State<CalendarScreen>
     return ServiceRequestLabels.categoria(l10n, categoria);
   }
 
-  String _getServizioLabelTradotto(String servizio) {
+  String _getServizioLabelTradotto(Object? servizioOrRecord) {
     final l10n = AppLocalizations.of(context);
-    if (l10n == null) return servizio;
-    return ServiceRequestLabels.servizio(l10n, servizio);
+    if (l10n == null) {
+      if (servizioOrRecord is Map) {
+        return (servizioOrRecord['servizio_label'] ??
+                servizioOrRecord['servizio'] ??
+                '')
+            .toString();
+      }
+      return servizioOrRecord?.toString() ?? '';
+    }
+    if (servizioOrRecord is Map) {
+      return ServiceRequestLabels.servizioFromRecord(l10n, servizioOrRecord);
+    }
+    return ServiceRequestLabels.servizio(l10n, servizioOrRecord);
   }
 
   /// Se il profilo non ha email, suggerisce (una volta) di completarlo per
@@ -592,7 +660,7 @@ class _CalendarScreenState extends State<CalendarScreen>
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             Text(
-              '${l10n.paymentService}: ${_getServizioLabelTradotto(richiesta['servizio'] ?? '')}',
+              '${l10n.paymentService}: ${_getServizioLabelTradotto(richiesta)}',
             ),
             const SizedBox(height: 16),
             Text(
@@ -619,7 +687,10 @@ class _CalendarScreenState extends State<CalendarScreen>
     );
 
     if (confirm == true) {
-      await _eliminaRichiesta(richiesta['id'] as int, fromBottomSheet: fromBottomSheet);
+      final id = parseIntOrNull(richiesta['id']);
+      if (id != null) {
+        await _eliminaRichiesta(id, fromBottomSheet: fromBottomSheet);
+      }
     }
   }
 
@@ -2561,7 +2632,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              _getServizioLabelTradotto(richiesta['servizio'] ?? ''),
+                              _getServizioLabelTradotto(richiesta),
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -3182,10 +3253,6 @@ class _CalendarScreenState extends State<CalendarScreen>
       {'label': l10n.paymentStatusAwaitingSignature, 'value': 'awaiting_signature'},
       {'label': l10n.paymentStatusCompleted, 'value': 'completed'},
     ];
-    
-    if (!_localeInitialized) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -3194,135 +3261,128 @@ class _CalendarScreenState extends State<CalendarScreen>
           IconButton(
             tooltip: l10n.reload,
             icon: const Icon(Icons.refresh),
-            onPressed: _isLoading ? null : _caricaRichieste,
+            onPressed: _isLoading ? null : () => _caricaRichieste(reset: true),
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _caricaRichieste,
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-                children: [
-                  // Filtri stato
-                  Container(
-                    height: 50,
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      itemCount: filtriStato.length,
-                      itemBuilder: (context, index) {
-                        final filtro = filtriStato[index];
-                        final label = filtro['label'] ?? '';
-                        final value = filtro['value'];
-                        final isSelected = _filtroStato == filtro['value'];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: FilterChip(
-                            label: Text(label),
-                            selected: isSelected,
-                            onSelected: (selected) {
-                              setState(() {
-                                _filtroStato = selected ? value : null;
-                              });
-                            },
-                            backgroundColor: Colors.grey.shade200,
-                            selectedColor: Colors.amber.shade100,
-                            checkmarkColor: Colors.amber.shade700,
-                          ),
-                        );
-                      },
-                    ),
+      body: Column(
+        children: [
+          Container(
+            height: 50,
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              itemCount: filtriStato.length,
+              itemBuilder: (context, index) {
+                final filtro = filtriStato[index];
+                final label = filtro['label'] ?? '';
+                final value = filtro['value'];
+                final isSelected = _filtroStato == filtro['value'];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: FilterChip(
+                    label: Text(label),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      setState(() {
+                        _filtroStato = selected ? value : null;
+                      });
+                      // Ricarica dalla pagina 1 con (eventuale) stato API.
+                      _caricaRichieste(reset: true);
+                    },
+                    backgroundColor: Colors.grey.shade200,
+                    selectedColor: Colors.amber.shade100,
+                    checkmarkColor: Colors.amber.shade700,
                   ),
-
-                  // Calendario
-                  Card(
-                    margin: const EdgeInsets.all(8),
-                    child: TableCalendar(
-                      firstDay: DateTime.utc(2020, 1, 1),
-                      lastDay: DateTime.utc(2030, 12, 31),
-                      focusedDay: _focusedDay,
-                      selectedDayPredicate:
-                          (day) => isSameDay(_selectedDay, day),
-                      calendarFormat: _calendarFormat,
-                      eventLoader: _getRichiesteDelGiorno,
-                      startingDayOfWeek: StartingDayOfWeek.monday,
-                      locale: _calendarLocale,
-                      calendarStyle: CalendarStyle(
-                        todayDecoration: BoxDecoration(
-                          color: Colors.amber.shade300,
-                          shape: BoxShape.circle,
-                        ),
-                        selectedDecoration: const BoxDecoration(
-                          color: Colors.amber,
-                          shape: BoxShape.circle,
-                        ),
-                        markerDecoration: const BoxDecoration(
-                          color: AppColors.info,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      headerStyle: const HeaderStyle(
-                        formatButtonVisible: true,
-                        titleCentered: true,
-                      ),
-                      onDaySelected: (selectedDay, focusedDay) {
-                        setState(() {
-                          _selectedDay = selectedDay;
-                          _focusedDay = focusedDay;
-                        });
-                      },
-                      onFormatChanged: (format) {
-                        setState(() {
-                          _calendarFormat = format;
-                        });
-                      },
-                      onPageChanged: (focusedDay) {
-                        _focusedDay = focusedDay;
-                      },
-                    ),
-                  ),
-
-                  // Lista richieste
-                  Expanded(child: _buildListaRichieste()),
-                ],
-              ),
+                );
+              },
+            ),
+          ),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () => _caricaRichieste(reset: true),
+              child: _isLoading
+                  ? ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: const [
+                        SizedBox(height: 180),
+                        Center(child: CircularProgressIndicator()),
+                      ],
+                    )
+                  : _buildListaRichieste(),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildListaRichieste() {
-    final richieste =
-        _selectedDay != null
-            ? _getRichiesteDelGiorno(_selectedDay!)
-            : _getRichiesteFiltrate();
+    final richieste = _getRichiesteFiltrate();
 
     if (richieste.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.inbox, size: 64, color: Colors.grey.shade400),
-            const SizedBox(height: 16),
-            Text(
-              _selectedDay != null
-                  ? AppLocalizations.of(context)!.noRequestsThisDay
-                  : AppLocalizations.of(context)!.noRequestsFound,
-              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.45,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.inbox, size: 64, color: Colors.grey.shade400),
+                const SizedBox(height: 16),
+                Text(
+                  AppLocalizations.of(context)!.noRequestsFound,
+                  style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(8),
-      itemCount: richieste.length,
-      itemBuilder: (context, index) {
-        final richiesta = richieste[index];
-        return _buildRichiestaCard(richiesta);
+    final showFooter = _loadingMore || _hasMore;
+    return NotificationListener<ScrollNotification>(
+      onNotification: (n) {
+        if (n is ScrollEndNotification && n.metrics.extentAfter < 240) {
+          _loadNextPage();
+        }
+        return false;
       },
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
+        itemCount: richieste.length + (showFooter ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index >= richieste.length) {
+            if (_loadingMore) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+              );
+            }
+            if (_hasMore) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: TextButton(
+                  onPressed: _loadNextPage,
+                  child: Text(
+                    _trFallback(
+                      AppLocalizations.of(context)!,
+                      'loadMore',
+                      'Carica altre',
+                    ),
+                  ),
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          }
+          return _buildRichiestaCard(richieste[index]);
+        },
+      ),
     );
   }
 
@@ -3337,7 +3397,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       MaterialPageRoute(
         builder: (context) => SelezionaSlotScreen(
           richiestaId: richiestaId,
-          servizioLabel: _getServizioLabelTradotto(richiesta['servizio'] ?? ''),
+          servizioLabel: _getServizioLabelTradotto(richiesta),
         ),
       ),
     ).then((_) => _caricaRichieste());
@@ -3435,7 +3495,7 @@ class _CalendarScreenState extends State<CalendarScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                _getServizioLabelTradotto(richiesta['servizio'] ?? ''),
+                _getServizioLabelTradotto(richiesta),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -3568,7 +3628,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                           _visualizzaRicevuta(
                             paymentId,
                             richiesta['numero_pratica'] ?? 'N/A',
-                            richiestaId: richiesta['id'] as int?,
+                            richiestaId: parseIntOrNull(richiesta['id']),
                           );
                         },
                         child: Container(
@@ -3602,17 +3662,21 @@ class _CalendarScreenState extends State<CalendarScreen>
                 ),
               ],
               // Bottone Paga - Usa schermata interna se c'è richiestaId
-              if ((isAwaitingPayment || puoPagare) && richiesta['id'] != null && pagamento['ricevuto'] != true) ...[
+              if ((isAwaitingPayment || puoPagare) &&
+                  parseIntOrNull(richiesta['id']) != null &&
+                  pagamento['ricevuto'] != true) ...[
                 const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () {
+                      final rid = parseIntOrNull(richiesta['id']);
+                      if (rid == null) return;
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => PagamentoScreen(
-                            richiestaId: richiesta['id'] as int,
+                            richiestaId: rid,
                           ),
                         ),
                       ).then((_) {

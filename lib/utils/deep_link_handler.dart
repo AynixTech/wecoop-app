@@ -3,7 +3,6 @@ import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:wecoop_app/utils/app_navigation.dart';
 import '../screens/profilo/change_password_screen.dart';
-import '../screens/servizi/pagamento_screen.dart';
 import '../screens/annunci/annunci_screen.dart';
 import '../screens/eventi/evento_detail_screen.dart';
 import '../screens/servizi/studiare_in_italia_screen.dart';
@@ -73,11 +72,7 @@ class DeepLinkHandler {
     if (path.startsWith('/pagamento/')) {
       final id = int.tryParse(path.split('/').last);
       if (id != null) {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => PagamentoScreen(richiestaId: id),
-          ),
-        );
+        AppNavigation.navigateToPagamento(richiestaId: id);
       }
       return;
     }
@@ -85,11 +80,7 @@ class DeepLinkHandler {
     if (path == '/pagamento' && queryParams.containsKey('richiesta_id')) {
       final id = int.tryParse(queryParams['richiesta_id']!);
       if (id != null) {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => PagamentoScreen(richiestaId: id),
-          ),
-        );
+        AppNavigation.navigateToPagamento(richiestaId: id);
       }
       return;
     }

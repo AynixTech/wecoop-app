@@ -189,7 +189,7 @@ class _MainScreenState extends State<MainScreen> {
       0: 'Home',
       1: 'Eventi',
       2: 'Annunci',
-      3: 'Calendario',
+      3: 'Richieste',
       4: 'Lavoro',
       5: 'Sportello',
       6: 'Profilo',

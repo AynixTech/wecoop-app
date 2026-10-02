@@ -1,12 +1,15 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../../theme/theme.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
 import 'package:wecoop_app/utils/italian_validators.dart';
 import 'package:wecoop_app/widgets/country_picker_field.dart';
 import '../../services/socio_service.dart';
 import '../login/login_screen.dart';
+import '../onboarding/first_access_screen.dart' show kGdprAppUrl, kPrivacyPolicyUrl;
 
 class AdesioneSocioScreen extends StatefulWidget {
   const AdesioneSocioScreen({super.key});
@@ -27,6 +30,8 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
   final _emailController = TextEditingController();
   String? _selectedNazionalita;
   bool _privacyAccepted = false;
+  late final TapGestureRecognizer _gdprLinkRecognizer;
+  late final TapGestureRecognizer _privacyLinkRecognizer;
   
   // Controllers per i campi OPZIONALI
   final _codiceFiscaleController = TextEditingController();
@@ -37,9 +42,27 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
   final _capController = TextEditingController();
   final _provinciaController = TextEditingController();
   final _professioneController = TextEditingController();
-  
+
+  @override
+  void initState() {
+    super.initState();
+    _gdprLinkRecognizer = TapGestureRecognizer()
+      ..onTap = () => _openLegalUrl(kGdprAppUrl);
+    _privacyLinkRecognizer = TapGestureRecognizer()
+      ..onTap = () => _openLegalUrl(kPrivacyPolicyUrl);
+  }
+
+  Future<void> _openLegalUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   @override
   void dispose() {
+    _gdprLinkRecognizer.dispose();
+    _privacyLinkRecognizer.dispose();
     _nomeController.dispose();
     _cognomeController.dispose();
     _prefissoController.dispose();
@@ -74,7 +97,9 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
     if (!_privacyAccepted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.translate('privacyRequired')),
+          content: Text(
+            AppLocalizations.of(context)!.translate('legalConsentRequired'),
+          ),
           backgroundColor: AppColors.error,
         ),
       );
@@ -521,24 +546,65 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Privacy Checkbox
-                      CheckboxListTile(
-                        value: _privacyAccepted,
-                        onChanged: (value) {
-                          setState(() {
-                            _privacyAccepted = value ?? false;
-                          });
-                        },
-                        title: Text(
-                          l10n.translate('iAcceptDataProcessing'),
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        subtitle: Text(
-                          l10n.translate('dataWillBeProcessed'),
-                          style: const TextStyle(fontSize: 11, color: Colors.grey),
-                        ),
-                        controlAffinity: ListTileControlAffinity.leading,
-                        contentPadding: EdgeInsets.zero,
+                      // Consenso GDPR + Privacy Policy (obbligatorio)
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Checkbox(
+                            value: _privacyAccepted,
+                            onChanged: (value) {
+                              setState(() {
+                                _privacyAccepted = value ?? false;
+                              });
+                            },
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 12),
+                              child: Text.rich(
+                                TextSpan(
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    height: 1.4,
+                                    color: Colors.grey.shade800,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                          '${l10n.translate('gdprConsentPrefix')} ',
+                                    ),
+                                    TextSpan(
+                                      text: l10n.translate('gdprLinkLabel'),
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        fontWeight: FontWeight.w700,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                      recognizer: _gdprLinkRecognizer,
+                                    ),
+                                    TextSpan(
+                                      text: l10n.translate('consentAndThe'),
+                                    ),
+                                    TextSpan(
+                                      text: l10n.translate('privacyPolicy'),
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        fontWeight: FontWeight.w700,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                      recognizer: _privacyLinkRecognizer,
+                                    ),
+                                    const TextSpan(text: ' *'),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 24),
 

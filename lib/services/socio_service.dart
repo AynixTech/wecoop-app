@@ -200,6 +200,8 @@ class SocioService {
             nazionalita.toUpperCase(), // Assicura maiuscolo ISO (IT, EC, ES)
         'email': email,
         'privacy_accepted': privacyAccepted,
+        'privacy': privacyAccepted,
+        'gdprAccepted': privacyAccepted,
       };
 
       // Aggiungi campi opzionali solo se valorizzati

@@ -11,6 +11,7 @@ class Pagamento {
   final String? transactionId;
   final String? note;
   final String? servizio;
+  final String? servizioLabel;
   final String? numeroPratica;
   final DateTime createdAt;
   final DateTime? updatedAt;
@@ -26,6 +27,7 @@ class Pagamento {
     this.transactionId,
     this.note,
     this.servizio,
+    this.servizioLabel,
     this.numeroPratica,
     required this.createdAt,
     this.updatedAt,
@@ -64,6 +66,7 @@ class Pagamento {
       transactionId: json['transaction_id']?.toString(),
       note: json['note']?.toString(),
       servizio: json['servizio']?.toString(),
+      servizioLabel: json['servizio_label']?.toString(),
       numeroPratica: json['numero_pratica']?.toString(),
       createdAt: parseDate(json['created_at']) ?? DateTime.now(),
       updatedAt: parseDate(json['updated_at']),
@@ -82,6 +85,7 @@ class Pagamento {
       'transaction_id': transactionId,
       'note': note,
       'servizio': servizio,
+      'servizio_label': servizioLabel,
       'numero_pratica': numeroPratica,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),

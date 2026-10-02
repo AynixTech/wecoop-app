@@ -29,12 +29,34 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
   bool _isLoading = true;
   String? _errorMessage;
   bool _isStripeLoadingDialogVisible = false;
+  bool _isPaying = false;
+  /// Stripe ha addebitato ma la conferma BE non è ancora andata a buon fine.
+  bool _chargePendingConfirm = false;
 
   @override
   void initState() {
     super.initState();
     AppLogger.d('🚀 [PagamentoScreen] initState - paymentId: ${widget.paymentId}, richiestaId: ${widget.richiestaId}');
     _loadPagamento();
+  }
+
+  @override
+  void dispose() {
+    _dismissStripeLoadingDialog(force: true);
+    super.dispose();
+  }
+
+  void _dismissStripeLoadingDialog({bool force = false}) {
+    if (!_isStripeLoadingDialogVisible && !force) return;
+    _isStripeLoadingDialogVisible = false;
+    try {
+      final nav = Navigator.maybeOf(context, rootNavigator: true);
+      if (nav != null && nav.canPop()) {
+        nav.pop();
+      }
+    } catch (_) {
+      // dispose / unmounted: ignore
+    }
   }
 
   Future<void> _loadPagamento() async {
@@ -151,8 +173,30 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
     }
   }
 
+  Future<Map<String, dynamic>> _confirmWithRetry({
+    required int paymentId,
+    required String transactionId,
+  }) async {
+    Map<String, dynamic> result = {'success': false};
+    for (var attempt = 1; attempt <= 3; attempt++) {
+      result = await PagamentoService.confermaPagamento(
+        paymentId: paymentId,
+        metodoPagamento: 'stripe',
+        transactionId: transactionId,
+        note: 'Pagato tramite Stripe in-app',
+      );
+      if (result['success'] == true) return result;
+      if (attempt < 3) {
+        await Future<void>.delayed(Duration(seconds: attempt));
+      }
+    }
+    return result;
+  }
+
   Future<void> _handleStripePayment() async {
     AppLogger.d('💳 [PagamentoScreen] Inizio processo pagamento Stripe');
+
+    if (_isPaying || _chargePendingConfirm) return;
 
     final pagamento = _pagamento;
     if (pagamento == null) {
@@ -164,28 +208,28 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       '💳 [PagamentoScreen] Pagamento: ID ${pagamento.id}, Importo €${pagamento.importo}, Stato: ${pagamento.stato}',
     );
 
-    // Assicura che Stripe sia inizializzato usando la chiave del backend (wp-config-stripe.php)
-    await _ensureStripeReady();
-    if (!mounted) return;
-
-    // Verifica se Stripe è configurato
-    if (!StripeConfig.isConfigured) {
-      AppLogger.d('❌ [PagamentoScreen] Stripe non configurato');
-      ErrorReporter.instance.reportPayment(
-        message: 'Stripe non configurato: pagamento carta bloccato',
-        paymentId: pagamento.id,
-        step: 'stripe_unavailable',
-      );
-      _showErrorDialog(
-        AppLocalizations.of(context)!.translate('stripeUnavailable'),
-      );
-      return;
-    }
-
-    AppLogger.d('✅ [PagamentoScreen] Stripe configurato correttamente');
+    setState(() => _isPaying = true);
 
     try {
-      // Mostra loading
+      // Assicura che Stripe sia inizializzato usando la chiave del backend
+      await _ensureStripeReady();
+      if (!mounted) return;
+
+      if (!StripeConfig.isConfigured) {
+        AppLogger.d('❌ [PagamentoScreen] Stripe non configurato');
+        ErrorReporter.instance.reportPayment(
+          message: 'Stripe non configurato: pagamento carta bloccato',
+          paymentId: pagamento.id,
+          step: 'stripe_unavailable',
+        );
+        _showErrorDialog(
+          AppLocalizations.of(context)!.translate('stripeUnavailable'),
+        );
+        return;
+      }
+
+      AppLogger.d('✅ [PagamentoScreen] Stripe configurato correttamente');
+
       showDialog(
         context: context,
         useRootNavigator: true,
@@ -198,7 +242,6 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
 
       AppLogger.d('🔄 Creo Payment Intent per €${pagamento.importo}...');
 
-      // 1. Crea Payment Intent sul backend (importo deciso server-side)
       final intent = await PagamentoService.creaStripePaymentIntent(
         paymentId: pagamento.id,
       );
@@ -206,17 +249,11 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
       AppLogger.d('✅ Client Secret ricevuto: ${intent != null ? "OK" : "NULL"}');
 
       if (!mounted) return;
-      if (_isStripeLoadingDialogVisible &&
-          Navigator.of(context, rootNavigator: true).canPop()) {
-        Navigator.of(context, rootNavigator: true).pop();
-        _isStripeLoadingDialogVisible = false;
-        // Attendi la fine dell'animazione di chiusura del dialog prima di mostrare Stripe.
-        await Future<void>.delayed(const Duration(milliseconds: 220));
-      }
+      _dismissStripeLoadingDialog();
+      await Future<void>.delayed(const Duration(milliseconds: 220));
       if (!mounted) return;
 
       if (intent == null) {
-        // Già segnalato da PagamentoService; UI only.
         _showErrorDialog(
           AppLocalizations.of(context)!.translate('paymentCreateFailed'),
         );
@@ -225,11 +262,10 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
 
       AppLogger.d('🔄 Inizializzo Payment Sheet...');
 
-      // 2. Inizializza Payment Sheet
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           paymentIntentClientSecret: intent.clientSecret,
-          merchantDisplayName: 'KINTI SRL',
+          merchantDisplayName: 'WECOOP APS',
           style: ThemeMode.system,
           appearance: const PaymentSheetAppearance(
             colors: PaymentSheetAppearanceColors(
@@ -242,28 +278,41 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
 
       AppLogger.d('✅ Payment Sheet inizializzato, mostro UI...');
 
-      // 3. Mostra Payment Sheet
       await Stripe.instance.presentPaymentSheet();
 
-      AppLogger.d('✅ Pagamento completato con successo!');
+      AppLogger.d('✅ Pagamento Stripe completato — confermo sul backend...');
 
-      // 4. Conferma sul backend (solo payment_intent id, mai il client_secret)
-      final result = await PagamentoService.confermaPagamento(
+      final transactionId = intent.paymentIntentId ??
+          intent.clientSecret.split('_secret').first;
+
+      // Da qui la carta può essere addebitata: non permettere un nuovo intent.
+      if (mounted) {
+        setState(() => _chargePendingConfirm = true);
+      }
+
+      var result = await _confirmWithRetry(
         paymentId: pagamento.id,
-        metodoPagamento: 'stripe',
-        transactionId: intent.paymentIntentId ??
-            intent.clientSecret.split('_secret').first,
-        note: 'Pagato tramite Stripe in-app',
+        transactionId: transactionId,
       );
 
       if (!mounted) return;
 
+      if (result['success'] != true) {
+        // Webhook / race: ricarica stato prima di dichiarare fallimento.
+        await _loadPagamento();
+        if (!mounted) return;
+        if (_pagamento?.isPaid == true) {
+          result = {'success': true};
+        }
+      }
+
       if (result['success'] == true) {
-        // Registra push token per email future con deep link app (non "Vai alla piattaforma").
+        if (mounted) {
+          setState(() => _chargePendingConfirm = false);
+        }
         await PushNotificationService().syncTokenWithBackend();
         if (!mounted) return;
 
-        // Ricarica i dati del pagamento
         await _loadPagamento();
         if (!mounted) return;
 
@@ -275,7 +324,6 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
               .replaceAll('{amount}', amount),
         );
       } else {
-        // Critico: Stripe ha addebitato ma il backend non ha confermato.
         ErrorReporter.instance.reportPayment(
           message:
               'Pagamento Stripe OK ma conferma backend fallita — pratica potenzialmente bloccata',
@@ -284,24 +332,16 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
           detail: result['message']?.toString() ?? 'unknown',
         );
         _showErrorDialog(
-          result['message'] ??
-              AppLocalizations.of(context)!.translate('paymentConfirmError'),
+          AppLocalizations.of(context)!.translate('paymentConfirmAfterChargeError'),
         );
       }
     } on StripeException catch (e) {
       AppLogger.d('❌ StripeException: ${e.error.code} - ${e.error.message}');
       if (!mounted) return;
-      
-      if (_isStripeLoadingDialogVisible &&
-          Navigator.of(context, rootNavigator: true).canPop()) {
-        Navigator.of(context, rootNavigator: true).pop();
-        _isStripeLoadingDialogVisible = false;
-      }
+      _dismissStripeLoadingDialog();
 
-      // Gestisci errori Stripe specifici
       if (e.error.code == FailureCode.Canceled) {
         AppLogger.d('ℹ️ Utente ha annullato il pagamento');
-        // Utente ha annullato — non segnalare
         return;
       }
 
@@ -325,16 +365,18 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
         detail: e,
       );
       if (!mounted) return;
-      if (_isStripeLoadingDialogVisible &&
-          Navigator.of(context, rootNavigator: true).canPop()) {
-        Navigator.of(context, rootNavigator: true).pop();
-        _isStripeLoadingDialogVisible = false;
-      }
+      _dismissStripeLoadingDialog();
       _showErrorDialog(
         AppLocalizations.of(context)!
             .translate('unexpectedErrorPrefix')
             .replaceAll('{detail}', '$e'),
       );
+    } finally {
+      if (mounted) {
+        setState(() => _isPaying = false);
+      } else {
+        _isPaying = false;
+      }
     }
   }
 
@@ -399,9 +441,12 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
     return AppLocalizations.of(context)!.translate(key);
   }
 
-  String _getServizioLabelTradotto(String servizio) {
+  String _getServizioLabelTradotto(String? servizio, {String? servizioLabel}) {
     final l10n = AppLocalizations.of(context);
-    if (l10n == null) return servizio;
+    if (servizioLabel != null && servizioLabel.trim().isNotEmpty) {
+      return servizioLabel.trim();
+    }
+    if (l10n == null) return servizio ?? '';
     return ServiceRequestLabels.servizio(l10n, servizio);
   }
 
@@ -538,7 +583,10 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                     const Divider(),
                                     _buildDetailRow(
                                       AppLocalizations.of(context)!.paymentService,
-                                      _getServizioLabelTradotto(_pagamento!.servizio ?? 'N/A'),
+                                      _getServizioLabelTradotto(
+                                        _pagamento!.servizio,
+                                        servizioLabel: _pagamento!.servizioLabel,
+                                      ),
                                     ),
                                     _buildDetailRow(
                                       AppLocalizations.of(context)!.paymentFileNumber,
@@ -550,7 +598,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                     ),
                                     _buildDetailRow(
                                       _legal('paymentInvoiceEntity'),
-                                      'KINTI SRL',
+                                      'WECOOP APS · CF/P.IVA 97977210158',
                                     ),
                                     if (_pagamento!.paidAt != null)
                                       _buildDetailRow(
@@ -609,8 +657,8 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                 ),
                               ),
 
-                            // Pulsanti pagamento (solo se pending)
-                            if (_pagamento!.isPending)
+                            // Pulsanti pagamento (solo se pending e non in charge-pending)
+                            if (_pagamento!.isPending && !_chargePendingConfirm)
                               Padding(
                                 padding: const EdgeInsets.all(16.0),
                               child: Column(
@@ -629,13 +677,74 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                   _buildPaymentButton(
                                     icon: Icons.credit_card,
                                     label: AppLocalizations.of(context)!.payWithCard,
-                                    subtitle: _legal('stripeConnectedToKinti'),
+                                    subtitle: _legal('stripeConnectedToWecoop'),
                                     color: const Color(0xFF635BFF),
-                                    onTap: _handleStripePayment,
+                                    onTap: (_isPaying || _chargePendingConfirm)
+                                        ? null
+                                        : _handleStripePayment,
                                   ),
                                 ],
                               ),
                             ),
+
+                            if (_chargePendingConfirm &&
+                                _pagamento != null &&
+                                !_pagamento!.isPaid)
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Card(
+                                  color: Colors.orange.shade50,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        Text(
+                                          AppLocalizations.of(context)!
+                                              .translate(
+                                            'paymentConfirmAfterChargeError',
+                                          ),
+                                          style: const TextStyle(height: 1.4),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        ElevatedButton(
+                                          onPressed: _isPaying
+                                              ? null
+                                              : () async {
+                                                  setState(
+                                                    () => _isPaying = true,
+                                                  );
+                                                  try {
+                                                    await _loadPagamento();
+                                                    if (!mounted) return;
+                                                    if (_pagamento?.isPaid ==
+                                                        true) {
+                                                      setState(
+                                                        () =>
+                                                            _chargePendingConfirm =
+                                                                false,
+                                                      );
+                                                    }
+                                                  } finally {
+                                                    if (mounted) {
+                                                      setState(
+                                                        () =>
+                                                            _isPaying = false,
+                                                      );
+                                                    }
+                                                  }
+                                                },
+                                          child: Text(
+                                            AppLocalizations.of(context)!
+                                                .translate('reload'),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
 
                           // Messaggio se già pagato
                           if (_pagamento!.isPaid)
@@ -707,7 +816,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
     required String label,
     required String subtitle,
     required Color color,
-    required VoidCallback onTap,
+    required VoidCallback? onTap,
   }) {
     return InkWell(
       onTap: onTap,

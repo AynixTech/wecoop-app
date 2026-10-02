@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
+import 'package:wecoop_app/utils/service_request_labels.dart';
 import '../../config/api_config.dart';
 
 class PrenotaAppuntamentoScreen extends StatefulWidget {
@@ -118,10 +119,13 @@ class _PrenotaAppuntamentoScreenState extends State<PrenotaAppuntamentoScreen> {
       final sede = app['sede'] ??
           l10n?.translate('unknownSede') ??
           'Sede sconosciuta';
-      final servizio = app['sportello'] ??
+      final rawServizio = app['sportello'] ??
           app['servizio'] ??
           l10n?.translate('unknownService') ??
           'Servizio sconosciuto';
+      final servizio = l10n != null
+          ? ServiceRequestLabels.servizio(l10n, rawServizio)
+          : rawServizio.toString();
 
       mappa.putIfAbsent(sede, () => {});
       mappa[sede]!.putIfAbsent(servizio, () => []);

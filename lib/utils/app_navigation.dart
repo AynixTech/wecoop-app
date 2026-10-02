@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../screens/eventi/evento_detail_screen.dart';
 import '../screens/lavoro/offerte_lavoro_screen.dart';
+import '../screens/login/login_screen.dart';
 import '../screens/profilo/documenti_screen.dart';
 import '../screens/profilo/mie_richieste_screen.dart';
 import '../screens/servizi/pagamento_screen.dart';
+import '../services/auth_helper.dart';
 import '../services/push_notification_service.dart';
 
 /// Indici tab di [MainScreen].
@@ -12,7 +14,9 @@ abstract final class MainTab {
   static const int home = 0;
   static const int eventi = 1;
   static const int annunci = 2;
+  /// Tab "Le mie richieste" (alias storico: calendar).
   static const int calendar = 3;
+  static const int richieste = calendar;
   static const int lavoro = 4;
   static const int sportello = 5;
   static const int profilo = 6;
@@ -92,9 +96,17 @@ abstract final class AppNavigation {
     );
   }
 
-  static void navigateToMieRichieste({String? ticketId}) {
+  static Future<void> navigateToMieRichieste({String? ticketId}) async {
     final navigator = _navigator;
     if (navigator == null) return;
+
+    final loggedIn = await AuthHelper.isLoggedIn();
+    if (!loggedIn) {
+      navigator.push(
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+      return;
+    }
 
     navigator.push(
       MaterialPageRoute(
@@ -104,11 +116,23 @@ abstract final class AppNavigation {
   }
 
   /// Apre la schermata di pagamento (stesso path dell'email deep link).
-  static void navigateToPagamento({int? richiestaId, int? paymentId}) {
+  /// Richiede login; altrimenti porta al LoginScreen.
+  static Future<void> navigateToPagamento({
+    int? richiestaId,
+    int? paymentId,
+  }) async {
     final navigator = _navigator;
     if (navigator == null) return;
     if (richiestaId == null && paymentId == null) {
-      navigateToMainTab(MainTab.calendar);
+      navigateToMainTab(MainTab.richieste);
+      return;
+    }
+
+    final loggedIn = await AuthHelper.isLoggedIn();
+    if (!loggedIn) {
+      navigator.push(
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
       return;
     }
 
@@ -120,6 +144,16 @@ abstract final class AppNavigation {
         ),
       ),
     );
+  }
+
+  /// Apre documenti solo se autenticato.
+  static Future<void> navigateToDocumentiAuthed() async {
+    final loggedIn = await AuthHelper.isLoggedIn();
+    if (!loggedIn) {
+      navigateToLogin();
+      return;
+    }
+    navigateToDocumenti();
   }
 
   /// Gestione unificata payload push / notifiche in-app.
@@ -176,7 +210,7 @@ abstract final class AppNavigation {
 
       case 'documenti':
       case 'document_expiry':
-        navigateToDocumenti();
+        navigateToDocumentiAuthed();
         return;
 
       case 'payment':

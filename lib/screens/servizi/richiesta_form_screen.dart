@@ -1810,17 +1810,24 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
   }
 
   Future<void> _submitForm() async {
+    if (_isSubmitting) return;
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
+    setState(() => _isSubmitting = true);
+
+    try {
     // Controlla se ci sono documenti mancanti e BLOCCA l'invio se presenti.
     final richiesti = _effectiveDocumenti;
     if (richiesti != null && richiesti.isNotEmpty) {
       await _checkDocumenti();
       if (_documentiMancanti.isNotEmpty ||
           _documentiMancantiFamiliare.isNotEmpty) {
-        if (mounted) _showDocumentiMancantiDialog();
+        if (mounted) {
+          setState(() => _isSubmitting = false);
+          _showDocumentiMancantiDialog();
+        }
         return; // non proseguire con l'invio finché mancano documenti
       }
     }
@@ -1861,12 +1868,6 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         }
       }
     }
-
-    setState(() {
-      _isSubmitting = true;
-    });
-
-    try {
       // Converti i dati dal formato form al formato API
       final apiData = _convertToApiFormat(_formData);
 
@@ -1918,18 +1919,18 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       AppLogger.d('   payment_id: ${result['payment_id']}');
       AppLogger.d('   importo: ${result['importo']}');
 
-      setState(() {
-        _isSubmitting = false;
-      });
-
       if (!mounted) return;
+      setState(() => _isSubmitting = false);
 
       if (result['success'] == true) {
         final l10n = AppLocalizations.of(context)!;
         final numeroPratica = result['numero_pratica'];
         final requiresPayment = result['requires_payment'] == true;
         final importo = result['importo'];
-        final paymentId = result['payment_id'];
+        final paymentIdRaw = result['payment_id'];
+        final paymentId = paymentIdRaw is int
+            ? paymentIdRaw
+            : int.tryParse('${paymentIdRaw ?? ''}');
 
         AppLogger.d('\n💬 PREPARAZIONE DIALOG:');
         AppLogger.d('   numeroPratica: $numeroPratica');
@@ -2029,27 +2030,26 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         );
       }
     } catch (e) {
-      setState(() {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+        final l10n = AppLocalizations.of(context)!;
+        showDialog(
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                title: Text('❌ ${l10n.error}'),
+                content: Text('${l10n.connectionError}: ${e.toString()}'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(l10n.ok),
+                  ),
+                ],
+              ),
+        );
+      } else {
         _isSubmitting = false;
-      });
-
-      if (!mounted) return;
-
-      final l10n = AppLocalizations.of(context)!;
-      showDialog(
-        context: context,
-        builder:
-            (context) => AlertDialog(
-              title: Text('❌ ${l10n.error}'),
-              content: Text('${l10n.connectionError}: ${e.toString()}'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(l10n.ok),
-                ),
-              ],
-            ),
-      );
+      }
     }
   }
 

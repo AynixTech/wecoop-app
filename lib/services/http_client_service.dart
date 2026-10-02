@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:http/http.dart' as http;
+import 'package:wecoop_app/services/auth_helper.dart';
 import 'package:wecoop_app/services/maintenance_handler.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/error_reporter.dart';
@@ -74,10 +75,9 @@ class HttpClientService {
   /// Le chiamate concorrenti condividono lo stesso Future (nessun doppio refresh).
   static Future<bool>? _refreshFuture;
 
-  /// Pulisce i token di sessione (logout locale).
+  /// Pulisce sessione locale completa (token + biometric + PII).
   static Future<void> _clearSession() async {
-    await storage.delete(key: 'jwt_token');
-    await storage.delete(key: 'refresh_token');
+    await AuthHelper.clearSessionForLogout();
   }
 
   static Future<bool> refreshToken() {

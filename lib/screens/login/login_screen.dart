@@ -171,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
     AppLogger.d('🔐 ==================== LOGIN ====================');
     AppLogger.d('🔐 Tipo: ${fromBiometrics ? "BIOMETRICO" : "MANUALE"}');
     AppLogger.d('🔐 phone (username): "$phone"');
-    AppLogger.d('🔐 password length: ${password.length} (vuota=${password.isEmpty})');
+    AppLogger.d('🔐 password presente: ${password.isNotEmpty}');
 
     if (mounted) {
       setState(() {
@@ -184,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final requestBody = jsonEncode({'username': phone, 'password': password});
     AppLogger.d('🔐 URL: $url');
-    AppLogger.d('🔐 Payload: $requestBody');
+    AppLogger.d('🔐 Payload: {"username":"$phone","password":"***"}');
 
     try {
       // Render free tier often returns HTML 502/503/504 on cold start.

@@ -94,6 +94,7 @@ class PresenceService {
       'MieRichiesteScreen': 'Le mie richieste',
       'NotificheScreen': 'Notifiche',
       'PrenotaAppuntamentoScreen': 'Prenota appuntamento',
+      'DecretoFlussiScreen': 'Decreto Flussi',
       'CompletaProfiloScreen': 'Completa profilo',
       'CvAiScreen': 'CV AI',
       'ChatbotAssistenzaScreen': 'Assistenza chatbot',

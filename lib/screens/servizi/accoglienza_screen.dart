@@ -3,13 +3,13 @@ import 'package:wecoop_app/services/app_localizations.dart';
 import '../../theme/theme.dart';
 import '../../widgets/design_system/design_system.dart';
 import '../../widgets/whatsapp_contact_button.dart';
-import '../prenota_appuntamento/prenota_appuntamento_screen.dart';
 import 'permesso_soggiorno_screen.dart';
 import 'cittadinanza_screen.dart';
 import 'ricongiungimento_familiare_screen.dart';
 import 'asilo_politico_screen.dart';
 import 'visa_turismo_screen.dart';
 import 'mediazione_linguistica_screen.dart';
+import 'decreto_flussi_screen.dart';
 
 class AccoglienzaScreen extends StatelessWidget {
   const AccoglienzaScreen({super.key});
@@ -86,7 +86,7 @@ class AccoglienzaScreen extends StatelessWidget {
                 icon: Icons.description_outlined,
                 title: l10n.translate('decretoFlussi'),
                 subtitle: l10n.translate('decretoFlussiDesc'),
-                onTap: () => go(const PrenotaAppuntamentoScreen()),
+                onTap: () => go(const DecretoFlussiScreen()),
               ),
               const WhatsappContactButton(
                 labelKey: 'parlaConNoi',

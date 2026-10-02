@@ -53,6 +53,9 @@ const Map<String, String> servizioStandardMap = {
   'Family Reunification': 'family_reunification',
   'Reagrupación Familiar': 'family_reunification',
 
+  // Decreto Flussi
+  'Decreto Flussi': 'decreto_flussi',
+
   // Educazione finanziaria + credito
   'Educazione finanziaria + credito': 'financial_education_credit',
   'Financial Education + Credit': 'financial_education_credit',
@@ -94,6 +97,11 @@ const Map<String, String> categoriaStandardMap = {
   'Family Reunification Permit': 'family_reunification_permit',
   'Family reunification permit': 'family_reunification_permit',
   'Reagrupación familiar': 'family_reunification_permit',
+
+  // Decreto Flussi
+  'Consulenza Decreto Flussi': 'decreto_flussi_consulting',
+  'Decreto Flussi consulting': 'decreto_flussi_consulting',
+  'Asesoría Decreto Flussi': 'decreto_flussi_consulting',
 
   // Permesso - Duplicato permesso di soggiorno
   'Duplicato permesso di soggiorno': 'duplicate_permit',

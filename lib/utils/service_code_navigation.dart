@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../screens/prenota_appuntamento/prenota_appuntamento_screen.dart';
 import '../screens/servizi/accoglienza_screen.dart';
+import '../screens/servizi/decreto_flussi_screen.dart';
 import '../screens/servizi/educazione_finanziaria_credito_screen.dart';
 import '../screens/servizi/lavoro_orientamento_screen.dart';
 import '../screens/servizi/mediazione_fiscale_screen.dart';
@@ -67,10 +67,10 @@ ServiceNavigationTarget? resolveServiceNavigation({
       serviceName: l10n.translate('financialEducationCredit'),
     );
   }
-  // Prima del macro vivere_in_italia: CTA spotlight → prenota appuntamento.
+  // Prima del macro vivere_in_italia: CTA spotlight → richiesta di servizio.
   if (c == 'decreto_flussi') {
     return ServiceNavigationTarget(
-      destination: const PrenotaAppuntamentoScreen(),
+      destination: const DecretoFlussiScreen(),
       serviceName: l10n.translate('decretoFlussi'),
     );
   }

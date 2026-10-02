@@ -962,6 +962,19 @@ class AppLocalizations {
       'decretoFlussi': 'Decreto Flussi',
       'decretoFlussiDesc':
           'Consulenza e verifica requisiti per lavoro domestico e non stagionale',
+      'decretoFlussiIntro':
+          'Invia una richiesta di consulenza. Un operatore WECOOP verificherà i requisiti e ti contatterà; se serve, ti invierà una proposta di appuntamento.',
+      'decretoFlussiRequestTitle': 'Richiesta consulenza Decreto Flussi',
+      'decretoFlussiRequestSubtitle':
+          'Compila il modulo: non prenoti subito un appuntamento, lo gestirà l’operatore.',
+      'decretoFlussiCategory': 'Consulenza Decreto Flussi',
+      'decretoFlussiTipologia': 'Tipologia',
+      'decretoFlussiDomestic': 'Lavoro domestico (colf e badanti)',
+      'decretoFlussiNonSeasonal': 'Lavoro subordinato non stagionale',
+      'decretoFlussiRuolo': 'Tu sei',
+      'decretoFlussiEmployer': 'Datore di lavoro',
+      'decretoFlussiWorker': 'Lavoratore / lavoratrice',
+      'decretoFlussiNotes': 'Note o domande (opzionale)',
       'loginToAccessServices':
           'Effettua il login per accedere a tutti i servizi riservati ai soci.',
       'membershipPendingApproval':
@@ -2650,6 +2663,19 @@ class AppLocalizations {
       'decretoFlussi': 'Decreto Flussi',
       'decretoFlussiDesc':
           'استشارة والتحقق من المتطلبات للعمل المنزلي وغير الموسمي',
+      'decretoFlussiIntro':
+          'أرسل طلب استشارة. سيراجع مشغّل WECOOP المتطلبات ويتواصل معك؛ وعند الحاجة يرسل لك اقتراح موعد.',
+      'decretoFlussiRequestTitle': 'طلب استشارة Decreto Flussi',
+      'decretoFlussiRequestSubtitle':
+          'املأ النموذج: لا تحجز موعداً الآن — يتولى ذلك المشغّل.',
+      'decretoFlussiCategory': 'استشارة Decreto Flussi',
+      'decretoFlussiTipologia': 'النوع',
+      'decretoFlussiDomestic': 'عمل منزلي (خادمة ورعاية)',
+      'decretoFlussiNonSeasonal': 'عمل تابع غير موسمي',
+      'decretoFlussiRuolo': 'أنت',
+      'decretoFlussiEmployer': 'صاحب العمل',
+      'decretoFlussiWorker': 'عامل / عاملة',
+      'decretoFlussiNotes': 'ملاحظات أو أسئلة (اختياري)',
       'loginToAccessServices': 'سجّل الدخول للوصول إلى جميع الخدمات المخصصة للأعضاء.',
       'membershipPendingApproval': 'طلب انضمامك كعضو قيد الموافقة.',
       'confirmationWithin24to48Hours': 'ستتلقى تأكيدًا عبر البريد الإلكتروني خلال 24-48 ساعة.',
@@ -4121,6 +4147,18 @@ class AppLocalizations {
       'touristVisaDesc': '申请旅游签证',
       'decretoFlussi': 'Decreto Flussi',
       'decretoFlussiDesc': '家政与非季节性工作的咨询与资格核查',
+      'decretoFlussiIntro':
+          '提交咨询申请。WECOOP 工作人员将审核条件并联系您；如有需要，会向您发送预约提议。',
+      'decretoFlussiRequestTitle': 'Decreto Flussi 咨询申请',
+      'decretoFlussiRequestSubtitle': '填写表格：现在不预约，由工作人员安排。',
+      'decretoFlussiCategory': 'Decreto Flussi 咨询',
+      'decretoFlussiTipologia': '类型',
+      'decretoFlussiDomestic': '家政工作（家政与护理）',
+      'decretoFlussiNonSeasonal': '非季节性受雇工作',
+      'decretoFlussiRuolo': '您是',
+      'decretoFlussiEmployer': '雇主',
+      'decretoFlussiWorker': '劳动者',
+      'decretoFlussiNotes': '备注或问题（可选）',
       'loginToAccessServices': '请登录以使用所有会员专属服务。',
       'membershipPendingApproval': '您的入会申请正在审批中。',
       'confirmationWithin24to48Hours': '您将在 24-48 小时内通过电子邮件收到确认。',
@@ -5556,6 +5594,19 @@ class AppLocalizations {
       'decretoFlussi': 'Decreto Flussi',
       'decretoFlussiDesc':
           'Consulting and eligibility check for domestic and non-seasonal work',
+      'decretoFlussiIntro':
+          'Submit a consulting request. A WECOOP operator will review your requirements and contact you; if needed, they will send you an appointment proposal.',
+      'decretoFlussiRequestTitle': 'Decreto Flussi consulting request',
+      'decretoFlussiRequestSubtitle':
+          'Fill out the form: you are not booking an appointment now — the operator will handle that.',
+      'decretoFlussiCategory': 'Decreto Flussi consulting',
+      'decretoFlussiTipologia': 'Type',
+      'decretoFlussiDomestic': 'Domestic work (housekeepers and caregivers)',
+      'decretoFlussiNonSeasonal': 'Non-seasonal employment',
+      'decretoFlussiRuolo': 'You are',
+      'decretoFlussiEmployer': 'Employer',
+      'decretoFlussiWorker': 'Worker',
+      'decretoFlussiNotes': 'Notes or questions (optional)',
       'understand': 'I understand',
       'contactUs': 'Contact us',
       'yes': 'Yes',
@@ -7106,6 +7157,19 @@ class AppLocalizations {
       'decretoFlussi': 'Decreto Flussi',
       'decretoFlussiDesc':
           'Conseil et vérification des conditions pour travail domestique et non saisonnier',
+      'decretoFlussiIntro':
+          'Envoyez une demande de conseil. Un opérateur WECOOP vérifiera les conditions et vous contactera ; si besoin, il vous enverra une proposition de rendez-vous.',
+      'decretoFlussiRequestTitle': 'Demande de conseil Decreto Flussi',
+      'decretoFlussiRequestSubtitle':
+          'Remplissez le formulaire : vous ne réservez pas un rendez-vous maintenant — l’opérateur s’en charge.',
+      'decretoFlussiCategory': 'Conseil Decreto Flussi',
+      'decretoFlussiTipologia': 'Type',
+      'decretoFlussiDomestic': 'Travail domestique (aide ménagère et assistance)',
+      'decretoFlussiNonSeasonal': 'Travail salarié non saisonnier',
+      'decretoFlussiRuolo': 'Vous êtes',
+      'decretoFlussiEmployer': 'Employeur',
+      'decretoFlussiWorker': 'Travailleur / travailleuse',
+      'decretoFlussiNotes': 'Notes ou questions (optionnel)',
       'understand': 'Je understand',
       'contactUs': 'Contact us',
       'yes': 'Oui',
@@ -8655,6 +8719,19 @@ class AppLocalizations {
       'decretoFlussi': 'Decreto Flussi',
       'decretoFlussiDesc':
           'Asesoría y verificación de requisitos para trabajo doméstico y no estacional',
+      'decretoFlussiIntro':
+          'Envía una solicitud de asesoría. Un operador WECOOP revisará los requisitos y te contactará; si hace falta, te enviará una propuesta de cita.',
+      'decretoFlussiRequestTitle': 'Solicitud de asesoría Decreto Flussi',
+      'decretoFlussiRequestSubtitle':
+          'Completa el formulario: no reservas una cita ahora — la gestionará el operador.',
+      'decretoFlussiCategory': 'Asesoría Decreto Flussi',
+      'decretoFlussiTipologia': 'Tipo',
+      'decretoFlussiDomestic': 'Trabajo doméstico (empleadas del hogar y cuidadoras)',
+      'decretoFlussiNonSeasonal': 'Trabajo subordinado no estacional',
+      'decretoFlussiRuolo': 'Tú eres',
+      'decretoFlussiEmployer': 'Empleador',
+      'decretoFlussiWorker': 'Trabajador / trabajadora',
+      'decretoFlussiNotes': 'Notas o preguntas (opcional)',
       'understand': 'Entiendo',
       'contactUs': 'Contáctanos',
       'yes': 'Sí',

@@ -1126,6 +1126,10 @@ class _CvAiScreenState extends State<CvAiScreen> {
     });
 
     try {
+      // Anteprima: se il JWT è scaduto, rinnova subito così non mostriamo
+      // "Invalid or expired token" mascherato da errore template.
+      await HttpClientService.refreshToken();
+
       final headers = await _buildAuthHeaders();
       final payload = await _buildCvGeneratePayload();
       final payloadJson = jsonEncode(payload);
@@ -1192,8 +1196,21 @@ class _CvAiScreenState extends State<CvAiScreen> {
       }
 
       if (!mounted) return;
+      final apiMessage =
+          body is Map<String, dynamic>
+              ? (body['message'] ?? body['error']?.toString() ?? '').toString()
+              : '';
+      final isAuthError =
+          response.statusCode == 401 ||
+          response.statusCode == 403 ||
+          apiMessage.toLowerCase().contains('token') ||
+          apiMessage.toLowerCase().contains('authorization') ||
+          apiMessage.toLowerCase().contains('authenticated');
       setState(() {
-        _templatePreviewError = 'Anteprima non disponibile per questo template';
+        _templatePreviewError =
+            isAuthError
+                ? 'Sessione scaduta. Esci e rientra nell\'app, poi riprova l\'anteprima.'
+                : 'Anteprima non disponibile per questo template';
         _isLoadingTemplatePreview = false;
       });
     } catch (_) {

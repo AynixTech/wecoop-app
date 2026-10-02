@@ -116,6 +116,10 @@ class _WECOOPAppState extends State<WECOOPApp> with WidgetsBindingObserver {
         }
       } catch (_) {}
     };
+    // Cold-start: tap ricevuto in initialize() prima di onMessageTap.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _pushService.flushPendingNotificationTap();
+    });
   }
 
   Future<void> _initializeDeepLinks() async {

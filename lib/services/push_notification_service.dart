@@ -33,6 +33,9 @@ class PushNotificationService {
   /// (impostato una volta all'avvio dell'app).
   static GlobalKey<NavigatorState>? navigatorKey;
 
+  /// Tap da cold-start (terminated) ricevuto prima che navigator/callback siano pronti.
+  Map<String, dynamic>? _pendingTapData;
+
   // URL API backend Node
   static const String apiUrl = ApiConfig.baseUrl;
 
@@ -240,8 +243,35 @@ class PushNotificationService {
 
     if (initialMessage != null) {
       AppLogger.d('📬 App aperta da notifica (terminated)');
-      _handleNotificationTap(initialMessage.data);
+      // Defer: in cold start navigator/onMessageTap spesso non sono ancora pronti.
+      _pendingTapData = Map<String, dynamic>.from(initialMessage.data);
+      _flushPendingTap();
     }
+  }
+
+  /// Riprova la navigazione del tap in coda (dopo set di onMessageTap / first frame).
+  void flushPendingNotificationTap() => _flushPendingTap();
+
+  void _flushPendingTap({int attempt = 0}) {
+    final data = _pendingTapData;
+    if (data == null) return;
+
+    final hasCallback = onMessageTap != null;
+    final hasNavigator = navigatorKey?.currentState != null;
+    if (!hasCallback && !hasNavigator) {
+      if (attempt >= 20) {
+        AppLogger.d('⚠️ Pending notification tap scaduto (navigator non pronto)');
+        _pendingTapData = null;
+        return;
+      }
+      Future.delayed(Duration(milliseconds: 150 + attempt * 50), () {
+        _flushPendingTap(attempt: attempt + 1);
+      });
+      return;
+    }
+
+    _pendingTapData = null;
+    _handleNotificationTap(data);
   }
 
   /// Mostra notifica locale (foreground)
@@ -287,16 +317,13 @@ class PushNotificationService {
 
     if (onMessageTap != null) {
       onMessageTap!(RemoteMessage(data: data));
-    } else {
-      // Navigazione diretta se callback non settato
-      _navigateToScreen(data);
+      return;
     }
-  }
 
-  /// Naviga alla schermata specificata dal payload della notifica.
-  void _navigateToScreen(Map<String, dynamic> data) {
     if (navigatorKey?.currentState == null) {
-      AppLogger.d('🔄 navigatorKey non disponibile, navigazione ignorata');
+      AppLogger.d('🔄 navigatorKey non disponibile, metto tap in coda');
+      _pendingTapData = data;
+      _flushPendingTap();
       return;
     }
 

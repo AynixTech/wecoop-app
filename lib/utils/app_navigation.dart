@@ -4,6 +4,7 @@ import '../screens/eventi/evento_detail_screen.dart';
 import '../screens/lavoro/offerte_lavoro_screen.dart';
 import '../screens/profilo/documenti_screen.dart';
 import '../screens/profilo/mie_richieste_screen.dart';
+import '../screens/servizi/pagamento_screen.dart';
 import '../services/push_notification_service.dart';
 
 /// Indici tab di [MainScreen].
@@ -102,6 +103,25 @@ abstract final class AppNavigation {
     );
   }
 
+  /// Apre la schermata di pagamento (stesso path dell'email deep link).
+  static void navigateToPagamento({int? richiestaId, int? paymentId}) {
+    final navigator = _navigator;
+    if (navigator == null) return;
+    if (richiestaId == null && paymentId == null) {
+      navigateToMainTab(MainTab.calendar);
+      return;
+    }
+
+    navigator.push(
+      MaterialPageRoute(
+        builder: (_) => PagamentoScreen(
+          richiestaId: richiestaId,
+          paymentId: paymentId ?? 0,
+        ),
+      ),
+    );
+  }
+
   /// Gestione unificata payload push / notifiche in-app.
   static void handleNotificationPayload(Map<String, dynamic> data) {
     if (data['type']?.toString() == 'badge_sync') return;
@@ -159,9 +179,20 @@ abstract final class AppNavigation {
         navigateToDocumenti();
         return;
 
+      case 'payment':
+        final rid = int.tryParse(requestId ?? '');
+        final paymentRaw =
+            (data['payment_id'] ?? data['pagamento_id'])?.toString();
+        final pid = int.tryParse(paymentRaw ?? '');
+        if (rid != null || pid != null) {
+          navigateToPagamento(richiestaId: rid, paymentId: pid);
+        } else {
+          navigateToMainTab(MainTab.calendar);
+        }
+        return;
+
       case 'document_ready':
       case 'status':
-      case 'payment':
       case 'integrazione':
       case 'operator_message':
       case 'service_request':

@@ -43,27 +43,30 @@ class PushNotificationService {
       return;
     }
 
-    // Richiedi permessi
-    NotificationSettings settings = await _firebaseMessaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-      provisional: false,
-    );
+    try {
+      // Richiedi permessi. Su iOS può fallire con
+      // "Notifications are not allowed for this application" (permessi di
+      // sistema / MDM / iPad senza push) — non deve diventare un crash.
+      final NotificationSettings settings =
+          await _firebaseMessaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+        provisional: false,
+      );
 
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      AppLogger.d('✅ Permessi notifiche concessi');
+      if (settings.authorizationStatus == AuthorizationStatus.authorized ||
+          settings.authorizationStatus == AuthorizationStatus.provisional) {
+        AppLogger.d('✅ Permessi notifiche concessi');
 
-      // Inizializza local notifications
-      await _initializeLocalNotifications();
-
-      // Ottieni FCM token
-      await _getFCMToken();
-
-      // Configura handlers
-      _configureMessageHandlers();
-    } else {
-      AppLogger.d('❌ Permessi notifiche negati');
+        await _initializeLocalNotifications();
+        await _getFCMToken();
+        _configureMessageHandlers();
+      } else {
+        AppLogger.d('❌ Permessi notifiche negati');
+      }
+    } catch (e) {
+      AppLogger.d('⚠️ Push init saltata (permessi/Firebase): $e');
     }
   }
 

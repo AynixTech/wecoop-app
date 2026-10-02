@@ -93,7 +93,12 @@ class _WECOOPAppState extends State<WECOOPApp> with WidgetsBindingObserver {
   }
 
   Future<void> _initializePushNotifications() async {
-    await _pushService.initialize();
+    try {
+      await _pushService.initialize();
+    } catch (e) {
+      AppLogger.d('⚠️ Push notifications non disponibili: $e');
+      return;
+    }
 
     // Configura callback per navigazione
     _pushService.onMessageTap = (RemoteMessage message) {

@@ -41,6 +41,11 @@ class ErrorReporter {
     FlutterError.onError = (FlutterErrorDetails details) {
       previousOnError?.call(details);
       final message = details.exceptionAsString();
+      if (message.contains('Notifications are not allowed for this application') ||
+          message.contains('firebase_messaging/unknown')) {
+        AppLogger.d('⏭️ Skip report FlutterError push permission: $message');
+        return;
+      }
       report(
         // Assert di layout/Material non sono crash fatali: evita rumore in Errori App.
         tipo: _isSoftFrameworkIssue(message) ? 'error' : 'crash',
@@ -53,6 +58,13 @@ class ErrorReporter {
     // Errori async non gestiti a livello di piattaforma.
     PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
       final message = error.toString();
+      // Permessi push negati / non disponibili: gestiti in PushNotificationService;
+      // se arrivano comunque qui, non riempire Errori App.
+      if (message.contains('Notifications are not allowed for this application') ||
+          message.contains('firebase_messaging/unknown')) {
+        AppLogger.d('⏭️ Skip report crash push permission: $message');
+        return true;
+      }
       report(
         tipo: _isSoftFrameworkIssue(message) ? 'error' : 'crash',
         message: message,
@@ -62,12 +74,27 @@ class ErrorReporter {
     };
   }
 
-  /// Overflow, assert ListTile/Material, ancestor dispose: segnalati ma non come crash.
+  /// Overflow, assert ListTile/Material, ancestor dispose, push permission:
+  /// segnalati ma non come crash (o filtrati del tutto dove applicabile).
   static bool _isSoftFrameworkIssue(String message) {
     return message.contains('ListTile background color') ||
         message.contains('A RenderFlex overflowed') ||
         message.contains('Looking up a deactivated widget') ||
-        message.contains('No Material widget found');
+        message.contains('No Material widget found') ||
+        message.contains('Notifications are not allowed for this application');
+  }
+
+  /// Connettività cliente (DNS / no internet): non è un bug app.
+  static bool _isClientNetworkIssue(String text) {
+    final t = text.toLowerCase();
+    return t.contains('unable to resolve host') ||
+        t.contains('no address associated with hostname') ||
+        t.contains('failed host lookup') ||
+        t.contains('network is unreachable') ||
+        t.contains('socketexception') ||
+        t.contains('connection abort') ||
+        t.contains('connection reset') ||
+        t.contains('software caused connection abort');
   }
 
   /// Segnala un errore HTTP anomalo (es. HTML invece di JSON, 5xx).
@@ -120,6 +147,13 @@ class ErrorReporter {
     if (looksLikeSessionExpired) {
       AppLogger.d(
         '⏭️ Skip report payment (sessione scaduta/401) '
+        'step=$step endpoint=$endpoint',
+      );
+      return;
+    }
+    if (_isClientNetworkIssue('$message $detailText')) {
+      AppLogger.d(
+        '⏭️ Skip report payment (rete client) '
         'step=$step endpoint=$endpoint',
       );
       return;

@@ -139,9 +139,11 @@ class HttpClientService {
     Uri url, {
     Map<String, String>? headers,
   }) async {
+    // Usa sempre una mappa: con null _withFreshToken non aggiunge il JWT
+    // e alcune chiamate pubbliche (es. spotlight) restano ok senza auth.
     return _makeRequestWithRefresh(
       () async => http
-          .get(url, headers: await _withFreshToken(headers))
+          .get(url, headers: await _withFreshToken(headers ?? const {}))
           .timeout(const Duration(seconds: 30)),
       url.toString(),
     );

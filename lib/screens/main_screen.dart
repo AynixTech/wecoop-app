@@ -37,6 +37,7 @@ class _MainScreenState extends State<MainScreen> {
   late final List<Widget> _tabScreens;
   final GlobalKey<NavigatorState> _calendarNavigatorKey =
       GlobalKey<NavigatorState>();
+  final GlobalKey<HomeScreenState> _homeKey = GlobalKey<HomeScreenState>();
   int _profileScreenVersion = 0;
   bool _profileCheckDone = false;
 
@@ -52,7 +53,7 @@ class _MainScreenState extends State<MainScreen> {
         : widget.initialIndex;
     _selectedIndex = initial;
     _tabScreens = [
-      const HomeScreen(),
+      HomeScreen(key: _homeKey),
       const EventiScreen(),
       const AnnunciScreen(),
       Navigator(
@@ -179,6 +180,8 @@ class _MainScreenState extends State<MainScreen> {
     if (_selectedIndex == MainTab.calendar && index != MainTab.calendar) {
       _closeCalendarOverlays();
     }
+    final cameBackToHome =
+        index == MainTab.home && _selectedIndex != MainTab.home;
     setState(() {
       if (index == MainTab.profilo && _selectedIndex != MainTab.profilo) {
         _profileScreenVersion++;
@@ -198,6 +201,9 @@ class _MainScreenState extends State<MainScreen> {
       screen: labels[index] ?? 'App',
       route: 'MainScreen/$index',
     );
+    if (cameBackToHome) {
+      _homeKey.currentState?.retryServiceSpotlight();
+    }
   }
 
   void _onItemTapped(int index) {

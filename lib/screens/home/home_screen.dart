@@ -36,14 +36,15 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> {
   final storage = SecureStorageService();
   String userName = '...'; // valore iniziale
   bool isLoggedIn = false;
-  bool _spotlightChecked = false;
+  bool _spotlightInFlight = false;
+  String? _lastSpotlightShownKey;
 
   @override
   void initState() {
@@ -53,22 +54,47 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       context.read<NotificationBadgeProvider>().refresh();
-      _maybeShowServiceSpotlight();
+      // Ritarda rispetto al dialog "completa profilo" di MainScreen.
+      _maybeShowServiceSpotlight(delayMs: 1200);
     });
   }
 
-  Future<void> _maybeShowServiceSpotlight() async {
-    if (_spotlightChecked || !mounted) return;
-    _spotlightChecked = true;
+  /// Chiamabile anche quando si torna sulla tab Home.
+  Future<void> _maybeShowServiceSpotlight({int delayMs = 0}) async {
+    if (!mounted || _spotlightInFlight) return;
+    _spotlightInFlight = true;
     try {
-      final item = await ServiceSpotlightService.nextUndismissed();
-      if (!mounted || item == null) return;
-      await Future<void>.delayed(const Duration(milliseconds: 350));
+      if (delayMs > 0) {
+        await Future<void>.delayed(Duration(milliseconds: delayMs));
+        if (!mounted) return;
+      }
+      // Aspetta che eventuali dialog di avvio (profilo incompleto) siano chiusi.
+      for (var i = 0; i < 20; i++) {
+        if (!mounted) return;
+        final route = ModalRoute.of(context);
+        final busy = route?.isCurrent != true;
+        if (!busy) break;
+        await Future<void>.delayed(const Duration(milliseconds: 250));
+      }
       if (!mounted) return;
+
+      final item = await ServiceSpotlightService.nextUndismissed(
+        forceRefresh: true,
+      );
+      if (!mounted || item == null) return;
+      if (_lastSpotlightShownKey == item.dismissKey) return;
       await showHomeServiceSpotlightModal(context, item);
+      _lastSpotlightShownKey = item.dismissKey;
     } catch (e) {
       AppLogger.d('home spotlight: $e');
+    } finally {
+      _spotlightInFlight = false;
     }
+  }
+
+  /// Esposto a MainScreen quando l'utente seleziona di nuovo la tab Home.
+  void retryServiceSpotlight() {
+    _maybeShowServiceSpotlight(delayMs: 200);
   }
 
   void _loadUserData() async {

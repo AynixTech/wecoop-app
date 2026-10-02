@@ -29,6 +29,8 @@ import '../eventi/evento_detail_screen.dart';
 import '../profilo/documenti_screen.dart';
 import '../../widgets/language_selector.dart';
 import '../notifiche/notifiche_screen.dart';
+import '../../services/service_spotlight_service.dart';
+import '../../widgets/home_service_spotlight_modal.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -41,6 +43,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final storage = SecureStorageService();
   String userName = '...'; // valore iniziale
   bool isLoggedIn = false;
+  bool _spotlightChecked = false;
+
   @override
   void initState() {
     super.initState();
@@ -49,7 +53,22 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       context.read<NotificationBadgeProvider>().refresh();
+      _maybeShowServiceSpotlight();
     });
+  }
+
+  Future<void> _maybeShowServiceSpotlight() async {
+    if (_spotlightChecked || !mounted) return;
+    _spotlightChecked = true;
+    try {
+      final item = await ServiceSpotlightService.nextUndismissed();
+      if (!mounted || item == null) return;
+      await Future<void>.delayed(const Duration(milliseconds: 350));
+      if (!mounted) return;
+      await showHomeServiceSpotlightModal(context, item);
+    } catch (e) {
+      AppLogger.d('home spotlight: $e');
+    }
   }
 
   void _loadUserData() async {

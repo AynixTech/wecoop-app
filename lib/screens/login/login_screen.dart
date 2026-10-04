@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/http_client_service.dart';
@@ -41,6 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _hasStoredBiometricCredentials = false;
   bool _biometricLoginEnabled = true;
   bool _forceShowPasswordLogin = false;
+  String _appVersion = '';
 
   @override
   void initState() {
@@ -49,8 +51,35 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _initializeLoginHelpers() async {
-    await _loadLastPhone();
-    await _loadBiometricState();
+    await Future.wait([
+      _loadLastPhone(),
+      _loadBiometricState(),
+      _loadAppVersion(),
+    ]);
+  }
+
+  Future<void> _loadAppVersion() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      if (!mounted) return;
+      setState(() {
+        _appVersion = '${info.version} (${info.buildNumber})';
+      });
+    } catch (e) {
+      AppLogger.d('Errore lettura versione app (login): $e');
+    }
+  }
+
+  Widget _buildAppVersionLabel(AppLocalizations l10n) {
+    if (_appVersion.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 16, bottom: 8),
+      child: Text(
+        '${l10n.translate('profileAppVersion')}: $_appVersion',
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+      ),
+    );
   }
 
   /// Carga el último teléfono usado para el login
@@ -763,6 +792,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         foregroundColor: Colors.grey[700],
                       ),
                     ),
+                    _buildAppVersionLabel(l10n),
                   ],
                 ),
               )
@@ -844,6 +874,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             foregroundColor: Colors.grey[700],
                           ),
                         ),
+                        _buildAppVersionLabel(l10n),
                       ],
                     ),
                   ),

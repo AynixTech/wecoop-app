@@ -5,13 +5,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
-import '../../services/firma_digitale_service.dart';
-import '../../models/firma_digitale_models.dart';
 import '../../services/socio_service.dart';
 import '../../services/http_client_service.dart';
 import '../../config/api_config.dart';
 import '../servizi/pagamento_screen.dart';
-import '../firma_digitale/firma_documento_screen.dart';
 import '../prenota_appuntamento/seleziona_slot_screen.dart';
 import '../profilo/completa_profilo_screen.dart';
 import '../../utils/service_request_labels.dart';
@@ -45,7 +42,6 @@ class _CalendarScreenState extends State<CalendarScreen>
   String? _filtroStato;
   final storage = SecureStorageService();
   String? _richiestaIdToOpen;
-  final Map<int, FirmaStatus> _firmaStatusByRichiesta = {};
   bool _isOpeningDettaglioRichiesta = false;
   bool _emailSuggestShown = false;
   Timer? _autoRefreshTimer;
@@ -579,35 +575,6 @@ class _CalendarScreenState extends State<CalendarScreen>
         }
       } catch (e) {
         AppLogger.d('❌ [Dettaglio] errore recupero dettaglio richiesta id=$firmaRichiestaId: $e');
-      }
-    }
-
-    if (firmaRichiestaId != null) {
-      try {
-        AppLogger.d('📊 [FirmaFlow] pre-check dettaglio stato firma richiestaId=$firmaRichiestaId');
-        final statoFirma = await FirmaDigitaleService.ottieniStatoFirma(firmaRichiestaId);
-        if (mounted) {
-          setState(() {
-            _firmaStatusByRichiesta[firmaRichiestaId] = statoFirma;
-          });
-        }
-        AppLogger.d('📊 [FirmaFlow] pre-check esito richiestaId=$firmaRichiestaId firmato=${statoFirma.firmato}');
-      } on FirmaDigitaleException catch (e) {
-        if (e.code == 'NOT_FOUND') {
-          if (mounted) {
-            setState(() {
-              _firmaStatusByRichiesta[firmaRichiestaId] = FirmaStatus(
-                firmato: false,
-                richiestaId: firmaRichiestaId,
-              );
-            });
-          }
-          AppLogger.d('📊 [FirmaFlow] pre-check: nessuna firma esistente richiestaId=$firmaRichiestaId');
-        } else {
-          AppLogger.d('❌ [FirmaFlow] pre-check errore stato firma richiestaId=$firmaRichiestaId code=${e.code} msg=${e.message}');
-        }
-      } catch (e) {
-        AppLogger.d('❌ [FirmaFlow] pre-check eccezione stato firma richiestaId=$firmaRichiestaId: $e');
       }
     }
 
@@ -1228,19 +1195,6 @@ class _CalendarScreenState extends State<CalendarScreen>
     return textTail.contains('%%EOF') || textTail.contains('startxref');
   }
 
-  Future<bool> _apriPdfFallbackWeb(String url) async {
-    final openedAuthPdf = await _apriPdfFallbackAutenticato(url);
-    if (openedAuthPdf) {
-      return true;
-    }
-
-    // Evita Google Docs su Documento Unico: su URL protette mostra spesso
-    // "anteprima non disponibile". Se il download autenticato fallisce,
-    // consideriamo fallito il fallback.
-    AppLogger.d('❌ [PdfFallback] apertura fallback autenticata fallita (Google disabilitato): $url');
-    return false;
-  }
-
   Future<bool> _apriPdfFallbackAutenticato(String url) async {
     try {
       final uri = Uri.tryParse(url);
@@ -1401,325 +1355,6 @@ class _CalendarScreenState extends State<CalendarScreen>
     return Uri.decodeComponent(parts.last);
   }
 
-  Map<String, dynamic> _sanitizeMetadata(Map<String, dynamic> metadata) {
-    final sanitized = Map<String, dynamic>.from(metadata);
-    const sensitivePathKeys = [
-      'documento_url',
-      'documento_download_url',
-      'url',
-      'filepath',
-      'path',
-      'file_path',
-      'file',
-      'filename',
-      'nome_file',
-    ];
-
-    for (final key in sensitivePathKeys) {
-      if (sanitized[key] is String) {
-        sanitized[key] = _extractFileName(sanitized[key] as String);
-      }
-    }
-
-    return sanitized;
-  }
-
-  Future<void> _visualizzaDocumentoUnico({
-    required int richiestaId,
-    bool forceMerge = false,
-    String? fallbackUrl,
-  }) async {
-    if (!mounted) return;
-    AppLogger.d('📄 [DocMergedUI] avvio visualizzazione richiestaId=$richiestaId forceMerge=$forceMerge');
-
-    final rootNavigator = Navigator.of(context, rootNavigator: true);
-    var loadingDialogVisible = false;
-
-    void dismissLoadingDialog() {
-      if (!loadingDialogVisible) return;
-      if (rootNavigator.canPop()) {
-        rootNavigator.pop();
-      }
-      loadingDialogVisible = false;
-    }
-
-    showDialog(
-      context: context,
-      useRootNavigator: true,
-      barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
-    loadingDialogVisible = true;
-
-    try {
-      final result = await SocioService.getDocumentoUnicoMergedPdf(
-        richiestaId,
-        forceMerge: forceMerge,
-      );
-      AppLogger.d('📄 [DocMergedUI] esito service success=${result['success']} keys=${result.keys.toList()}');
-
-      if (mounted) {
-        dismissLoadingDialog();
-      }
-
-      if (result['success'] == true) {
-        final pdfBytes = result['pdf_bytes'] as List<int>?;
-        final filename = result['filename'] as String? ?? 'Documento_Unico_$richiestaId.pdf';
-        AppLogger.d('📄 [DocMergedUI] filename=$filename bytes=${pdfBytes?.length ?? 0}');
-
-        if (pdfBytes == null || pdfBytes.isEmpty) {
-          AppLogger.d('❌ [DocMergedUI] PDF vuoto o assente per richiestaId=$richiestaId');
-          if (fallbackUrl != null && _isValidWebUrl(fallbackUrl)) {
-            AppLogger.d('⚠️ [DocMergedUI] PDF assente, provo fallback avanzato richiestaId=$richiestaId');
-            final opened = await _tryOpenDocumentoUnicoFallbacks(
-              richiestaId: richiestaId,
-              preferredUrl: fallbackUrl,
-            );
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    opened
-                        ? '⚠️ ${AppLocalizations.of(context)!.translate('invalidMergedPdfFallbackOpened')}'
-                        : '❌ ${AppLocalizations.of(context)!.translate('invalidPdfFallbackUnavailable')}',
-                  ),
-                  backgroundColor: opened ? Colors.orange : AppColors.error,
-                ),
-              );
-            }
-            return;
-          }
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('❌ ${AppLocalizations.of(context)!.translate('pdfDocumentUnavailable')}'),
-                backgroundColor: AppColors.error,
-              ),
-            );
-          }
-          return;
-        }
-
-        final normalizedPdfBytes = _normalizzaPdfBytes(
-          pdfBytes,
-          context: 'documento_unico_$richiestaId',
-        );
-        final isValid = _isPdfBytesProbablyValid(normalizedPdfBytes);
-        AppLogger.d('📄 [DocMergedUI] bytes validazione pdf: $isValid');
-
-        if (!isValid) {
-          AppLogger.d('⚠️ [DocMergedUI] bytes merged non validi, provo fallback avanzato richiestaId=$richiestaId');
-          final opened = await _tryOpenDocumentoUnicoFallbacks(
-            richiestaId: richiestaId,
-            preferredUrl: fallbackUrl,
-          );
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  opened
-                      ? '⚠️ ${AppLocalizations.of(context)!.translate('invalidMergedPdfFallbackOpened')}'
-                      : '❌ ${AppLocalizations.of(context)!.translate('invalidPdfFallbackUnavailable')}',
-                ),
-                backgroundColor: opened ? Colors.orange : AppColors.error,
-              ),
-            );
-          }
-          return;
-        }
-
-        final savedFile = await _salvaPdfLocale(normalizedPdfBytes, filename);
-        if (savedFile == null) {
-          AppLogger.d('❌ [DocMergedUI] salvataggio file fallito richiestaId=$richiestaId');
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('❌ ${AppLocalizations.of(context)!.translate('cannotSavePdfDocument')}'),
-                backgroundColor: AppColors.error,
-              ),
-            );
-          }
-          return;
-        }
-
-        await _apriPdfInApp(savedFile, title: filename);
-        AppLogger.d('✅ [DocMerged] PDF salvato e aperto in-app: ${savedFile.path}');
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '✅ ${AppLocalizations.of(context)!.translate('documentSavedMessage')} ${savedFile.path.split('/').last}',
-              ),
-              backgroundColor: AppColors.secondary,
-            ),
-          );
-        }
-
-        return;
-      }
-
-      if (!forceMerge) {
-        AppLogger.d('⚠️ [DocMergedUI] primo tentativo fallito, retry con forceMerge=true richiestaId=$richiestaId');
-        await _visualizzaDocumentoUnico(
-          richiestaId: richiestaId,
-          forceMerge: true,
-          fallbackUrl: fallbackUrl,
-        );
-        return;
-      }
-
-      {
-        AppLogger.d('⚠️ [DocMergedUI] service non riuscito, provo fallback avanzato richiestaId=$richiestaId');
-        final opened = await _tryOpenDocumentoUnicoFallbacks(
-          richiestaId: richiestaId,
-          preferredUrl: fallbackUrl,
-        );
-        if (opened) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  '⚠️ ${AppLocalizations.of(context)!.translate('invalidMergedPdfFallbackOpened')}',
-                ),
-                backgroundColor: Colors.orange,
-              ),
-            );
-          }
-          return;
-        }
-      }
-
-      if (mounted) {
-        AppLogger.d('❌ [DocMergedUI] errore service message=${result['message']}');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '❌ ${result['message'] ?? AppLocalizations.of(context)!.translate('errorDownloadingMergedDocument')}',
-            ),
-            backgroundColor: AppColors.error,
-            duration: const Duration(seconds: 4),
-          ),
-        );
-      }
-    } catch (e) {
-      AppLogger.d('❌ [DocMergedUI] eccezione imprevista: $e');
-      if (mounted) {
-        dismissLoadingDialog();
-      }
-
-      {
-        AppLogger.d('⚠️ [DocMergedUI] eccezione service, provo fallback avanzato richiestaId=$richiestaId');
-        final opened = await _tryOpenDocumentoUnicoFallbacks(
-          richiestaId: richiestaId,
-          preferredUrl: fallbackUrl,
-        );
-        if (opened) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  '⚠️ ${AppLocalizations.of(context)!.translate('invalidMergedPdfFallbackOpened')}',
-                ),
-                backgroundColor: Colors.orange,
-              ),
-            );
-          }
-          return;
-        }
-      }
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '❌ ${AppLocalizations.of(context)!.translate('errorDownloadingMergedDocument')}: $e',
-            ),
-            backgroundColor: AppColors.error,
-            duration: const Duration(seconds: 4),
-          ),
-        );
-      }
-    }
-  }
-
-  List<String> _extractUrlsFromMetadata(Map<String, dynamic>? metadata) {
-    if (metadata == null || metadata.isEmpty) {
-      return const [];
-    }
-
-    const keys = [
-      'documento_unico_merged_url',
-      'attestato_firma_url',
-      'documento_download_url',
-      'documento_url',
-      'merged_url',
-      'download_url',
-      'url',
-    ];
-
-    final urls = <String>[];
-    for (final key in keys) {
-      final value = metadata[key]?.toString();
-      if (_isValidWebUrl(value)) {
-        urls.add(value!.trim());
-      }
-    }
-
-    return urls;
-  }
-
-  Future<bool> _tryOpenDocumentoUnicoFallbacks({
-    required int richiestaId,
-    String? preferredUrl,
-  }) async {
-    final candidates = <String>[];
-
-    if (_isValidWebUrl(preferredUrl)) {
-      candidates.add(preferredUrl!.trim());
-    }
-
-    try {
-      final status = await FirmaDigitaleService.ottieniStatoFirma(richiestaId);
-      if (mounted) {
-        setState(() {
-          _firmaStatusByRichiesta[richiestaId] = status;
-        });
-      }
-
-      if (_isValidWebUrl(status.documentoDownloadUrl)) {
-        candidates.add(status.documentoDownloadUrl!.trim());
-      }
-      if (_isValidWebUrl(status.documentoUrl)) {
-        candidates.add(status.documentoUrl!.trim());
-      }
-
-      candidates.addAll(_extractUrlsFromMetadata(status.metadata));
-    } catch (e) {
-      AppLogger.d('⚠️ [DocMergedUI] impossibile recuperare stato firma aggiornato richiestaId=$richiestaId: $e');
-    }
-
-    final uniqueCandidates = <String>[];
-    for (final c in candidates) {
-      if (!uniqueCandidates.contains(c)) {
-        uniqueCandidates.add(c);
-      }
-    }
-
-    AppLogger.d('📄 [DocMergedUI] fallback candidates richiestaId=$richiestaId count=${uniqueCandidates.length}');
-
-    for (final candidate in uniqueCandidates) {
-      final opened = await _apriPdfFallbackWeb(candidate);
-      AppLogger.d('📄 [DocMergedUI] fallback candidate opened=$opened url=$candidate');
-      if (opened) {
-        return true;
-      }
-    }
-
-    return false;
-  }
 
   void _apriRichiestaById(String id) {
     AppLogger.d('🔍 Cerco richiesta con ID: $id');
@@ -1745,20 +1380,6 @@ class _CalendarScreenState extends State<CalendarScreen>
     }
   }
 
-  bool _isRichiestaFirmabile(Map<String, dynamic> richiesta) {
-    if (richiesta['puo_firmare'] == true) {
-      return true;
-    }
-
-    final stato = (richiesta['stato'] ?? richiesta['status'] ?? '').toString().toLowerCase();
-    return stato == 'pending_firma' ||
-        stato == 'awaiting_signature' ||
-        stato == 'in_attesa_firma' ||
-        stato == 'da_firmare' ||
-        stato == 'paid' ||
-        stato == 'completed' ||
-        stato == 'completata';
-  }
 
   bool _hasMeaningfulValue(String? value) {
     if (value == null) return false;
@@ -1775,38 +1396,6 @@ class _CalendarScreenState extends State<CalendarScreen>
     return (scheme == 'http' || scheme == 'https') && uri.host.isNotEmpty;
   }
 
-  String? _resolveDocumentoUnicoUrl(FirmaStatus? firmaStatus) {
-    final downloadUrl = firmaStatus?.documentoDownloadUrl;
-    if (_isValidWebUrl(downloadUrl)) {
-      return downloadUrl!.trim();
-    }
-
-    final documentoUrl = firmaStatus?.documentoUrl;
-    if (_isValidWebUrl(documentoUrl)) {
-      return documentoUrl!.trim();
-    }
-
-    return null;
-  }
-
-  String? _resolveDocumentoUnicoUrlFromRichiesta(Map<String, dynamic> richiesta) {
-    final candidates = [
-      richiesta['documento_unico_url'],
-      richiesta['documento_url'],
-      richiesta['documento_download_url'],
-      richiesta['modello_unico_url'],
-      richiesta['url_documento'],
-    ];
-
-    for (final candidate in candidates) {
-      final value = candidate?.toString();
-      if (_isValidWebUrl(value)) {
-        return value!.trim();
-      }
-    }
-
-    return null;
-  }
 
   int? _resolveFirmaRichiestaId(Map<String, dynamic> richiesta) {
     final candidates = [
@@ -1877,183 +1466,6 @@ class _CalendarScreenState extends State<CalendarScreen>
     return 'N/A';
   }
 
-  Future<void> _apriFirmaDocumento(Map<String, dynamic> richiesta) async {
-    final firmaRichiestaId = _resolveFirmaRichiestaId(richiesta);
-    AppLogger.d('🔐 [FirmaFlow] Avvio apertura firma');
-    AppLogger.d('🔐 [FirmaFlow] Campi ID candidati: richiesta_id=${richiesta['richiesta_id']} id_richiesta=${richiesta['id_richiesta']} request_id=${richiesta['request_id']} service_request_id=${richiesta['service_request_id']} id=${richiesta['id']}');
-    AppLogger.d('🔐 [FirmaFlow] ID selezionato per endpoint documento-unico: $firmaRichiestaId');
-
-    if (firmaRichiestaId == null) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context)!.translate('invalidDigitalSignatureRequestId'),
-            ),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
-      return;
-    }
-
-    try {
-      AppLogger.d('📊 [FirmaFlow] controllo stato firma per richiestaId=$firmaRichiestaId');
-      final statoFirma = await FirmaDigitaleService.ottieniStatoFirma(firmaRichiestaId);
-      AppLogger.d('📊 [FirmaFlow] stato firma ricevuto: firmato=${statoFirma.firmato}, documentoUrl=${statoFirma.documentoUrl}, documentoDownloadUrl=${statoFirma.documentoDownloadUrl}');
-
-      if (statoFirma.firmato) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                AppLocalizations.of(context)!.translate('documentAlreadySignedCannotResign'),
-              ),
-              backgroundColor: Colors.orange,
-            ),
-          );
-        }
-        return;
-      }
-
-    } on FirmaDigitaleException catch (e) {
-      if (e.code == 'NOT_FOUND') {
-        AppLogger.d('📊 [FirmaFlow] nessuna firma esistente per richiestaId=$firmaRichiestaId, continuo con il flusso');
-      } else {
-        AppLogger.d('❌ [FirmaFlow] errore durante controllo stato firma: ${e.code} - ${e.message}');
-      }
-    } catch (e) {
-      AppLogger.d('❌ [FirmaFlow] eccezione non prevista durante controllo stato firma: $e');
-    }
-
-    final userIdRaw = await storage.read(key: 'user_id');
-    final socioIdRaw = await storage.read(key: 'socio_id');
-    final telefonoRaw =
-        await storage.read(key: 'telefono') ?? await storage.read(key: 'user_phone');
-
-    final parsedUserId = userIdRaw != null ? int.tryParse(userIdRaw) : null;
-    final parsedSocioId = socioIdRaw != null ? int.tryParse(socioIdRaw) : null;
-    int? userId = parsedUserId ?? parsedSocioId;
-    String? telefono = telefonoRaw?.trim();
-
-    AppLogger.d('🔐 [FirmaFlow] Storage user_id raw: $userIdRaw');
-    AppLogger.d('🔐 [FirmaFlow] Storage socio_id raw: $socioIdRaw');
-    AppLogger.d('🔐 [FirmaFlow] Storage telefono presente: ${telefono != null && telefono.isNotEmpty}');
-    AppLogger.d('🔐 [FirmaFlow] userId parse: $userId');
-
-    // Fallback: se i dati non sono in storage (es. login biometrico o sessione
-    // ripristinata), li recuperiamo da /soci/me e li salviamo.
-    if (userId == null || telefono == null || telefono.isEmpty) {
-      AppLogger.d('🔄 [FirmaFlow] Dati utente mancanti in storage, recupero da /soci/me');
-      try {
-        final meData = await SocioService.getMe();
-        if (meData != null) {
-          final meUserIdRaw =
-              (meData['user_id'] ?? meData['id'])?.toString();
-          final meUserId =
-              meUserIdRaw != null ? int.tryParse(meUserIdRaw) : null;
-          final meTelefono = (meData['telefono'] ?? '').toString().trim();
-
-          if (meUserId != null) {
-            userId = meUserId;
-            await storage.write(key: 'user_id', value: meUserId.toString());
-            if ((meData['id'] ?? '').toString().isNotEmpty) {
-              await storage.write(
-                key: 'socio_id',
-                value: meData['id'].toString(),
-              );
-            }
-          }
-          if (meTelefono.isNotEmpty) {
-            telefono = meTelefono;
-            await storage.write(key: 'telefono', value: meTelefono);
-          }
-          AppLogger.d('🔄 [FirmaFlow] Dopo /soci/me userId=$userId telefonoPresente=${telefono != null && telefono.isNotEmpty}');
-        } else {
-          AppLogger.d('⚠️ [FirmaFlow] /soci/me ha restituito null');
-        }
-      } catch (e) {
-        AppLogger.d('❌ [FirmaFlow] Errore recupero dati da /soci/me: $e');
-      }
-    }
-
-    if (!mounted) return;
-
-    if (userId == null || telefono == null || telefono.isEmpty) {
-      AppLogger.d('❌ [FirmaFlow] Dati utente mancanti, blocco apertura firma');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context)!.translate('missingDigitalSignatureUserData'),
-          ),
-          backgroundColor: AppColors.error,
-        ),
-      );
-      return;
-    }
-
-    final telefonoFinal = telefono;
-    final userIdFinal = userId;
-
-    Navigator.pop(context);
-    AppLogger.d('🔐 [FirmaFlow] Bottom sheet chiuso, apro FirmaDocumentoScreen');
-
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => FirmaDocumentoScreen(
-          richiestaId: firmaRichiestaId,
-          userId: userIdFinal,
-          telefono: telefonoFinal,
-        ),
-      ),
-    );
-
-    AppLogger.d('🔐 [FirmaFlow] Rientro da FirmaDocumentoScreen, ricarico richieste');
-
-    if (!mounted) return;
-    await _refreshLoggedUserSocioStatus();
-    if (!mounted) return;
-    _caricaRichieste();
-  }
-
-  Future<void> _refreshLoggedUserSocioStatus() async {
-    try {
-      final meData = await SocioService.getMe();
-      if (meData == null) {
-        return;
-      }
-
-      final statusSocio =
-          (meData['status_socio'] ?? meData['status'] ?? meData['stato'] ?? '')
-              .toString()
-              .trim();
-      final isSocio = meData['is_socio'] == true || statusSocio == 'attivo';
-      final numeroTessera = (meData['numero_tessera'] ?? '').toString().trim();
-      final dataAdesione =
-          (meData['data_adesione'] ?? meData['created_at'] ?? '')
-              .toString()
-              .trim();
-
-      await storage.write(key: 'stato_socio', value: statusSocio.isNotEmpty ? statusSocio : 'attivo');
-      await storage.write(
-        key: 'socio_id',
-        value: (meData['socio_id'] ?? meData['id'] ?? '').toString(),
-      );
-
-      if (numeroTessera.isNotEmpty) {
-        await storage.write(key: 'tessera_numero', value: numeroTessera);
-      }
-
-      if (dataAdesione.isNotEmpty) {
-        await storage.write(key: 'data_iscrizione', value: dataAdesione);
-      }
-
-      AppLogger.d('✅ [FirmaFlow] Stato socio sincronizzato dopo firma. isSocio=$isSocio status=${statusSocio.isNotEmpty ? statusSocio : 'attivo'}');
-    } catch (e) {
-      AppLogger.d('⚠️ [FirmaFlow] Impossibile sincronizzare stato socio dopo firma: $e');
-    }
-  }
 
   /// Apre/scarica un documento risultato tramite download autenticato (signed URL).
   Future<void> _apriDocumentoRisultato(
@@ -2568,16 +1980,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     final richiestaId = richiestaIdRaw is int
         ? richiestaIdRaw
         : int.tryParse(richiestaIdRaw?.toString() ?? '');
-    final firmaRichiestaId = _resolveFirmaRichiestaId(richiesta);
-    final isFirmabile = _isRichiestaFirmabile(richiesta);
-    final firmaStatus =
-      firmaRichiestaId != null ? _firmaStatusByRichiesta[firmaRichiestaId] : null;
-    final isGiaFirmata = firmaStatus?.firmato == true;
-    final documentoUnicoUrl =
-        _resolveDocumentoUnicoUrl(firmaStatus) ??
-        _resolveDocumentoUnicoUrlFromRichiesta(richiesta);
-    final canOpenFirmaCta = documentoUnicoUrl != null && !isGiaFirmata;
-    
+    // Documento Unico è a livello UTENTE (non pratica): nessuna CTA DU qui.
     // Debug: verifica dati pagamento COMPLETI
     AppLogger.d('📋 ==================== DEBUG RICHIESTA ====================');
     AppLogger.d('📋 Richiesta ID: $richiestaId');
@@ -2590,8 +1993,6 @@ class _CalendarScreenState extends State<CalendarScreen>
     AppLogger.d('🔑 pagamento["payment_id"]: ${pagamento['payment_id']}');
     AppLogger.d('🔑 pagamento["pagamento_id"]: ${pagamento['pagamento_id']}');
     AppLogger.d('✅ pagamento["ricevuto"]: ${pagamento['ricevuto']}');
-    AppLogger.d('🔐 [FirmaFlow] CTA abilitata: $canOpenFirmaCta');
-    AppLogger.d('🔐 [FirmaFlow] isFirmabile=$isFirmabile stato=$stato puo_firmare=${richiesta['puo_firmare']} richiestaId=$richiestaId isGiaFirmata=$isGiaFirmata');
     AppLogger.d('📋 =========================================================');
     
     // Stato awaiting_payment significa che c'è un pagamento da effettuare
@@ -2879,152 +2280,6 @@ class _CalendarScreenState extends State<CalendarScreen>
                         ),
                       ],
 
-                      if (canOpenFirmaCta) ...[
-                        const SizedBox(height: 12),
-                        ElevatedButton.icon(
-                          onPressed: () => _apriFirmaDocumento(richiesta),
-                          icon: const Icon(Icons.verified_user),
-                          label: Text(
-                            AppLocalizations.of(context)!.translate('openMergedDocumentAndSignOtp'),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.secondary,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            minimumSize: const Size(double.infinity, 0),
-                          ),
-                        ),
-                      ],
-
-                      if (isGiaFirmata) ...[
-                        const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.orange.shade50,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.orange.shade200),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.verified, color: Colors.orange),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  AppLocalizations.of(context)!.translate('documentAlreadySignedOtpUnavailable'),
-                                  style: const TextStyle(fontSize: 13),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.infoBg,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: AppColors.info),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: Theme(
-                              data: Theme.of(context).copyWith(
-                                dividerColor: Colors.transparent,
-                              ),
-                              child: ExpansionTile(
-                                initiallyExpanded: false,
-                                tilePadding: EdgeInsets.zero,
-                                childrenPadding: const EdgeInsets.only(bottom: 8),
-                                leading: const Icon(Icons.badge, color: AppColors.info),
-                                title: Text(
-                                  AppLocalizations.of(context)!.translate('digitalSignatureDetails'),
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  AppLocalizations.of(context)!.translate('tapToExpand'),
-                                  style: const TextStyle(fontSize: 12),
-                                ),
-                                children: [
-                                _buildInfoRow(
-                                  AppLocalizations.of(context)!.translate('signedLabel'),
-                                  (firmaStatus?.firmato == true)
-                                      ? AppLocalizations.of(context)!.yes
-                                      : AppLocalizations.of(context)!.no,
-                                  Icons.verified,
-                                ),
-                                if (firmaStatus != null) ...[
-                                  if ((firmaStatus.id ?? '').isNotEmpty)
-                                    _buildInfoRow(
-                                      AppLocalizations.of(context)!.translate('signatureIdLabel'),
-                                      firmaStatus.id!,
-                                      Icons.fingerprint,
-                                    ),
-                                  if (firmaStatus.dataFirma != null)
-                                    _buildInfoRow(
-                                      AppLocalizations.of(context)!.translate('signatureTimestampLabel'),
-                                      _formatData(firmaStatus.dataFirma!.toIso8601String()),
-                                      Icons.access_time,
-                                    ),
-                                  if ((firmaStatus.metodo ?? '').isNotEmpty)
-                                    _buildInfoRow(
-                                      AppLocalizations.of(context)!.translate('signatureTypeLabel'),
-                                      firmaStatus.metodo!,
-                                      Icons.fact_check,
-                                    ),
-                                  if ((firmaStatus.status ?? '').isNotEmpty)
-                                    _buildInfoRow(
-                                      AppLocalizations.of(context)!.translate('signatureStatusLabel'),
-                                      firmaStatus.status!,
-                                      Icons.rule,
-                                    ),
-                                  if ((firmaStatus.firmaHash ?? '').isNotEmpty)
-                                    _buildInfoRow(
-                                      AppLocalizations.of(context)!.translate('signatureHashLabel'),
-                                      firmaStatus.firmaHash!,
-                                      Icons.tag,
-                                    ),
-                                  if ((firmaStatus.documentoHashSha256 ?? '').isNotEmpty)
-                                    _buildInfoRow(
-                                      AppLocalizations.of(context)!.translate('documentHashSha256Label'),
-                                      firmaStatus.documentoHashSha256!,
-                                      Icons.security,
-                                    ),
-                                  if ((firmaStatus.deviceFirma ?? '').isNotEmpty)
-                                    _buildInfoRow(
-                                      AppLocalizations.of(context)!.translate('signatureDeviceLabel'),
-                                      firmaStatus.deviceFirma!,
-                                      Icons.devices,
-                                    ),
-                                  if ((firmaStatus.documentoUrl ?? '').isNotEmpty)
-                                    _buildInfoRow(
-                                      AppLocalizations.of(context)!.translate('documentFileNameLabel'),
-                                      _extractFileName(firmaStatus.documentoUrl),
-                                      Icons.link,
-                                    ),
-                                  if ((firmaStatus.documentoDownloadUrl ?? '').isNotEmpty)
-                                    _buildInfoRow(
-                                      AppLocalizations.of(context)!.translate('downloadFileNameLabel'),
-                                      _extractFileName(firmaStatus.documentoDownloadUrl),
-                                      Icons.download,
-                                    ),
-                                  if ((firmaStatus.metadata ?? const {}).isNotEmpty)
-                                    _buildInfoRow(
-                                      AppLocalizations.of(context)!.translate('signatureMetadataLabel'),
-                                      jsonEncode(_sanitizeMetadata(firmaStatus.metadata!)),
-                                      Icons.data_object,
-                                    ),
-                                ],
-                              ],
-                            ),
-                          ),
-                          ),
-                        ),
-                      ],
-                      
                       // Pulsante Scarica Ricevuta - Solo per pagamenti completati
                       // PROBLEMA: Backend non ritorna payment ID, solo transaction_id
                       if (pagamento['ricevuto'] == true || stato == 'completed' || stato == 'completata') ...[
@@ -3152,47 +2407,6 @@ class _CalendarScreenState extends State<CalendarScreen>
                           ),
                         ),
 
-                      ],
-
-                      if (documentoUnicoUrl != null || firmaRichiestaId != null) ...[
-                        const SizedBox(height: 12),
-                        OutlinedButton.icon(
-                          onPressed: () async {
-                            AppLogger.d('🖱️ [DocMergedUI] tap Visualizza Documento Unico richiestaId=$firmaRichiestaId stato=$stato isGiaFirmata=$isGiaFirmata fallbackUrl=$documentoUnicoUrl');
-
-                            if (firmaRichiestaId != null) {
-                              await _visualizzaDocumentoUnico(
-                                richiestaId: firmaRichiestaId,
-                                fallbackUrl: documentoUnicoUrl,
-                              );
-                              return;
-                            }
-
-                            if (documentoUnicoUrl != null) {
-                              final opened = await _apriPdfFallbackWeb(documentoUnicoUrl);
-                              if (!opened && mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      '❌ ${AppLocalizations.of(context)!.translate('invalidPdfFallbackUnavailable')}',
-                                    ),
-                                    backgroundColor: AppColors.error,
-                                  ),
-                                );
-                              }
-                            }
-                          },
-                          icon: const Icon(Icons.description_outlined),
-                          label: Text(
-                            AppLocalizations.of(context)!.translate('viewMergedDocument'),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.info,
-                            side: BorderSide(color: AppColors.info),
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            minimumSize: const Size(double.infinity, 0),
-                          ),
-                        ),
                       ],
                     ],
                   ),

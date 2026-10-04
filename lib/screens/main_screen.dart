@@ -7,8 +7,10 @@ import '../services/socio_service.dart';
 import '../services/secure_storage_service.dart';
 import '../services/app_localizations.dart';
 import '../services/app_settings_service.dart';
+import '../services/attivazione_service.dart';
 import '../services/presence_service.dart';
 import '../utils/app_navigation.dart';
+import '../utils/documento_unico_flow.dart';
 import 'annunci/annunci_screen.dart';
 import 'home/home_screen.dart';
 import 'calendar/calendar_screen.dart';
@@ -16,6 +18,7 @@ import 'lavoro/offerte_lavoro_screen.dart';
 import 'sportello/sportello_screen.dart';
 import 'profilo/profilo_screen.dart';
 import 'profilo/completa_profilo_screen.dart';
+import 'profilo/documenti_screen.dart';
 import 'eventi/eventi_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -40,6 +43,7 @@ class _MainScreenState extends State<MainScreen> {
   final GlobalKey<HomeScreenState> _homeKey = GlobalKey<HomeScreenState>();
   int _profileScreenVersion = 0;
   bool _profileCheckDone = false;
+  bool _documentoUnicoCheckDone = false;
 
   /// Fallback WhatsApp WeCoop (stesso numero di Contatti).
   static const String _fallbackWhatsappDigits = '393515112113';
@@ -73,6 +77,7 @@ class _MainScreenState extends State<MainScreen> {
     PresenceService.instance.setScreen(screen: 'Home', route: 'MainScreen');
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkProfiloCompleto();
+      _checkDocumentoUnico();
       if (widget.initialIndex == MainTab.sportello) {
         _openWhatsAppSupport();
       }
@@ -116,6 +121,73 @@ class _MainScreenState extends State<MainScreen> {
     } catch (_) {
       // Silenzioso: non bloccare l'app se la verifica fallisce.
     }
+  }
+
+  /// Propone la sottoscrizione DU solo se manca la versione vigente.
+  /// Non è un hard-gate su first_login: l'utente può rimandare.
+  Future<void> _checkDocumentoUnico() async {
+    if (_documentoUnicoCheckDone) return;
+    _documentoUnicoCheckDone = true;
+
+    final token = await SecureStorageService().read(key: 'jwt_token');
+    if (token == null || token.isEmpty) return;
+
+    try {
+      final status = await AttivazioneService.getStatus();
+      if (status == null || !status.needsDocumentoUnico || !mounted) return;
+      _showDocumentoUnicoDialog();
+    } catch (_) {
+      // Silenzioso: non bloccare l'app.
+    }
+  }
+
+  void _showDocumentoUnicoDialog() {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            const Icon(Icons.description_outlined, color: AppColors.secondary, size: 28),
+            const SizedBox(width: 10),
+            Expanded(child: Text(l10n.translate('documentoUnicoDialogTitle'))),
+          ],
+        ),
+        content: Text(
+          l10n.translate('documentoUnicoDialogMessage'),
+          style: const TextStyle(height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.translate('documentoUnicoDialogLater')),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const DocumentiScreen()),
+              );
+            },
+            child: Text(l10n.myDocumentsTitle),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.secondary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () async {
+              Navigator.of(ctx).pop();
+              await DocumentoUnicoFlow.apriSottoscrizione(context);
+            },
+            child: Text(l10n.translate('documentoUnicoDialogSign')),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showCompletaProfiloDialog() {

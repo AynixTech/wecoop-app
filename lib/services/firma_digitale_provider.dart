@@ -55,9 +55,9 @@ class FirmaDigitaleProvider extends ChangeNotifier {
 
   bool get hasError => _step == FirmaStep.errore;
 
-  // Inizializza il flusso di firma
+  // Inizializza il flusso di firma (richiestaId null = user-level).
   void iniziaFlusso({
-    required int richiestaId,
+    int? richiestaId,
     required int userId,
     required String telefono,
   }) {
@@ -74,20 +74,22 @@ class FirmaDigitaleProvider extends ChangeNotifier {
 
   // Step 1: Scarica il documento
   Future<void> scaricaDocumento() async {
-    if (_richiestaId == null) {
-      _setError('Richiesta ID non inizializzato', 'INVALID_STATE');
+    if (_userId == null) {
+      _setError('Utente non inizializzato', 'INVALID_STATE');
       return;
     }
 
     try {
-      printDebug('📄 [Provider] scaricaDocumento start richiestaId=$_richiestaId');
+      printDebug('📄 [Provider] scaricaDocumento start richiestaId=$_richiestaId userLevel=${_richiestaId == null}');
       _step = FirmaStep.loadingDocumento;
       _errorMessage = null;
       _errorCode = null;
       notifyListeners();
 
       printDebug('📄 Scarico documento...');
-      _documento = await FirmaDigitaleService.scaricaDocumento(_richiestaId!);
+      _documento = await FirmaDigitaleService.scaricaDocumento(
+        richiestaId: _richiestaId,
+      );
 
       _step = FirmaStep.documentoCaricato;
       printDebug('✅ Documento caricato nome=${_documento?.nome} url=${_documento?.url}');
@@ -103,7 +105,7 @@ class FirmaDigitaleProvider extends ChangeNotifier {
 
   // Step 2: Richiedi OTP
   Future<void> richiestaOTP() async {
-    if (_richiestaId == null || _userId == null || _telefono == null) {
+    if (_userId == null || _telefono == null) {
       final maskedPhone = _maskPhone(_telefono);
       printDebug('❌ [Provider] richiestaOTP parametri mancanti richiestaId=$_richiestaId userId=$_userId telefono=$maskedPhone');
       _setError('Parametri non inizializzati', 'INVALID_STATE');
@@ -117,11 +119,10 @@ class FirmaDigitaleProvider extends ChangeNotifier {
 
       printDebug('📱 Genero OTP...');
       _otpGenerata = await FirmaDigitaleService.generaOTP(
-        richiestaId: _richiestaId!,
+        richiestaId: _richiestaId,
         userId: _userId!,
         telefono: _telefono!,
       );
-
       _step = FirmaStep.otpInviato;
       printDebug('✅ OTP inviato via SMS+Email otpId=${_otpGenerata?.id} scadenza=${_otpGenerata?.scadenza} metodo=${_otpGenerata?.metodoInvio}');
       notifyListeners();
@@ -178,9 +179,7 @@ class FirmaDigitaleProvider extends ChangeNotifier {
     required String deviceModel,
     required String appVersion,
   }) async {
-    if (_otpGenerata?.id == null ||
-        _richiestaId == null ||
-        _documento?.hashSha256 == null) {
+    if (_otpGenerata?.id == null || _documento?.hashSha256 == null) {
       printDebug('❌ [Provider] firmaDocumento dati mancanti otpId=${_otpGenerata?.id} richiestaId=$_richiestaId hash=${_documento?.hashSha256 != null}');
       _setError('Dati necessari non disponibili', 'INVALID_STATE');
       return;
@@ -199,7 +198,7 @@ class FirmaDigitaleProvider extends ChangeNotifier {
       printDebug('🔐 Firmo documento...');
       _firmaCreata = await FirmaDigitaleService.firmaDocumento(
         otpId: _otpGenerata!.id,
-        richiestaId: _richiestaId!,
+        richiestaId: _richiestaId,
         documentoContenuto: documentoContenuto,
         deviceType: deviceType,
         deviceModel: deviceModel,
@@ -210,7 +209,8 @@ class FirmaDigitaleProvider extends ChangeNotifier {
       printDebug('✅ Documento firmato id=${_firmaCreata?.id} status=${_firmaCreata?.status}');
       notifyListeners();
     } on FirmaDigitaleException catch (e) {
-      if (e.code == 'document_already_signed') {
+      if (e.code == 'document_already_signed' ||
+          e.code == 'DOCUMENT_ALREADY_SIGNED') {
         final details = e.details ?? {};
         final firmaId = (details['firma_id'] ?? details['id'] ?? 'existing_signature').toString();
         final firmaTimestampRaw =
@@ -226,7 +226,7 @@ class FirmaDigitaleProvider extends ChangeNotifier {
 
         _firmaCreata = FirmaDigitale(
           id: firmaId,
-          richiestaId: _richiestaId!,
+          richiestaId: _richiestaId ?? 0,
           firmaTimestamp: firmaTimestamp,
           metodoFirma: metodo,
           status: 'valida',

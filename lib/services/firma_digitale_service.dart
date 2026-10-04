@@ -31,12 +31,14 @@ class FirmaDigitaleService {
   }
 
   /// 1️⃣ Scarica il Documento Unico (PDF + Testo)
-  /// POST /documento-unico/{richiesta_id}/send
-  /// Response include: URL PDF, contenuto testo compilato, hash SHA-256, data generazione
-  static Future<DocumentoUnico> scaricaDocumento(int richiestaId) async {
+  /// User-level: POST /documento-unico/send
+  /// Legacy pratica: POST /documento-unico/{richiesta_id}/send
+  static Future<DocumentoUnico> scaricaDocumento({int? richiestaId}) async {
     try {
       final headers = await _getHeaders();
-      final url = '$baseUrl/documento-unico/$richiestaId/send';
+      final url = richiestaId == null
+          ? '$baseUrl/documento-unico/send'
+          : '$baseUrl/documento-unico/$richiestaId/send';
 
       AppLogger.d('📄 Scarico documento da: $url');
       AppLogger.d(
@@ -132,14 +134,20 @@ class FirmaDigitaleService {
   /// POST /firma-digitale/otp/generate
   /// Invia OTP via SMS al numero custodito
   static Future<OTPGenerateResponse> generaOTP({
-    required int richiestaId,
+    int? richiestaId,
     required int userId,
     required String telefono,
   }) async {
     try {
       final headers = await _getHeaders();
       final url = '$baseUrl/firma-digitale/otp/generate';
-      final requestBody = {'richiesta_id': richiestaId, 'telefono': telefono};
+      final requestBody = <String, dynamic>{
+        'telefono': telefono,
+        'user_id': userId,
+      };
+      if (richiestaId != null) {
+        requestBody['richiesta_id'] = richiestaId;
+      }
 
       AppLogger.d('📱 Genero OTP per richiesta: $richiestaId');
       AppLogger.d('📱 [OtpGenerate] url=$url');
@@ -337,10 +345,10 @@ class FirmaDigitaleService {
 
   /// 4️⃣ Firma il documento (FES - Firma Elettronica Semplice)
   /// POST /firma-digitale/sign
-  /// Invia: otp_id, richiesta_id, documento_contenuto, device_info, app_version, ip_address
+  /// Invia: otp_id, richiesta_id (opz.), documento_contenuto, device_info, app_version, ip_address
   static Future<FirmaDigitale> firmaDocumento({
     required String otpId,
-    required int richiestaId,
+    int? richiestaId,
     required String documentoContenuto,
     required String deviceType, // iOS o Android
     required String deviceModel,
@@ -349,14 +357,16 @@ class FirmaDigitaleService {
     try {
       final headers = await _getHeaders();
       final url = '$baseUrl/firma-digitale/sign';
-      final requestBody = {
+      final requestBody = <String, dynamic>{
         'otp_id': otpId,
-        'richiesta_id': richiestaId,
         'documento_contenuto': documentoContenuto,
         'device_info': {'device_type': deviceType, 'device_model': deviceModel},
         'app_version': appVersion,
         'ip_address': 'auto',
       };
+      if (richiestaId != null) {
+        requestBody['richiesta_id'] = richiestaId;
+      }
 
       AppLogger.d('🔐 Firmo documento con OTP: $otpId');
       AppLogger.d(
@@ -396,7 +406,7 @@ class FirmaDigitaleService {
         } else if (data['success'] == true && data['firma_id'] != null) {
           final normalizedFirma = {
             'id': data['firma_id'].toString(),
-            'richiesta_id': richiestaId,
+            'richiesta_id': richiestaId ?? 0,
             'firma_timestamp':
                 (data['firma_timestamp'] ?? DateTime.now().toIso8601String())
                     .toString(),

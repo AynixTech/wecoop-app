@@ -160,19 +160,9 @@ class _StoricoPraticaDettaglioScreenState
     final docsCliente = _parseDocs(d['documenti']);
     final docsPubblicati = _parseDocs(d['documenti_risultato']);
     final puoPagare = d['puo_pagare'] == true;
-    final firmato = d['firmato'] == true ||
-        (d['firma_stato']?.toString().toLowerCase() == 'firmato');
     final paymentId = pagamento['id'] is int
         ? pagamento['id'] as int
         : int.tryParse('${pagamento['id'] ?? ''}');
-
-    final firmaLabel = firmato
-        ? l10n.translate('signedLabel')
-        : (d['firma_stato']?.toString().isNotEmpty == true
-            ? d['firma_stato'].toString()
-            : (d['documento_unico_url'] != null
-                ? l10n.pending
-                : l10n.translate('notAvailable')));
 
     return Scaffold(
       appBar: AppBar(
@@ -214,12 +204,6 @@ class _StoricoPraticaDettaglioScreenState
                     scheme,
                     l10n.translate('payment'),
                     _pagamentoLabel(l10n, pagamento, d),
-                  ),
-                  const SizedBox(height: 8),
-                  _chip(
-                    scheme,
-                    l10n.translate('signature'),
-                    firmaLabel,
                   ),
                   if (puoPagare) ...[
                     const SizedBox(height: 20),

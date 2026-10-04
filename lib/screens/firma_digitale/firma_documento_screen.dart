@@ -10,13 +10,14 @@ import 'package:wecoop_app/widgets/firma_digitale/conferma_firma_widget.dart';
 import 'package:wecoop_app/widgets/firma_digitale/risultato_firma_widget.dart';
 
 class FirmaDocumentoScreen extends StatefulWidget {
-  final int richiestaId;
+  /// Null = sottoscrizione Documento Unico a livello utente (senza pratica).
+  final int? richiestaId;
   final int userId;
   final String telefono;
 
   const FirmaDocumentoScreen({
     super.key,
-    required this.richiestaId,
+    this.richiestaId,
     required this.userId,
     required this.telefono,
   });

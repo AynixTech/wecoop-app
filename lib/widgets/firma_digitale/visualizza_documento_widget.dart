@@ -8,14 +8,15 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class VisualizzaDocumentoWidget extends StatefulWidget {
-  final int richiestaId;
+  /// Null = Documento Unico user-level (senza pratica).
+  final int? richiestaId;
   final int userId;
   final String telefono;
   final VoidCallback onFirmaClick;
 
   const VisualizzaDocumentoWidget({
     super.key,
-    required this.richiestaId,
+    this.richiestaId,
     required this.userId,
     required this.telefono,
     required this.onFirmaClick,

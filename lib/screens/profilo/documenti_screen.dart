@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../models/attivazione_models.dart';
 import '../../models/documento.dart';
 import '../../services/app_localizations.dart';
+import '../../services/attivazione_service.dart';
 import '../../services/documento_service.dart';
+import '../../theme/app_colors.dart';
+import '../../utils/documento_unico_flow.dart';
 
 class DocumentiScreen extends StatefulWidget {
   final bool showFamilyDocuments;
@@ -25,6 +29,7 @@ class DocumentiScreen extends StatefulWidget {
 class _DocumentiScreenState extends State<DocumentiScreen> {
   final DocumentoService _documentoService = DocumentoService();
   bool _isLoading = true;
+  AttivazioneStatus? _attivazione;
   late String _selectedSoggetto;
 
   String _localizedSoggettoLabel(String soggetto) {
@@ -47,11 +52,127 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
   Future<void> _loadDocumenti() async {
     if (!mounted) return;
     setState(() => _isLoading = true);
+    final attivazione = await AttivazioneService.getStatus();
     await _documentoService.getDocumenti();
     if (!mounted) return;
     setState(() {
+      _attivazione = attivazione;
       _isLoading = false;
     });
+  }
+
+  String _duStatoLabel(AppLocalizations l10n, AttivazioneStatus? status) {
+    if (status == null) return l10n.translate('notAvailable');
+    switch (status.documentoUnicoStato.toUpperCase()) {
+      case 'SOTTOSCRITTO':
+        return l10n.translate('documentoUnicoStatusSottoscritto');
+      case 'DA_AGGIORNARE':
+        return l10n.translate('documentoUnicoStatusDaAggiornare');
+      default:
+        return l10n.translate('documentoUnicoStatusNonSottoscritto');
+    }
+  }
+
+  Widget _buildDocumentoUnicoCard() {
+    final l10n = AppLocalizations.of(context)!;
+    final status = _attivazione;
+    final needsSign = status?.needsDocumentoUnico ?? true;
+    final version =
+        status?.documentoUnicoVersion ?? status?.requiredDocumentoUnicoVersion;
+    final signedAt = status?.documentoUnicoSignedAt;
+    final dateFmt = DateFormat('dd/MM/yyyy HH:mm');
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context)
+            .colorScheme
+            .surfaceContainerHighest
+            .withOpacity(0.45),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: needsSign
+              ? AppColors.secondary.withOpacity(0.45)
+              : AppColors.success.withOpacity(0.45),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                needsSign ? Icons.description_outlined : Icons.verified_user,
+                color: needsSign ? AppColors.secondary : AppColors.success,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  l10n.translate('documentoUnicoTitle'),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            '${l10n.translate('documentoUnicoVersionLabel')} ${version ?? '1.0'}',
+            style: TextStyle(
+              fontSize: 13,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${l10n.translate('documentoUnicoStatusLabel')}: ${_duStatoLabel(l10n, status)}',
+            style: TextStyle(
+              fontSize: 13,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+          if (signedAt != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              '${l10n.translate('documentoUnicoSignedAtLabel')}: ${dateFmt.format(signedAt.toLocal())}',
+              style: TextStyle(
+                fontSize: 13,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+          const SizedBox(height: 14),
+          if (needsSign)
+            ElevatedButton.icon(
+              onPressed: () async {
+                await DocumentoUnicoFlow.apriSottoscrizione(context);
+                if (mounted) _loadDocumenti();
+              },
+              icon: const Icon(Icons.verified_user),
+              label: Text(l10n.translate('documentoUnicoSignCta')),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.secondary,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 44),
+              ),
+            )
+          else
+            OutlinedButton.icon(
+              onPressed: () => DocumentoUnicoFlow.visualizzaDocumento(context),
+              icon: const Icon(Icons.description_outlined),
+              label: Text(l10n.translate('documentoUnicoViewDocument')),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.info,
+                side: const BorderSide(color: AppColors.info),
+                minimumSize: const Size(double.infinity, 44),
+              ),
+            ),
+        ],
+      ),
+    );
   }
 
   Future<void> _caricaDocumento(String tipo, String soggetto) async {
@@ -469,6 +590,8 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
                       color: scheme.onSurfaceVariant,
                     ),
                   ),
+                  const SizedBox(height: 20),
+                  _buildDocumentoUnicoCard(),
                   const SizedBox(height: 24),
                   if (widget.showFamilyDocuments) ...[
                     _buildSoggettoSelector(),

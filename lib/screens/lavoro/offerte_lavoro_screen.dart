@@ -1819,26 +1819,44 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
       });
     }
 
-    final categorieResult = await OfferteLavoroService.getCategorie();
-    final offerteResult = await OfferteLavoroService.getOfferte(
-      page: 1,
-      perPage: 12,
-      search: _searchController.text,
-      categoryDirection: _selectedJobDirection,
-    );
+    try {
+      final categorieResult = await OfferteLavoroService.getCategorie();
+      final offerteResult = await OfferteLavoroService.getOfferte(
+        page: 1,
+        perPage: 12,
+        search: _searchController.text,
+        categoryDirection: _selectedJobDirection,
+      );
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    if (offerteResult['success'] == true) {
-      final pagination =
-          offerteResult['pagination'] as Map<String, dynamic>? ??
-          const <String, dynamic>{};
+      if (offerteResult['success'] == true) {
+        final pagination =
+            offerteResult['pagination'] as Map<String, dynamic>? ??
+            const <String, dynamic>{};
+        setState(() {
+          _offerte =
+              (offerteResult['offerte'] as List?)?.cast<OffertaLavoro>() ??
+              <OffertaLavoro>[];
+          _totalPages = (pagination['total_pages'] as num?)?.toInt() ?? 1;
+          _isLoading = false;
+          _categorie =
+              categorieResult['success'] == true
+                  ? ((categorieResult['categorie'] as List?)
+                          ?.cast<OffertaCategoria>() ??
+                      <OffertaCategoria>[])
+                  : <OffertaCategoria>[];
+        });
+        await _tryOpenInitialOfferta();
+        return;
+      }
+
       setState(() {
-        _offerte =
-            (offerteResult['offerte'] as List?)?.cast<OffertaLavoro>() ??
-            <OffertaLavoro>[];
-        _totalPages = (pagination['total_pages'] as num?)?.toInt() ?? 1;
         _isLoading = false;
+        _errorMessage =
+            (offerteResult['message'] ??
+                    _OfferteLavoroText.tr(context, 'sendError'))
+                .toString();
         _categorie =
             categorieResult['success'] == true
                 ? ((categorieResult['categorie'] as List?)
@@ -1846,23 +1864,13 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                     <OffertaCategoria>[])
                 : <OffertaCategoria>[];
       });
-      await _tryOpenInitialOfferta();
-      return;
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _errorMessage = _OfferteLavoroText.tr(context, 'sendError');
+      });
     }
-
-    setState(() {
-      _isLoading = false;
-      _errorMessage =
-          (offerteResult['message'] ??
-                  _OfferteLavoroText.tr(context, 'sendError'))
-              .toString();
-      _categorie =
-          categorieResult['success'] == true
-              ? ((categorieResult['categorie'] as List?)
-                      ?.cast<OffertaCategoria>() ??
-                  <OffertaCategoria>[])
-              : <OffertaCategoria>[];
-    });
   }
 
   Future<void> _tryOpenInitialOfferta() async {
@@ -2243,6 +2251,10 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
                       TextField(
                         controller: tempSearchCtrl,
                         textInputAction: TextInputAction.search,
+                        autofillHints: const [],
+                        enableSuggestions: false,
+                        autocorrect: false,
+                        keyboardType: TextInputType.text,
                         decoration: InputDecoration(
                           hintText: t('searchHint'),
                           prefixIcon: const Icon(Icons.search),

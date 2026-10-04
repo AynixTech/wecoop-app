@@ -718,6 +718,11 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
           Expanded(
             child: TextField(
               controller: _textController,
+              autofillHints: const [],
+              enableSuggestions: false,
+              autocorrect: true,
+              keyboardType: TextInputType.text,
+              textInputAction: TextInputAction.send,
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context)!.translate('chatbotInputHint'),
                 border: OutlineInputBorder(

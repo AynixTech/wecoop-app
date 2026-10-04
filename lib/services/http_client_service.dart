@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:http/http.dart' as http;
 import 'package:wecoop_app/services/auth_helper.dart';
@@ -24,6 +25,22 @@ class HttpClientService {
   /// True for reverse-proxy / cold-start failures (HTML body, not JSON).
   static bool isGatewayStatus(int statusCode) =>
       statusCode == 502 || statusCode == 503 || statusCode == 504;
+
+  /// Drop di connessione tipici di Render cold-start / rete mobile instabile.
+  static bool isTransientNetworkError(Object error) {
+    if (error is SocketException) return true;
+    if (error is http.ClientException) return true;
+    if (error is HandshakeException) return true;
+    if (error is TlsException) return true;
+    final text = error.toString().toLowerCase();
+    return text.contains('connection closed') ||
+        text.contains('connection reset') ||
+        text.contains('broken pipe') ||
+        text.contains('software caused connection abort') ||
+        text.contains('network is unreachable') ||
+        text.contains('timed out') ||
+        text.contains('timeout');
+  }
 
   /// Decodifica JSON dalla risposta HTTP mantenendo l'encoding UTF-8 corretto
   ///
@@ -278,12 +295,28 @@ class HttpClientService {
     String requestUrl,
   ) async {
     try {
-      // Render free tier: 502/503/504 HTML su cold start. Ritenta prima di fallire.
+      // Render free tier: 502/503/504 HTML o drop TCP su cold start. Ritenta.
       const maxGatewayAttempts = 3;
       late http.Response response;
+      Object? lastTransientError;
       for (var attempt = 1; attempt <= maxGatewayAttempts; attempt++) {
-        response = await processResponse(await request());
-        if (!isGatewayStatus(response.statusCode) || attempt == maxGatewayAttempts) {
+        try {
+          response = await processResponse(await request());
+          lastTransientError = null;
+        } catch (e) {
+          if (isTransientNetworkError(e) && attempt < maxGatewayAttempts) {
+            lastTransientError = e;
+            AppLogger.d(
+              '⏳ Rete/transient su $requestUrl ($e), '
+              'ritento $attempt/$maxGatewayAttempts...',
+            );
+            await Future.delayed(Duration(seconds: attempt * 2));
+            continue;
+          }
+          rethrow;
+        }
+        if (!isGatewayStatus(response.statusCode) ||
+            attempt == maxGatewayAttempts) {
           break;
         }
         AppLogger.d(
@@ -291,6 +324,11 @@ class HttpClientService {
           'ritento $attempt/$maxGatewayAttempts...',
         );
         await Future.delayed(Duration(seconds: attempt * 2));
+      }
+      // Evita warning "late not assigned" se il loop uscisse solo da continue
+      // (non dovrebbe: all'ultimo tentativo rethrow). Manteniamo assert esplicito.
+      if (lastTransientError != null) {
+        throw lastTransientError;
       }
 
       // Non tentare il refresh sugli endpoint di autenticazione:

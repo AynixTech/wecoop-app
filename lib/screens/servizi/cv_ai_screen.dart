@@ -724,6 +724,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
 
       final merged = _mergeCvEntries(entries, localCached);
 
+      if (!mounted) return;
       setState(() {
         _existingCvs
           ..clear()
@@ -733,6 +734,7 @@ class _CvAiScreenState extends State<CvAiScreen> {
 
       await _saveLocalCachedCvs(merged);
     } catch (_) {
+      if (!mounted) return;
       setState(() {
         _existingCvs
           ..clear()

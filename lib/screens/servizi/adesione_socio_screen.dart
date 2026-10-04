@@ -110,40 +110,53 @@ class _AdesioneSocioScreenState extends State<AdesioneSocioScreen> {
       _isSubmitting = true;
     });
 
-    final result = await SocioService.richiestaAdesioneSocio(
-      nome: _nomeController.text.trim(),
-      cognome: _cognomeController.text.trim(),
-      prefix: _prefissoController.text.trim(),
-      telefono: _telefonoController.text.trim(),
-      nazionalita: _selectedNazionalita!,
-      email: _emailController.text.trim(),
-      privacyAccepted: _privacyAccepted,
-      // Campi opzionali
-      codiceFiscale: _codiceFiscaleController.text.trim().isNotEmpty
-          ? ItalianValidators.normalizeCodiceFiscale(_codiceFiscaleController.text)
-          : null,
-      dataNascita: _dataNascitaController.text.trim().isNotEmpty
-          ? ItalianValidators.birthDateToIso(_dataNascitaController.text.trim())
-          : null,
-      luogoNascita: _luogoNascitaController.text.trim().isNotEmpty
-          ? _luogoNascitaController.text.trim()
-          : null,
-      indirizzo: _indirizzoController.text.trim().isNotEmpty
-          ? _indirizzoController.text.trim()
-          : null,
-      citta: _cittaController.text.trim().isNotEmpty
-          ? _cittaController.text.trim()
-          : null,
-      cap: _capController.text.trim().isNotEmpty
-          ? _capController.text.trim()
-          : null,
-      provincia: _provinciaController.text.trim().isNotEmpty
-          ? _provinciaController.text.trim()
-          : null,
-      professione: _professioneController.text.trim().isNotEmpty
-          ? _professioneController.text.trim()
-          : null,
-    );
+    Map<String, dynamic> result;
+    try {
+      result = await SocioService.richiestaAdesioneSocio(
+        nome: _nomeController.text.trim(),
+        cognome: _cognomeController.text.trim(),
+        prefix: _prefissoController.text.trim(),
+        telefono: _telefonoController.text.trim(),
+        nazionalita: _selectedNazionalita!,
+        email: _emailController.text.trim(),
+        privacyAccepted: _privacyAccepted,
+        // Campi opzionali
+        codiceFiscale: _codiceFiscaleController.text.trim().isNotEmpty
+            ? ItalianValidators.normalizeCodiceFiscale(_codiceFiscaleController.text)
+            : null,
+        dataNascita: _dataNascitaController.text.trim().isNotEmpty
+            ? ItalianValidators.birthDateToIso(_dataNascitaController.text.trim())
+            : null,
+        luogoNascita: _luogoNascitaController.text.trim().isNotEmpty
+            ? _luogoNascitaController.text.trim()
+            : null,
+        indirizzo: _indirizzoController.text.trim().isNotEmpty
+            ? _indirizzoController.text.trim()
+            : null,
+        citta: _cittaController.text.trim().isNotEmpty
+            ? _cittaController.text.trim()
+            : null,
+        cap: _capController.text.trim().isNotEmpty
+            ? _capController.text.trim()
+            : null,
+        provincia: _provinciaController.text.trim().isNotEmpty
+            ? _provinciaController.text.trim()
+            : null,
+        professione: _professioneController.text.trim().isNotEmpty
+            ? _professioneController.text.trim()
+            : null,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isSubmitting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.networkError),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
 
     if (!mounted) return;
 

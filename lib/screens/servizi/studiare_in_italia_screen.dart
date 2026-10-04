@@ -602,8 +602,18 @@ class _PartnerDettaglioScreenState extends State<_PartnerDettaglioScreen> {
   }
 
   Future<void> _load() async {
-    final data = await widget.contenutiService.getPartnerDettaglio(widget.partner.id);
-    if (mounted) setState(() { _dettaglio = data; _isLoading = false; });
+    try {
+      final data =
+          await widget.contenutiService.getPartnerDettaglio(widget.partner.id);
+      if (mounted) {
+        setState(() {
+          _dettaglio = data;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   Future<void> _openMedia(String url) async {

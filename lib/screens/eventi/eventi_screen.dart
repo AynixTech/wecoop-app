@@ -35,40 +35,50 @@ class _EventiScreenState extends State<EventiScreen> {
 
     AppLogger.d('🔄 Caricamento eventi - Filtro categoria: ${_categoriaFiltro ?? "nessuno"}');
 
-    final result = await EventiService.getEventi(
-      perPage: 50,
-      categoria: _categoriaFiltro,
-    );
+    try {
+      final result = await EventiService.getEventi(
+        perPage: 50,
+        categoria: _categoriaFiltro,
+      );
 
-    AppLogger.d('📥 Risultato getEventi: success=${result['success']}');
-    
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-        if (result['success'] == true) {
-          _eventi = result['eventi'] as List<Evento>;
-          AppLogger.d('✅ ${_eventi.length} eventi caricati');
-          
-          // Log dettagliato per ogni evento
-          for (var i = 0; i < _eventi.length; i++) {
-            final evento = _eventi[i];
-            AppLogger.d('📌 Evento #$i: ${evento.titolo}');
-            AppLogger.d('   - ID: ${evento.id}');
-            AppLogger.d('   - Data: ${evento.dataInizio} ${evento.oraInizio ?? ""}');
-            AppLogger.d('   - Categoria: ${evento.categoria ?? "nessuna"}');
-            AppLogger.d('   - Immagine copertina: ${evento.immagineCopertina ?? "NESSUNA"}');
-            AppLogger.d('   - Luogo: ${evento.luogo ?? evento.citta ?? "non specificato"}');
-            AppLogger.d('   - Online: ${evento.online}');
-            AppLogger.d('   - Richiede iscrizione: ${evento.richiedeIscrizione}');
-            AppLogger.d('   - Sono iscritto: ${evento.sonoIscritto}');
-            AppLogger.d('   - Partecipanti: ${evento.partecipantiCount}/${evento.maxPartecipanti}');
-            AppLogger.d('   - Prezzo: ${evento.prezzoFormattato}');
+      AppLogger.d('📥 Risultato getEventi: success=${result['success']}');
+
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          if (result['success'] == true) {
+            _eventi = result['eventi'] as List<Evento>;
+            AppLogger.d('✅ ${_eventi.length} eventi caricati');
+
+            // Log dettagliato per ogni evento
+            for (var i = 0; i < _eventi.length; i++) {
+              final evento = _eventi[i];
+              AppLogger.d('📌 Evento #$i: ${evento.titolo}');
+              AppLogger.d('   - ID: ${evento.id}');
+              AppLogger.d('   - Data: ${evento.dataInizio} ${evento.oraInizio ?? ""}');
+              AppLogger.d('   - Categoria: ${evento.categoria ?? "nessuna"}');
+              AppLogger.d('   - Immagine copertina: ${evento.immagineCopertina ?? "NESSUNA"}');
+              AppLogger.d('   - Luogo: ${evento.luogo ?? evento.citta ?? "non specificato"}');
+              AppLogger.d('   - Online: ${evento.online}');
+              AppLogger.d('   - Richiede iscrizione: ${evento.richiedeIscrizione}');
+              AppLogger.d('   - Sono iscritto: ${evento.sonoIscritto}');
+              AppLogger.d('   - Partecipanti: ${evento.partecipantiCount}/${evento.maxPartecipanti}');
+              AppLogger.d('   - Prezzo: ${evento.prezzoFormattato}');
+            }
+          } else {
+            _errorMessage = result['message'];
+            AppLogger.d('❌ Errore caricamento eventi: $_errorMessage');
           }
-        } else {
-          _errorMessage = result['message'];
-          AppLogger.d('❌ Errore caricamento eventi: $_errorMessage');
-        }
-      });
+        });
+      }
+    } catch (e) {
+      AppLogger.d('❌ Eccezione caricamento eventi: $e');
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = AppLocalizations.of(context)!.networkError;
+        });
+      }
     }
   }
 

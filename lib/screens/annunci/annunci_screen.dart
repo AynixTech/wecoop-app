@@ -81,23 +81,34 @@ class _AnnunciScreenState extends State<AnnunciScreen> {
         _loading = true;
       });
     }
-    final items = await _service.getAnnunci(
-      categoria: _selectedCategoria,
-      search:
-          _searchCtrl.text.trim().isEmpty ? null : _searchCtrl.text.trim(),
-      page: _page,
-    );
-    if (!mounted) return;
-    setState(() {
-      if (reset) {
-        _annunci = items;
-      } else {
-        _annunci.addAll(items);
-      }
-      _hasMore = items.length >= 20;
-      _loading = false;
-      _loadingMore = false;
-    });
+    try {
+      final items = await _service.getAnnunci(
+        categoria: _selectedCategoria,
+        search:
+            _searchCtrl.text.trim().isEmpty ? null : _searchCtrl.text.trim(),
+        page: _page,
+      );
+      if (!mounted) return;
+      setState(() {
+        if (reset) {
+          _annunci = items;
+        } else {
+          _annunci.addAll(items);
+        }
+        _hasMore = items.length >= 20;
+        _loading = false;
+        _loadingMore = false;
+      });
+    } catch (_) {
+      // Transient network (Render cold-start / drop): non crashare la tab.
+      if (!mounted) return;
+      setState(() {
+        if (reset) _annunci = [];
+        _hasMore = false;
+        _loading = false;
+        _loadingMore = false;
+      });
+    }
   }
 
   Future<void> _loadMore() async {
@@ -242,6 +253,12 @@ class _SearchBar extends StatelessWidget {
       child: TextField(
         controller: controller,
         style: const TextStyle(color: Colors.white),
+        // Evita autofill telefono/credenziali nel campo ricerca annunci.
+        autofillHints: const [],
+        enableSuggestions: false,
+        autocorrect: false,
+        keyboardType: TextInputType.text,
+        textInputAction: TextInputAction.search,
         decoration: InputDecoration(
           hintText: AppLocalizations.of(context)!.annunciSearchHint,
           hintStyle:

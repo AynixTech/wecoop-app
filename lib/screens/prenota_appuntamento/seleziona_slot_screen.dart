@@ -47,19 +47,27 @@ class _SelezionaSlotScreenState extends State<SelezionaSlotScreen> {
       _loading = true;
       _error = null;
     });
-    final res = await AppuntamentiService.getSlot(widget.richiestaId);
-    if (!mounted) return;
-    if (res['success'] == true) {
-      final data = res['data'] as SlotDisponibilita;
+    try {
+      final res = await AppuntamentiService.getSlot(widget.richiestaId);
+      if (!mounted) return;
+      if (res['success'] == true) {
+        final data = res['data'] as SlotDisponibilita;
+        setState(() {
+          _slots = data.slots;
+          _appuntamento = data.appuntamento;
+          _selectedSlotId = null;
+          _loading = false;
+        });
+      } else {
+        setState(() {
+          _error = res['message']?.toString();
+          _loading = false;
+        });
+      }
+    } catch (_) {
+      if (!mounted) return;
       setState(() {
-        _slots = data.slots;
-        _appuntamento = data.appuntamento;
-        _selectedSlotId = null;
-        _loading = false;
-      });
-    } else {
-      setState(() {
-        _error = res['message']?.toString();
+        _error = _tr('connectionError', 'Errore di connessione');
         _loading = false;
       });
     }
@@ -89,17 +97,24 @@ class _SelezionaSlotScreenState extends State<SelezionaSlotScreen> {
     if (_selectedSlotId == null) return;
     setState(() => _submitting = true);
 
-    final Map<String, dynamic> res;
-    if (_rescheduling && _appuntamento != null) {
-      res = await AppuntamentiService.riprogramma(
-        appuntamentoId: _appuntamento!.id,
-        nuovoSlotId: _selectedSlotId!,
-      );
-    } else {
-      res = await AppuntamentiService.prenota(
-        richiestaId: widget.richiestaId,
-        slotId: _selectedSlotId!,
-      );
+    Map<String, dynamic> res;
+    try {
+      if (_rescheduling && _appuntamento != null) {
+        res = await AppuntamentiService.riprogramma(
+          appuntamentoId: _appuntamento!.id,
+          nuovoSlotId: _selectedSlotId!,
+        );
+      } else {
+        res = await AppuntamentiService.prenota(
+          richiestaId: widget.richiestaId,
+          slotId: _selectedSlotId!,
+        );
+      }
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _submitting = false);
+      _showError(_tr('connectionError', 'Errore di connessione'));
+      return;
     }
 
     if (!mounted) return;
@@ -139,7 +154,15 @@ class _SelezionaSlotScreenState extends State<SelezionaSlotScreen> {
     if (confirmed != true || _appuntamento == null) return;
 
     setState(() => _submitting = true);
-    final res = await AppuntamentiService.annulla(_appuntamento!.id);
+    Map<String, dynamic> res;
+    try {
+      res = await AppuntamentiService.annulla(_appuntamento!.id);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _submitting = false);
+      _showError(_tr('connectionError', 'Errore di connessione'));
+      return;
+    }
     if (!mounted) return;
     setState(() => _submitting = false);
 

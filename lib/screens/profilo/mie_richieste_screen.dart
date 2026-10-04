@@ -39,19 +39,28 @@ class _MieRichiesteScreenState extends State<MieRichiesteScreen> {
       _errorMessage = null;
     });
 
-    final result = await SupportoService.getMieRichieste();
-    if (!mounted) return;
+    try {
+      final result = await SupportoService.getMieRichieste();
+      if (!mounted) return;
 
-    if (result['success'] == true) {
-      setState(() {
-        _tickets = (result['data'] as List<SupportoTicket>?) ?? [];
-        _loading = false;
-      });
-      _maybeOpenInitialTicket();
-    } else {
+      if (result['success'] == true) {
+        setState(() {
+          _tickets = (result['data'] as List<SupportoTicket>?) ?? [];
+          _loading = false;
+        });
+        _maybeOpenInitialTicket();
+      } else {
+        setState(() {
+          _error = true;
+          _errorMessage = result['message'] as String?;
+          _loading = false;
+        });
+      }
+    } catch (_) {
+      if (!mounted) return;
       setState(() {
         _error = true;
-        _errorMessage = result['message'] as String?;
+        _errorMessage = null;
         _loading = false;
       });
     }

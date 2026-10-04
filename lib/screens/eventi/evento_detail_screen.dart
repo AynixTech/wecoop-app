@@ -31,30 +31,51 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
     setState(() {
       _isLoading = true;
     });
-    
-    final result = await EventiService.getEvento(widget.eventoId);
-    
-    if (result['success'] == true && mounted) {
-      setState(() {
-        _evento = result['evento'] as Evento?;
-        _isLoading = false;
-      });
-    } else if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
+
+    try {
+      final result = await EventiService.getEvento(widget.eventoId);
+
+      if (result['success'] == true && mounted) {
+        setState(() {
+          _evento = result['evento'] as Evento?;
+          _isLoading = false;
+        });
+      } else if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
   Future<void> _iscriviEvento() async {
     if (_evento == null) return;
-    
+
     if (mounted) {
       setState(() => _isLoading = true);
     }
 
     final l10n = AppLocalizations.of(context)!;
-    final result = await EventiService.iscriviEvento(eventoId: _evento!.id);
+    Map<String, dynamic> result;
+    try {
+      result = await EventiService.iscriviEvento(eventoId: _evento!.id);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.networkError),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
 
     if (mounted) {
       setState(() => _isLoading = false);
@@ -101,7 +122,20 @@ class _EventoDetailScreenState extends State<EventoDetailScreen> {
       setState(() => _isLoading = true);
     }
 
-    final result = await EventiService.cancellaIscrizione(_evento!.id);
+    Map<String, dynamic> result;
+    try {
+      result = await EventiService.cancellaIscrizione(_evento!.id);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.networkError),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
 
     if (mounted) {
       setState(() => _isLoading = false);

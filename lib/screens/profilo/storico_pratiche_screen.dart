@@ -111,7 +111,20 @@ class _StoricoPraticheScreenState extends State<StoricoPraticheScreen> {
       );
     }
 
-    final result = await SocioService.downloadDocumentoPratica(doc);
+    Map<String, dynamic> result;
+    try {
+      result = await SocioService.downloadDocumentoPratica(doc);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _downloadingId = null);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.translate('storicoPraticheDownloadError')),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
 
     if (!mounted) return;
     setState(() => _downloadingId = null);

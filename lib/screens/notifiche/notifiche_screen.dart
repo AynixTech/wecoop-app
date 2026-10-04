@@ -37,63 +37,80 @@ class _NotificheScreenState extends State<NotificheScreen> {
       _errorMessage = null;
     });
 
-    final result = await NotificationsService.list();
-    if (!mounted) return;
+    try {
+      final result = await NotificationsService.list();
+      if (!mounted) return;
 
-    if (result['success'] == true) {
-      final count = result['unread_count'] as int? ?? 0;
+      if (result['success'] == true) {
+        final count = result['unread_count'] as int? ?? 0;
+        if (!mounted) return;
+        await context.read<NotificationBadgeProvider>().setCount(count);
+        if (!mounted) return;
+        setState(() {
+          _items = (result['data'] as List<AppNotification>?) ?? [];
+          _loading = false;
+        });
+      } else {
+        setState(() {
+          _error = true;
+          _errorMessage = result['message'] as String?;
+          _loading = false;
+        });
+      }
+    } catch (_) {
       if (!mounted) return;
-      await context.read<NotificationBadgeProvider>().setCount(count);
-      if (!mounted) return;
-      setState(() {
-        _items = (result['data'] as List<AppNotification>?) ?? [];
-        _loading = false;
-      });
-    } else {
       setState(() {
         _error = true;
-        _errorMessage = result['message'] as String?;
+        _errorMessage = null;
         _loading = false;
       });
     }
   }
 
   Future<void> _markAllRead() async {
-    final result = await NotificationsService.markAllRead();
-    if (!mounted) return;
-    if (result['success'] == true) {
-      final count = result['unread_count'] as int? ?? 0;
-      await context.read<NotificationBadgeProvider>().setCount(count);
+    try {
+      final result = await NotificationsService.markAllRead();
       if (!mounted) return;
-      await _load();
+      if (result['success'] == true) {
+        final count = result['unread_count'] as int? ?? 0;
+        await context.read<NotificationBadgeProvider>().setCount(count);
+        if (!mounted) return;
+        await _load();
+      }
+    } catch (_) {
+      // Silenzioso: non bloccare la UI su errore rete.
     }
   }
 
   Future<void> _onTap(AppNotification n) async {
     if (!n.read) {
-      final result = await NotificationsService.markRead(n.id);
-      if (mounted && result['success'] == true) {
-        final count = result['unread_count'] as int? ?? 0;
-        await context.read<NotificationBadgeProvider>().setCount(count);
-        if (!mounted) return;
-        setState(() {
-          final idx = _items.indexWhere((e) => e.id == n.id);
-          if (idx >= 0) {
-            _items[idx] = AppNotification(
-              id: n.id,
-              type: n.type,
-              category: n.category,
-              title: n.title,
-              body: n.body,
-              entityType: n.entityType,
-              entityId: n.entityId,
-              data: n.data,
-              read: true,
-              readAt: DateTime.now(),
-              createdAt: n.createdAt,
-            );
-          }
-        });
+      try {
+        final result = await NotificationsService.markRead(n.id);
+        if (mounted && result['success'] == true) {
+          final count = result['unread_count'] as int? ?? 0;
+          await context.read<NotificationBadgeProvider>().setCount(count);
+          if (!mounted) return;
+          setState(() {
+            final idx = _items.indexWhere((e) => e.id == n.id);
+            if (idx >= 0) {
+              _items[idx] = AppNotification(
+                id: n.id,
+                type: n.type,
+                category: n.category,
+                title: n.title,
+                body: n.body,
+                entityType: n.entityType,
+                entityId: n.entityId,
+                data: n.data,
+                read: true,
+                readAt: DateTime.now(),
+                createdAt: n.createdAt,
+              );
+            }
+          });
+        }
+      } catch (_) {
+        // Continua comunque la navigazione.
       }
     }
     if (!mounted) return;

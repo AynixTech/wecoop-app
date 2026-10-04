@@ -202,11 +202,10 @@ class _LoginScreenState extends State<LoginScreen> {
     AppLogger.d('🔐 phone (username): "$phone"');
     AppLogger.d('🔐 password presente: ${password.isNotEmpty}');
 
-    if (mounted) {
-      setState(() {
-        isLoading = true;
-      });
-    }
+    if (!mounted) return;
+    setState(() {
+      isLoading = true;
+    });
 
     final url = Uri.parse(ApiConfig.loginUrl);
     final l10n = AppLocalizations.of(context)!;
@@ -381,19 +380,19 @@ class _LoginScreenState extends State<LoginScreen> {
         final message = data['message'] ?? l10n.networkError;
         final decodedMessage = decodeHtmlEntities(message);
         AppLogger.d('⚠️ Messaggio mostrato: $decodedMessage');
+        if (!mounted) return;
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(decodedMessage)));
       }
     } catch (e, stackTrace) {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
       AppLogger.d('❌❌❌ ECCEZIONE durante il login: $e');
       AppLogger.d('❌ Tipo eccezione: ${e.runtimeType}');
       AppLogger.d('❌ StackTrace:\n$stackTrace');
+      if (!mounted) return;
+      setState(() {
+        isLoading = false;
+      });
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l10n.networkError)));

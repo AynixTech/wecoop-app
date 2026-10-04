@@ -42,11 +42,13 @@ class InfoCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
-              height: 100,
-              width: double.infinity,
-              child: image ?? const ColoredBox(color: AppColors.bgSubtle),
-            ),
+            // Nessun placeholder se non c'è immagine: evita lo spazio bianco vuoto.
+            if (image != null)
+              SizedBox(
+                height: 100,
+                width: double.infinity,
+                child: image,
+              ),
             Padding(
               padding: const EdgeInsets.all(AppSpacing.md),
               child: Column(
@@ -55,15 +57,21 @@ class InfoCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    maxLines: 1,
+                    maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.bodyM.copyWith(
                       fontWeight: AppTypography.bold,
+                      height: 1.25,
                     ),
                   ),
                   if (subtitle != null) ...[
-                    const SizedBox(height: 2),
-                    Text(subtitle!, style: AppTypography.caption),
+                    const SizedBox(height: 6),
+                    Text(
+                      subtitle!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.caption.copyWith(height: 1.3),
+                    ),
                   ],
                   if (ctaLabel != null) ...[
                     const SizedBox(height: AppSpacing.sm),

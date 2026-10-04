@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:wecoop_app/utils/app_logger.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
@@ -662,35 +663,20 @@ class _InfoCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String? imageUrl;
-  final String? link;
-  final String? ctaLabel;
   final VoidCallback? onTap;
 
   const _InfoCard({
     required this.title,
     required this.subtitle,
     this.imageUrl,
-    this.link,
-    this.ctaLabel,
     this.onTap,
   });
-
-  void _openLink() async {
-    if (link == null || link!.isEmpty) return;
-
-    final uri = Uri.parse(link!);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      debugPrint('Could not launch $link');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return InkWell(
-      onTap: onTap ?? (link != null ? _openLink : null),
+      onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
         width: 208,
@@ -773,28 +759,6 @@ class _InfoCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const Spacer(),
-                    if (ctaLabel != null && ctaLabel!.isNotEmpty)
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: TextButton.icon(
-                          onPressed: onTap ?? (link != null ? _openLink : null),
-                          style: TextButton.styleFrom(
-                            foregroundColor: scheme.primary,
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(0, 0),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          icon: const Icon(
-                            Icons.arrow_forward_rounded,
-                            size: 16,
-                          ),
-                          label: Text(
-                            ctaLabel!,
-                            style: const TextStyle(fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                      ),
                   ],
                 ),
               ),
@@ -1021,6 +985,135 @@ class _SectionTitle extends StatelessWidget {
   }
 }
 
+/// Card Notizie: categoria · data, titolo, anteprima, CTA — senza area immagine.
+class _NewsCard extends StatelessWidget {
+  final Post post;
+  final String ctaLabel;
+
+  const _NewsCard({required this.post, required this.ctaLabel});
+
+  static final _dateFormat = DateFormat('dd/MM/yyyy');
+
+  Future<void> _openLink() async {
+    if (post.link.isEmpty) return;
+    final uri = Uri.parse(post.link);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      debugPrint('Could not launch ${post.link}');
+    }
+  }
+
+  String get _metaLine {
+    final parts = <String>[post.categoryLabel];
+    if (post.publishedAt != null) {
+      parts.add(_dateFormat.format(post.publishedAt!.toLocal()));
+    }
+    return parts.join(' · ');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final hasExcerpt = post.excerpt.trim().isNotEmpty;
+
+    return InkWell(
+      onTap: post.link.isNotEmpty ? _openLink : null,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: 208,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: scheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: scheme.onSurface.withOpacity(0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+              spreadRadius: 0,
+            ),
+            BoxShadow(
+              color: scheme.onSurface.withOpacity(0.04),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              _metaLine,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.3,
+                color: scheme.primary,
+                height: 1.2,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              post.title,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+                color: scheme.onSurface,
+                height: 1.25,
+              ),
+            ),
+            if (hasExcerpt) ...[
+              const SizedBox(height: 6),
+              Text(
+                post.excerpt,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: scheme.onSurface.withOpacity(0.7),
+                  height: 1.3,
+                ),
+              ),
+            ],
+            const SizedBox(height: 10),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(
+                    ctaLabel.toUpperCase(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                      color: scheme.primary,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.arrow_forward_rounded,
+                  size: 14,
+                  color: scheme.primary,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _LatestPostsSection extends StatefulWidget {
   const _LatestPostsSection();
 
@@ -1058,8 +1151,12 @@ class _LatestPostsSectionState extends State<_LatestPostsSection> {
             }
 
             final posts = snapshot.data!;
+            // Altezza content-driven (meta + titolo 3 righe + excerpt 2 + CTA),
+            // senza slot immagine / Spacer che lasciavano il bianco vuoto.
+            final textScale = MediaQuery.textScalerOf(context).scale(1.0);
+            final listHeight = (188 * textScale.clamp(1.0, 1.35)).ceilToDouble();
             return SizedBox(
-              height: 224,
+              height: listHeight,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 shrinkWrap: true,
@@ -1068,12 +1165,12 @@ class _LatestPostsSectionState extends State<_LatestPostsSection> {
                 separatorBuilder: (_, __) => const SizedBox(width: 16),
                 itemBuilder: (context, index) {
                   final post = posts[index];
-                  return _InfoCard(
-                    title: post.title,
-                    subtitle: post.excerpt,
-                    imageUrl: post.imageUrl,
-                    link: post.link,
-                    ctaLabel: l10n.translate('ctaOpenArticle'),
+                  return Align(
+                    alignment: Alignment.topLeft,
+                    child: _NewsCard(
+                      post: post,
+                      ctaLabel: l10n.translate('ctaOpenArticle'),
+                    ),
                   );
                 },
               ),

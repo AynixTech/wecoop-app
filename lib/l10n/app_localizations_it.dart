@@ -259,11 +259,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get loginToAccessServices =>
-      'Effettua il login per accedere a tutti i servizi riservati ai soci.';
+      'Effettua il login per accedere a tutti i servizi WECOOP.';
 
   @override
   String get membershipPendingApproval =>
-      'La tua richiesta di adesione come socio è in fase di approvazione.';
+      'La tua richiesta è in fase di verifica.';
 
   @override
   String get confirmationWithin24to48Hours =>
@@ -271,15 +271,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get onceApprovedAccessAllServices =>
-      'Una volta approvata, potrai accedere a tutti i servizi.';
+      'Dopo la conferma potrai accedere a tutti i servizi.';
 
   @override
   String toAccessServicesBecomeMember(Object serviceName) {
-    return 'Per accedere ai servizi di $serviceName devi essere socio di WECOOP.';
+    return 'Per accedere ai servizi di $serviceName effettua il login.';
   }
 
   @override
-  String get becomeMemberToAccess => 'Diventa socio per accedere a:';
+  String get becomeMemberToAccess => 'Accedi per utilizzare:';
 
   @override
   String get whyBecomeMember => 'Perché diventare socio?';
@@ -899,11 +899,11 @@ class AppLocalizationsIt extends AppLocalizations {
       'Il progetto MAFALDA offre opportunità di mobilità europea, formazione e sviluppo competenze.';
 
   @override
-  String get chatbotFAQ4Question => 'Come posso diventare socio?';
+  String get chatbotFAQ4Question => 'Come posso registrarmi?';
 
   @override
   String get chatbotFAQ4Answer =>
-      'Dal tuo profilo clicca su \"Diventa Socio WECOOP\" e compila il modulo di adesione.';
+      'Dalla schermata di login puoi creare un account WECOOP e accedere ai servizi.';
 
   @override
   String get chatbotFAQ5Question => 'Come prenoto un appuntamento?';

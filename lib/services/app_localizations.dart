@@ -741,7 +741,7 @@ class AppLocalizations {
       'invalidResetPasswordLink': 'Link reset password non valido',
       'guestProfileTitle': 'Accedi al tuo spazio WeCoop',
       'guestProfileSubtitle':
-          'Effettua il login per gestire tessera, documenti e servizi riservati ai soci.',
+          'Effettua il login per gestire documenti, pratiche e servizi WECOOP.',
       'updateYourPersonalData': 'Aggiorna i tuoi dati personali',
       'personalData': 'Dati Personali',
       'documents': 'Documenti',
@@ -782,13 +782,13 @@ class AppLocalizations {
       'contactUs': 'Contattaci',
       'yes': 'Sì',
       'no': 'No',
-      'needLogin': 'Servizio riservato ai soci',
+      'needLogin': 'Accesso richiesto',
       'needLoginMessage':
-          'Per accedere a questo servizio devi essere registrato come socio WECOOP.',
+          'Per accedere a questo servizio devi effettuare il login.',
       'goBack': 'Torna indietro',
-      'notMemberYet': 'Non sei ancora socio?',
+      'notMemberYet': 'Non hai ancora un account?',
       'notMemberMessage':
-          'Per accedere a questo servizio devi essere socio di WECOOP.',
+          'Registra un account WECOOP per accedere a questo servizio.',
       'backToHome': 'Torna alla home',
       'serviceNotAvailable': 'Servizio non disponibile',
       'serviceNotAvailableMessage':
@@ -976,17 +976,17 @@ class AppLocalizations {
       'decretoFlussiWorker': 'Lavoratore / lavoratrice',
       'decretoFlussiNotes': 'Note o domande (opzionale)',
       'loginToAccessServices':
-          'Effettua il login per accedere a tutti i servizi riservati ai soci.',
+          'Effettua il login per accedere a tutti i servizi WECOOP.',
       'membershipPendingApproval':
-          'La tua richiesta di adesione come socio è in fase di approvazione.',
+          'La tua richiesta è in fase di verifica.',
       'confirmationWithin24to48Hours':
           'Riceverai una conferma via email entro 24-48 ore.',
       'onceApprovedAccessAllServices':
-          'Una volta approvata, potrai accedere a tutti i servizi.',
+          'Dopo la conferma potrai accedere a tutti i servizi.',
       'toAccessServicesBecomeMember':
-          'Per accedere ai servizi di {serviceName} devi essere socio di WECOOP.',
-      'becomeMemberToAccess': 'Diventa socio per accedere a:',
-      'whyBecomeMember': 'Perché diventare socio?',
+          'Per accedere ai servizi di {serviceName} effettua il login.',
+      'becomeMemberToAccess': 'Accedi per utilizzare:',
+      'whyBecomeMember': 'Perché registrarsi?',
       'credentialsSentTo': 'Abbiamo inviato le credenziali a:',
       'credentialsSentViaEmail': 'Credenziali inviate via email',
       'useTheseCredentials': 'Usa queste credenziali per accedere',
@@ -1386,9 +1386,9 @@ class AppLocalizations {
       'chatbotFAQ3Question': 'Che progetti avete per i giovani?',
       'chatbotFAQ3Answer':
           'Il progetto MAFALDA offre opportunità di mobilità europea, formazione e sviluppo competenze.',
-      'chatbotFAQ4Question': 'Come posso diventare socio?',
+      'chatbotFAQ4Question': 'Come posso registrarmi?',
       'chatbotFAQ4Answer':
-          'Dal tuo profilo clicca su "Diventa Socio WECOOP" e compila il modulo di adesione.',
+          'Dalla schermata di login puoi creare un account WECOOP e accedere ai servizi.',
       'chatbotFAQ5Question': 'Come prenoto un appuntamento?',
       'chatbotFAQ5Answer':
           'Puoi prenotare direttamente dall\'app cliccando su "Prenota Appuntamento".',
@@ -1491,7 +1491,7 @@ class AppLocalizations {
       'phoneRequired': 'Telefono *',
       'continue': 'Continua',
       'afterRegistrationInfo':
-          'Dopo la registrazione, potrai accedere a tutti i servizi. Un operatore ti contatterà per completare l\'adesione come socio.',
+          'Dopo la registrazione potrai accedere a tutti i servizi WECOOP.',
       'completeDataToAccessServices':
           'Completa i tuoi dati per accedere a tutti i servizi',
       'nameIsMandatory': 'Il nome è obbligatorio',
@@ -2046,7 +2046,7 @@ class AppLocalizations {
       'invalidResetPasswordLink': 'رابط إعادة تعيين كلمة المرور غير صالح',
       'guestProfileTitle': 'سجّل الدخول إلى مساحة WeCoop',
       'guestProfileSubtitle':
-          'سجّل الدخول لإدارة بطاقة العضوية والمستندات والخدمات المخصصة للأعضاء.',
+          'سجّل الدخول لإدارة المستندات والطلبات وخدمات WECOOP.',
       'memberCard': 'بطاقة العضوية',
       'memberCardNumberUnavailable': 'رقم البطاقة غير متاح',
       // Biometric
@@ -2692,7 +2692,7 @@ class AppLocalizations {
       'decretoFlussiEmployer': 'صاحب العمل',
       'decretoFlussiWorker': 'عامل / عاملة',
       'decretoFlussiNotes': 'ملاحظات أو أسئلة (اختياري)',
-      'loginToAccessServices': 'سجّل الدخول للوصول إلى جميع الخدمات المخصصة للأعضاء.',
+      'loginToAccessServices': 'سجّل الدخول للوصول إلى جميع خدمات WECOOP.',
       'membershipPendingApproval': 'طلب انضمامك كعضو قيد الموافقة.',
       'confirmationWithin24to48Hours': 'ستتلقى تأكيدًا عبر البريد الإلكتروني خلال 24-48 ساعة.',
       'onceApprovedAccessAllServices': 'بمجرد الموافقة، ستتمكن من الوصول إلى جميع الخدمات.',
@@ -3542,7 +3542,7 @@ class AppLocalizations {
       'invalidDeepLink': '无效链接',
       'invalidResetPasswordLink': '密码重置链接无效',
       'guestProfileTitle': '登录 WeCoop 空间',
-      'guestProfileSubtitle': '登录后可管理会员卡、文档和会员专属服务。',
+      'guestProfileSubtitle': '登录后可管理文档、申请和 WECOOP 服务。',
       'memberCard': '会员卡',
       'memberCardNumberUnavailable': '卡号不可用',
       // Biometric
@@ -4175,7 +4175,7 @@ class AppLocalizations {
       'decretoFlussiEmployer': '雇主',
       'decretoFlussiWorker': '劳动者',
       'decretoFlussiNotes': '备注或问题（可选）',
-      'loginToAccessServices': '请登录以使用所有会员专属服务。',
+      'loginToAccessServices': '请登录以使用所有 WECOOP 服务。',
       'membershipPendingApproval': '您的入会申请正在审批中。',
       'confirmationWithin24to48Hours': '您将在 24-48 小时内通过电子邮件收到确认。',
       'onceApprovedAccessAllServices': '获批后，您即可使用所有服务。',
@@ -5402,7 +5402,7 @@ class AppLocalizations {
       'invalidResetPasswordLink': 'Invalid password reset link',
       'guestProfileTitle': 'Sign in to your WeCoop space',
       'guestProfileSubtitle':
-          'Log in to manage your membership card, documents, and member-only services.',
+          'Log in to manage documents, requests and WECOOP services.',
       'updateYourPersonalData': 'Update your personal data',
       'personalData': 'Personal Data',
       'documents': 'Documents',
@@ -5635,17 +5635,17 @@ class AppLocalizations {
       'notMemberMessage': 'To access this service you must be a WECOOP member.',
       'backToHome': 'Back to home',
       'loginToAccessServices':
-          'Log in to access all services reserved for members.',
+          'Log in to access all WECOOP services.',
       'membershipPendingApproval':
-          'Your membership application is pending approval.',
+          'Your request is being reviewed.',
       'confirmationWithin24to48Hours':
           'You will receive an email confirmation within 24-48 hours.',
       'onceApprovedAccessAllServices':
-          'Once approved, you will be able to access all services.',
+          'Once confirmed, you will be able to access all services.',
       'toAccessServicesBecomeMember':
-          'To access {serviceName} services you must be a WECOOP member.',
-      'becomeMemberToAccess': 'Become a member to access:',
-      'whyBecomeMember': 'Why become a member?',
+          'To access {serviceName} services, please log in.',
+      'becomeMemberToAccess': 'Sign in to access:',
+      'whyBecomeMember': 'Why sign up?',
       'credentialsSentTo': 'We have sent credentials to:',
       'credentialsSentViaEmail': 'Credentials sent via email',
       'useTheseCredentials': 'Use these credentials to log in',
@@ -7002,7 +7002,7 @@ class AppLocalizations {
       'invalidDeepLink': 'Invalide lien',
       'invalidResetPasswordLink': 'Invalide mot de passe reset lien',
       'guestProfileTitle': 'Connectez-vous à votre WeCoop space',
-      'guestProfileSubtitle': 'Connectez-vous à gérer votre carte de membre, documents, et services réservés aux membres.',
+      'guestProfileSubtitle': 'Connectez-vous pour gérer documents, demandes et services WECOOP.',
       'updateYourPersonalData': 'Update votre données personnelles',
       'personalData': 'Données personnelles',
       'documents': 'Documents',
@@ -7212,7 +7212,7 @@ class AppLocalizations {
       'notMemberYet': 'Not un membre encore?',
       'notMemberMessage': 'To accéder ce service vous devez être un WECOOP membre.',
       'backToHome': 'Back à home',
-      'loginToAccessServices': 'Connectez-vous à accéder tous services réservé pour members.',
+      'loginToAccessServices': 'Connectez-vous pour accéder à tous les services WECOOP.',
       'membershipPendingApproval': 'Votre adhésion candidature est pending approval.',
       'confirmationWithin24to48Hours': 'Vous recevrez un e-mail confirmation sous 24-48 heures.',
       'onceApprovedAccessAllServices': 'Once approved, vous va être able à accéder tous services.',
@@ -8552,7 +8552,7 @@ class AppLocalizations {
       'invalidResetPasswordLink': 'Enlace de restablecimiento no válido',
       'guestProfileTitle': 'Accede a tu espacio WeCoop',
       'guestProfileSubtitle':
-          'Inicia sesión para gestionar tu tarjeta, documentos y servicios reservados a socios.',
+          'Inicia sesión para gestionar documentos, prácticas y servicios WECOOP.',
       'updateYourPersonalData': 'Actualiza tus datos personales',
       'personalData': 'Datos Personales',
       'documents': 'Documentos',
@@ -8768,25 +8768,25 @@ class AppLocalizations {
       'contactUs': 'Contáctanos',
       'yes': 'Sí',
       'no': 'No',
-      'needLogin': 'Servicio exclusivo para socios',
+      'needLogin': 'Acceso requerido',
       'needLoginMessage':
-          'Para acceder a este servicio debes estar registrado como socio WECOOP.',
+          'Para acceder a este servicio debes iniciar sesión.',
       'goBack': 'Volver',
-      'notMemberYet': '¿Aún no eres socio?',
+      'notMemberYet': '¿Aún no tienes cuenta?',
       'notMemberMessage':
-          'Para acceder a este servicio debes ser socio de WECOOP.',
+          'Regístrate en WECOOP para acceder a este servicio.',
       'backToHome': 'Volver al inicio',
       'loginToAccessServices':
-          'Inicia sesión para acceder a todos los servicios reservados para socios.',
+          'Inicia sesión para acceder a todos los servicios WECOOP.',
       'membershipPendingApproval':
-          'Tu solicitud de membresía está pendiente de aprobación.',
+          'Tu solicitud está en revisión.',
       'confirmationWithin24to48Hours':
           'Recibirás una confirmación por email dentro de 24-48 horas.',
       'onceApprovedAccessAllServices':
-          'Una vez aprobada, podrás acceder a todos los servicios.',
+          'Una vez confirmada, podrás acceder a todos los servicios.',
       'toAccessServicesBecomeMember':
-          'Para acceder a los servicios de {serviceName} debes ser socio de WECOOP.',
-      'becomeMemberToAccess': 'Hazte socio para acceder a:',
+          'Para acceder a los servicios de {serviceName} inicia sesión.',
+      'becomeMemberToAccess': 'Inicia sesión para acceder a:',
       'whyBecomeMember': '¿Por qué hacerse socio?',
       'credentialsSentTo': 'Hemos enviado las credenciales a:',
       'credentialsSentViaEmail': 'Credenciales enviadas por email',

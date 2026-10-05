@@ -4,10 +4,9 @@ import '../screens/login/login_screen.dart';
 import '../screens/servizi/servizi_gate_screen.dart';
 import '../services/auth_helper.dart';
 
-/// Apre un servizio per utenti autenticati (socio o utente).
+/// Apre un servizio per utenti autenticati.
 ///
-/// La membership (socio) si attiva alla firma del documento unico lato backend.
-/// Qui si richiede solo il login: nessun blocco "riservato ai soci".
+/// Richiede solo login: nessuna tessera/membri/SOCIO nell'esperienza APP.
 Future<void> openMemberService(
   BuildContext context, {
   required Widget destination,

@@ -5,8 +5,7 @@ import '../login/login_screen.dart';
 
 /// Gate di accesso ai servizi: richiede solo login.
 ///
-/// Diventare socio avviene alla firma del documento unico (backend),
-/// non qui: qualsiasi utente autenticato può aprire e inviare richieste.
+/// Nessun requisito SOCIO: qualsiasi utente autenticato può aprire i servizi.
 class ServiziGateScreen extends StatefulWidget {
   final Widget destinationScreen;
   final String serviceName;

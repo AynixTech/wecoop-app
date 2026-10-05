@@ -110,11 +110,21 @@ class _ChatbotAssistenzaScreenState extends State<ChatbotAssistenzaScreen> {
   Future<void> _processUserInput(String input) async {
     final l10n = AppLocalizations.of(context)!;
     final inputLower = input.toLowerCase();
+    final language = Localizations.localeOf(context).languageCode;
 
-    final backendReply = await SupportoAiService.askAssistant(
-      message: input,
-      language: Localizations.localeOf(context).languageCode,
-    );
+    Map<String, dynamic> backendReply;
+    try {
+      backendReply = await SupportoAiService.askAssistant(
+        message: input,
+        language: language,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      _addBotMessage(l10n.networkError);
+      return;
+    }
+
+    if (!mounted) return;
 
     if (backendReply['success'] == true &&
         (backendReply['reply'] ?? '').toString().trim().isNotEmpty) {

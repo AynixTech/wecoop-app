@@ -129,7 +129,19 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
     );
     if (confirmed != true) return;
 
-    final success = await AccountService.deleteCurrentUser();
+    bool success;
+    try {
+      success = await AccountService.deleteCurrentUser();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.translate('deleteAccountError')),
+          backgroundColor: scheme.error,
+        ),
+      );
+      return;
+    }
     if (!mounted) return;
     if (success) {
       // logout e mutex
@@ -284,7 +296,22 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
       _isUploadingAvatar = true;
     });
 
-    final result = await SocioService.uploadAvatar(file: croppedFile);
+    Map<String, dynamic> result;
+    try {
+      result = await SocioService.uploadAvatar(file: croppedFile);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isUploadingAvatar = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.translate('avatarUpdateError')),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
 
     if (!mounted) return;
 

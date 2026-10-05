@@ -299,12 +299,25 @@ class _DocumentiScreenState extends State<DocumentiScreen> {
 
     // Upload fronte + retro
     setState(() => _isLoading = true);
-    final documento = await _documentoService.caricaDocumentoDueLati(
-      tipo: tipo,
-      fileFrente: fileFrente,
-      fileRetro: fileRetro,
-      soggetto: soggetto,
-    );
+    Documento? documento;
+    try {
+      documento = await _documentoService.caricaDocumentoDueLati(
+        tipo: tipo,
+        fileFrente: fileFrente,
+        fileRetro: fileRetro,
+        soggetto: soggetto,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${l10n.error}. ${l10n.retry}.'),
+          backgroundColor: scheme.error,
+        ),
+      );
+      return;
+    }
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(

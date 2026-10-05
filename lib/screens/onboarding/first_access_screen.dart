@@ -759,6 +759,9 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
             AppLogger.d('📱 Mostra dialog con credenziali...');
             await _showSuccessDialog(data);
 
+            // Dopo await dialog: ricontrollare mounted prima di navigare.
+            if (!mounted) return;
+
             // Dopo che l'utente chiude il dialog, fa login automatico
             AppLogger.d('\n🔍 CHECK CREDENZIALI PER LOGIN AUTOMATICO:');
             AppLogger.d('   - data presente? ${data['data'] != null}');
@@ -795,6 +798,7 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
               if (password == null || password.toString().isEmpty) {
                 AppLogger.d('   - password è NULL o vuota');
               }
+              if (!mounted) return;
               // Fallback: vai a MainScreen senza login
               AppLogger.d('🧭 Navigazione a MainScreen (senza login)...');
               Navigator.of(context).pushReplacement(

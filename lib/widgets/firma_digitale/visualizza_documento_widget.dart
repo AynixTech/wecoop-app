@@ -3,12 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:http/http.dart' as http;
+import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
+import 'package:wecoop_app/services/attivazione_service.dart';
 import 'package:wecoop_app/services/firma_digitale_provider.dart';
-import 'package:wecoop_app/services/http_client_service.dart';
+import 'package:wecoop_app/services/socio_service.dart';
 import 'package:wecoop_app/theme/theme.dart';
 import 'package:wecoop_app/utils/app_logger.dart';
 
@@ -60,23 +61,18 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
 
     final provider =
         Provider.of<FirmaDigitaleProvider>(context, listen: false);
-    AppLogger.d('📄 [DocView] provider.step before init: ${provider.step}');
     provider.iniziaFlusso(
       richiestaId: widget.richiestaId,
       userId: widget.userId,
       telefono: widget.telefono,
     );
-    AppLogger.d('📄 [DocView] iniziaFlusso completato, scarico documento...');
     await provider.scaricaDocumento();
-    AppLogger.d(
-      '📄 [DocView] scaricaDocumento completato step=${provider.step} hasError=${provider.hasError}',
-    );
 
     if (!mounted) return;
 
     if (provider.documento == null) {
       AppLogger.d(
-        '❌ [DocView] documento nullo, error=${provider.errorMessage} code=${provider.errorCode}',
+        '❌ [DocView] documento nullo, error=${provider.errorMessage}',
       );
       setState(() {
         _previewLoading = false;
@@ -85,38 +81,83 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
       return;
     }
 
-    AppLogger.d(
-      '✅ [DocView] documento ricevuto url=${provider.documento!.url} nome=${provider.documento!.nome}',
-    );
-    await _scaricaAnteprimaLocale(provider.documento!.url, provider.documento!.nome);
-  }
+    final nome = provider.documento!.nome;
+    // Preferisci stream PDF autenticato (niente WebView / Spaces lato client).
+    final fromApi = await _scaricaPdfAutenticato(nome);
+    if (fromApi) return;
 
-  bool _isSpacesSignedUrl(String url) {
-    final lower = url.toLowerCase();
-    return lower.contains('digitaloceanspaces.com') ||
-        lower.contains('amazonaws.com') ||
-        lower.contains('x-amz-signature');
-  }
-
-  Future<http.Response> _fetchPdfBytes(String url) async {
-    final uri = Uri.parse(url);
-    // URL firmato Spaces: niente Authorization Bearer (rompe la firma SigV4).
-    if (_isSpacesSignedUrl(url)) {
-      return http.get(
-        uri,
-        headers: const {'Accept': 'application/pdf,application/octet-stream,*/*'},
-      ).timeout(const Duration(seconds: 45));
+    // Fallback: URL firmato Spaces (se l'API non è disponibile).
+    final url = provider.documento!.url;
+    if (url.isNotEmpty) {
+      AppLogger.d('📄 [DocView] fallback download Spaces url=$url');
+      await _scaricaDaUrl(url, nome);
+      return;
     }
-    return HttpClientService.get(
-      uri,
-      headers: const {'Accept': 'application/pdf,application/octet-stream,*/*'},
-    );
+
+    if (!mounted) return;
+    setState(() {
+      _previewLoading = false;
+      _previewError = 'PDF non disponibile';
+    });
   }
 
-  Future<void> _scaricaAnteprimaLocale(String url, String nome) async {
+  Future<bool> _scaricaPdfAutenticato(String nome) async {
     try {
-      AppLogger.d('📄 [DocView] download anteprima da $url');
-      final response = await _fetchPdfBytes(url);
+      Map<String, dynamic> result;
+      if (widget.richiestaId == null) {
+        AppLogger.d('📄 [DocView] GET /documento-unico/download (user-level)');
+        result = await AttivazioneService.downloadDocumentoUnicoPdf();
+      } else {
+        AppLogger.d(
+          '📄 [DocView] GET /documento-unico/${widget.richiestaId}/download-merged',
+        );
+        result = await SocioService.getDocumentoUnicoMergedPdf(
+          widget.richiestaId!,
+        );
+      }
+
+      if (result['success'] != true) {
+        AppLogger.d('⚠️ [DocView] API PDF fail: ${result['message']}');
+        return false;
+      }
+
+      final bytes = result['pdf_bytes'] as List<int>?;
+      if (bytes == null || bytes.length < 5) return false;
+      final header = String.fromCharCodes(bytes.take(5));
+      if (header != '%PDF-') return false;
+
+      final filename = (result['filename'] as String?) ?? nome;
+      await _persistPreview(bytes, filename);
+      return true;
+    } catch (e) {
+      AppLogger.d('⚠️ [DocView] API PDF eccezione: $e');
+      return false;
+    }
+  }
+
+  Future<void> _scaricaDaUrl(String url, String nome) async {
+    try {
+      final uri = Uri.parse(url);
+      final isSpaces = url.toLowerCase().contains('digitaloceanspaces.com') ||
+          url.toLowerCase().contains('x-amz-signature');
+      final response = isSpaces
+          ? await http
+              .get(
+                uri,
+                headers: const {
+                  'Accept': 'application/pdf,application/octet-stream,*/*',
+                },
+              )
+              .timeout(const Duration(seconds: 45))
+          : await http
+              .get(
+                uri,
+                headers: const {
+                  'Accept': 'application/pdf,application/octet-stream,*/*',
+                },
+              )
+              .timeout(const Duration(seconds: 45));
+
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw Exception('HTTP ${response.statusCode}');
       }
@@ -125,21 +166,9 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
           String.fromCharCodes(bytes.take(5)) != '%PDF-') {
         throw Exception('Risposta non PDF (${bytes.length} bytes)');
       }
-
-      final safeName = nome.replaceAll(RegExp(r'[^\w.\-]'), '_');
-      final dir = await getTemporaryDirectory();
-      final file = File('${dir.path}/du_preview_$safeName');
-      await file.writeAsBytes(bytes, flush: true);
-      AppLogger.d('✅ [DocView] anteprima salvata path=${file.path}');
-
-      if (!mounted) return;
-      setState(() {
-        _localPdfPath = file.path;
-        _previewLoading = false;
-        _previewError = null;
-      });
+      await _persistPreview(bytes, nome);
     } catch (e) {
-      AppLogger.d('❌ [DocView] anteprima locale fallita: $e');
+      AppLogger.d('❌ [DocView] download URL fallito: $e');
       if (!mounted) return;
       setState(() {
         _localPdfPath = null;
@@ -149,21 +178,40 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
     }
   }
 
-  Future<void> _apriDocumentoEsterno(String url) async {
+  Future<void> _persistPreview(List<int> bytes, String nome) async {
+    final safeName = nome.replaceAll(RegExp(r'[^\w.\-]'), '_');
+    final dir = await getTemporaryDirectory();
+    final file = File('${dir.path}/du_preview_$safeName');
+    await file.writeAsBytes(bytes, flush: true);
+    AppLogger.d('✅ [DocView] anteprima salvata path=${file.path}');
+    if (!mounted) return;
+    setState(() {
+      _localPdfPath = file.path;
+      _previewLoading = false;
+      _previewError = null;
+    });
+  }
+
+  Future<void> _apriDocumentoEsterno() async {
     final l10n = AppLocalizations.of(context)!;
-    final uri = Uri.tryParse(url);
-    if (uri == null) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.translate('invalidDocumentUrl'))),
-      );
+    // Preferisci il PDF già scaricato in locale (niente Spaces nel browser).
+    if (_localPdfPath != null) {
+      final result = await OpenFile.open(_localPdfPath!);
+      if (result.type != ResultType.done && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.translate('cannotOpenDocumentExternally')),
+          ),
+        );
+      }
       return;
     }
-
-    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!opened && mounted) {
+    await _loadDocumento();
+    if (_localPdfPath != null && mounted) {
+      await OpenFile.open(_localPdfPath!);
+    } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.translate('cannotOpenDocumentExternally'))),
+        SnackBar(content: Text(l10n.translate('docViewLoadError'))),
       );
     }
   }
@@ -176,9 +224,6 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
         final loadingMeta = provider.isLoading && provider.documento == null;
         final showPreviewBusy = loadingMeta || _previewLoading;
 
-        AppLogger.d(
-          '📄 [DocView] build step=${provider.step} isLoading=${provider.isLoading} hasDoc=${provider.documento != null} hasError=${provider.hasError} localPdf=${_localPdfPath != null}',
-        );
         return Column(
           children: [
             Container(
@@ -245,11 +290,6 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
                               onError: (error) {
                                 AppLogger.d('❌ [DocView] PDFView error: $error');
                               },
-                              onPageError: (page, error) {
-                                AppLogger.d(
-                                  '❌ [DocView] PDFView page=$page error=$error',
-                                );
-                              },
                             )
                           : Center(
                               child: Padding(
@@ -296,8 +336,8 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () =>
-                                _apriDocumentoEsterno(provider.documento!.url),
+                            onPressed:
+                                showPreviewBusy ? null : _apriDocumentoEsterno,
                             icon: const Icon(Icons.open_in_new),
                             label: Text(l10n.translate('openInBrowser')),
                           ),

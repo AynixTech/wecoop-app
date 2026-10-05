@@ -134,9 +134,12 @@ class DocumentoUnicoFlow {
         await _storage.read(key: 'telefono') ??
         await _storage.read(key: 'user_phone');
 
-    int? userId = userIdRaw != null
-        ? int.tryParse(userIdRaw)
-        : (socioIdRaw != null ? int.tryParse(socioIdRaw) : null);
+    // Mai usare socio_id tipo "S-123" come user_id numerico.
+    int? userId = userIdRaw != null ? int.tryParse(userIdRaw) : null;
+    if (userId == null && socioIdRaw != null) {
+      final digits = socioIdRaw.replaceFirst(RegExp(r'^S-', caseSensitive: false), '');
+      userId = int.tryParse(digits);
+    }
     String? telefono = telefonoRaw?.trim();
 
     if (userId == null || telefono == null || telefono.isEmpty) {

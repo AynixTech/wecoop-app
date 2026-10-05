@@ -69,18 +69,20 @@ class DeepLinkHandler {
       return;
     }
 
-    if (path.startsWith('/pagamento/')) {
-      final id = int.tryParse(path.split('/').last);
-      if (id != null) {
-        AppNavigation.navigateToPagamento(richiestaId: id);
-      }
-      return;
-    }
-
-    if (path == '/pagamento' && queryParams.containsKey('richiesta_id')) {
-      final id = int.tryParse(queryParams['richiesta_id']!);
-      if (id != null) {
-        AppNavigation.navigateToPagamento(richiestaId: id);
+    if (path.startsWith('/pagamento/') || path == '/pagamento') {
+      final pathId = path.startsWith('/pagamento/')
+          ? int.tryParse(path.split('/').last)
+          : null;
+      final paymentId = int.tryParse(queryParams['payment_id'] ?? '');
+      final richiestaId = int.tryParse(queryParams['richiesta_id'] ?? '');
+      if (paymentId != null) {
+        AppNavigation.navigateToPagamento(
+          paymentId: paymentId,
+          richiestaId: richiestaId ?? pathId,
+        );
+      } else if (richiestaId != null || pathId != null) {
+        // Link storici email: /pagamento/{richiestaId}
+        AppNavigation.navigateToPagamento(richiestaId: richiestaId ?? pathId);
       }
       return;
     }

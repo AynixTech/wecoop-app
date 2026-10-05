@@ -283,8 +283,11 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
 
       AppLogger.d('✅ Pagamento Stripe completato — confermo sul backend...');
 
-      final transactionId = intent.paymentIntentId ??
-          intent.clientSecret.split('_secret').first;
+      // Mai usare client_secret come transaction_id (rompe riconciliazione).
+      final transactionId = intent.paymentIntentId;
+      if (transactionId == null || transactionId.isEmpty) {
+        throw Exception('PaymentIntent id assente dopo Payment Sheet');
+      }
 
       // Da qui la carta può essere addebitata: non permettere un nuovo intent.
       if (mounted) {

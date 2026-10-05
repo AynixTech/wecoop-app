@@ -437,20 +437,18 @@ class _LoginScreenState extends State<LoginScreen> {
         AppLogger.d('  - citta: ${data['citta']}');
         AppLogger.d('  - numero_tessera: ${data['numero_tessera']}');
 
-        // Salva tutti i dati dell'utente socio
-        // Salva sia socio_id (ID tabella soci) che user_id (ID WordPress)
-        if (data['id'] != null) {
-          await storage.write(key: 'socio_id', value: data['id'].toString());
-          // 'id' in /soci/me è il WordPress user ID (wp_get_current_user()->ID)
-          await storage.write(key: 'user_id', value: data['id'].toString());
+        // Node /soci/me: id == user_id (users.id). socio_id può essere "S-{n}".
+        final resolvedUserId =
+            (data['user_id'] ?? data['id'])?.toString().trim();
+        if (resolvedUserId != null &&
+            resolvedUserId.isNotEmpty &&
+            int.tryParse(resolvedUserId) != null) {
+          await storage.write(key: 'user_id', value: resolvedUserId);
         }
         if (data['socio_id'] != null) {
-          await storage.write(key: 'socio_id', value: data['socio_id'].toString());
-        }
-        if (data['user_id'] != null) {
           await storage.write(
-            key: 'user_id',
-            value: data['user_id'].toString(),
+            key: 'socio_id',
+            value: data['socio_id'].toString(),
           );
         }
         if (data['nome'] != null) {

@@ -1879,18 +1879,21 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
       // Converti i dati dal formato form al formato API
       final apiData = _convertToApiFormat(_formData);
 
-      // Aggiungi l'ID dell'utente per collegare la richiesta all'account.
-      final socioId = await _storage.read(key: 'socio_id');
-      final userId = await _storage.read(key: 'user_id');
+      // ID utente numerico (JWT è la fonte di verità lato BE; campo ridondante).
+      final userIdRaw = await _storage.read(key: 'user_id');
+      final socioIdRaw = await _storage.read(key: 'socio_id');
       final telefonoUtente = await _storage.read(key: 'telefono');
 
-      // Priorità a user_id (ID reale nel backend Node); socio_id come fallback.
-      if (userId != null && userId.isNotEmpty) {
-        apiData['user_id'] = userId;
-        AppLogger.d('📋 Aggiunto user_id: $userId');
-      } else if (socioId != null && socioId.isNotEmpty) {
-        apiData['socio_id'] = socioId;
-        AppLogger.d('📋 Aggiunto socio_id: $socioId');
+      int? resolvedUserId =
+          userIdRaw != null ? int.tryParse(userIdRaw) : null;
+      if (resolvedUserId == null && socioIdRaw != null) {
+        final digits =
+            socioIdRaw.replaceFirst(RegExp(r'^S-', caseSensitive: false), '');
+        resolvedUserId = int.tryParse(digits);
+      }
+      if (resolvedUserId != null) {
+        apiData['user_id'] = resolvedUserId.toString();
+        AppLogger.d('📋 Aggiunto user_id: $resolvedUserId');
       }
       // Invia sempre il telefono per collegare in modo affidabile la richiesta.
       if (telefonoUtente != null && telefonoUtente.isNotEmpty) {

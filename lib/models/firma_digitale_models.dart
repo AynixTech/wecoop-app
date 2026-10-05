@@ -264,14 +264,37 @@ class VerificaIntegrita {
   });
 
   factory VerificaIntegrita.fromJson(Map<String, dynamic> json) {
+    final nested = (json['verifica'] is Map)
+        ? Map<String, dynamic>.from(json['verifica'] as Map)
+        : json;
+    bool asBool(dynamic v) {
+      if (v is bool) return v;
+      if (v is num) return v != 0;
+      if (v is String) {
+        final s = v.toLowerCase().trim();
+        return s == 'true' || s == '1' || s == 'yes';
+      }
+      return false;
+    }
+
+    final rawDate = nested['data_verifica'] ?? json['data_verifica'];
+    DateTime dataVerifica;
+    if (rawDate is DateTime) {
+      dataVerifica = rawDate;
+    } else if (rawDate is String && rawDate.isNotEmpty) {
+      dataVerifica = DateTime.tryParse(rawDate) ?? DateTime.now();
+    } else {
+      dataVerifica = DateTime.now();
+    }
+
     return VerificaIntegrita(
-      firmaId: json['firma_id'] as String,
-      integrita: json['integrita'] as String,
-      hashCorrisponde: json['hash_corrisponde'] as bool,
-      otpValidato: json['otp_validato'] as bool,
-      timestampValido: json['timestamp_valido'] as bool,
-      metodoFirma: json['metodo_firma'] as String,
-      dataVerifica: DateTime.parse(json['data_verifica'] as String),
+      firmaId: (nested['firma_id'] ?? json['firma_id'] ?? '').toString(),
+      integrita: (nested['integrita'] ?? 'sconosciuta').toString(),
+      hashCorrisponde: asBool(nested['hash_corrisponde'] ?? json['hash_corrisponde']),
+      otpValidato: asBool(nested['otp_validato'] ?? json['otp_validato']),
+      timestampValido: asBool(nested['timestamp_valido'] ?? json['timestamp_valido']),
+      metodoFirma: (nested['metodo_firma'] ?? json['metodo_firma'] ?? 'FES').toString(),
+      dataVerifica: dataVerifica,
     );
   }
 

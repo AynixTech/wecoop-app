@@ -2303,96 +2303,24 @@ class _CalendarScreenState extends State<CalendarScreen>
                             AppLogger.d('   - Transaction ID: $transactionId');
                             AppLogger.d('   - Richiesta ID: $richiestaId');
                             
-                            if (paymentId == null) {
-                              // Mostra dialog informativo invece di errore
+                            // Backend accetta anche request_id come :id (fallback).
+                            if (paymentId == null && richiestaId == null) {
                               if (mounted) {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: Row(
-                                      children: [
-                                        Icon(Icons.info_outline, color: Colors.orange),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          AppLocalizations.of(context)!.translate('receiptUnavailableTitle'),
-                                        ),
-                                      ],
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      AppLocalizations.of(context)!
+                                          .translate('receiptUnavailableTitle'),
                                     ),
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          AppLocalizations.of(context)!.translate('paymentProcessingMessage'),
-                                          style: const TextStyle(fontWeight: FontWeight.bold),
-                                        ),
-                                        const SizedBox(height: 16),
-                                        Text(AppLocalizations.of(context)!.translate('paymentDetailsLabel')),
-                                        const SizedBox(height: 8),
-                                        Text('• ${AppLocalizations.of(context)!.fileNumber}: ${richiesta['numero_pratica']}'),
-                                        if (transactionId != null) ...[
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            '• ${AppLocalizations.of(context)!.translate('transactionIdLabel')}: ${transactionId.substring(0, 20)}...',
-                                            style: const TextStyle(fontSize: 12),
-                                          ),
-                                        ],
-                                        if (pagamento['metodo'] != null) ...[
-                                          const SizedBox(height: 4),
-                                          Text('• ${AppLocalizations.of(context)!.paymentMethod}: ${pagamento['metodo']}'),
-                                        ],
-                                        if (pagamento['data'] != null) ...[
-                                          const SizedBox(height: 4),
-                                          Text('• ${AppLocalizations.of(context)!.date}: ${_formatData(pagamento['data'])}'),
-                                        ],
-                                        const SizedBox(height: 16),
-                                        Container(
-                                          padding: const EdgeInsets.all(12),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.infoBg,
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              const Icon(Icons.lightbulb_outline, size: 20, color: AppColors.info),
-                                              const SizedBox(width: 8),
-                                              Expanded(
-                                                child: Text(
-                                                  AppLocalizations.of(context)!.translate('receiptAvailableSoonTip'),
-                                                  style: const TextStyle(fontSize: 12),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: Text(AppLocalizations.of(context)!.close),
-                                      ),
-                                      ElevatedButton.icon(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                          _caricaRichieste(); // Ricarica per vedere se ora c'è l'ID
-                                        },
-                                        icon: const Icon(Icons.refresh),
-                                        label: Text(AppLocalizations.of(context)!.reload),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: AppColors.info,
-                                          foregroundColor: Colors.white,
-                                        ),
-                                      ),
-                                    ],
+                                    backgroundColor: Colors.orange,
                                   ),
                                 );
                               }
                               return;
                             }
-                            
+
                             await _visualizzaRicevuta(
-                              paymentId, 
+                              paymentId,
                               richiesta['numero_pratica'] ?? 'N/A',
                               richiestaId: richiestaId,
                             );

@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'secure_storage_service.dart';
 
-/// Helper leggero per verifiche di sessione (guest vs socio loggato).
+/// Helper leggero per verifiche di sessione (utente loggato).
 abstract final class AuthHelper {
   static final SecureStorageService _storage = SecureStorageService();
 
@@ -102,6 +104,27 @@ abstract final class AuthHelper {
 
     for (final key in keys) {
       await _storage.delete(key: key);
+    }
+
+    // Primo accesso scriveva PII anche in SharedPreferences: pulisci al logout.
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      const prefsKeys = <String>[
+        'user_id',
+        'richiesta_id',
+        'numero_pratica',
+        'username',
+        'nome',
+        'cognome',
+        'telefono_completo',
+        'is_socio',
+        'profilo_completo',
+      ];
+      for (final key in prefsKeys) {
+        await prefs.remove(key);
+      }
+    } catch (_) {
+      // ignore: prefs opzionale
     }
 
     if (keepLastLoginPhone && lastPhone != null && lastPhone.isNotEmpty) {

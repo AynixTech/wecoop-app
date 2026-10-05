@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:wecoop_app/utils/app_logger.dart';
-import '../../theme/theme.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
 import 'package:wecoop_app/services/firma_digitale_provider.dart';
-import 'package:webview_flutter/webview_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:wecoop_app/services/http_client_service.dart';
+import 'package:wecoop_app/theme/theme.dart';
+import 'package:wecoop_app/utils/app_logger.dart';
 
 class VisualizzaDocumentoWidget extends StatefulWidget {
   /// Null = Documento Unico user-level (senza pratica).
@@ -28,55 +33,31 @@ class VisualizzaDocumentoWidget extends StatefulWidget {
 }
 
 class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
-  late WebViewController _webViewController;
-
-  String _buildViewerUrl(String sourceUrl) {
-    final lower = sourceUrl.toLowerCase();
-    if (lower.endsWith('.pdf')) {
-      final encoded = Uri.encodeComponent(sourceUrl);
-      return 'https://docs.google.com/gview?embedded=1&url=$encoded';
-    }
-    return sourceUrl;
-  }
+  String? _localPdfPath;
+  bool _previewLoading = false;
+  String? _previewError;
 
   @override
   void initState() {
     super.initState();
-    AppLogger.d('📄 [DocView] initState richiestaId=${widget.richiestaId} userId=${widget.userId}');
-    _webViewController = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (String url) {
-            AppLogger.d('🌐 [DocView] WebView onPageStarted: $url');
-          },
-          onPageFinished: (String url) {
-            AppLogger.d('✅ [DocView] WebView onPageFinished: $url');
-          },
-          onWebResourceError: (WebResourceError error) {
-            AppLogger.d('❌ [DocView] WebView error code=${error.errorCode} type=${error.errorType} description=${error.description}');
-            if (!mounted) return;
-            final l10n = AppLocalizations.of(context)!;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('${l10n.translate('docViewLoadError')}: ${error.description}')),
-            );
-          },
-          onNavigationRequest: (NavigationRequest request) {
-            AppLogger.d('🌐 [DocView] Navigation request: ${request.url}');
-            return NavigationDecision.navigate;
-          },
-        ),
-      );
-
-    // Carica il documento quando il widget inizializza
+    AppLogger.d(
+      '📄 [DocView] initState richiestaId=${widget.richiestaId} userId=${widget.userId}',
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       AppLogger.d('📄 [DocView] postFrameCallback -> _loadDocumento');
       _loadDocumento();
     });
   }
 
-  void _loadDocumento() async {
+  Future<void> _loadDocumento() async {
     AppLogger.d('📄 [DocView] _loadDocumento start');
+    if (!mounted) return;
+    setState(() {
+      _previewLoading = true;
+      _previewError = null;
+      _localPdfPath = null;
+    });
+
     final provider =
         Provider.of<FirmaDigitaleProvider>(context, listen: false);
     AppLogger.d('📄 [DocView] provider.step before init: ${provider.step}');
@@ -87,18 +68,84 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
     );
     AppLogger.d('📄 [DocView] iniziaFlusso completato, scarico documento...');
     await provider.scaricaDocumento();
-    AppLogger.d('📄 [DocView] scaricaDocumento completato step=${provider.step} hasError=${provider.hasError}');
+    AppLogger.d(
+      '📄 [DocView] scaricaDocumento completato step=${provider.step} hasError=${provider.hasError}',
+    );
 
-    if (provider.documento != null) {
-      AppLogger.d('✅ [DocView] documento ricevuto url=${provider.documento!.url} nome=${provider.documento!.nome}');
-      final viewerUrl = _buildViewerUrl(provider.documento!.url);
-      AppLogger.d('🌐 [DocView] viewerUrl=$viewerUrl');
-      _webViewController.loadRequest(
-        Uri.parse(viewerUrl),
+    if (!mounted) return;
+
+    if (provider.documento == null) {
+      AppLogger.d(
+        '❌ [DocView] documento nullo, error=${provider.errorMessage} code=${provider.errorCode}',
       );
-      AppLogger.d('🌐 [DocView] loadRequest inviato alla WebView');
-    } else {
-      AppLogger.d('❌ [DocView] documento nullo, error=${provider.errorMessage} code=${provider.errorCode}');
+      setState(() {
+        _previewLoading = false;
+        _previewError = provider.errorMessage;
+      });
+      return;
+    }
+
+    AppLogger.d(
+      '✅ [DocView] documento ricevuto url=${provider.documento!.url} nome=${provider.documento!.nome}',
+    );
+    await _scaricaAnteprimaLocale(provider.documento!.url, provider.documento!.nome);
+  }
+
+  bool _isSpacesSignedUrl(String url) {
+    final lower = url.toLowerCase();
+    return lower.contains('digitaloceanspaces.com') ||
+        lower.contains('amazonaws.com') ||
+        lower.contains('x-amz-signature');
+  }
+
+  Future<http.Response> _fetchPdfBytes(String url) async {
+    final uri = Uri.parse(url);
+    // URL firmato Spaces: niente Authorization Bearer (rompe la firma SigV4).
+    if (_isSpacesSignedUrl(url)) {
+      return http.get(
+        uri,
+        headers: const {'Accept': 'application/pdf,application/octet-stream,*/*'},
+      ).timeout(const Duration(seconds: 45));
+    }
+    return HttpClientService.get(
+      uri,
+      headers: const {'Accept': 'application/pdf,application/octet-stream,*/*'},
+    );
+  }
+
+  Future<void> _scaricaAnteprimaLocale(String url, String nome) async {
+    try {
+      AppLogger.d('📄 [DocView] download anteprima da $url');
+      final response = await _fetchPdfBytes(url);
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Exception('HTTP ${response.statusCode}');
+      }
+      final bytes = response.bodyBytes;
+      if (bytes.length < 5 ||
+          String.fromCharCodes(bytes.take(5)) != '%PDF-') {
+        throw Exception('Risposta non PDF (${bytes.length} bytes)');
+      }
+
+      final safeName = nome.replaceAll(RegExp(r'[^\w.\-]'), '_');
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/du_preview_$safeName');
+      await file.writeAsBytes(bytes, flush: true);
+      AppLogger.d('✅ [DocView] anteprima salvata path=${file.path}');
+
+      if (!mounted) return;
+      setState(() {
+        _localPdfPath = file.path;
+        _previewLoading = false;
+        _previewError = null;
+      });
+    } catch (e) {
+      AppLogger.d('❌ [DocView] anteprima locale fallita: $e');
+      if (!mounted) return;
+      setState(() {
+        _localPdfPath = null;
+        _previewLoading = false;
+        _previewError = e.toString();
+      });
     }
   }
 
@@ -126,10 +173,14 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
     final l10n = AppLocalizations.of(context)!;
     return Consumer<FirmaDigitaleProvider>(
       builder: (context, provider, _) {
-        AppLogger.d('📄 [DocView] build step=${provider.step} isLoading=${provider.isLoading} hasDoc=${provider.documento != null} hasError=${provider.hasError}');
+        final loadingMeta = provider.isLoading && provider.documento == null;
+        final showPreviewBusy = loadingMeta || _previewLoading;
+
+        AppLogger.d(
+          '📄 [DocView] build step=${provider.step} isLoading=${provider.isLoading} hasDoc=${provider.documento != null} hasError=${provider.hasError} localPdf=${_localPdfPath != null}',
+        );
         return Column(
           children: [
-            // Intestazione
             Container(
               padding: const EdgeInsets.all(16),
               color: AppColors.infoBg,
@@ -149,9 +200,8 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
                 ],
               ),
             ),
-            // WebView per il PDF
             Expanded(
-              child: provider.isLoading && provider.documento == null
+              child: showPreviewBusy
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -185,13 +235,50 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
                             ],
                           ),
                         )
-                      : provider.documento != null
-                          ? WebViewWidget(
-                              controller: _webViewController,
+                      : _localPdfPath != null
+                          ? PDFView(
+                              filePath: _localPdfPath!,
+                              enableSwipe: true,
+                              swipeHorizontal: false,
+                              autoSpacing: true,
+                              pageSnap: true,
+                              onError: (error) {
+                                AppLogger.d('❌ [DocView] PDFView error: $error');
+                              },
+                              onPageError: (page, error) {
+                                AppLogger.d(
+                                  '❌ [DocView] PDFView page=$page error=$error',
+                                );
+                              },
                             )
-                          : const SizedBox.expand(),
+                          : Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(24),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.picture_as_pdf_outlined,
+                                      size: 48,
+                                      color: Colors.grey,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      _previewError != null
+                                          ? '${l10n.translate('docViewLoadError')}: $_previewError'
+                                          : l10n.translate('docViewLoadError'),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    ElevatedButton(
+                                      onPressed: _loadDocumento,
+                                      child: Text(l10n.retry),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
             ),
-            // Bottom action button
             Container(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -201,7 +288,7 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
                       children: [
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: _loadDocumento,
+                            onPressed: showPreviewBusy ? null : _loadDocumento,
                             icon: const Icon(Icons.refresh),
                             label: Text(l10n.translate('reloadPreview')),
                           ),
@@ -209,7 +296,8 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () => _apriDocumentoEsterno(provider.documento!.url),
+                            onPressed: () =>
+                                _apriDocumentoEsterno(provider.documento!.url),
                             icon: const Icon(Icons.open_in_new),
                             label: Text(l10n.translate('openInBrowser')),
                           ),
@@ -222,7 +310,9 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: provider.documento != null && !provider.isLoading
+                      onPressed: provider.documento != null &&
+                              !provider.isLoading &&
+                              !showPreviewBusy
                           ? widget.onFirmaClick
                           : null,
                       style: ElevatedButton.styleFrom(
@@ -231,7 +321,7 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
                       ),
                       child: Text(
                         l10n.translate('signDocument'),
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

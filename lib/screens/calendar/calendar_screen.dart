@@ -2461,11 +2461,11 @@ class _CalendarScreenState extends State<CalendarScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    // Nessun filtro "Da Firmare": il DU/firma è a livello utente, non pratica.
     final List<Map<String, String?>> filtriStato = [
       {'label': l10n.all, 'value': null},
       {'label': l10n.paymentStatusAwaitingPayment, 'value': 'awaiting_payment'},
       {'label': l10n.paymentStatusPaid, 'value': 'paid'},
-      {'label': l10n.paymentStatusAwaitingSignature, 'value': 'awaiting_signature'},
       {'label': l10n.paymentStatusCompleted, 'value': 'completed'},
     ];
 

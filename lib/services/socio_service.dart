@@ -509,6 +509,8 @@ class SocioService {
     int page = 1,
     int perPage = 20,
     String? stato,
+    /// `attive` = esclude completed/cancelled/rejected (Le Mie Richieste).
+    String? vista,
   }) async {
     try {
       final token = await storage.read(key: 'jwt_token');
@@ -525,6 +527,9 @@ class SocioService {
 
       if (stato != null && stato.isNotEmpty) {
         queryParams['stato'] = stato;
+      }
+      if (vista != null && vista.isNotEmpty) {
+        queryParams['vista'] = vista;
       }
 
       final uri = Uri.parse(

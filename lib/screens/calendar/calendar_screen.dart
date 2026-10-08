@@ -13,6 +13,8 @@ import '../prenota_appuntamento/seleziona_slot_screen.dart';
 import '../profilo/completa_profilo_screen.dart';
 import '../../utils/service_request_labels.dart';
 import '../../utils/parse_helpers.dart';
+import '../../utils/practice_status.dart';
+import '../profilo/storico_pratica_dettaglio_screen.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
@@ -157,10 +159,11 @@ class _CalendarScreenState extends State<CalendarScreen>
     }
 
     try {
+      // Filtri operativi sono client-side; BE esclude solo le chiuse.
       final result = await SocioService.getRichiesteUtente(
         page: 1,
         perPage: _perPage,
-        stato: _filtroStato,
+        vista: 'attive',
       );
 
       if (!mounted) return;
@@ -228,7 +231,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       final result = await SocioService.getRichiesteUtente(
         page: next,
         perPage: _perPage,
-        stato: _filtroStato,
+        vista: 'attive',
       );
       if (!mounted) return;
       if (result['success'] == true) {
@@ -258,117 +261,33 @@ class _CalendarScreenState extends State<CalendarScreen>
     }
   }
 
-  bool _isRichiestaPaid(Map<String, dynamic> richiesta) {
-    final pagamento = richiesta['pagamento'];
-    if (pagamento is Map && pagamento['ricevuto'] == true) return true;
-    final stato = (richiesta['stato'] ?? richiesta['status'] ?? '').toString();
-    return _canonicalStato(stato) == 'paid';
-  }
-
   List<Map<String, dynamic>> _getRichiesteFiltrate() {
-    if (_filtroStato == null) return _tutteRichieste;
+    // Solo pratiche attive (BE già esclude le chiuse con vista=attive;
+    // doppio filtro client per robustness / backend vecchio).
+    final attive = _tutteRichieste.where((r) {
+      final stato = (r['stato'] ?? r['status'] ?? '').toString();
+      return PracticeStatus.isActive(stato);
+    }).toList();
 
-    if (_filtroStato == 'paid') {
-      return _tutteRichieste.where(_isRichiestaPaid).toList();
-    }
+    if (_filtroStato == null) return attive;
 
-    // Con filtro BE già applicato, rifiniamo lato client per alias di stato.
-    return _tutteRichieste.where((richiesta) {
-      final stato = (richiesta['stato'] ?? richiesta['status'] ?? '').toString();
-      final canonical = _canonicalStato(stato);
-      if (_filtroStato == 'awaiting_signature') {
-        // Post-pagamento lo status è spesso `paid` finché non parte il DU.
-        if (canonical == 'awaiting_signature') return true;
-        if (canonical == 'paid') return true;
-        return richiesta['puo_firmare'] == true;
-      }
-      return canonical == _filtroStato;
+    return attive.where((richiesta) {
+      final stato =
+          (richiesta['stato'] ?? richiesta['status'] ?? '').toString();
+      return PracticeStatus.operational(stato) == _filtroStato;
     }).toList();
   }
 
-  String _normalizeStato(String stato) {
-    return stato.trim().toLowerCase().replaceAll(' ', '_');
-  }
-
-  String _canonicalStato(String stato) {
-    final normalized = _normalizeStato(stato);
-
-    if (normalized == 'awaiting_payment' ||
-        normalized == 'pending_payment' ||
-        normalized == 'in_attesa_di_pagamento' ||
-        normalized == 'in_attesa_pagamento' ||
-        normalized == 'in_attesa_del_pagamento' ||
-        (normalized.contains('attesa') && normalized.contains('pagament'))) {
-      return 'awaiting_payment';
-    }
-
-    if (normalized == 'awaiting_signature' ||
-        normalized == 'da_firmare' ||
-        normalized == 'pending_firma' ||
-        normalized == 'pending_digital_signature' ||
-        normalized == 'in_attesa_di_firma' ||
-        normalized == 'in_attesa_firma' ||
-        normalized == 'pendiente_de_firma' ||
-        (normalized.contains('firma') && normalized.contains('attesa')) ||
-        (normalized.contains('firma') && normalized.contains('pending'))) {
-      return 'awaiting_signature';
-    }
-
-    if (normalized == 'completed' ||
-        normalized == 'completata' ||
-        normalized == 'completato') {
-      return 'completed';
-    }
-
-    if (normalized == 'cancelled' ||
-        normalized == 'annullata' ||
-        normalized == 'annullato') {
-      return 'cancelled';
-    }
-
-    if (normalized == 'integrazione_documentale' ||
-        normalized == 'document_integration' ||
-        normalized == 'integracion_documental' ||
-        (normalized.contains('integ') && normalized.contains('document'))) {
-      return 'integrazione_documentale';
-    }
-
-    if (normalized == 'processing' || normalized == 'in_lavorazione') {
-      return 'processing';
-    }
-
-    if (normalized == 'paid' || normalized == 'pagato' || normalized == 'pagado') {
-      return 'paid';
-    }
-
-    if (normalized == 'awaiting_appointment' ||
-        normalized == 'in_attesa_appuntamento' ||
-        normalized == 'in_attesa_di_appuntamento' ||
-        (normalized.contains('appunt') && normalized.contains('attesa')) ||
-        (normalized.contains('appoint') && normalized.contains('await'))) {
-      return 'awaiting_appointment';
-    }
-
-    if (normalized == 'appointment_confirmed' ||
-        normalized == 'appuntamento_confermato' ||
-        (normalized.contains('appunt') && normalized.contains('conferm')) ||
-        (normalized.contains('appoint') && normalized.contains('confirm'))) {
-      return 'appointment_confirmed';
-    }
-
-    return normalized;
-  }
-
   bool _isAwaitingPaymentStatus(String stato) {
-    return _canonicalStato(stato) == 'awaiting_payment';
+    return PracticeStatus.canonical(stato) == 'awaiting_payment';
   }
 
   bool _isAwaitingAppointmentStatus(String stato) {
-    return _canonicalStato(stato) == 'awaiting_appointment';
+    return PracticeStatus.canonical(stato) == 'awaiting_appointment';
   }
 
   bool _isAppointmentConfirmedStatus(String stato) {
-    return _canonicalStato(stato) == 'appointment_confirmed';
+    return PracticeStatus.canonical(stato) == 'appointment_confirmed';
   }
 
   /// Traduce [key] con fallback se la chiave non e' presente nel dizionario.
@@ -377,91 +296,14 @@ class _CalendarScreenState extends State<CalendarScreen>
     return v == key ? fallback : v;
   }
 
-  Color _getStatoColor(String stato) {
-    switch (_canonicalStato(stato)) {
-      case 'awaiting_payment':
-        return const Color(0xFF9c27b0); // Viola
-      case 'paid':
-        return const Color(0xFF673ab7); // Viola scuro
-      case 'awaiting_signature':
-        return const Color(0xFFff6f00); // Arancione scuro
-      case 'integrazione_documentale':
-        return const Color(0xFFe91e63); // Rosa
-      case 'awaiting_appointment':
-        return const Color(0xFF00897b); // Teal
-      case 'appointment_confirmed':
-        return const Color(0xFF2e7d32); // Verde scuro
-      case 'processing':
-        return AppColors.info;
-      case 'completed':
-        return AppColors.secondary;
-      case 'cancelled':
-        return AppColors.error;
-      case 'in_attesa':
-        return Colors.amber;
-      default:
-        return Colors.grey;
-    }
-  }
+  Color _getStatoColor(String stato) => PracticeStatus.operationalColor(stato);
 
-  IconData _getStatoIcon(String stato) {
-    switch (_canonicalStato(stato)) {
-      case 'awaiting_payment':
-        return Icons.payment;
-      case 'paid':
-        return Icons.paid;
-      case 'awaiting_signature':
-        return Icons.edit_document;
-      case 'integrazione_documentale':
-        return Icons.upload_file;
-      case 'awaiting_appointment':
-        return Icons.event_available;
-      case 'appointment_confirmed':
-        return Icons.event_available;
-      case 'processing':
-        return Icons.hourglass_empty;
-      case 'completed':
-        return Icons.check_circle;
-      case 'cancelled':
-        return Icons.cancel;
-      case 'in_attesa':
-        return Icons.schedule;
-      default:
-        return Icons.info;
-    }
-  }
+  IconData _getStatoIcon(String stato) => PracticeStatus.operationalIcon(stato);
 
   String _getStatoLabelTradotto(String stato) {
     final l10n = AppLocalizations.of(context);
     if (l10n == null) return stato;
-    switch (_canonicalStato(stato)) {
-      case 'pending':
-        return l10n.paymentStatusPending;
-      case 'awaiting_payment':
-        return l10n.paymentStatusAwaitingPayment;
-      case 'paid':
-        return l10n.paymentStatusPaid;
-      case 'awaiting_signature':
-        return l10n.paymentStatusAwaitingSignature;
-      case 'integrazione_documentale':
-        return l10n.documentIntegrationStatus;
-      case 'awaiting_appointment':
-        return _trFallback(l10n, 'statusAwaitingAppointment', 'In attesa di appuntamento');
-      case 'appointment_confirmed':
-        return _trFallback(l10n, 'statusAppointmentConfirmed', 'Appuntamento confermato');
-      case 'completed':
-        return l10n.paymentStatusCompleted;
-      case 'failed':
-        return l10n.paymentStatusFailed;
-      case 'cancelled':
-        return l10n.paymentStatusCancelled;
-      case 'processing':
-        return l10n.processing;
-      case 'in_attesa':
-        return l10n.pending;
-      default:
-        return stato;
-    }
+    return PracticeStatus.operationalLabel(l10n, stato);
   }
 
   String _getCategoriaLabelTradotta(String categoria) {
@@ -1356,28 +1198,68 @@ class _CalendarScreenState extends State<CalendarScreen>
   }
 
 
-  void _apriRichiestaById(String id) {
+  Future<void> _apriRichiestaById(String id) async {
     AppLogger.d('🔍 Cerco richiesta con ID: $id');
-    
-    final richiesta = _tutteRichieste.firstWhere(
-      (r) => r['id'].toString() == id,
-      orElse: () => {},
-    );
-    
-    if (richiesta.isNotEmpty) {
-      AppLogger.d('✅ Richiesta trovata: ${richiesta['numero_pratica']}');
-      _mostraDettaglioRichiesta(richiesta);
-    } else {
-      AppLogger.d('❌ Richiesta non trovata: $id');
+
+    Map<String, dynamic>? inList;
+    for (final r in _tutteRichieste) {
+      if (r['id'].toString() == id) {
+        inList = r;
+        break;
+      }
+    }
+
+    if (inList != null) {
+      AppLogger.d('✅ Richiesta trovata in lista: ${inList['numero_pratica']}');
+      await _mostraDettaglioRichiesta(inList);
+      return;
+    }
+
+    // Non in lista attiva → fetch dettaglio (può essere completata → Storico).
+    final rid = int.tryParse(id);
+    if (rid == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.translate('requestNotFound')),
+            content: Text(
+              AppLocalizations.of(context)!.translate('requestNotFound'),
+            ),
             duration: const Duration(seconds: 2),
           ),
         );
       }
+      return;
     }
+
+    final dettaglio = await SocioService.getDettaglioRichiesta(rid);
+    if (!mounted) return;
+    if (dettaglio == null || dettaglio.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.translate('requestNotFound'),
+          ),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    final stato =
+        (dettaglio['stato'] ?? dettaglio['status'] ?? '').toString();
+    if (PracticeStatus.isClosed(stato)) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => StoricoPraticaDettaglioScreen(
+            richiestaId: rid,
+            initial: dettaglio,
+          ),
+        ),
+      );
+      return;
+    }
+
+    await _mostraDettaglioRichiesta(dettaglio);
   }
 
 
@@ -2389,12 +2271,29 @@ class _CalendarScreenState extends State<CalendarScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    // Nessun filtro "Da Firmare": il DU/firma è a livello utente, non pratica.
+    // Spec V1.0: filtri operativi WECOOP (no Da firmare / Completato / Pagato).
     final List<Map<String, String?>> filtriStato = [
       {'label': l10n.all, 'value': null},
-      {'label': l10n.paymentStatusAwaitingPayment, 'value': 'awaiting_payment'},
-      {'label': l10n.paymentStatusPaid, 'value': 'paid'},
-      {'label': l10n.paymentStatusCompleted, 'value': 'completed'},
+      {
+        'label': _trFallback(l10n, 'opsStatusRicevuta', 'Richiesta ricevuta'),
+        'value': PracticeOps.ricevuta,
+      },
+      {
+        'label': _trFallback(
+          l10n,
+          'opsStatusRaccoltaDocumenti',
+          'In raccolta documenti',
+        ),
+        'value': PracticeOps.raccoltaDocumenti,
+      },
+      {
+        'label': _trFallback(l10n, 'opsStatusInLavorazione', 'In lavorazione'),
+        'value': PracticeOps.inLavorazione,
+      },
+      {
+        'label': _trFallback(l10n, 'opsStatusAttesaUtente', 'In attesa utente'),
+        'value': PracticeOps.attesaUtente,
+      },
     ];
 
     return Scaffold(

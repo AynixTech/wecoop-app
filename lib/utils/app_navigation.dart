@@ -5,9 +5,12 @@ import '../screens/lavoro/offerte_lavoro_screen.dart';
 import '../screens/login/login_screen.dart';
 import '../screens/profilo/documenti_screen.dart';
 import '../screens/profilo/mie_richieste_screen.dart';
+import '../screens/profilo/storico_pratica_dettaglio_screen.dart';
 import '../screens/servizi/pagamento_screen.dart';
 import '../services/auth_helper.dart';
 import '../services/push_notification_service.dart';
+import '../services/socio_service.dart';
+import '../utils/practice_status.dart';
 
 /// Indici tab di [MainScreen].
 abstract final class MainTab {
@@ -156,6 +159,56 @@ abstract final class AppNavigation {
     navigateToDocumenti();
   }
 
+  /// Apre una pratica: se chiusa → Storico dettaglio; altrimenti tab Richieste.
+  static Future<void> navigateToPratica({
+    required String richiestaId,
+    String? preferredScreen,
+  }) async {
+    final rid = int.tryParse(richiestaId);
+    if (rid == null) {
+      navigateToMainTab(MainTab.calendar, richiestaId: richiestaId);
+      return;
+    }
+
+    final loggedIn = await AuthHelper.isLoggedIn();
+    if (!loggedIn) {
+      navigateToLogin();
+      return;
+    }
+
+    // Completamento → Storico diretto senza dipendere dalla lista attiva.
+    if (preferredScreen == 'service_request_completed' ||
+        preferredScreen == 'completed') {
+      final navigator = _navigator;
+      if (navigator == null) return;
+      navigator.push(
+        MaterialPageRoute(
+          builder: (_) => StoricoPraticaDettaglioScreen(richiestaId: rid),
+        ),
+      );
+      return;
+    }
+
+    final dettaglio = await SocioService.getDettaglioRichiesta(rid);
+    final stato =
+        (dettaglio?['stato'] ?? dettaglio?['status'] ?? '').toString();
+    if (dettaglio != null && PracticeStatus.isClosed(stato)) {
+      final navigator = _navigator;
+      if (navigator == null) return;
+      navigator.push(
+        MaterialPageRoute(
+          builder: (_) => StoricoPraticaDettaglioScreen(
+            richiestaId: rid,
+            initial: dettaglio,
+          ),
+        ),
+      );
+      return;
+    }
+
+    navigateToMainTab(MainTab.calendar, richiestaId: richiestaId);
+  }
+
   /// Gestione unificata payload push / notifiche in-app.
   static void handleNotificationPayload(Map<String, dynamic> data) {
     if (data['type']?.toString() == 'badge_sync') return;
@@ -192,10 +245,11 @@ abstract final class AppNavigation {
       case 'appuntamento_reminder':
       case 'calendar':
       case 'AppointmentDetail':
-        navigateToMainTab(
-          MainTab.calendar,
-          richiestaId: requestId,
-        );
+        if (requestId != null && requestId.isNotEmpty) {
+          navigateToPratica(richiestaId: requestId);
+        } else {
+          navigateToMainTab(MainTab.calendar);
+        }
         return;
 
       case 'support':
@@ -225,21 +279,33 @@ abstract final class AppNavigation {
         }
         return;
 
+      case 'service_request_completed':
+        if (requestId != null && requestId.isNotEmpty) {
+          navigateToPratica(
+            richiestaId: requestId,
+            preferredScreen: 'service_request_completed',
+          );
+        } else {
+          navigateToMainTab(MainTab.profilo);
+        }
+        return;
+
       case 'document_ready':
       case 'status':
       case 'integrazione':
       case 'operator_message':
       case 'service_request':
       case 'ServiceDetail':
-        navigateToMainTab(
-          MainTab.calendar,
-          richiestaId: requestId,
-        );
+        if (requestId != null && requestId.isNotEmpty) {
+          navigateToPratica(richiestaId: requestId);
+        } else {
+          navigateToMainTab(MainTab.calendar);
+        }
         return;
 
       default:
         if (requestId != null && requestId.isNotEmpty) {
-          navigateToMainTab(MainTab.calendar, richiestaId: requestId);
+          navigateToPratica(richiestaId: requestId);
         } else {
           navigateToNotifications();
         }

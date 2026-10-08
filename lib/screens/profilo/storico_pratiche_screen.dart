@@ -10,6 +10,7 @@ import '../../services/app_localizations.dart';
 import '../../services/socio_service.dart';
 import '../../theme/theme.dart';
 import '../../utils/service_request_labels.dart';
+import '../../utils/practice_status.dart';
 import 'storico_pratica_dettaglio_screen.dart';
 
 /// Storico pratiche: elenca le richieste di servizio (WC-…) con pagamento/firma
@@ -52,13 +53,19 @@ class _StoricoPraticheScreenState extends State<StoricoPraticheScreen> {
       }
       final pratiche = bundle['pratiche'];
       final docs = bundle['documenti'];
+      // Spec V1.0: Storico = pratiche concluse (completate / annullate / respinte).
+      final allPratiche = pratiche is List
+          ? pratiche
+              .whereType<Map>()
+              .map((e) => Map<String, dynamic>.from(e))
+              .toList()
+          : <Map<String, dynamic>>[];
+      final chiuse = allPratiche.where((p) {
+        final stato = (p['stato'] ?? p['status'] ?? '').toString();
+        return PracticeStatus.isClosed(stato);
+      }).toList();
       setState(() {
-        _pratiche = pratiche is List
-            ? pratiche
-                .whereType<Map>()
-                .map((e) => Map<String, dynamic>.from(e))
-                .toList()
-            : [];
+        _pratiche = chiuse;
         _documenti = docs is List<PraticaDocumento>
             ? docs
             : (docs is List
@@ -339,14 +346,23 @@ class _StoricoPraticheScreenState extends State<StoricoPraticheScreen> {
     final servizio = ServiceRequestLabels.servizioFromRecord(l10n, p);
     final stato = (p['stato'] ?? p['status'] ?? '').toString();
     final payStato = (p['payment_status'] ?? '').toString();
-    final firma = (p['firma_stato'] ?? '').toString();
     final meta = <String>[];
-    if (stato.isNotEmpty) meta.add(stato);
+    if (stato.isNotEmpty) {
+      meta.add(PracticeStatus.operationalLabel(l10n, stato));
+    }
     if (payStato.isNotEmpty) meta.add('Pagamento: $payStato');
-    if (firma.isNotEmpty) meta.add('Firma: $firma');
     final created = p['created_at']?.toString();
     if (created != null && created.length >= 10) {
       meta.add(created.substring(0, 10).split('-').reversed.join('/'));
+    }
+    final updated = p['updated_at']?.toString();
+    if (updated != null &&
+        updated.length >= 10 &&
+        PracticeStatus.isClosed(stato)) {
+      meta.add(
+        '${l10n.translate('storicoPraticheCompletedOn')}: '
+        '${updated.substring(0, 10).split('-').reversed.join('/')}',
+      );
     }
 
     return Card(

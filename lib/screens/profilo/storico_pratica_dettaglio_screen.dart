@@ -8,6 +8,7 @@ import '../../services/app_localizations.dart';
 import '../../services/socio_service.dart';
 import '../../theme/theme.dart';
 import '../../utils/service_request_labels.dart';
+import '../../utils/practice_status.dart';
 import '../servizi/pagamento_screen.dart';
 
 /// Dettaglio di una pratica di servizio dallo Storico (stato, pagamento, firma, documenti).
@@ -197,7 +198,9 @@ class _StoricoPraticaDettaglioScreenState
                   _chip(
                     scheme,
                     l10n.translate('status'),
-                    stato.isEmpty ? '—' : stato,
+                    stato.isEmpty
+                        ? '—'
+                        : PracticeStatus.operationalLabel(l10n, stato),
                   ),
                   const SizedBox(height: 8),
                   _chip(

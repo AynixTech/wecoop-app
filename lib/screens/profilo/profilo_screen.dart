@@ -1172,7 +1172,8 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
               context: context,
               icon: Icons.support_agent_outlined,
               accentColor: const Color(0xFF25D366),
-              title: AppLocalizations.of(context)!.myRequests,
+              title: AppLocalizations.of(context)!
+                  .translate('mySupportRequests'),
               subtitle: AppLocalizations.of(context)!
                   .translate('mySupportRequestsSubtitle'),
               onTap: () {

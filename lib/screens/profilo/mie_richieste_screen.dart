@@ -231,7 +231,7 @@ class _MieRichiesteScreenState extends State<MieRichiesteScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.myRequests)),
+      appBar: AppBar(title: Text(l10n.translate('mySupportRequests'))),
       body: RefreshIndicator(
         onRefresh: _load,
         child: _buildBody(l10n),

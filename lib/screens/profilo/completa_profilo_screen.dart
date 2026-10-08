@@ -335,14 +335,17 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final media = MediaQuery.of(context);
+    // Su schermi bassi / testo grande l'header blu non deve mangiare il form.
+    final compactHeader =
+        media.size.height < 720 || media.textScaler.scale(14) > 16;
 
     return Scaffold(
       backgroundColor: scheme.surface,
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(l10n.completeProfile),
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: scheme.primary,
         foregroundColor: Colors.white,
         systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
@@ -376,30 +379,46 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                 )
                 : Column(
                   children: [
-                    _buildHeader(theme, scheme, l10n),
-
-                    // Content
                     Expanded(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
-                        child: Form(
-                          key: _formKey,
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 300),
-                            transitionBuilder: (child, animation) {
-                              return FadeTransition(
-                                opacity: animation,
-                                child: SlideTransition(
-                                  position: Tween<Offset>(
-                                    begin: const Offset(0.06, 0),
-                                    end: Offset.zero,
-                                  ).animate(animation),
-                                  child: child,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Header nello scroll: su telefoni bassi non copre i campi.
+                            _buildHeader(
+                              theme,
+                              scheme,
+                              l10n,
+                              compact: compactHeader,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(
+                                16,
+                                compactHeader ? 12 : 16,
+                                16,
+                                16,
+                              ),
+                              child: Form(
+                                key: _formKey,
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 300),
+                                  transitionBuilder: (child, animation) {
+                                    return FadeTransition(
+                                      opacity: animation,
+                                      child: SlideTransition(
+                                        position: Tween<Offset>(
+                                          begin: const Offset(0.06, 0),
+                                          end: Offset.zero,
+                                        ).animate(animation),
+                                        child: child,
+                                      ),
+                                    );
+                                  },
+                                  child: _buildStepContent(_currentStep, l10n),
                                 ),
-                              );
-                            },
-                            child: _buildStepContent(_currentStep, l10n),
-                          ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -411,17 +430,16 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
     );
   }
 
-  /// Header con gradiente: titolo, sottotitolo e stepper moderno.
+  /// Header gradiente sotto l'AppBar: sottotitolo + stepper (senza titolo duplicato).
   Widget _buildHeader(
     ThemeData theme,
     ColorScheme scheme,
-    AppLocalizations l10n,
-  ) {
-    final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight;
-
+    AppLocalizations l10n, {
+    required bool compact,
+  }) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.fromLTRB(20, topPadding + 4, 20, 26),
+      padding: EdgeInsets.fromLTRB(20, compact ? 10 : 14, 20, compact ? 14 : 18),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -429,41 +447,48 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
           colors: [scheme.primary, const Color(0xFF1496C1)],
         ),
         borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(28),
-          bottomRight: Radius.circular(28),
+          bottomLeft: Radius.circular(22),
+          bottomRight: Radius.circular(22),
         ),
         boxShadow: [
           BoxShadow(
-            color: scheme.primary.withOpacity(0.20),
-            blurRadius: 24,
-            offset: const Offset(0, 10),
+            color: scheme.primary.withOpacity(0.18),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            l10n.translate('completeProfileHeaderTitle'),
-            style: theme.textTheme.titleLarge?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
+          if (!compact) ...[
+            Text(
+              l10n.translate('completeProfileHeaderSubtitle'),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: Colors.white.withOpacity(0.90),
+                height: 1.3,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            l10n.translate('completeProfileHeaderSubtitle'),
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withOpacity(0.85),
-              height: 1.35,
-            ),
-          ),
-          const SizedBox(height: 22),
+            const SizedBox(height: 14),
+          ],
           Row(
             children: [
-              _buildStepIndicator(0, l10n.personalData, Icons.person_rounded),
-              _buildStepConnector(0),
-              _buildStepIndicator(1, l10n.address, Icons.home_rounded),
+              _buildStepIndicator(
+                0,
+                l10n.personalData,
+                Icons.person_rounded,
+                compact: compact,
+              ),
+              _buildStepConnector(0, compact: compact),
+              _buildStepIndicator(
+                1,
+                l10n.address,
+                Icons.home_rounded,
+                compact: compact,
+              ),
             ],
           ),
         ],
@@ -549,18 +574,25 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
     );
   }
 
-  Widget _buildStepIndicator(int step, String label, IconData icon) {
+  Widget _buildStepIndicator(
+    int step,
+    String label,
+    IconData icon, {
+    required bool compact,
+  }) {
     final isActive = _currentStep == step;
     final isCompleted = _currentStep > step;
     final isDone = isActive || isCompleted;
+    final size = compact ? 36.0 : 42.0;
 
     return Expanded(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 250),
-            width: 46,
-            height: 46,
+            width: size,
+            height: size,
             decoration: BoxDecoration(
               color: isDone ? Colors.white : Colors.white.withOpacity(0.18),
               shape: BoxShape.circle,
@@ -573,8 +605,8 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
                       ? [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.15),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
                         ),
                       ]
                       : null,
@@ -582,19 +614,19 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
             child: Icon(
               isCompleted ? Icons.check_rounded : icon,
               color: isDone ? const Color(0xFF1496C1) : Colors.white,
-              size: 22,
+              size: compact ? 18 : 20,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: compact ? 4 : 6),
           Text(
             label,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: compact ? 11 : 12,
               fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
               color: Colors.white.withOpacity(isDone ? 1 : 0.75),
             ),
             textAlign: TextAlign.center,
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ],
@@ -602,13 +634,13 @@ class _CompletaProfiloScreenState extends State<CompletaProfiloScreen> {
     );
   }
 
-  Widget _buildStepConnector(int step) {
+  Widget _buildStepConnector(int step, {required bool compact}) {
     final isCompleted = _currentStep > step;
 
     return Expanded(
       child: Container(
         height: 3,
-        margin: const EdgeInsets.only(bottom: 28),
+        margin: EdgeInsets.only(bottom: compact ? 18 : 22),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(isCompleted ? 1 : 0.3),
           borderRadius: BorderRadius.circular(2),

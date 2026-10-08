@@ -8,6 +8,7 @@ import '../../services/app_localizations.dart';
 import '../../services/push_notification_service.dart';
 import '../../services/error_reporter.dart';
 import '../../config/stripe_config.dart';
+import '../../config/wecoop_org.dart';
 import '../../utils/service_request_labels.dart';
 
 class PagamentoScreen extends StatefulWidget {
@@ -611,7 +612,7 @@ class _PagamentoScreenState extends State<PagamentoScreen> {
                                     ),
                                     _buildDetailRow(
                                       _legal('paymentInvoiceEntity'),
-                                      'WECOOP APS · CF/P.IVA 97977210158',
+                                      WecoopOrg.paymentFooterCf,
                                     ),
                                     if (_pagamento!.paidAt != null)
                                       _buildDetailRow(

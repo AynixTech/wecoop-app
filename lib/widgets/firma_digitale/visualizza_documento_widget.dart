@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:http/http.dart' as http;
-import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:wecoop_app/services/app_localizations.dart';
@@ -33,14 +32,18 @@ class VisualizzaDocumentoWidget extends StatefulWidget {
       _VisualizzaDocumentoWidgetState();
 }
 
-class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
+class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget>
+    with WidgetsBindingObserver {
   String? _localPdfPath;
+  Key _pdfViewKey = UniqueKey();
   bool _previewLoading = false;
   String? _previewError;
+  bool _hasReadDocument = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     AppLogger.d(
       '📄 [DocView] initState richiestaId=${widget.richiestaId} userId=${widget.userId}',
     );
@@ -50,14 +53,47 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
     });
   }
 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _deletePreviewFile(_localPdfPath);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed &&
+        _localPdfPath != null &&
+        !_previewLoading) {
+      // Android PlatformView can go blank after background; remount without re-download.
+      AppLogger.d('📄 [DocView] resumed -> remount PDFView');
+      setState(() {
+        _pdfViewKey = UniqueKey();
+      });
+    }
+  }
+
+  Future<void> _deletePreviewFile(String? path) async {
+    if (path == null) return;
+    try {
+      final file = File(path);
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (_) {}
+  }
+
   Future<void> _loadDocumento() async {
     AppLogger.d('📄 [DocView] _loadDocumento start');
     if (!mounted) return;
+    final previousPath = _localPdfPath;
     setState(() {
       _previewLoading = true;
       _previewError = null;
       _localPdfPath = null;
+      _hasReadDocument = false;
     });
+    await _deletePreviewFile(previousPath);
 
     final provider =
         Provider.of<FirmaDigitaleProvider>(context, listen: false);
@@ -77,6 +113,7 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
       setState(() {
         _previewLoading = false;
         _previewError = provider.errorMessage;
+        _hasReadDocument = false;
       });
       return;
     }
@@ -98,6 +135,7 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
     setState(() {
       _previewLoading = false;
       _previewError = 'PDF non disponibile';
+      _hasReadDocument = false;
     });
   }
 
@@ -138,25 +176,14 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
   Future<void> _scaricaDaUrl(String url, String nome) async {
     try {
       final uri = Uri.parse(url);
-      final isSpaces = url.toLowerCase().contains('digitaloceanspaces.com') ||
-          url.toLowerCase().contains('x-amz-signature');
-      final response = isSpaces
-          ? await http
-              .get(
-                uri,
-                headers: const {
-                  'Accept': 'application/pdf,application/octet-stream,*/*',
-                },
-              )
-              .timeout(const Duration(seconds: 45))
-          : await http
-              .get(
-                uri,
-                headers: const {
-                  'Accept': 'application/pdf,application/octet-stream,*/*',
-                },
-              )
-              .timeout(const Duration(seconds: 45));
+      final response = await http
+          .get(
+            uri,
+            headers: const {
+              'Accept': 'application/pdf,application/octet-stream,*/*',
+            },
+          )
+          .timeout(const Duration(seconds: 45));
 
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw Exception('HTTP ${response.statusCode}');
@@ -174,46 +201,26 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
         _localPdfPath = null;
         _previewLoading = false;
         _previewError = e.toString();
+        _hasReadDocument = false;
       });
     }
   }
 
   Future<void> _persistPreview(List<int> bytes, String nome) async {
     final safeName = nome.replaceAll(RegExp(r'[^\w.\-]'), '_');
+    final stamp = DateTime.now().millisecondsSinceEpoch;
     final dir = await getTemporaryDirectory();
-    final file = File('${dir.path}/du_preview_$safeName');
+    final file = File('${dir.path}/du_preview_${stamp}_$safeName');
     await file.writeAsBytes(bytes, flush: true);
     AppLogger.d('✅ [DocView] anteprima salvata path=${file.path}');
     if (!mounted) return;
     setState(() {
       _localPdfPath = file.path;
+      _pdfViewKey = UniqueKey();
       _previewLoading = false;
       _previewError = null;
+      _hasReadDocument = false;
     });
-  }
-
-  Future<void> _apriDocumentoEsterno() async {
-    final l10n = AppLocalizations.of(context)!;
-    // Preferisci il PDF già scaricato in locale (niente Spaces nel browser).
-    if (_localPdfPath != null) {
-      final result = await OpenFile.open(_localPdfPath!);
-      if (result.type != ResultType.done && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.translate('cannotOpenDocumentExternally')),
-          ),
-        );
-      }
-      return;
-    }
-    await _loadDocumento();
-    if (_localPdfPath != null && mounted) {
-      await OpenFile.open(_localPdfPath!);
-    } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.translate('docViewLoadError'))),
-      );
-    }
   }
 
   @override
@@ -223,6 +230,11 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
       builder: (context, provider, _) {
         final loadingMeta = provider.isLoading && provider.documento == null;
         final showPreviewBusy = loadingMeta || _previewLoading;
+        final canSign = provider.documento != null &&
+            _localPdfPath != null &&
+            _hasReadDocument &&
+            !provider.isLoading &&
+            !showPreviewBusy;
 
         return Column(
           children: [
@@ -282,13 +294,16 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
                         )
                       : _localPdfPath != null
                           ? PDFView(
+                              key: _pdfViewKey,
                               filePath: _localPdfPath!,
                               enableSwipe: true,
                               swipeHorizontal: false,
                               autoSpacing: true,
                               pageSnap: true,
                               onError: (error) {
-                                AppLogger.d('❌ [DocView] PDFView error: $error');
+                                AppLogger.d(
+                                  '❌ [DocView] PDFView error: $error',
+                                );
                               },
                             )
                           : Center(
@@ -324,37 +339,35 @@ class _VisualizzaDocumentoWidgetState extends State<VisualizzaDocumentoWidget> {
               child: Column(
                 children: [
                   if (provider.documento != null) ...[
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: showPreviewBusy ? null : _loadDocumento,
-                            icon: const Icon(Icons.refresh),
-                            label: Text(l10n.translate('reloadPreview')),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed:
-                                showPreviewBusy ? null : _apriDocumentoEsterno,
-                            icon: const Icon(Icons.open_in_new),
-                            label: Text(l10n.translate('openInBrowser')),
-                          ),
-                        ),
-                      ],
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: showPreviewBusy ? null : _loadDocumento,
+                        icon: const Icon(Icons.refresh),
+                        label: Text(l10n.translate('reloadPreview')),
+                      ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
+                    CheckboxListTile(
+                      value: _hasReadDocument,
+                      onChanged: showPreviewBusy || _localPdfPath == null
+                          ? null
+                          : (value) {
+                              setState(() {
+                                _hasReadDocument = value ?? false;
+                              });
+                            },
+                      controlAffinity: ListTileControlAffinity.leading,
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(l10n.translate('documentReadAck')),
+                    ),
+                    const SizedBox(height: 8),
                   ],
                   SizedBox(
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: provider.documento != null &&
-                              !provider.isLoading &&
-                              !showPreviewBusy
-                          ? widget.onFirmaClick
-                          : null,
+                      onPressed: canSign ? widget.onFirmaClick : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         disabledBackgroundColor: Colors.grey.shade300,

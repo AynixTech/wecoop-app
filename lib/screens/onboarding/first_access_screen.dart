@@ -105,17 +105,20 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
           ),
           child: Column(
             children: [
-              _buildInfoBanner(),
-
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
                   child: Form(
                     key: _formKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const SizedBox(height: 12),
+                        // Dentro lo scroll: su telefoni bassi non copre i campi.
+                        _buildInfoBanner(),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
                         Center(
                           child: Container(
                             width: 96,
@@ -454,6 +457,9 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
                             ],
                           ),
                         ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -545,9 +551,12 @@ class _FirstAccessScreenState extends State<FirstAccessScreen> {
               AppLocalizations.of(context)!.completeDataToAccessServices,
               style: TextStyle(
                 color: scheme.onPrimary,
-                fontSize: 16,
+                fontSize: 15,
                 fontWeight: FontWeight.w600,
+                height: 1.3,
               ),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

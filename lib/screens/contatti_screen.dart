@@ -127,10 +127,10 @@ class ContattiScreen extends StatelessWidget {
                   _buildContactCard(
                     icon: Icons.email,
                     iconColor: Colors.orange,
-                    title: 'info@wecoop.it',
+                    title: 'info@wecoop.org',
                     subtitle: l10n.contactSendEmail,
                     onTap: () {
-                      _launchUrl('mailto:info@wecoop.it');
+                      _launchUrl('mailto:info@wecoop.org');
                     },
                   ),
                   

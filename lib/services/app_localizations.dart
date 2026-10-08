@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wecoop_app/config/wecoop_org.dart';
 
 class AppLocalizations {
   final Locale locale;
@@ -87,8 +88,7 @@ class AppLocalizations {
           'Impossibile eliminare l\'account. Riprova o contatta l\'assistenza.',
       'profileAppInfoTitle': 'Versione app e fatturazione',
       'profileAppVersion': 'Versione app',
-      'profileWecoopCompanyDetails':
-          'WECOOP APS\nSede: Via Populonia 8, 20133 Milano (MI)\nCF/P.IVA: 97977210158\nRUNTS: 142852\nTel: +39 351 511 2113\nEmail: info@wecoop.org\nWeb: wecoop.org',
+      'profileWecoopCompanyDetails': WecoopOrg.companyDetailsIt,
       'profileWecoopBillingNotice':
           'Il pagamento e la fatturazione sono gestiti da WECOOP APS.',
       'profileWecoopInvoiceFlow':
@@ -1521,7 +1521,7 @@ class AppLocalizations {
       'contacts': 'Contatti',
       'contactsTitle': 'Contattaci',
       'ourOffice': 'La nostra sede',
-      'officeAddress': 'Via Populonia 8, 20159 Milano MI',
+      'officeAddress': WecoopOrg.officeAddressMaps,
       'officeHours': 'Orari di apertura',
       'officeHoursDetails': 'Lunedì - Venerdì: 9:00 - 18:00',
       'contactPhone': 'Telefono',
@@ -1601,6 +1601,7 @@ class AppLocalizations {
       'loadingDocument': 'Caricamento documento...',
       'reloadPreview': 'Ricarica anteprima',
       'openInBrowser': 'Apri nel browser',
+      'documentReadAck': 'Ho letto il Documento Unico',
       'verifyIdentityTitle': 'Verifica identita',
       'otpSentToPhoneAndEmail':
           'Riceverai lo stesso codice OTP via SMS al numero',
@@ -2065,8 +2066,7 @@ class AppLocalizations {
           'فعّل بصمة الإصبع أو Face ID لدخول أسرع',
       'profileAppInfoTitle': 'إصدار التطبيق والفوترة',
       'profileAppVersion': 'إصدار التطبيق',
-      'profileWecoopCompanyDetails':
-          'WECOOP APS\nAddress: Via Populonia 8, 20133 Milano (MI)\nCF/P.IVA: 97977210158\nRUNTS: 142852\nTel: +39 351 511 2113\nEmail: info@wecoop.org\nWeb: wecoop.org',
+      'profileWecoopCompanyDetails': WecoopOrg.companyDetailsAr,
       'profileWecoopBillingNotice': 'تتم إدارة الدفع والفوترة من قبل WECOOP APS.',
       'profileWecoopInvoiceFlow': 'بعد الدفع ستتلقى الفاتورة بصيغة PDF عبر البريد الإلكتروني. جميع المبالغ المعروضة في التطبيق شاملة ضريبة القيمة المضافة.',
       'maintenanceTitle': 'الصيانة جارية',
@@ -3133,7 +3133,7 @@ class AppLocalizations {
       'contacts': 'جهات الاتصال',
       'contactsTitle': 'تواصل معنا',
       'ourOffice': 'مقرنا',
-      'officeAddress': 'Via Populonia 8, 20159 Milano MI',
+      'officeAddress': WecoopOrg.officeAddressMaps,
       'officeHours': 'ساعات العمل',
       'officeHoursDetails': 'الإثنين - الجمعة: 9:00 - 18:00',
       'contactPhone': 'الهاتف',
@@ -3189,6 +3189,7 @@ class AppLocalizations {
       'loadingDocument': 'جارٍ تحميل المستند...',
       'reloadPreview': 'إعادة تحميل المعاينة',
       'openInBrowser': 'فتح في المتصفح',
+      'documentReadAck': 'لقد قرأت الوثيقة الموحدة',
       'verifyIdentityTitle': 'التحقق من الهوية',
       'otpSentToPhoneAndEmail': 'ستتلقى رمز OTP نفسه عبر رسالة قصيرة على الرقم',
       'andByEmail': 'وعبر البريد الإلكتروني',
@@ -3559,8 +3560,7 @@ class AppLocalizations {
       'useBiometricLoginSettingDescription': '启用指纹或Face ID以更快速登录',
       'profileAppInfoTitle': '应用版本与开票',
       'profileAppVersion': '应用版本',
-      'profileWecoopCompanyDetails':
-          'WECOOP APS\nAddress: Via Populonia 8, 20133 Milano (MI)\nCF/P.IVA: 97977210158\nRUNTS: 142852\nTel: +39 351 511 2113\nEmail: info@wecoop.org\nWeb: wecoop.org',
+      'profileWecoopCompanyDetails': WecoopOrg.companyDetailsZh,
       'profileWecoopBillingNotice': '付款和开票由 WECOOP APS 处理。',
       'profileWecoopInvoiceFlow': '付款后您将通过电子邮件收到 PDF 格式的发票。应用中显示的所有金额均含增值税。',
       'maintenanceTitle': '系统维护中',
@@ -4614,7 +4614,7 @@ class AppLocalizations {
       'contacts': '联系方式',
       'contactsTitle': '联系我们',
       'ourOffice': '我们的办公地点',
-      'officeAddress': 'Via Populonia 8, 20159 Milano MI',
+      'officeAddress': WecoopOrg.officeAddressMaps,
       'officeHours': '营业时间',
       'officeHoursDetails': '周一至周五：9:00 - 18:00',
       'contactPhone': '电话',
@@ -4670,6 +4670,7 @@ class AppLocalizations {
       'loadingDocument': '正在加载文档……',
       'reloadPreview': '重新加载预览',
       'openInBrowser': '在浏览器中打开',
+      'documentReadAck': '我已阅读唯一文件',
       'verifyIdentityTitle': '验证身份',
       'otpSentToPhoneAndEmail': '您将通过短信在以下号码收到相同的 OTP 验证码',
       'andByEmail': '以及通过电子邮件',
@@ -4808,8 +4809,7 @@ class AppLocalizations {
           'Unable to delete the account. Please try again or contact support.',
       'profileAppInfoTitle': 'App version and invoicing',
       'profileAppVersion': 'App version',
-      'profileWecoopCompanyDetails':
-          'WECOOP APS\nAddress: Via Populonia 8, 20133 Milan (MI)\nTax ID / VAT: 97977210158\nRUNTS: 142852\nTel: +39 351 511 2113\nEmail: info@wecoop.org\nWeb: wecoop.org',
+      'profileWecoopCompanyDetails': WecoopOrg.companyDetailsEn,
       'profileWecoopBillingNotice':
           'Payments and invoicing are managed by WECOOP APS.',
       'profileWecoopInvoiceFlow':
@@ -6205,7 +6205,7 @@ class AppLocalizations {
       'contacts': 'Contacts',
       'contactsTitle': 'Contact us',
       'ourOffice': 'Our office',
-      'officeAddress': 'Via Populonia 8, 20159 Milano MI',
+      'officeAddress': WecoopOrg.officeAddressMaps,
       'officeHours': 'Opening hours',
       'officeHoursDetails': 'Monday - Friday: 9:00 AM - 6:00 PM',
       'contactPhone': 'Phone',
@@ -6283,6 +6283,7 @@ class AppLocalizations {
       'loadingDocument': 'Loading document...',
       'reloadPreview': 'Reload preview',
       'openInBrowser': 'Open in browser',
+      'documentReadAck': 'I have read the Single Document',
       'verifyIdentityTitle': 'Verify identity',
       'otpSentToPhoneAndEmail': 'You will receive the same OTP code via SMS to',
       'andByEmail': 'and by email',
@@ -6497,8 +6498,7 @@ class AppLocalizations {
       'deleteAccountError': 'Impossible de supprimer le compte. Réessayez ou contactez l’assistance.',
       'profileAppInfoTitle': 'Version de l’application et facturation',
       'profileAppVersion': 'Version de l’application',
-      'profileWecoopCompanyDetails':
-          'WECOOP APS\nSiege: Via Populonia 8, 20133 Milan (MI)\nCF/TVA: 97977210158\nRUNTS: 142852\nTel: +39 351 511 2113\nEmail: info@wecoop.org\nWeb: wecoop.org',
+      'profileWecoopCompanyDetails': WecoopOrg.companyDetailsFr,
       'profileWecoopBillingNotice': 'Les paiements et la facturation sont gérés par WECOOP APS.',
       'profileWecoopInvoiceFlow': 'Après le paiement, vous recevrez la facture PDF par e-mail. Tous les prix affichés dans l’application incluent la TVA.',
       'email': 'E-mail',
@@ -7714,7 +7714,7 @@ class AppLocalizations {
       'contacts': 'Coordonnées',
       'contactsTitle': 'Contact us',
       'ourOffice': 'Notre bureau',
-      'officeAddress': 'Via Populonia 8, 20159 Milano MI',
+      'officeAddress': WecoopOrg.officeAddressMaps,
       'officeHours': 'Horaires d’ouverture',
       'officeHoursDetails': 'Du lundi au vendredi : de 9 h à 18 h',
       'contactPhone': 'Téléphone',
@@ -7770,6 +7770,7 @@ class AppLocalizations {
       'loadingDocument': 'Loading document...',
       'reloadPreview': 'Reload aperçu',
       'openInBrowser': 'Ouvrir dans browser',
+      'documentReadAck': 'J\'ai lu le Document Unique',
       'verifyIdentityTitle': 'Verify identité',
       'otpSentToPhoneAndEmail': 'Vous recevrez le même OTP code par SMS à',
       'andByEmail': 'et par e-mail',
@@ -7983,8 +7984,7 @@ class AppLocalizations {
           'No se puede eliminar la cuenta. Inténtalo de nuevo o contacta con soporte.',
       'profileAppInfoTitle': 'Versión de la app y facturación',
       'profileAppVersion': 'Versión de la app',
-      'profileWecoopCompanyDetails':
-          'WECOOP APS\nSede: Via Populonia 8, 20133 Milan (MI)\nCF/NIF-IVA: 97977210158\nRUNTS: 142852\nTel: +39 351 511 2113\nEmail: info@wecoop.org\nWeb: wecoop.org',
+      'profileWecoopCompanyDetails': WecoopOrg.companyDetailsEs,
       'profileWecoopBillingNotice':
           'Los pagos y la facturación son gestionados por WECOOP APS.',
       'profileWecoopInvoiceFlow':
@@ -9352,7 +9352,7 @@ class AppLocalizations {
       'contacts': 'Contactos',
       'contactsTitle': 'Contáctanos',
       'ourOffice': 'Nuestra oficina',
-      'officeAddress': 'Via Populonia 8, 20159 Milano MI',
+      'officeAddress': WecoopOrg.officeAddressMaps,
       'officeHours': 'Horario de atención',
       'officeHoursDetails': 'Lunes - Viernes: 9:00 - 18:00',
       'contactPhone': 'Teléfono',
@@ -9431,6 +9431,7 @@ class AppLocalizations {
       'loadingDocument': 'Cargando documento...',
       'reloadPreview': 'Recargar vista previa',
       'openInBrowser': 'Abrir en el navegador',
+      'documentReadAck': 'He leído el Documento Unico',
       'verifyIdentityTitle': 'Verificar identidad',
       'otpSentToPhoneAndEmail':
           'Recibirás el mismo código OTP por SMS al número',

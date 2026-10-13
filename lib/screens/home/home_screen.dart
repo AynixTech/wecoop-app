@@ -23,6 +23,7 @@ import '../servizi/supporto_contabile_screen.dart';
 import '../servizi/educazione_finanziaria_credito_screen.dart';
 import '../servizi/lavoro_orientamento_screen.dart';
 import '../servizi/studiare_in_italia_screen.dart';
+import '../../utils/app_navigation.dart';
 import '../../utils/member_service_navigation.dart';
 import '../../widgets/network_image_fallback.dart';
 import '../progetti/project_category_detail_screen.dart';
@@ -518,31 +519,44 @@ class _GreetingSection extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                decoration: BoxDecoration(
-                  color: scheme.onPrimary.withOpacity(0.15),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () =>
+                      AppNavigation.navigateToMainTab(MainTab.profilo),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: scheme.onPrimary.withOpacity(0.3)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      isLoggedIn ? Icons.verified_user : Icons.person_outline,
-                      color: scheme.onPrimary,
-                      size: 16,
+                  child: Ink(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
                     ),
-                    const SizedBox(width: 6),
-                    Text(
-                      isLoggedIn ? 'Area soci' : 'Guest',
-                      style: TextStyle(
-                        color: scheme.onPrimary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
+                    decoration: BoxDecoration(
+                      color: scheme.onPrimary.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: scheme.onPrimary.withOpacity(0.3),
                       ),
                     ),
-                  ],
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.person_outline,
+                          color: scheme.onPrimary,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          l10n.myProfile,
+                          style: TextStyle(
+                            color: scheme.onPrimary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ],

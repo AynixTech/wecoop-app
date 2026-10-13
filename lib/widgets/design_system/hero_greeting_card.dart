@@ -1,6 +1,6 @@
 /// WeCoop Design System — Hero greeting card
 ///
-/// Card di saluto in home: gradiente teal→verde, avatar, badge stato socio.
+/// Card di saluto in home: gradiente teal→verde, avatar, badge profilo.
 library;
 
 import 'package:flutter/material.dart';
@@ -22,7 +22,7 @@ class HeroGreetingCard extends StatelessWidget {
   /// Es. "Socio dal 2024 · Codice #4489".
   final String? subtitle;
 
-  /// Es. "Area Soci" / "Ospite".
+  /// Es. "Il mio profilo".
   final String? badgeLabel;
 
   /// Widget avatar (immagine). Se null, mostra [initials] o un'icona.

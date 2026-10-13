@@ -274,7 +274,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     return attive.where((richiesta) {
       final stato =
           (richiesta['stato'] ?? richiesta['status'] ?? '').toString();
-      return PracticeStatus.operational(stato) == _filtroStato;
+      return PracticeStatus.matchesAppFilter(stato, _filtroStato);
     }).toList();
   }
 
@@ -2271,28 +2271,24 @@ class _CalendarScreenState extends State<CalendarScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    // Spec V1.0: filtri operativi WECOOP (no Da firmare / Completato / Pagato).
+    // Spec V1.1: TUTTE | RICEVUTE | IN LAVORAZIONE | DA COMPLETARE
+    // (IN LAVORAZIONE raggruppa raccolta documenti + in lavorazione).
     final List<Map<String, String?>> filtriStato = [
-      {'label': l10n.all, 'value': null},
       {
-        'label': _trFallback(l10n, 'opsStatusRicevuta', 'Richiesta ricevuta'),
+        'label': _trFallback(l10n, 'requestsFilterAll', 'Tutte'),
+        'value': null,
+      },
+      {
+        'label': _trFallback(l10n, 'requestsFilterRicevute', 'Ricevute'),
         'value': PracticeOps.ricevuta,
       },
       {
-        'label': _trFallback(
-          l10n,
-          'opsStatusRaccoltaDocumenti',
-          'In raccolta documenti',
-        ),
-        'value': PracticeOps.raccoltaDocumenti,
+        'label': _trFallback(l10n, 'requestsFilterInLavorazione', 'In lavorazione'),
+        'value': PracticeOps.filterInLavorazione,
       },
       {
-        'label': _trFallback(l10n, 'opsStatusInLavorazione', 'In lavorazione'),
-        'value': PracticeOps.inLavorazione,
-      },
-      {
-        'label': _trFallback(l10n, 'opsStatusAttesaUtente', 'In attesa utente'),
-        'value': PracticeOps.attesaUtente,
+        'label': _trFallback(l10n, 'requestsFilterDaCompletare', 'Da completare'),
+        'value': PracticeOps.filterDaCompletare,
       },
     ];
 
@@ -2375,7 +2371,13 @@ class _CalendarScreenState extends State<CalendarScreen>
                 Icon(Icons.inbox, size: 64, color: Colors.grey.shade400),
                 const SizedBox(height: 16),
                 Text(
-                  AppLocalizations.of(context)!.noRequestsFound,
+                  _filtroStato == null
+                      ? AppLocalizations.of(context)!.noRequestsFound
+                      : _trFallback(
+                          AppLocalizations.of(context)!,
+                          'noRequestsInCategory',
+                          'Nessuna richiesta in questa categoria',
+                        ),
                   style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
                 ),
               ],

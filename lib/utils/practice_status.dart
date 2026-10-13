@@ -3,13 +3,19 @@ import 'package:flutter/material.dart';
 import '../services/app_localizations.dart';
 import '../theme/theme.dart';
 
-/// Stati operativi visibili all'utente (spec V1.0 Lizandro).
+/// Stati operativi visibili all'utente (spec V1.0 / filtri V1.1 Lizandro).
 /// Separati dallo stato economico (pagamento).
 abstract final class PracticeOps {
   static const String ricevuta = 'ricevuta';
   static const String raccoltaDocumenti = 'raccolta_documenti';
   static const String inLavorazione = 'in_lavorazione';
   static const String attesaUtente = 'attesa_utente';
+
+  /// Valore chip APP V1.1: raggruppa raccolta documenti + in lavorazione.
+  static const String filterInLavorazione = 'filtro_in_lavorazione';
+
+  /// Valore chip APP V1.1 «Da completare» (= attesa utente).
+  static const String filterDaCompletare = attesaUtente;
 
   static const List<String> filterValues = [
     ricevuta,
@@ -132,6 +138,20 @@ abstract final class PracticeStatus {
         }
         return PracticeOps.inLavorazione;
     }
+  }
+
+  /// Match chip filtri APP V1.1 (TUTTE / RICEVUTE / IN LAVORAZIONE / DA COMPLETARE).
+  /// [filter] null = Tutte; [PracticeOps.filterInLavorazione] include
+  /// raccolta documenti + in lavorazione; [PracticeOps.filterDaCompletare]
+  /// = attesa utente.
+  static bool matchesAppFilter(String? stato, String? filter) {
+    if (filter == null || filter.isEmpty) return true;
+    final ops = operational(stato);
+    if (filter == PracticeOps.filterInLavorazione) {
+      return ops == PracticeOps.raccoltaDocumenti ||
+          ops == PracticeOps.inLavorazione;
+    }
+    return ops == filter;
   }
 
   static String operationalLabel(AppLocalizations l10n, String? stato) {

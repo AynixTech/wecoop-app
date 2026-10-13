@@ -75,7 +75,7 @@ abstract final class AppColors {
   // --------------------------------------------------------- overlay/vetro
   /// Chip su AppBar teal (bianco 15%).
   static const Color glassLight = Color(0x26FFFFFF); // ~15%
-  /// Badge "Area soci" su hero (bianco 20%).
+  /// Badge hero (es. "Il mio profilo") su gradiente (bianco 20%).
   static const Color glassBadge = Color(0x33FFFFFF); // ~20%
 
   // ----------------------------------------------------------- gradienti

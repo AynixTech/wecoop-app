@@ -70,6 +70,10 @@ class ContenutiService {
     }
   }
 
+  /// Nomi partner commerciali che non devono mai apparire come Partner Accademici
+  /// (anche se in DB risultano erroneamente `tipo=accademico`).
+  static const _partnerAccademiciEsclusi = {'aynix', 'kinti'};
+
   /// Recupera i Partner Accademici (università partner WECOOP) pubblicati.
   Future<List<Partner>> getPartnerAccademici({int perPage = 50}) async {
     final url = Uri.parse('$wecoopApiUrl/partners?tipo=accademico&per_page=$perPage');
@@ -79,6 +83,11 @@ class ContenutiService {
         final List<dynamic> rawData = json.decode(response.body);
         return rawData
             .map((json) => Partner.fromJson(json as Map<String, dynamic>))
+            .where((p) {
+              final nome = p.nome.trim().toLowerCase();
+              return nome.isNotEmpty &&
+                  !_partnerAccademiciEsclusi.contains(nome);
+            })
             .toList();
       } else {
         throw Exception('Errore Partner Accademici: ${response.statusCode}');

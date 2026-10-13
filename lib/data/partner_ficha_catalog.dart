@@ -55,25 +55,36 @@ class PartnerFichaLocale {
 
 class PartnerFicha {
   final String slug;
+  /// Alias aggiuntivi sul nome partner API (es. «Società Umanitaria»).
+  final List<String> aliases;
   final String coverAsset;
   final Map<String, PartnerFichaLocale> byLang;
 
   const PartnerFicha({
     required this.slug,
+    this.aliases = const [],
     required this.coverAsset,
     required this.byLang,
   });
 
   PartnerFichaLocale localeFor(String lang) =>
       byLang[lang] ?? byLang['en'] ?? byLang['it']!;
+
+  bool matchesName(String nome) {
+    final n = nome.trim().toLowerCase();
+    if (n.isEmpty) return false;
+    if (n.contains(slug)) return true;
+    for (final a in aliases) {
+      if (n.contains(a.toLowerCase())) return true;
+    }
+    return false;
+  }
 }
 
-/// Match per nome partner API (case-insensitive, contiene lo slug).
+/// Match per nome partner API (case-insensitive, slug o alias).
 PartnerFicha? fichaForPartnerName(String nome) {
-  final n = nome.trim().toLowerCase();
-  if (n.isEmpty) return null;
   for (final f in _catalog) {
-    if (n.contains(f.slug)) return f;
+    if (f.matchesName(nome)) return f;
   }
   return null;
 }
@@ -82,6 +93,7 @@ const _catalog = <PartnerFicha>[_uniuma];
 
 const _uniuma = PartnerFicha(
   slug: 'uniuma',
+  aliases: ['società umanitaria', 'societa umanitaria', 'umanitaria', 'ssml'],
   coverAsset: 'assets/images/partners/uniuma_cover.jpg',
   byLang: {
     'es': PartnerFichaLocale(

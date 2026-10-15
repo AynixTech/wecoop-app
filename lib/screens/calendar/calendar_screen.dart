@@ -2271,7 +2271,7 @@ class _CalendarScreenState extends State<CalendarScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    // Spec V1.1: TUTTE | RICEVUTE | IN LAVORAZIONE | DA COMPLETARE
+    // Spec V1.1: TUTTE | INVIATE | IN LAVORAZIONE | DA COMPLETARE
     // (IN LAVORAZIONE raggruppa raccolta documenti + in lavorazione).
     final List<Map<String, String?>> filtriStato = [
       {
@@ -2279,7 +2279,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         'value': null,
       },
       {
-        'label': _trFallback(l10n, 'requestsFilterRicevute', 'Ricevute'),
+        'label': _trFallback(l10n, 'requestsFilterRicevute', 'Inviate'),
         'value': PracticeOps.ricevuta,
       },
       {

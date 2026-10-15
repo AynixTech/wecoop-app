@@ -118,7 +118,10 @@ class _NotificheScreenState extends State<NotificheScreen> {
   }
 
   void _navigateFor(AppNotification n) {
+    // Mantieni tutto `n.data` (payment_id, status, …) e sovrascrivi solo
+    // i campi normalizzati usati dal router.
     AppNavigation.handleNotificationPayload({
+      ...n.data,
       'type': n.type,
       'screen': n.data['screen'] ?? n.type,
       'entity_type': n.entityType ?? n.data['entity_type'],
@@ -126,6 +129,8 @@ class _NotificheScreenState extends State<NotificheScreen> {
       'ticket_id': n.data['ticket_id'] ?? n.entityId,
       'request_id': n.data['request_id'] ?? n.entityId,
       'event_id': n.data['event_id'] ?? n.data['evento_id'],
+      if (n.data['payment_id'] != null) 'payment_id': n.data['payment_id'],
+      if (n.data['pagamento_id'] != null) 'pagamento_id': n.data['pagamento_id'],
     });
   }
 

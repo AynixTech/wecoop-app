@@ -30,6 +30,23 @@ abstract final class AppNavigation {
   static NavigatorState? get _navigator =>
       PushNotificationService.navigatorKey?.currentState;
 
+  /// Payload push/deep-link da riprendere dopo il login (es. richiesta pagamento).
+  static Map<String, dynamic>? _pendingAfterLogin;
+
+  /// Memorizza un intent di navigazione da eseguire dopo login riuscito.
+  static void queueAfterLogin(Map<String, dynamic> data) {
+    _pendingAfterLogin = Map<String, dynamic>.from(data);
+  }
+
+  /// Esegue (una volta) l'intent in coda post-login, se presente.
+  static void resumeAfterLogin() {
+    final pending = _pendingAfterLogin;
+    if (pending == null) return;
+    _pendingAfterLogin = null;
+    // Defer: dopo pushReplacementNamed('/home') il navigator deve stabilizzarsi.
+    Future.microtask(() => handleNotificationPayload(pending));
+  }
+
   static void navigateToMainTab(
     int index, {
     String? richiestaId,
@@ -119,7 +136,7 @@ abstract final class AppNavigation {
   }
 
   /// Apre la schermata di pagamento (stesso path dell'email deep link).
-  /// Richiede login; altrimenti porta al LoginScreen.
+  /// Richiede login; altrimenti porta al LoginScreen e riprende dopo l'accesso.
   static Future<void> navigateToPagamento({
     int? richiestaId,
     int? paymentId,
@@ -133,6 +150,12 @@ abstract final class AppNavigation {
 
     final loggedIn = await AuthHelper.isLoggedIn();
     if (!loggedIn) {
+      queueAfterLogin({
+        'type': 'payment',
+        'screen': 'payment',
+        if (richiestaId != null) 'request_id': richiestaId.toString(),
+        if (paymentId != null) 'payment_id': paymentId.toString(),
+      });
       navigator.push(
         MaterialPageRoute(builder: (_) => const LoginScreen()),
       );
@@ -220,6 +243,20 @@ abstract final class AppNavigation {
     final eventIdRaw = data['event_id'] ?? data['evento_id'];
     final eventId =
         eventIdRaw is int ? eventIdRaw : int.tryParse(eventIdRaw?.toString() ?? '');
+    final status = (data['status'] ?? data['stato'] ?? '').toString();
+
+    // Notifiche legacy type=status + awaiting_payment: apri il pagamento.
+    if (screen != 'payment' &&
+        status == 'awaiting_payment' &&
+        (requestId != null && requestId.isNotEmpty)) {
+      final paymentRaw =
+          (data['payment_id'] ?? data['pagamento_id'])?.toString();
+      navigateToPagamento(
+        richiestaId: int.tryParse(requestId),
+        paymentId: int.tryParse(paymentRaw ?? ''),
+      );
+      return;
+    }
 
     switch (screen) {
       case 'Notifications':

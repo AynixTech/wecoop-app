@@ -2032,22 +2032,38 @@ class _CvAiScreenState extends State<CvAiScreen> {
                         ?.toString()
                     : null)
                 : null;
-        final message =
+        final rawMessage =
             body is Map<String, dynamic>
                 ? (body['message']?.toString() ??
                     'Errore durante la generazione del CV')
                 : 'Errore durante la generazione del CV';
-        final supportHint = [
-          if (errorCode != null && errorCode.isNotEmpty) 'code: $errorCode',
-          if (requestId != null && requestId.isNotEmpty)
-            'requestId: $requestId',
-        ].join(' | ');
+        final msgLower = rawMessage.toLowerCase();
+        final isAuthError =
+            response.statusCode == 401 ||
+            response.statusCode == 403 ||
+            msgLower.contains('token') ||
+            msgLower.contains('authorization') ||
+            msgLower.contains('authenticated');
+        final message =
+            isAuthError
+                ? 'Sessione scaduta. Esci e rientra nell\'app, poi riprova.'
+                : rawMessage;
+        final supportHint =
+            isAuthError
+                ? ''
+                : [
+                  if (errorCode != null && errorCode.isNotEmpty)
+                    'code: $errorCode',
+                  if (requestId != null && requestId.isNotEmpty)
+                    'requestId: $requestId',
+                ].join(' | ');
         _logCvGeneration(
           'cv_generate_non_200_details',
           data: {
             'statusCode': response.statusCode,
             'requestId': requestId,
             'errorCode': errorCode,
+            'isAuthError': isAuthError,
             'bodySnippet': _bodySnippet(body),
           },
         );

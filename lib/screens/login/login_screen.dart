@@ -12,6 +12,7 @@ import 'package:wecoop_app/services/error_reporter.dart';
 import 'package:wecoop_app/services/push_notification_service.dart';
 import 'package:wecoop_app/screens/onboarding/first_access_screen.dart';
 import 'package:wecoop_app/screens/profilo/change_password_screen.dart';
+import 'package:wecoop_app/utils/app_navigation.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../widgets/language_selector.dart';
@@ -355,6 +356,8 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           } else {
             Navigator.pushReplacementNamed(context, '/home');
+            // Deep link / push pagamento interrotti dal login: riprendi dopo home.
+            AppNavigation.resumeAfterLogin();
           }
         }
       } else {

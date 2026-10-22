@@ -140,7 +140,7 @@ abstract final class PracticeStatus {
     }
   }
 
-  /// Match chip filtri APP V1.1 (TUTTE / RICEVUTE / IN LAVORAZIONE / DA COMPLETARE).
+  /// Match chip filtri APP V1.1 (TUTTE / INVIATE / IN LAVORAZIONE / DA COMPLETARE).
   /// [filter] null = Tutte; [PracticeOps.filterInLavorazione] include
   /// raccolta documenti + in lavorazione; [PracticeOps.filterDaCompletare]
   /// = attesa utente.
@@ -157,7 +157,7 @@ abstract final class PracticeStatus {
   static String operationalLabel(AppLocalizations l10n, String? stato) {
     switch (operational(stato)) {
       case PracticeOps.ricevuta:
-        return _tr(l10n, 'opsStatusRicevuta', 'Richiesta ricevuta');
+        return _tr(l10n, 'opsStatusRicevuta', 'In attesa di presa in carico');
       case PracticeOps.raccoltaDocumenti:
         return _tr(l10n, 'opsStatusRaccoltaDocumenti', 'In raccolta documenti');
       case PracticeOps.inLavorazione:

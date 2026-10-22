@@ -1957,7 +1957,7 @@ class _RichiestaFormScreenState extends State<RichiestaFormScreen> {
         // Aggiungi info pagamento se richiesto
         if (requiresPayment && importo != null) {
           message +=
-              '\n\n💰 ${l10n.paymentRequiredAmount}: €${importo.toStringAsFixed(2)} IVA inclusa';
+              '\n\n💰 ${l10n.paymentRequiredAmount}: €${importo.toStringAsFixed(2)} (totale da pagare)';
           message += '\n\n${l10n.canCompletePaymentFromRequests}';
         } else {
           message += '\n\n${l10n.willBeContactedByEmail}';

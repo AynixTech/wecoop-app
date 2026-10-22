@@ -1,11 +1,17 @@
-/// Anagrafica istituzionale WECOOP APS — unica fonte per sede, CF, RUNTS, contatti.
+/// Anagrafica istituzionale WECOOP APS — unica fonte per sede, CF, P.IVA, RUNTS, contatti.
 /// Allineata a Documento Unico V1.0 e Informativa Privacy GDPR V1.0 (Settembre 2026).
+///
+/// Solo dati identificativi: non attiva logiche IVA, fatturazione elettronica o bollo.
 class WecoopOrg {
   WecoopOrg._();
 
   static const String name = 'WECOOP APS';
   static const String codiceFiscale = '97977210158';
+  static const String partitaIva = '14933240963';
   static const String runts = 'n. 142852';
+  static const String ateco = '94.99.10';
+  /// Data inizio attività IVA (Agenzia delle Entrate), ISO.
+  static const String dataInizioIva = '2026-10-14';
   static const String sedeLegale =
       "Via Benefattori dell'Ospedale 3, 20159 Milano (MI)";
   static const String sedeOperativa = 'Via Populonia 8, Milano';
@@ -16,12 +22,13 @@ class WecoopOrg {
   static const String web = 'wecoop.org';
   static const String webUrl = 'https://wecoop.org';
 
-  /// Blocco "Versione app e fatturazione" (IT).
+  /// Blocco "Versione app e informazioni fiscali" (IT).
   static const String companyDetailsIt =
       '$name\n'
       'Sede legale: $sedeLegale\n'
       'Sede operativa / Sportello: $sedeOperativa\n'
       'Codice fiscale: $codiceFiscale\n'
+      'Partita IVA: $partitaIva\n'
       'RUNTS: $runts\n'
       'Tel.: $phoneDisplay\n'
       'E-mail: $email\n'
@@ -32,6 +39,7 @@ class WecoopOrg {
       'Registered office: $sedeLegale\n'
       'Operational office / Desk: $sedeOperativa\n'
       'Tax code: $codiceFiscale\n'
+      'VAT number: $partitaIva\n'
       'RUNTS: $runts\n'
       'Tel.: $phoneDisplay\n'
       'E-mail: $email\n'
@@ -42,6 +50,7 @@ class WecoopOrg {
       'Siège légal: $sedeLegale\n'
       'Siège opérationnel / Guichet: $sedeOperativa\n'
       'Code fiscal: $codiceFiscale\n'
+      'N° TVA: $partitaIva\n'
       'RUNTS: $runts\n'
       'Tél.: $phoneDisplay\n'
       'E-mail: $email\n'
@@ -52,6 +61,7 @@ class WecoopOrg {
       'Sede legal: $sedeLegale\n'
       'Sede operativa / Ventanilla: $sedeOperativa\n'
       'Código fiscal: $codiceFiscale\n'
+      'NIF/IVA: $partitaIva\n'
       'RUNTS: $runts\n'
       'Tel.: $phoneDisplay\n'
       'E-mail: $email\n'
@@ -62,6 +72,7 @@ class WecoopOrg {
       'المقر القانوني: $sedeLegale\n'
       'المقر التشغيلي / الشباك: $sedeOperativa\n'
       'الرمز الضريبي: $codiceFiscale\n'
+      'الرقم الضريبي (P.IVA): $partitaIva\n'
       'RUNTS: $runts\n'
       'الهاتف: $phoneDisplay\n'
       'البريد: $email\n'
@@ -72,11 +83,13 @@ class WecoopOrg {
       '注册地址: $sedeLegale\n'
       '运营地址 / 柜台: $sedeOperativa\n'
       '税号: $codiceFiscale\n'
+      '增值税号 (P.IVA): $partitaIva\n'
       'RUNTS: $runts\n'
       '电话: $phoneDisplay\n'
       '邮箱: $email\n'
       '网站: $web';
 
+  /// Riga soggetto emittente in UI pagamento (non genera PDF ricevuta).
   static const String paymentFooterCf =
-      '$name · Codice fiscale $codiceFiscale';
+      '$name · Codice fiscale $codiceFiscale · P.IVA $partitaIva';
 }

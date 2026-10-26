@@ -7,7 +7,7 @@ import '../../services/app_localizations.dart';
 import '../../services/lavoro_service.dart';
 import '../../services/secure_storage_service.dart';
 import '../../widgets/whatsapp_contact_button.dart';
-import 'cv_ai_screen.dart';
+import '../cv/i_miei_curriculum_screen.dart';
 
 class LavoroOrientamentoScreen extends StatefulWidget {
   const LavoroOrientamentoScreen({super.key});
@@ -122,7 +122,7 @@ class _LavoroOrientamentoScreenState extends State<LavoroOrientamentoScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const CvAiScreen(),
+                        builder: (context) => const IMieiCurriculumScreen(),
                       ),
                     );
                   },
@@ -178,7 +178,7 @@ class _LavoroOrientamentoScreenState extends State<LavoroOrientamentoScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const CvAiScreen()),
+                  MaterialPageRoute(builder: (context) => const IMieiCurriculumScreen()),
                 );
               },
             ),

@@ -25,6 +25,7 @@ import '../../services/socio_service.dart';
 import '../../services/user_avatar_store.dart';
 import '../../services/push_notification_service.dart';
 import '../../models/evento_model.dart';
+import '../cv/i_miei_curriculum_screen.dart';
 import '../eventi/evento_detail_screen.dart';
 import 'completa_profilo_screen.dart';
 import 'documenti_screen.dart';
@@ -1161,6 +1162,24 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const StoricoPraticheScreen(),
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 20),
+
+            _buildActionCard(
+              context: context,
+              icon: Icons.description_outlined,
+              accentColor: scheme.primary,
+              title: 'I miei Curriculum',
+              subtitle: 'Crea, aggiorna e scarica i tuoi CV',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const IMieiCurriculumScreen(),
                   ),
                 );
               },

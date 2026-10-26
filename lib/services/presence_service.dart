@@ -97,6 +97,8 @@ class PresenceService {
       'DecretoFlussiScreen': 'Decreto Flussi',
       'CompletaProfiloScreen': 'Completa profilo',
       'CvAiScreen': 'CV AI',
+      'IMieiCurriculumScreen': 'I miei Curriculum',
+      'CvEditorScreen': 'Compilazione CV',
       'ChatbotAssistenzaScreen': 'Assistenza chatbot',
       'OfferteLavoroScreen': 'Offerte di lavoro',
       'SupportoContabileScreen': 'Supporto contabile',

@@ -119,15 +119,16 @@ bool isUniumaPartnerName(String? nome) {
   return fichaForPartnerName(nome)?.slug == 'uniuma';
 }
 
+/// Tutte le voci (intestazioni + opzioni) per il menu a tendina UNIUMA.
 List<OffertaFormativa> uniumaOfferteAsFormative({
   required int partnerId,
   required String partnerNome,
 }) {
   var i = 0;
-  return uniumaOrientacionPrograms.where((p) => p.selectable).map((p) {
+  return uniumaOrientacionPrograms.map((p) {
     i += 1;
     return OffertaFormativa(
-      id: -1000 - i,
+      id: p.selectable ? (-1000 - i) : (-2000 - i),
       titolo: p.titolo,
       descrizione: p.codice,
       partnerId: partnerId,
@@ -142,6 +143,9 @@ List<OffertaFormativa> uniumaOfferteAsFormative({
     );
   }).toList();
 }
+
+bool isUniumaProgramHeader(OffertaFormativa o) =>
+    o.durata == 'header' || o.linkInfo.startsWith('hdr_');
 
 UniumaProgramOption? uniumaOptionForOfferta(OffertaFormativa? o) {
   if (o == null) return null;

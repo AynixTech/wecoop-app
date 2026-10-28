@@ -1310,7 +1310,9 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
 
   Future<void> _submit() async {
     final l10n = AppLocalizations.of(context)!;
-    if (_isUniuma && _selectedProgram == null) {
+    if (_isUniuma &&
+        (_selectedProgram == null ||
+            isUniumaProgramHeader(_selectedProgram!))) {
       setState(() => _programError = 'Selecciona un programa o «Aún no lo sé».');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(_programError!)),
@@ -1505,23 +1507,41 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                       ),
                     ),
                     ..._offerte.map(
-                      (o) => DropdownMenuItem<OffertaFormativa?>(
-                        value: o,
-                        child: Text(
-                          o.categoria.isNotEmpty
-                              ? '${o.titolo}'
-                              : o.titolo,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
+                      (o) {
+                        final header = _isUniuma && isUniumaProgramHeader(o);
+                        return DropdownMenuItem<OffertaFormativa?>(
+                          value: o,
+                          enabled: !header,
+                          child: Text(
+                            o.titolo,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: header ? 3 : 2,
+                            style: TextStyle(
+                              fontWeight:
+                                  header ? FontWeight.w700 : FontWeight.w400,
+                              fontSize: header ? 12 : 14,
+                              color: header
+                                  ? AppColors.textSecondary
+                                  : AppColors.textPrimary,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                   onChanged: _loadingOfferte
                       ? null
-                      : (v) => setState(() {
+                      : (v) {
+                          if (v != null &&
+                              _isUniuma &&
+                              isUniumaProgramHeader(v)) {
+                            return;
+                          }
+                          setState(() {
                             _selectedProgram = v;
                             _programError = null;
-                          }),
+                          });
+                        },
                 ),
                 if (_isUniuma) ...[
                   const SizedBox(height: 18),

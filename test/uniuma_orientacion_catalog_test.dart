@@ -11,4 +11,10 @@ void main() {
     expect(isUniumaPartnerName('Società Umanitaria'), isTrue);
     expect(isUniumaPartnerName('Altro Partner'), isFalse);
   });
+
+  test('embedded offerte include category headers', () {
+    final offerte = uniumaOfferteAsFormative(partnerId: 1, partnerNome: 'UNIUMA');
+    expect(offerte.length, uniumaOrientacionPrograms.length);
+    expect(offerte.where((o) => isUniumaProgramHeader(o)).length, 3);
+  });
 }

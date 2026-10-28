@@ -1,0 +1,57 @@
+# Dispatched by Anthony Dev Hub on «Aprobar release».
+# Secret required: PLAY_PUBLISHER_JSON (Play service account JSON).
+# iOS store upload stays on the Mac runner webhook (signing + AuthKey.p8).
+
+name: Store production (Hub)
+
+on:
+  workflow_dispatch:
+    inputs:
+      track:
+        description: Play track
+        required: false
+        default: production
+      version:
+        description: Marketing version (X.Y.Z)
+        required: false
+        default: ""
+      build:
+        description: Build number
+        required: false
+        default: ""
+      source:
+        description: Trigger source
+        required: false
+        default: anthony-dev-hub
+
+jobs:
+  android-play:
+    name: Android → Play production
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Pub get
+        run: flutter pub get
+      - name: Build AAB
+        run: flutter build appbundle --release
+      - name: Upload to Play (production)
+        env:
+          PLAY_PUBLISHER_JSON: ${{ secrets.PLAY_PUBLISHER_JSON }}
+        run: |
+          if [ -z "$PLAY_PUBLISHER_JSON" ]; then
+            echo "::error::Missing PLAY_PUBLISHER_JSON secret — add it in repo Settings → Secrets"
+            exit 1
+          fi
+          mkdir -p "$HOME/.wecoop"
+          printf '%s' "$PLAY_PUBLISHER_JSON" > "$HOME/.wecoop/play-publisher.json"
+          chmod 600 "$HOME/.wecoop/play-publisher.json"
+          pip3 install --user 'google-api-python-client>=2.0' 'google-auth>=2.0'
+          python3 tools/upload_aab.py \
+            --aab build/app/outputs/bundle/release/app-release.aab \
+            --track "${{ github.event.inputs.track || 'production' }}" \
+            --status completed \
+            --notes "WeCoop ${{ github.event.inputs.version }}+${{ github.event.inputs.build }} (Hub ${{ github.event.inputs.source }})"

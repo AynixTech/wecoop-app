@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../data/partner_ficha_catalog.dart';
+import '../../../data/uniuma_orientacion_catalog.dart';
 import '../../../models/offerta_formativa_model.dart';
 import '../../../models/partner_dettaglio_model.dart';
 import '../../../models/partner_model.dart';
@@ -1201,16 +1202,22 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
   final _helpCtrl = TextEditingController();
   OffertaFormativa? _selectedProgram;
   List<OffertaFormativa> _offerte = [];
+  List<PartnerMedia> _media = [];
   bool _privacy = false;
   bool _sending = false;
   bool _loadingOfferte = false;
+  String? _programError;
+
+  bool get _isUniuma => isUniumaPartnerName(widget.partner?.nome);
 
   @override
   void initState() {
     super.initState();
     _offerte = List.of(widget.offerte);
-    if (_offerte.isEmpty && widget.partner != null) {
+    if (widget.partner != null) {
       _loadOfferte();
+    } else if (_isUniuma && _offerte.isEmpty) {
+      _offerte = uniumaOfferteAsFormative(partnerId: 0, partnerNome: 'UNIUMA');
     }
   }
 
@@ -1219,14 +1226,79 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
     try {
       final d = await widget.contenutiService
           .getPartnerDettaglio(widget.partner!.id);
-      if (mounted) {
-        setState(() {
-          _offerte = d?.offerteFormative ?? const [];
-          _loadingOfferte = false;
-        });
+      if (!mounted) return;
+      var offerte = d?.offerteFormative ?? const <OffertaFormativa>[];
+      // API prevale; se vuota e partner UNIUMA → catalogo embedded.
+      if (offerte.isEmpty && _isUniuma) {
+        offerte = uniumaOfferteAsFormative(
+          partnerId: widget.partner!.id,
+          partnerNome: widget.partner!.nome,
+        );
       }
+      setState(() {
+        _offerte = offerte;
+        _media = d?.media ?? const [];
+        _loadingOfferte = false;
+      });
     } catch (_) {
-      if (mounted) setState(() => _loadingOfferte = false);
+      if (!mounted) return;
+      setState(() {
+        if (_isUniuma && _offerte.isEmpty) {
+          _offerte = uniumaOfferteAsFormative(
+            partnerId: widget.partner?.id ?? 0,
+            partnerNome: widget.partner?.nome ?? 'UNIUMA',
+          );
+        }
+        _loadingOfferte = false;
+      });
+    }
+  }
+
+  String? _brochureUrlForLang(String lang) {
+    PartnerMedia? match;
+    for (final m in _media) {
+      if (!m.isPdf) continue;
+      final t = '${m.tipo} ${m.titolo} ${m.descrizione}'.toLowerCase();
+      if (lang == 'es' &&
+          (t.contains('es') || t.contains('espa') || t.contains('spanish'))) {
+        match = m;
+        break;
+      }
+      if (lang == 'en' && (t.contains('en') || t.contains('english'))) {
+        match = m;
+        break;
+      }
+      if (lang == 'it' && (t.contains('it') || t.contains('ital'))) {
+        match = m;
+        break;
+      }
+    }
+    if (match != null && match.url.isNotEmpty) return match.url;
+    if (lang == 'es' && _isUniuma) return kUniumaBrochureEsUrl;
+    return null;
+  }
+
+  Future<void> _openBrochure(String lang) async {
+    final url = _brochureUrlForLang(lang);
+    if (url == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Brochure próximamente en este idioma.'),
+        ),
+      );
+      return;
+    }
+    final ok = await launchUrl(
+      Uri.parse(url),
+      mode: LaunchMode.externalApplication,
+    );
+    if (!ok && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No se pudo abrir la brochure. Inténtalo de nuevo.'),
+        ),
+      );
     }
   }
 
@@ -1238,14 +1310,25 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
 
   Future<void> _submit() async {
     final l10n = AppLocalizations.of(context)!;
+    if (_isUniuma && _selectedProgram == null) {
+      setState(() => _programError = 'Selecciona un programa o «Aún no lo sé».');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_programError!)),
+      );
+      return;
+    }
     if (!_privacy) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.translate('privacyRequired'))),
       );
       return;
     }
-    setState(() => _sending = true);
+    setState(() {
+      _sending = true;
+      _programError = null;
+    });
     try {
+      final opt = uniumaOptionForOfferta(_selectedProgram);
       final res = await SocioService.inviaRichiestaServizio(
         servizio: 'study_italy_service',
         categoria: 'studiare_in_italia',
@@ -1254,8 +1337,13 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
           if (widget.partner != null) 'partner_id': widget.partner!.id,
           if (widget.partner != null) 'partner_nome': widget.partner!.nome,
           if (_selectedProgram != null) ...{
-            'programma_id': _selectedProgram!.id,
+            if (_selectedProgram!.id > 0) 'programma_id': _selectedProgram!.id,
             'programma_titolo': _selectedProgram!.titolo,
+            if (opt != null) ...{
+              'programma_codice': opt.codice,
+              'programma_categoria': opt.categoria,
+              'programma_livello': opt.livello,
+            },
           },
           'messaggio': _helpCtrl.text.trim(),
           'privacy_accepted': true,
@@ -1367,7 +1455,9 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                 ],
                 const SizedBox(height: 20),
                 Text(
-                  l10n.translate('partnerAccademiciProgramLabel'),
+                  _isUniuma
+                      ? 'Programa de interés'
+                      : l10n.translate('partnerAccademiciProgramLabel'),
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
@@ -1382,6 +1472,7 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                     filled: true,
                     fillColor: AppColors.surface,
                     hintText: l10n.translate('partnerAccademiciProgramHint'),
+                    errorText: _programError,
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 14),
                     border: OutlineInputBorder(
@@ -1393,6 +1484,18 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                       borderSide: const BorderSide(color: Color(0xFFE5EAF0)),
                     ),
                   ),
+                  selectedItemBuilder: (context) {
+                    return [
+                      Text(
+                        l10n.translate('partnerAccademiciProgramHint'),
+                        style: const TextStyle(color: AppColors.textMuted),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      ..._offerte.map(
+                        (o) => Text(o.titolo, overflow: TextOverflow.ellipsis),
+                      ),
+                    ];
+                  },
                   items: [
                     DropdownMenuItem<OffertaFormativa?>(
                       value: null,
@@ -1404,14 +1507,77 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                     ..._offerte.map(
                       (o) => DropdownMenuItem<OffertaFormativa?>(
                         value: o,
-                        child: Text(o.titolo, overflow: TextOverflow.ellipsis),
+                        child: Text(
+                          o.categoria.isNotEmpty
+                              ? '${o.titolo}'
+                              : o.titolo,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
                   ],
                   onChanged: _loadingOfferte
                       ? null
-                      : (v) => setState(() => _selectedProgram = v),
+                      : (v) => setState(() {
+                            _selectedProgram = v;
+                            _programError = null;
+                          }),
                 ),
+                if (_isUniuma) ...[
+                  const SizedBox(height: 18),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: const Color(0xFFE5EAF0)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Conoce el programa completo',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        const Text(
+                          'Consulta y descarga la brochure con todos los itinerarios de especialización.',
+                          style: TextStyle(
+                            fontSize: 13,
+                            height: 1.4,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            OutlinedButton.icon(
+                              onPressed: () => _openBrochure('es'),
+                              icon: const Icon(Icons.picture_as_pdf_outlined,
+                                  size: 18),
+                              label: const Text('Consultar / Descargar (ES)'),
+                            ),
+                            OutlinedButton(
+                              onPressed: null,
+                              child: const Text('English · Próximamente'),
+                            ),
+                            OutlinedButton(
+                              onPressed: null,
+                              child: const Text('Italiano · Próximamente'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 18),
                 Text(
                   l10n.translate('partnerAccademiciHelpLabel'),

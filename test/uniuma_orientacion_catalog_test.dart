@@ -1,0 +1,14 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:wecoop_app/data/uniuma_orientacion_catalog.dart';
+
+void main() {
+  test('UNIUMA catalog has 10 selectable options', () {
+    final selectable =
+        uniumaOrientacionPrograms.where((p) => p.selectable).toList();
+    expect(selectable.length, 10);
+    expect(selectable.first.codice, 'undecided');
+    expect(selectable.last.codice, 'master_criminologia');
+    expect(isUniumaPartnerName('Società Umanitaria'), isTrue);
+    expect(isUniumaPartnerName('Altro Partner'), isFalse);
+  });
+}

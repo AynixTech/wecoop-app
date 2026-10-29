@@ -5,6 +5,7 @@ import '../screens/servizi/decreto_flussi_screen.dart';
 import '../screens/servizi/educazione_finanziaria_credito_screen.dart';
 import '../screens/servizi/lavoro_orientamento_screen.dart';
 import '../screens/servizi/mediazione_fiscale_screen.dart';
+import '../screens/servizi/mediazione_linguistica_screen.dart';
 import '../screens/servizi/studiare_in_italia_screen.dart';
 import '../screens/servizi/supporto_contabile_screen.dart';
 import '../services/app_localizations.dart';
@@ -72,6 +73,18 @@ ServiceNavigationTarget? resolveServiceNavigation({
     return ServiceNavigationTarget(
       destination: const DecretoFlussiScreen(),
       serviceName: l10n.translate('decretoFlussi'),
+    );
+  }
+  if (c == 'pighetti_mediazione_domestica') {
+    return ServiceNavigationTarget(
+      destination: const MediazioneLinguisticaScreen(),
+      serviceName: l10n.translate('mediazioneLinguistica'),
+    );
+  }
+  if (c == 'pighetti_pacchetto_lavoratore' || m == 'pratiche_caf_patronato') {
+    return ServiceNavigationTarget(
+      destination: const MediazioneFiscaleScreen(),
+      serviceName: l10n.translate('fiscalServices'),
     );
   }
   if (m == 'vivere_in_italia' ||

@@ -41,9 +41,8 @@ class ErrorReporter {
     FlutterError.onError = (FlutterErrorDetails details) {
       previousOnError?.call(details);
       final message = details.exceptionAsString();
-      if (message.contains('Notifications are not allowed for this application') ||
-          message.contains('firebase_messaging/unknown')) {
-        AppLogger.d('⏭️ Skip report FlutterError push permission: $message');
+      if (_shouldSkipReport(message)) {
+        AppLogger.d('⏭️ Skip report FlutterError: $message');
         return;
       }
       report(
@@ -58,11 +57,8 @@ class ErrorReporter {
     // Errori async non gestiti a livello di piattaforma.
     PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
       final message = error.toString();
-      // Permessi push negati / non disponibili: gestiti in PushNotificationService;
-      // se arrivano comunque qui, non riempire Errori App.
-      if (message.contains('Notifications are not allowed for this application') ||
-          message.contains('firebase_messaging/unknown')) {
-        AppLogger.d('⏭️ Skip report crash push permission: $message');
+      if (_shouldSkipReport(message)) {
+        AppLogger.d('⏭️ Skip report crash: $message');
         return true;
       }
       report(
@@ -72,6 +68,29 @@ class ErrorReporter {
       );
       return true;
     };
+  }
+
+  /// Rumore noto: permessi push iOS / immagini Spaces 403 (avatar privati legacy).
+  static bool _shouldSkipReport(String message) {
+    if (message.contains('Notifications are not allowed for this application') ||
+        message.contains('firebase_messaging/unknown')) {
+      return true;
+    }
+    // NetworkImage / CachedNetworkImage su asset Spaces non leggibili.
+    final lower = message.toLowerCase();
+    final isImageHttpFail =
+        lower.contains('http request failed') ||
+        lower.contains('httpexception') ||
+        lower.contains('invalid statuscode');
+    final isSpacesAsset =
+        lower.contains('digitaloceanspaces.com') ||
+        lower.contains('/avatars/');
+    if (isImageHttpFail && isSpacesAsset) return true;
+    if (isImageHttpFail &&
+        (lower.contains('statuscode: 403') || lower.contains('statuscode: 404'))) {
+      return true;
+    }
+    return false;
   }
 
   /// Overflow, assert ListTile/Material, ancestor dispose, push permission:

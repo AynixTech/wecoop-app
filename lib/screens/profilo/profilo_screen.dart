@@ -27,6 +27,7 @@ import '../../services/push_notification_service.dart';
 import '../../models/evento_model.dart';
 import '../cv/i_miei_curriculum_screen.dart';
 import '../eventi/evento_detail_screen.dart';
+import '../../widgets/safe_network_avatar.dart';
 import 'completa_profilo_screen.dart';
 import 'documenti_screen.dart';
 import 'mie_richieste_screen.dart';
@@ -1046,26 +1047,20 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                               _openImagePreview(currentAvatar);
                             }
                           },
-                          child: CircleAvatar(
+                          child: SafeNetworkAvatar(
                             radius: 34,
+                            imageUrl: avatarUrl,
                             backgroundColor: Colors.white.withOpacity(0.18),
-                            backgroundImage:
-                                (avatarUrl ?? '').trim().isNotEmpty
-                                    ? NetworkImage(avatarUrl!.trim())
-                                    : null,
-                            child:
-                                (avatarUrl ?? '').trim().isEmpty
-                                    ? Text(
-                                      displayUserName.isNotEmpty
-                                          ? displayUserName[0]
-                                          : '?',
-                                      style: const TextStyle(
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
-                                      ),
-                                    )
-                                    : null,
+                            placeholder: Text(
+                              displayUserName.isNotEmpty
+                                  ? displayUserName[0]
+                                  : '?',
+                              style: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
                         Positioned(

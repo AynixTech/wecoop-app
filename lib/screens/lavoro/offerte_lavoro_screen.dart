@@ -13,6 +13,7 @@ import 'package:wecoop_app/services/annunci_submission_service.dart';
 import 'package:wecoop_app/services/secure_storage_service.dart';
 import 'package:wecoop_app/utils/phone_prefixes.dart';
 import 'package:wecoop_app/utils/share_helper.dart';
+import 'package:wecoop_app/widgets/safe_network_avatar.dart';
 
 class _OfferteLavoroText {
   static const Map<String, Map<String, String>> _values = {
@@ -2528,21 +2529,18 @@ class _OfferteLavoroScreenState extends State<OfferteLavoroScreen>
     final initial =
         initialsSource.isNotEmpty ? initialsSource[0].toUpperCase() : '?';
 
-    final avatar = CircleAvatar(
+    final avatar = SafeNetworkAvatar(
       radius: radius,
+      imageUrl: avatarUrl,
       backgroundColor: const Color(0xFFEAF5F8),
-      backgroundImage: avatarUrl.isNotEmpty ? NetworkImage(avatarUrl) : null,
-      child:
-          avatarUrl.isEmpty
-              ? Text(
-                initial,
-                style: TextStyle(
-                  fontSize: radius * 0.8,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
-                ),
-              )
-              : null,
+      placeholder: Text(
+        initial,
+        style: TextStyle(
+          fontSize: radius * 0.8,
+          fontWeight: FontWeight.w700,
+          color: AppColors.primary,
+        ),
+      ),
     );
 
     if (avatarUrl.isEmpty) {
@@ -4383,21 +4381,18 @@ class _OffertaLavoroDetailScreen extends StatelessWidget {
     final initial =
         initialsSource.isNotEmpty ? initialsSource[0].toUpperCase() : '?';
 
-    final avatar = CircleAvatar(
+    final avatar = SafeNetworkAvatar(
       radius: radius,
+      imageUrl: avatarUrl,
       backgroundColor: const Color(0xFFEAF5F8),
-      backgroundImage: avatarUrl.isNotEmpty ? NetworkImage(avatarUrl) : null,
-      child:
-          avatarUrl.isEmpty
-              ? Text(
-                initial,
-                style: TextStyle(
-                  fontSize: radius * 0.8,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
-                ),
-              )
-              : null,
+      placeholder: Text(
+        initial,
+        style: TextStyle(
+          fontSize: radius * 0.8,
+          fontWeight: FontWeight.w700,
+          color: AppColors.primary,
+        ),
+      ),
     );
 
     if (avatarUrl.isEmpty) {

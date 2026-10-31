@@ -91,6 +91,48 @@ PartnerFicha? fichaForPartnerName(String nome) {
 
 const _catalog = <PartnerFicha>[_uniuma];
 
+const _uniumaDetailDescriptionEs =
+    'UNIUMA, la Escuela Superior de Mediadores Lingüísticos «P. M. Loria» de la histórica Società Umanitaria, ofrece formación universitaria en Milán y Génova.\n\n'
+    'Su oferta académica incluye un grado universitario trienal en Mediación Lingüística y Cultural, con diferentes itinerarios de especialización, y un Máster en Criminología y Psico-Sociología de la Desviación.\n\n'
+    'A través de WECOOP, puedes conocer sus programas, explorar tus oportunidades de estudio y solicitar orientación personalizada para dar el próximo paso en tu formación.';
+
+const _uniumaDetailDescriptionIt =
+    'UNIUMA, la Scuola Superiore di Mediazione Linguistica «P. M. Loria» della storica Società Umanitaria, offre formazione universitaria a Milano e Genova.\n\n'
+    'La sua offerta accademica comprende un corso di laurea triennale in Mediazione Linguistica e Culturale, con diversi itinerari di specializzazione, e un Master in Criminologia e Psico-Sociologia della Devianza.\n\n'
+    'Attraverso WECOOP, puoi conoscere i suoi programmi, esplorare le opportunità di studio e richiedere orientamento personalizzato per il prossimo passo nella tua formazione.';
+
+const _uniumaAdmissionCatalogEs =
+    'SEDES DE MILÁN Y GÉNOVA\n\n'
+    'ITINERARIOS DE ESPECIALIZACIÓN\n\n'
+    'DEPARTAMENTO DE HUMANIDADES\n'
+    '• CRIMINOLOGÍA Y PROTECCIÓN SOCIAL\n'
+    '• DIPLOMACIA INTERNACIONAL Y DERECHOS HUMANOS\n'
+    '• DISEÑO MULTICULTURAL\n\n'
+    'DEPARTAMENTO ECONÓMICO\n'
+    '• DISEÑO ARTÍSTICO (activo en la sede de Milán)\n'
+    '• GESTIÓN EMPRESARIAL (activo en la sede de Milán)\n'
+    '• MARKETING ÉTICO Y DESARROLLO DIGITAL (activo en la sede de Milán)\n'
+    '• GESTIÓN SOSTENIBLE DE LA MODA (activo en la sede de Génova)\n'
+    '• GESTIÓN PARA EL DISEÑO Y LA GESTIÓN MARÍTIMA, TURÍSTICA Y PORTUARIA (activo en la sede de Génova)\n\n'
+    'FORMACIÓN SUPERIOR DE POSGRADO – 60 CFU\n'
+    'Master en CRIMINOLOGÍA E PSICO-SOCIOLOGÍA DE LA DESVIACIÓN';
+
+const _uniumaAdmissionCatalogIt =
+    'SEDI DI MILANO E GENOVA\n\n'
+    'ITINERARI DI SPECIALIZZAZIONE\n\n'
+    'DIPARTIMENTO UMANISTICO\n'
+    '• CRIMINOLOGIA E TUTELA SOCIALE\n'
+    '• DIPLOMAZIA INTERNAZIONALE E DIRITTI UMANI\n'
+    '• DESIGN MULTICULTURALE\n\n'
+    'DIPARTIMENTO ECONOMICO\n'
+    '• DESIGN ARTISTICO (attivo nella sede di Milano)\n'
+    '• GESTIONE D\'IMPRESA (attivo nella sede di Milano)\n'
+    '• MARKETING ETICO E SVILUPPO DIGITALE (attivo nella sede di Milano)\n'
+    '• GESTIONE SOSTENIBILE DELLA MODA (attivo nella sede di Genova)\n'
+    '• GESTIONE PER IL DESIGN E LA GESTIONE MARITTIMA, TURISTICA E PORTUALE (attivo nella sede di Genova)\n\n'
+    'FORMAZIONE SUPERIORE DI POST LAUREA – 60 CFU\n'
+    'Master in CRIMINOLOGIA E PSICO-SOCIOLOGIA DELLA DEVIANZA';
+
 const _uniuma = PartnerFicha(
   slug: 'uniuma',
   aliases: ['società umanitaria', 'societa umanitaria', 'umanitaria', 'ssml'],
@@ -102,28 +144,13 @@ const _uniuma = PartnerFicha(
       affiliation: 'SSML «P. M. Loria» · Società Umanitaria',
       tags: ['Mediación lingüística', '3 años'],
       detailHeadline: 'Conecta lenguas, culturas y tu futuro.',
-      detailDescription:
-          'Formación superior en mediación lingüística y cultural, en el corazón de Milán.',
-      admissionIntro:
-          'El acceso y la documentación dependen del programa elegido y de tus estudios previos.',
+      detailDescription: _uniumaDetailDescriptionEs,
+      admissionIntro: '',
       admissionSections: [
         PartnerAdmissionSection(
-          titleKey: 'Cómo empezar',
-          stepsKeys: [
-            'Consulta el programa y su convocatoria vigente.',
-            'Solicita el encuentro con la dirección académica.',
-            'Confirma los requisitos y presenta la documentación solicitada.',
-          ],
-        ),
-        PartnerAdmissionSection(
-          titleKey: 'Documentación a preparar',
-          bodyKey:
-              'Como punto de partida, ten a mano tu documento de identidad y la información sobre tus estudios previos. La lista definitiva depende del programa y debe confirmarla UNIUMA.',
-        ),
-        PartnerAdmissionSection(
-          titleKey: '¿Tienes un título extranjero?',
-          bodyKey:
-              'Si tu título se obtuvo fuera de Italia, consulta con UNIUMA la documentación, las traducciones o el reconocimiento que puedan corresponder, además de los plazos de la convocatoria.',
+          titleKey:
+              'A. GRADO UNIVERSITARIO TRIENAL EN MEDIACIÓN LINGÜÍSTICA Y CULTURAL – 180 CFU',
+          bodyKey: _uniumaAdmissionCatalogEs,
         ),
       ],
       stats: [
@@ -137,28 +164,13 @@ const _uniuma = PartnerFicha(
       affiliation: 'SSML «P. M. Loria» · Società Umanitaria',
       tags: ['Mediazione linguistica', '3 anni'],
       detailHeadline: 'Collega lingue, culture e il tuo futuro.',
-      detailDescription:
-          'Formazione superiore in mediazione linguistica e culturale, nel cuore di Milano.',
-      admissionIntro:
-          'L’accesso e la documentazione dipendono dal percorso scelto e dai tuoi studi precedenti.',
+      detailDescription: _uniumaDetailDescriptionIt,
+      admissionIntro: '',
       admissionSections: [
         PartnerAdmissionSection(
-          titleKey: 'Come iniziare',
-          stepsKeys: [
-            'Consulta il percorso e il bando vigente.',
-            'Richiedi l’incontro con la direzione accademica.',
-            'Conferma i requisiti e presenta la documentazione richiesta.',
-          ],
-        ),
-        PartnerAdmissionSection(
-          titleKey: 'Documentazione da preparare',
-          bodyKey:
-              'Come punto di partenza, tieni a portata di mano il documento d’identità e le informazioni sui tuoi studi precedenti. L’elenco definitivo dipende dal percorso e va confermato con UNIUMA.',
-        ),
-        PartnerAdmissionSection(
-          titleKey: 'Hai un titolo estero?',
-          bodyKey:
-              'Se il tuo titolo è stato conseguito fuori dall’Italia, verifica con UNIUMA la documentazione, le traduzioni o il riconoscimento eventualmente richiesti, oltre alle scadenze del bando.',
+          titleKey:
+              'A. CORSO DI LAUREA TRIENNALE IN MEDIAZIONE LINGUISTICA E CULTURALE – 180 CFU',
+          bodyKey: _uniumaAdmissionCatalogIt,
         ),
       ],
       stats: [

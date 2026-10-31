@@ -2,6 +2,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:wecoop_app/data/uniuma_orientacion_catalog.dart';
 
 void main() {
+  test('UNIUMA brochure documenti prepends Italian PDF when missing', () {
+    final docs = uniumaBrochureDocumenti(const []);
+    expect(docs.length, 1);
+    expect(docs.first.titolo, contains('Italiano'));
+    expect(docs.first.url, startsWith(kUniumaAssetUrlPrefix));
+  });
+
   test('UNIUMA catalog has 10 selectable options', () {
     final selectable =
         uniumaOrientacionPrograms.where((p) => p.selectable).toList();

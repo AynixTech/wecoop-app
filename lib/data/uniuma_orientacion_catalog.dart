@@ -4,10 +4,43 @@
 library;
 
 import '../models/offerta_formativa_model.dart';
+import '../models/partner_model.dart';
 import 'partner_ficha_catalog.dart';
 
 const kUniumaBrochureEsUrl =
     'https://anthonydevhub.fra1.digitaloceanspaces.com/wecoop/uniuma/2026_brochure_es.pdf';
+
+/// Brochure ufficiale 2026–2027 in italiano (bundle app + URL CDN quando pubblicato).
+const kUniumaBrochureItAsset = 'assets/documents/uniuma_2026_brochure_it.pdf';
+const kUniumaBrochureItUrl =
+    'https://anthonydevhub.fra1.digitaloceanspaces.com/wecoop/uniuma/2026_brochure_it.pdf';
+
+/// Prefisso URL embedded in [PartnerMedia.url] per PDF in assets Flutter.
+const kUniumaAssetUrlPrefix = 'asset://';
+
+PartnerMedia uniumaBrochureItMedia({int ordine = 0}) => PartnerMedia(
+      id: -100,
+      tipo: 'brochure',
+      titolo: 'Brochure UNIUMA 2026–2027 (Italiano)',
+      descrizione: 'Brochure ufficiale accademica — IT',
+      url: '$kUniumaAssetUrlPrefix$kUniumaBrochureItAsset',
+      mime: 'application/pdf',
+      ordine: ordine,
+    );
+
+/// Documenti brochure UNIUMA: IT in testa, poi eventuali PDF da API.
+List<PartnerMedia> uniumaBrochureDocumenti(List<PartnerMedia> fromApi) {
+  final docs = fromApi.where((m) => m.isPdf).toList();
+  final hasIt = docs.any((m) {
+    final t = '${m.titolo} ${m.descrizione}'.toLowerCase();
+    return t.contains('ital') || t.contains(' it');
+  });
+  if (!hasIt) {
+    docs.insert(0, uniumaBrochureItMedia(ordine: 0));
+  }
+  docs.sort((a, b) => a.ordine.compareTo(b.ordine));
+  return docs;
+}
 
 class UniumaProgramOption {
   final String codice;

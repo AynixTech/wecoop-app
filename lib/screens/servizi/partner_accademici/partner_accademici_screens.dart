@@ -1,4 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../data/partner_ficha_catalog.dart';
@@ -11,6 +16,22 @@ import '../../../services/contenuti_service.dart';
 import '../../../services/socio_service.dart';
 import '../../../theme/app_colors.dart';
 import '../../../utils/share_helper.dart';
+
+Future<void> openPartnerMediaUrl(String url) async {
+  if (url.isEmpty) return;
+  if (url.startsWith(kUniumaAssetUrlPrefix)) {
+    final assetPath = url.substring(kUniumaAssetUrlPrefix.length);
+    final data = await rootBundle.load(assetPath);
+    final dir = await getTemporaryDirectory();
+    final file = File('${dir.path}/${assetPath.split('/').last}');
+    await file.writeAsBytes(
+      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+    );
+    await OpenFile.open(file.path);
+    return;
+  }
+  await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+}
 
 // ─────────────────────────────────────────────────────────────
 // TAB – Vetrina Partner Accademici (design Figma UNIUMA)
@@ -506,8 +527,7 @@ class _PartnerFichaScreenState extends State<PartnerFichaScreen> {
   }
 
   Future<void> _openMedia(String url) async {
-    if (url.isEmpty) return;
-    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    await openPartnerMediaUrl(url);
   }
 
   @override
@@ -517,6 +537,10 @@ class _PartnerFichaScreenState extends State<PartnerFichaScreen> {
     final ficha = fichaForPartnerName(widget.partner.nome);
     final loc = ficha?.localeFor(lang);
     final d = _dettaglio;
+    final isUniuma = isUniumaPartnerName(widget.partner.nome);
+    final brochureDocumenti = isUniuma
+        ? uniumaBrochureDocumenti(d?.documenti ?? const [])
+        : (d?.documenti ?? const []);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -768,7 +792,7 @@ class _PartnerFichaScreenState extends State<PartnerFichaScreen> {
                               ),
                             ],
 
-                            if (d != null && d.documenti.isNotEmpty) ...[
+                            if (brochureDocumenti.isNotEmpty) ...[
                               const SizedBox(height: 16),
                               Text(
                                 l10n.translate('partnerAccademiciBrochure'),
@@ -778,7 +802,7 @@ class _PartnerFichaScreenState extends State<PartnerFichaScreen> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              ...d.documenti.map(
+                              ...brochureDocumenti.map(
                                 (m) => Card(
                                   child: ListTile(
                                     leading: const Icon(
@@ -1037,15 +1061,17 @@ class _PartnerAmmissioneScreenState extends State<PartnerAmmissioneScreen> {
                               color: AppColors.textPrimary,
                             ),
                           ),
-                          const SizedBox(height: 6),
-                          Text(
-                            loc.admissionIntro,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              height: 1.45,
-                              color: AppColors.textSecondary,
+                          if (loc.admissionIntro.isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            Text(
+                              loc.admissionIntro,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                height: 1.45,
+                                color: AppColors.textSecondary,
+                              ),
                             ),
-                          ),
+                          ],
                         ],
                       ),
                     ),
@@ -1274,6 +1300,9 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
       }
     }
     if (match != null && match.url.isNotEmpty) return match.url;
+    if (lang == 'it' && _isUniuma) {
+      return '$kUniumaAssetUrlPrefix$kUniumaBrochureItAsset';
+    }
     if (lang == 'es' && _isUniuma) return kUniumaBrochureEsUrl;
     return null;
   }
@@ -1289,11 +1318,10 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
       );
       return;
     }
-    final ok = await launchUrl(
-      Uri.parse(url),
-      mode: LaunchMode.externalApplication,
-    );
-    if (!ok && mounted) {
+    try {
+      await openPartnerMediaUrl(url);
+    } catch (_) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('No se pudo abrir la brochure. Inténtalo de nuevo.'),
@@ -1579,6 +1607,12 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                           runSpacing: 8,
                           children: [
                             OutlinedButton.icon(
+                              onPressed: () => _openBrochure('it'),
+                              icon: const Icon(Icons.picture_as_pdf_outlined,
+                                  size: 18),
+                              label: const Text('Consultar / Descargar (IT)'),
+                            ),
+                            OutlinedButton.icon(
                               onPressed: () => _openBrochure('es'),
                               icon: const Icon(Icons.picture_as_pdf_outlined,
                                   size: 18),
@@ -1587,10 +1621,6 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                             OutlinedButton(
                               onPressed: null,
                               child: const Text('English · Próximamente'),
-                            ),
-                            OutlinedButton(
-                              onPressed: null,
-                              child: const Text('Italiano · Próximamente'),
                             ),
                           ],
                         ),

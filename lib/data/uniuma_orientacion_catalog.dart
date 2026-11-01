@@ -180,6 +180,17 @@ List<OffertaFormativa> uniumaOfferteAsFormative({
 bool isUniumaProgramHeader(OffertaFormativa o) =>
     o.durata == 'header' || o.linkInfo.startsWith('hdr_');
 
+/// True solo per URL http(s). I [linkInfo] UNIUMA sono codici (`hdr_hum`,
+/// `undecided`, …) e non vanno aperti con url_launcher.
+bool isLaunchableHttpUrl(String? value) {
+  if (value == null) return false;
+  final s = value.trim();
+  if (s.isEmpty) return false;
+  final uri = Uri.tryParse(s);
+  if (uri == null || !uri.hasScheme) return false;
+  return uri.isScheme('http') || uri.isScheme('https');
+}
+
 UniumaProgramOption? uniumaOptionForOfferta(OffertaFormativa? o) {
   if (o == null) return null;
   final code = o.linkInfo.isNotEmpty ? o.linkInfo : o.descrizione;

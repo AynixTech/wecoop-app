@@ -30,7 +30,15 @@ Future<void> openPartnerMediaUrl(String url) async {
     await OpenFile.open(file.path);
     return;
   }
-  await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+  if (!isLaunchableHttpUrl(url)) return;
+  final uri = Uri.parse(url.trim());
+  try {
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  } catch (_) {
+    // Evita crash PlatformException(ACTIVITY_NOT_FOUND) sul reporter.
+  }
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -747,16 +755,19 @@ class _PartnerFichaScreenState extends State<PartnerFichaScreen> {
                                 ),
                               ),
                               const SizedBox(height: 10),
-                              ...d.offerteFormative.map(
+                              ...(isUniuma
+                                      ? d.offerteFormative.where(
+                                          (o) => !isUniumaProgramHeader(o))
+                                      : d.offerteFormative)
+                                  .map(
                                 (o) => Padding(
                                   padding: const EdgeInsets.only(bottom: 10),
                                   child: _OffertaMiniCard(
                                     offerta: o,
                                     onInfo: () {
-                                      if (o.linkInfo.isNotEmpty) {
-                                        launchUrl(Uri.parse(o.linkInfo),
-                                            mode:
-                                                LaunchMode.externalApplication);
+                                      // UNIUMA: linkInfo = codice programma, non URL.
+                                      if (isLaunchableHttpUrl(o.linkInfo)) {
+                                        openPartnerMediaUrl(o.linkInfo);
                                       } else {
                                         _openOrientazione();
                                       }

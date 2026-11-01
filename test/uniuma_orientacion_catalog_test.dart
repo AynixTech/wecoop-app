@@ -24,4 +24,17 @@ void main() {
     expect(offerte.length, uniumaOrientacionPrograms.length);
     expect(offerte.where((o) => isUniumaProgramHeader(o)).length, 3);
   });
+
+  test('UNIUMA linkInfo codes are not launchable URLs', () {
+    for (final p in uniumaOrientacionPrograms) {
+      expect(isLaunchableHttpUrl(p.codice), isFalse,
+          reason: 'codice ${p.codice} must not open via url_launcher');
+    }
+    expect(isLaunchableHttpUrl('undecided'), isFalse);
+    expect(isLaunchableHttpUrl('hdr_hum'), isFalse);
+    expect(
+      isLaunchableHttpUrl('https://www.wecoop.org/formazione/info'),
+      isTrue,
+    );
+  });
 }

@@ -80,8 +80,10 @@ class UniumaProgramOption {
   String titoloFor(String lang) => _pick(titoli, lang);
   String categoriaFor(String lang) => _pick(categorie, lang);
 
-  static String _pick(Map<String, String> m, String lang) =>
-      m[lang] ?? m['es'] ?? m['en'] ?? m['it'] ?? m.values.first;
+  static String _pick(Map<String, String> m, String lang) {
+    final code = lang.toLowerCase().split(RegExp(r'[_-]')).first;
+    return m[code] ?? m['it'] ?? m['es'] ?? m['en'] ?? m.values.first;
+  }
 }
 
 const _catHum = {
@@ -344,7 +346,8 @@ String uniumaLivelloLabel(String livello, String lang) {
   };
   final m = labels[livello];
   if (m == null) return livello;
-  return m[lang] ?? m['es'] ?? livello;
+  final code = lang.toLowerCase().split(RegExp(r'[_-]')).first;
+  return m[code] ?? m['it'] ?? m['es'] ?? livello;
 }
 
 bool isUniumaPartnerName(String? nome) {
@@ -356,7 +359,7 @@ bool isUniumaPartnerName(String? nome) {
 List<OffertaFormativa> uniumaOfferteAsFormative({
   required int partnerId,
   required String partnerNome,
-  String lang = 'es',
+  String lang = 'it',
 }) {
   var i = 0;
   return uniumaOrientacionPrograms.map((p) {

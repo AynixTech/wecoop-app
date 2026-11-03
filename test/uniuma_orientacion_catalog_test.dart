@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wecoop_app/data/uniuma_orientacion_catalog.dart';
+import 'package:wecoop_app/models/offerta_formativa_model.dart';
 import 'package:wecoop_app/models/partner_model.dart';
 
 void main() {
@@ -68,6 +69,59 @@ void main() {
     expect(en.titolo, 'Criminology and Social Protection');
     expect(it.categoria, 'Umanistico');
     expect(en.categoria, 'Humanities');
+  });
+
+  test('every ficha program is localized for it/es/en/fr/ar/zh', () {
+    const langs = ['it', 'es', 'en', 'fr', 'ar', 'zh'];
+    final base = uniumaOfferteAsFormative(partnerId: 1, partnerNome: 'U')
+        .where(isUniumaFichaOfferta)
+        .toList();
+    expect(base, hasLength(9));
+
+    for (final p in uniumaOrientacionPrograms.where((e) => e.showInFicha)) {
+      for (final lang in langs) {
+        expect(p.titoli.containsKey(lang), isTrue,
+            reason: '${p.codice} missing titolo $lang');
+        expect(p.categorie.containsKey(lang), isTrue,
+            reason: '${p.codice} missing categoria $lang');
+        expect(p.titoloFor(lang).trim(), isNotEmpty);
+      }
+      // IT e ES devono differire (nessun testo ES “inchiodato”).
+      expect(p.titoloFor('it'), isNot(equals(p.titoloFor('es'))),
+          reason: p.codice);
+    }
+
+    // Anche partendo da titoli API in spagnolo, la UI IT/EN si localizza.
+    final fromApiEs = base.map((o) {
+      final es = localizeUniumaOfferta(o, 'es');
+      return OffertaFormativa(
+        id: es.id,
+        titolo: es.titolo,
+        descrizione: '',
+        partnerId: es.partnerId,
+        partnerNome: es.partnerNome,
+        partnerLogoUrl: '',
+        partnerSitoWeb: '',
+        categoria: es.categoria,
+        durata: 'triennale',
+        linkInfo: es.linkInfo,
+        imageUrl: '',
+        ordine: es.ordine,
+      );
+    }).toList();
+
+    final asIt = localizeUniumaOfferte(fromApiEs, 'it');
+    final asEs = localizeUniumaOfferte(fromApiEs, 'es');
+    final asFr = localizeUniumaOfferte(fromApiEs, 'fr');
+    expect(asIt.first.titolo, 'Criminologia e Tutela Sociale');
+    expect(asIt.first.categoria, 'Umanistico');
+    expect(asIt.first.durata, 'triennale');
+    expect(asEs.first.titolo, 'Criminología y Protección Social');
+    expect(asEs.first.categoria, 'Humanidades');
+    expect(asEs.first.durata, 'trienal');
+    expect(asFr.first.titolo, 'Criminologie et Protection Sociale');
+    expect(asIt.map((e) => e.titolo).toSet().length, 9);
+    expect(asEs.map((e) => e.titolo).toSet().length, 9);
   });
 
   test('UNIUMA linkInfo codes are not launchable URLs', () {

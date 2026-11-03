@@ -1322,9 +1322,10 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
     final url = _brochureUrlForLang(lang);
     if (url == null) {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Brochure próximamente en este idioma.'),
+        SnackBar(
+          content: Text(l10n.translate('partnerAccademiciBrochureLangSoon')),
         ),
       );
       return;
@@ -1333,9 +1334,10 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
       await openPartnerMediaUrl(url);
     } catch (_) {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No se pudo abrir la brochure. Inténtalo de nuevo.'),
+        SnackBar(
+          content: Text(l10n.translate('partnerAccademiciBrochureOpenFail')),
         ),
       );
     }
@@ -1496,9 +1498,7 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                 ],
                 const SizedBox(height: 20),
                 Text(
-                  _isUniuma
-                      ? 'Programa de interés'
-                      : l10n.translate('partnerAccademiciProgramLabel'),
+                  l10n.translate('partnerAccademiciProgramLabel'),
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
@@ -1595,18 +1595,18 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Conoce el programa completo',
-                          style: TextStyle(
+                        Text(
+                          l10n.translate('partnerAccademiciBrochureFullTitle'),
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
                             color: AppColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 6),
-                        const Text(
-                          'Consulta y descarga la brochure con todos los itinerarios de especialización.',
-                          style: TextStyle(
+                        Text(
+                          l10n.translate('partnerAccademiciBrochureFullHint'),
+                          style: const TextStyle(
                             fontSize: 13,
                             height: 1.4,
                             color: AppColors.textSecondary,
@@ -1621,17 +1621,20 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                               onPressed: () => _openBrochure('it'),
                               icon: const Icon(Icons.picture_as_pdf_outlined,
                                   size: 18),
-                              label: const Text('Consultar / Descargar (IT)'),
+                              label: Text(l10n.translate(
+                                  'partnerAccademiciBrochureDownloadIt')),
                             ),
                             OutlinedButton.icon(
                               onPressed: () => _openBrochure('es'),
                               icon: const Icon(Icons.picture_as_pdf_outlined,
                                   size: 18),
-                              label: const Text('Consultar / Descargar (ES)'),
+                              label: Text(l10n.translate(
+                                  'partnerAccademiciBrochureDownloadEs')),
                             ),
                             OutlinedButton(
                               onPressed: null,
-                              child: const Text('English · Próximamente'),
+                              child: Text(l10n.translate(
+                                  'partnerAccademiciBrochureEnSoon')),
                             ),
                           ],
                         ),

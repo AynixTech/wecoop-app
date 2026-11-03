@@ -101,6 +101,26 @@ const _uniumaDetailDescriptionIt =
     'La sua offerta accademica comprende un corso di laurea triennale in Mediazione Linguistica e Culturale, con diversi itinerari di specializzazione, e un Master in Criminologia e Psico-Sociologia della Devianza.\n\n'
     'Attraverso WECOOP, puoi conoscere i suoi programmi, esplorare le opportunità di studio e richiedere orientamento personalizzato per il prossimo passo nella tua formazione.';
 
+const _uniumaDetailDescriptionEn =
+    'UNIUMA, the Higher School of Linguistic Mediators «P. M. Loria» of the historic Società Umanitaria, offers university education in Milan and Genoa.\n\n'
+    'Its academic offering includes a three-year university degree in Linguistic and Cultural Mediation, with different specialisation pathways, and a Master\'s in Criminology and Psycho-Sociology of Deviance.\n\n'
+    'Through WECOOP, you can explore its programmes, discover your study opportunities and request personalised guidance for the next step in your education.';
+
+const _uniumaDetailDescriptionFr =
+    'UNIUMA, l’École Supérieure de Médiateurs Linguistiques «P. M. Loria» de la historique Società Umanitaria, propose une formation universitaire à Milan et à Gênes.\n\n'
+    'Son offre académique comprend un diplôme universitaire triennal en Médiation Linguistique et Culturelle, avec différents parcours de spécialisation, et un Master en Criminologie et Psycho-Sociologie de la Déviance.\n\n'
+    'Grâce à WECOOP, vous pouvez découvrir ses programmes, explorer vos opportunités d’études et demander une orientation personnalisée pour franchir la prochaine étape de votre formation.';
+
+const _uniumaDetailDescriptionAr =
+    'UNIUMA، المدرسة العليا للوسطاء اللغويين «P. M. Loria» التابعة لـ Società Umanitaria التاريخية، تقدّم تكويناً جامعياً في ميلانو وجنوى.\n\n'
+    'تشمل عروضها الأكاديمية درجة جامعية ثلاثية السنوات في الوساطة اللغوية والثقافية، بمسارات تخصص مختلفة، وماجستير في علم الجريمة وعلم النفس الاجتماعي للانحراف.\n\n'
+    'من خلال WECOOP يمكنك التعرف على برامجها واستكشاف فرص الدراسة وطلب توجيه شخصي للخطوة التالية في مسارك التعليمي.';
+
+const _uniumaDetailDescriptionZh =
+    'UNIUMA 是历史悠久的 Società Umanitaria 旗下语言调解高等学院「P. M. Loria」，在米兰与热那亚提供大学教育。\n\n'
+    '其学术项目包括语言与文化调解三年制大学学位（含多种专业方向），以及犯罪学与越轨心理社会学硕士。\n\n'
+    '通过 WECOOP，你可以了解其课程、探索留学机会，并申请个性化升学指导，迈出学业下一步。';
+
 const _uniumaAdmissionCatalogEs =
     'SEDES DE MILÁN Y GÉNOVA\n\n'
     'ITINERARIOS DE ESPECIALIZACIÓN\n\n'
@@ -133,6 +153,72 @@ const _uniumaAdmissionCatalogIt =
     'FORMAZIONE SUPERIORE DI POST LAUREA – 60 CFU\n'
     'Master in CRIMINOLOGIA E PSICO-SOCIOLOGIA DELLA DEVIANZA';
 
+const _uniumaAdmissionCatalogEn =
+    'CAMPUSES IN MILAN AND GENOA\n\n'
+    'SPECIALISATION PATHWAYS\n\n'
+    'HUMANITIES DEPARTMENT\n'
+    '• CRIMINOLOGY AND SOCIAL PROTECTION\n'
+    '• INTERNATIONAL DIPLOMACY AND HUMAN RIGHTS\n'
+    '• MULTICULTURAL DESIGN\n\n'
+    'ECONOMICS DEPARTMENT\n'
+    '• ARTISTIC DESIGN (active at the Milan campus)\n'
+    '• BUSINESS MANAGEMENT (active at the Milan campus)\n'
+    '• ETHICAL MARKETING AND DIGITAL DEVELOPMENT (active at the Milan campus)\n'
+    '• SUSTAINABLE FASHION MANAGEMENT (active at the Genoa campus)\n'
+    '• MANAGEMENT FOR MARITIME, TOURISM AND PORT DESIGN AND MANAGEMENT (active at the Genoa campus)\n\n'
+    'POSTGRADUATE HIGHER EDUCATION – 60 CFU\n'
+    'Master\'s in CRIMINOLOGY AND PSYCHO-SOCIOLOGY OF DEVIANCE';
+
+const _uniumaAdmissionCatalogFr =
+    'SITES DE MILAN ET GÊNES\n\n'
+    'PARCOURS DE SPÉCIALISATION\n\n'
+    'DÉPARTEMENT DES HUMANITÉS\n'
+    '• CRIMINOLOGIE ET PROTECTION SOCIALE\n'
+    '• DIPLOMATIE INTERNATIONALE ET DROITS HUMAINS\n'
+    '• DESIGN MULTICULTUREL\n\n'
+    'DÉPARTEMENT ÉCONOMIQUE\n'
+    '• DESIGN ARTISTIQUE (actif sur le site de Milan)\n'
+    '• GESTION D\'ENTREPRISE (actif sur le site de Milan)\n'
+    '• MARKETING ÉTHIQUE ET DÉVELOPPEMENT NUMÉRIQUE (actif sur le site de Milan)\n'
+    '• GESTION DURABLE DE LA MODE (actif sur le site de Gênes)\n'
+    '• GESTION POUR LE DESIGN ET LA GESTION MARITIME, TOURISTIQUE ET PORTUAIRE (actif sur le site de Gênes)\n\n'
+    'FORMATION SUPÉRIEURE DE POSTGRADE – 60 CFU\n'
+    'Master en CRIMINOLOGIE ET PSYCHO-SOCIOLOGIE DE LA DÉVIANCE';
+
+const _uniumaAdmissionCatalogAr =
+    'مقار ميلانو وجنوى\n\n'
+    'مسارات التخصص\n\n'
+    'قسم العلوم الإنسانية\n'
+    '• علم الجريمة والحماية الاجتماعية\n'
+    '• الدبلوماسية الدولية وحقوق الإنسان\n'
+    '• التصميم متعدد الثقافات\n\n'
+    'القسم الاقتصادي\n'
+    '• التصميم الفني (نشط في مقر ميلانو)\n'
+    '• إدارة الأعمال (نشط في مقر ميلانو)\n'
+    '• التسويق الأخلاقي والتطوير الرقمي (نشط في مقر ميلانو)\n'
+    '• الإدارة المستدامة للأزياء (نشط في مقر جنوى)\n'
+    '• الإدارة للتصميم والإدارة البحرية والسياحية والمينائية (نشط في مقر جنوى)\n\n'
+    'تكوين عالٍ لمرحلة ما بعد التخرج – 60 CFU\n'
+    'ماجستير في علم الجريمة وعلم النفس الاجتماعي للانحراف';
+
+const _uniumaAdmissionCatalogZh =
+    '米兰与热那亚校区\n\n'
+    '专业方向\n\n'
+    '人文学部\n'
+    '• 犯罪学与社会保护\n'
+    '• 国际外交与人权\n'
+    '• 多元文化设计\n\n'
+    '经济学部\n'
+    '• 艺术设计（米兰校区开设）\n'
+    '• 企业管理（米兰校区开设）\n'
+    '• 伦理营销与数字发展（米兰校区开设）\n'
+    '• 可持续时尚管理（热那亚校区开设）\n'
+    '• 海事、旅游与港口设计与管理（热那亚校区开设）\n\n'
+    '研究生高等教育 – 60 CFU\n'
+    '犯罪学与越轨心理社会学硕士';
+
+const _uniumaEmptyStats = <({String value, String label})>[];
+
 const _uniuma = PartnerFicha(
   slug: 'uniuma',
   aliases: ['società umanitaria', 'societa umanitaria', 'umanitaria', 'ssml'],
@@ -142,7 +228,7 @@ const _uniuma = PartnerFicha(
       cardTagline:
           'Lenguas, culturas y oportunidades para conectar con el mundo.',
       affiliation: 'SSML «P. M. Loria» · Società Umanitaria',
-      tags: ['Mediación lingüística', '3 años'],
+      tags: ['Mediación lingüística'],
       detailHeadline: 'Conecta lenguas, culturas y tu futuro.',
       detailDescription: _uniumaDetailDescriptionEs,
       admissionIntro: '',
@@ -153,16 +239,13 @@ const _uniuma = PartnerFicha(
           bodyKey: _uniumaAdmissionCatalogEs,
         ),
       ],
-      stats: [
-        (value: '3 años', label: 'Programa principal'),
-        (value: '180 CFU', label: 'Créditos académicos'),
-      ],
+      stats: _uniumaEmptyStats,
     ),
     'it': PartnerFichaLocale(
       cardTagline:
           'Lingue, culture e opportunità per connettersi con il mondo.',
       affiliation: 'SSML «P. M. Loria» · Società Umanitaria',
-      tags: ['Mediazione linguistica', '3 anni'],
+      tags: ['Mediazione linguistica'],
       detailHeadline: 'Collega lingue, culture e il tuo futuro.',
       detailDescription: _uniumaDetailDescriptionIt,
       admissionIntro: '',
@@ -173,146 +256,72 @@ const _uniuma = PartnerFicha(
           bodyKey: _uniumaAdmissionCatalogIt,
         ),
       ],
-      stats: [
-        (value: '3 anni', label: 'Percorso principale'),
-        (value: '180 CFU', label: 'Crediti formativi'),
-      ],
+      stats: _uniumaEmptyStats,
     ),
     'en': PartnerFichaLocale(
       cardTagline:
           'Languages, cultures and opportunities to connect with the world.',
       affiliation: 'SSML «P. M. Loria» · Società Umanitaria',
-      tags: ['Linguistic mediation', '3 years'],
+      tags: ['Linguistic mediation'],
       detailHeadline: 'Connect languages, cultures and your future.',
-      detailDescription:
-          'Higher education in linguistic and cultural mediation, in the heart of Milan.',
-      admissionIntro:
-          'Access and documentation depend on the chosen programme and your previous studies.',
+      detailDescription: _uniumaDetailDescriptionEn,
+      admissionIntro: '',
       admissionSections: [
         PartnerAdmissionSection(
-          titleKey: 'How to start',
-          stepsKeys: [
-            'Review the programme and its current call for applications.',
-            'Request a meeting with the academic board.',
-            'Confirm the requirements and submit the requested documents.',
-          ],
-        ),
-        PartnerAdmissionSection(
-          titleKey: 'Documents to prepare',
-          bodyKey:
-              'As a starting point, keep your identity document and information about your previous studies ready. The final list depends on the programme and must be confirmed with UNIUMA.',
-        ),
-        PartnerAdmissionSection(
-          titleKey: 'Do you have a foreign degree?',
-          bodyKey:
-              'If your degree was obtained outside Italy, check with UNIUMA which documents, translations or recognition may be required, as well as the call deadlines.',
+          titleKey:
+              'A. THREE-YEAR UNIVERSITY DEGREE IN LINGUISTIC AND CULTURAL MEDIATION – 180 CFU',
+          bodyKey: _uniumaAdmissionCatalogEn,
         ),
       ],
-      stats: [
-        (value: '3 years', label: 'Main programme'),
-        (value: '180 CFU', label: 'Academic credits'),
-      ],
+      stats: _uniumaEmptyStats,
     ),
     'fr': PartnerFichaLocale(
       cardTagline:
           'Langues, cultures et opportunités pour se connecter au monde.',
       affiliation: 'SSML «P. M. Loria» · Società Umanitaria',
-      tags: ['Médiation linguistique', '3 ans'],
+      tags: ['Médiation linguistique'],
       detailHeadline: 'Reliez langues, cultures et votre avenir.',
-      detailDescription:
-          'Formation supérieure en médiation linguistique et culturelle, au cœur de Milan.',
-      admissionIntro:
-          'L’accès et la documentation dépendent du programme choisi et de vos études antérieures.',
+      detailDescription: _uniumaDetailDescriptionFr,
+      admissionIntro: '',
       admissionSections: [
         PartnerAdmissionSection(
-          titleKey: 'Comment commencer',
-          stepsKeys: [
-            'Consultez le programme et son appel à candidatures en vigueur.',
-            'Demandez un entretien avec la direction académique.',
-            'Confirmez les exigences et présentez la documentation demandée.',
-          ],
-        ),
-        PartnerAdmissionSection(
-          titleKey: 'Documents à préparer',
-          bodyKey:
-              'Pour commencer, préparez votre pièce d’identité et les informations sur vos études antérieures. La liste définitive dépend du programme et doit être confirmée avec UNIUMA.',
-        ),
-        PartnerAdmissionSection(
-          titleKey: 'Avez-vous un diplôme étranger ?',
-          bodyKey:
-              'Si votre diplôme a été obtenu hors d’Italie, vérifiez auprès d’UNIUMA la documentation, les traductions ou la reconnaissance éventuellement requises, ainsi que les délais de l’appel.',
+          titleKey:
+              'A. DIPLÔME UNIVERSITAIRE TRIENNAL EN MÉDIATION LINGUISTIQUE ET CULTURELLE – 180 CFU',
+          bodyKey: _uniumaAdmissionCatalogFr,
         ),
       ],
-      stats: [
-        (value: '3 ans', label: 'Programme principal'),
-        (value: '180 CFU', label: 'Crédits académiques'),
-      ],
+      stats: _uniumaEmptyStats,
     ),
     'ar': PartnerFichaLocale(
       cardTagline: 'لغات وثقافات وفرص للتواصل مع العالم.',
       affiliation: 'SSML «P. M. Loria» · Società Umanitaria',
-      tags: ['الوساطة اللغوية', '3 سنوات'],
+      tags: ['الوساطة اللغوية'],
       detailHeadline: 'اربط اللغات والثقافات ومستقبلك.',
-      detailDescription:
-          'تعليم عالٍ في الوساطة اللغوية والثقافية، في قلب ميلانو.',
-      admissionIntro:
-          'يعتمد القبول والوثائق على البرنامج المختار ودراستك السابقة.',
+      detailDescription: _uniumaDetailDescriptionAr,
+      admissionIntro: '',
       admissionSections: [
         PartnerAdmissionSection(
-          titleKey: 'كيف تبدأ',
-          stepsKeys: [
-            'اطّلع على البرنامج ودعوته الحالية.',
-            'اطلب لقاءً مع الإدارة الأكاديمية.',
-            'أكّد المتطلبات وقدّم الوثائق المطلوبة.',
-          ],
-        ),
-        PartnerAdmissionSection(
-          titleKey: 'وثائق للتحضير',
-          bodyKey:
-              'كنقطة انطلاق، جهّز وثيقة هويتك ومعلومات دراستك السابقة. تعتمد القائمة النهائية على البرنامج ويجب تأكيدها مع UNIUMA.',
-        ),
-        PartnerAdmissionSection(
-          titleKey: 'هل لديك شهادة أجنبية؟',
-          bodyKey:
-              'إذا حصلت على شهادتك خارج إيطاليا، راجع مع UNIUMA الوثائق أو الترجمات أو الاعتراف المطلوب، بالإضافة إلى مواعيد الدعوة.',
+          titleKey:
+              'أ. درجة جامعية ثلاثية السنوات في الوساطة اللغوية والثقافية – 180 CFU',
+          bodyKey: _uniumaAdmissionCatalogAr,
         ),
       ],
-      stats: [
-        (value: '3 سنوات', label: 'البرنامج الرئيسي'),
-        (value: '180 CFU', label: 'وحدات دراسية'),
-      ],
+      stats: _uniumaEmptyStats,
     ),
     'zh': PartnerFichaLocale(
       cardTagline: '语言、文化与连接世界的机遇。',
       affiliation: 'SSML «P. M. Loria» · Società Umanitaria',
-      tags: ['语言调解', '3 年'],
+      tags: ['语言调解'],
       detailHeadline: '连接语言、文化与你的未来。',
-      detailDescription: '米兰市中心的语言与文化调解高等教育。',
-      admissionIntro: '入学与所需材料取决于所选课程及你的既往学历。',
+      detailDescription: _uniumaDetailDescriptionZh,
+      admissionIntro: '',
       admissionSections: [
         PartnerAdmissionSection(
-          titleKey: '如何开始',
-          stepsKeys: [
-            '查阅课程及现行招生简章。',
-            '申请与学术管理部门会面。',
-            '确认要求并提交所需材料。',
-          ],
-        ),
-        PartnerAdmissionSection(
-          titleKey: '需准备的材料',
-          bodyKey:
-              '首先请准备身份证件及既往学历信息。最终清单取决于课程，需与 UNIUMA 确认。',
-        ),
-        PartnerAdmissionSection(
-          titleKey: '你持有外国学历吗？',
-          bodyKey:
-              '若学历在意大利境外获得，请向 UNIUMA 确认所需文件、翻译或认证，以及招生截止日期。',
+          titleKey: 'A. 语言与文化调解三年制大学学位 – 180 CFU',
+          bodyKey: _uniumaAdmissionCatalogZh,
         ),
       ],
-      stats: [
-        (value: '3 年', label: '主修课程'),
-        (value: '180 CFU', label: '学分'),
-      ],
+      stats: _uniumaEmptyStats,
     ),
   },
 );

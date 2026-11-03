@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wecoop_app/data/uniuma_orientacion_catalog.dart';
+import 'package:wecoop_app/models/partner_model.dart';
 
 void main() {
   test('UNIUMA brochure documenti prepends Italian PDF when missing', () {
@@ -7,6 +8,23 @@ void main() {
     expect(docs.length, 1);
     expect(docs.first.titolo, contains('Italiano'));
     expect(docs.first.url, startsWith(kUniumaAssetUrlPrefix));
+  });
+
+  test('UNIUMA brochure documenti keeps Italian first over API ES', () {
+    final docs = uniumaBrochureDocumenti([
+      PartnerMedia(
+        id: 1,
+        tipo: 'brochure',
+        titolo: 'Brochure UNIUMA 2026–2027 (Español)',
+        descrizione: 'ES',
+        url: kUniumaBrochureEsUrl,
+        mime: 'application/pdf',
+        ordine: 0,
+      ),
+    ]);
+    expect(docs.length, 2);
+    expect(docs.first.titolo, contains('Italiano'));
+    expect(docs.last.titolo, contains('Español'));
   });
 
   test('UNIUMA catalog has 10 selectable options', () {

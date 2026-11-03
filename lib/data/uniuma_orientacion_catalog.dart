@@ -28,17 +28,30 @@ PartnerMedia uniumaBrochureItMedia({int ordine = 0}) => PartnerMedia(
       ordine: ordine,
     );
 
-/// Documenti brochure UNIUMA: IT in testa, poi eventuali PDF da API.
+bool _isItalianBrochure(PartnerMedia m) {
+  final label = '${m.titolo} ${m.descrizione}'.toLowerCase();
+  final url = m.url.toLowerCase();
+  return label.contains('italiano') ||
+      label.contains('italian') ||
+      RegExp(r'(^|[\s_(/-])it([\s_)./-]|$)').hasMatch(label) ||
+      url.contains('brochure_it') ||
+      url.contains('_it.pdf') ||
+      url.startsWith(kUniumaAssetUrlPrefix);
+}
+
+/// Documenti brochure UNIUMA: IT sempre in testa, poi eventuali PDF da API.
 List<PartnerMedia> uniumaBrochureDocumenti(List<PartnerMedia> fromApi) {
   final docs = fromApi.where((m) => m.isPdf).toList();
-  final hasIt = docs.any((m) {
-    final t = '${m.titolo} ${m.descrizione}'.toLowerCase();
-    return t.contains('ital') || t.contains(' it');
-  });
-  if (!hasIt) {
+  if (!docs.any(_isItalianBrochure)) {
     docs.insert(0, uniumaBrochureItMedia(ordine: 0));
   }
-  docs.sort((a, b) => a.ordine.compareTo(b.ordine));
+  docs.sort((a, b) {
+    final aIt = _isItalianBrochure(a);
+    final bIt = _isItalianBrochure(b);
+    if (aIt && !bIt) return -1;
+    if (!aIt && bIt) return 1;
+    return a.ordine.compareTo(b.ordine);
+  });
   return docs;
 }
 

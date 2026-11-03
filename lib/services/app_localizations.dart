@@ -444,6 +444,16 @@ class AppLocalizations {
       'partnerAccademiciAdmissionTitle': 'Prepara la tua ammissione',
       'partnerAccademiciAdmissionCrumb': '{name} / Ammissione e requisiti',
       'partnerAccademiciSeeAdmission': 'Vedi i requisiti di ammissione',
+      'partnerAccademiciBrochureFullTitle': 'Conosci il programma completo',
+      'partnerAccademiciBrochureFullHint':
+          'Consulta e scarica la brochure con tutti gli itinerari di specializzazione.',
+      'partnerAccademiciBrochureDownloadIt': 'Consulta / Scarica (IT)',
+      'partnerAccademiciBrochureDownloadEs': 'Consulta / Scarica (ES)',
+      'partnerAccademiciBrochureEnSoon': 'English · Prossimamente',
+      'partnerAccademiciBrochureOpenFail':
+          'Impossibile aprire la brochure. Riprova.',
+      'partnerAccademiciBrochureLangSoon':
+          'Brochure disponibile a breve in questa lingua.',
       'partnerAccademiciRequestOrientHint': 'Per aiutarti a pianificare il tuo prossimo passo',
       'partnerAccademiciRequestOrient': 'Richiedi orientamento con WECOOP',
       'partnerAccademiciStartMessage': 'WECOOP ti orienta per esplorare le tue opzioni di studio e pianificare i prossimi passi.',
@@ -2312,6 +2322,16 @@ class AppLocalizations {
       'partnerAccademiciAdmissionTitle': 'جهّز قبولك',
       'partnerAccademiciAdmissionCrumb': '{name} / القبول والمتطلبات',
       'partnerAccademiciSeeAdmission': 'عرض متطلبات القبول',
+      'partnerAccademiciBrochureFullTitle': 'تعرّف على البرنامج بالكامل',
+      'partnerAccademiciBrochureFullHint':
+          'اطّلع على الكتيّب وحمّله مع جميع مسارات التخصص.',
+      'partnerAccademiciBrochureDownloadIt': 'عرض / تنزيل (IT)',
+      'partnerAccademiciBrochureDownloadEs': 'عرض / تنزيل (ES)',
+      'partnerAccademiciBrochureEnSoon': 'English · قريباً',
+      'partnerAccademiciBrochureOpenFail':
+          'تعذّر فتح الكتيّب. حاول مرة أخرى.',
+      'partnerAccademiciBrochureLangSoon':
+          'الكتيّب قريباً بهذه اللغة.',
       'partnerAccademiciRequestOrientHint': 'لمساعدتك على التخطيط لخطوتك التالية',
       'partnerAccademiciRequestOrient': 'اطلب توجيهاً مع WECOOP',
       'partnerAccademiciStartMessage': 'توجّهك WECOOP لاستكشاف خيارات الدراسة والتخطيط للخطوات التالية.',
@@ -3842,6 +3862,13 @@ class AppLocalizations {
       'partnerAccademiciAdmissionTitle': '准备你的入学',
       'partnerAccademiciAdmissionCrumb': '{name} / 入学与要求',
       'partnerAccademiciSeeAdmission': '查看入学要求',
+      'partnerAccademiciBrochureFullTitle': '了解完整课程',
+      'partnerAccademiciBrochureFullHint': '查看并下载包含全部专业方向的手册。',
+      'partnerAccademiciBrochureDownloadIt': '查看 / 下载（IT）',
+      'partnerAccademiciBrochureDownloadEs': '查看 / 下载（ES）',
+      'partnerAccademiciBrochureEnSoon': 'English · 即将推出',
+      'partnerAccademiciBrochureOpenFail': '无法打开手册，请重试。',
+      'partnerAccademiciBrochureLangSoon': '该语言手册即将推出。',
       'partnerAccademiciRequestOrientHint': '帮助你规划下一步',
       'partnerAccademiciRequestOrient': '申请 WECOOP 升学指导',
       'partnerAccademiciStartMessage': 'WECOOP 协助你探索学习选择并规划下一步。',
@@ -5228,6 +5255,16 @@ class AppLocalizations {
       'partnerAccademiciAdmissionTitle': 'Prepare your admission',
       'partnerAccademiciAdmissionCrumb': '{name} / Admission and requirements',
       'partnerAccademiciSeeAdmission': 'View admission requirements',
+      'partnerAccademiciBrochureFullTitle': 'Discover the full programme',
+      'partnerAccademiciBrochureFullHint':
+          'View and download the brochure with all specialisation pathways.',
+      'partnerAccademiciBrochureDownloadIt': 'View / Download (IT)',
+      'partnerAccademiciBrochureDownloadEs': 'View / Download (ES)',
+      'partnerAccademiciBrochureEnSoon': 'English · Coming soon',
+      'partnerAccademiciBrochureOpenFail':
+          'Could not open the brochure. Please try again.',
+      'partnerAccademiciBrochureLangSoon':
+          'Brochure coming soon in this language.',
       'partnerAccademiciRequestOrientHint': 'To help you plan your next step',
       'partnerAccademiciRequestOrient': 'Request guidance with WECOOP',
       'partnerAccademiciStartMessage': 'WECOOP guides you to explore your study options and plan the next steps.',
@@ -6905,6 +6942,16 @@ class AppLocalizations {
       'partnerAccademiciAdmissionTitle': 'Préparez votre admission',
       'partnerAccademiciAdmissionCrumb': '{name} / Admission et conditions',
       'partnerAccademiciSeeAdmission': 'Voir les conditions d\'admission',
+      'partnerAccademiciBrochureFullTitle': 'Découvrez le programme complet',
+      'partnerAccademiciBrochureFullHint':
+          'Consultez et téléchargez la brochure avec tous les parcours de spécialisation.',
+      'partnerAccademiciBrochureDownloadIt': 'Consulter / Télécharger (IT)',
+      'partnerAccademiciBrochureDownloadEs': 'Consulter / Télécharger (ES)',
+      'partnerAccademiciBrochureEnSoon': 'English · Bientôt',
+      'partnerAccademiciBrochureOpenFail':
+          'Impossible d\'ouvrir la brochure. Réessayez.',
+      'partnerAccademiciBrochureLangSoon':
+          'Brochure bientôt disponible dans cette langue.',
       'partnerAccademiciRequestOrientHint': 'Pour vous aider à planifier votre prochaine étape',
       'partnerAccademiciRequestOrient': 'Demander une orientation avec WECOOP',
       'partnerAccademiciStartMessage': 'WECOOP vous oriente pour explorer vos options d\'études et planifier les prochaines étapes.',
@@ -8479,6 +8526,16 @@ class AppLocalizations {
       'partnerAccademiciAdmissionTitle': 'Prepara tu admisión',
       'partnerAccademiciAdmissionCrumb': '{name} / Admisión y requisitos',
       'partnerAccademiciSeeAdmission': 'Ver requisitos de admisión',
+      'partnerAccademiciBrochureFullTitle': 'Conoce el programa completo',
+      'partnerAccademiciBrochureFullHint':
+          'Consulta y descarga la brochure con todos los itinerarios de especialización.',
+      'partnerAccademiciBrochureDownloadIt': 'Consultar / Descargar (IT)',
+      'partnerAccademiciBrochureDownloadEs': 'Consultar / Descargar (ES)',
+      'partnerAccademiciBrochureEnSoon': 'English · Próximamente',
+      'partnerAccademiciBrochureOpenFail':
+          'No se pudo abrir la brochure. Inténtalo de nuevo.',
+      'partnerAccademiciBrochureLangSoon':
+          'Brochure próximamente en este idioma.',
       'partnerAccademiciRequestOrientHint': 'Para ayudarte a planificar tu próximo paso',
       'partnerAccademiciRequestOrient': 'Solicitar orientación con WECOOP',
       'partnerAccademiciStartMessage': 'WECOOP te orienta para explorar tus opciones de estudio y planificar los próximos pasos.',

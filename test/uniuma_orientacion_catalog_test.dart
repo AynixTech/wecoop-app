@@ -38,9 +38,36 @@ void main() {
   });
 
   test('embedded offerte include category headers', () {
-    final offerte = uniumaOfferteAsFormative(partnerId: 1, partnerNome: 'UNIUMA');
+    final offerte =
+        uniumaOfferteAsFormative(partnerId: 1, partnerNome: 'UNIUMA', lang: 'es');
     expect(offerte.length, uniumaOrientacionPrograms.length);
     expect(offerte.where((o) => isUniumaProgramHeader(o)).length, 3);
+  });
+
+  test('ficha list hides undecided and headers', () {
+    final offerte =
+        uniumaOfferteAsFormative(partnerId: 1, partnerNome: 'UNIUMA', lang: 'it');
+    final ficha = offerte.where(isUniumaFichaOfferta).toList();
+    expect(ficha.length, 9);
+    expect(ficha.any(isUniumaUndecided), isFalse);
+    expect(ficha.any(isUniumaProgramHeader), isFalse);
+    expect(ficha.first.titolo, 'Criminologia e Tutela Sociale');
+    expect(ficha.first.descrizione, isEmpty);
+  });
+
+  test('titles follow app language', () {
+    final es = localizeUniumaOfferta(
+      uniumaOfferteAsFormative(partnerId: 1, partnerNome: 'U', lang: 'es')
+          .firstWhere((o) => o.linkInfo == 'hum_criminologia'),
+      'es',
+    );
+    final it = localizeUniumaOfferta(es, 'it');
+    final en = localizeUniumaOfferta(es, 'en');
+    expect(es.titolo, 'Criminología y Protección Social');
+    expect(it.titolo, 'Criminologia e Tutela Sociale');
+    expect(en.titolo, 'Criminology and Social Protection');
+    expect(it.categoria, 'Umanistico');
+    expect(en.categoria, 'Humanities');
   });
 
   test('UNIUMA linkInfo codes are not launchable URLs', () {

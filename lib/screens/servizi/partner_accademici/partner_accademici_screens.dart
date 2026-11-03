@@ -549,6 +549,22 @@ class _PartnerFichaScreenState extends State<PartnerFichaScreen> {
     final brochureDocumenti = isUniuma
         ? uniumaBrochureDocumenti(d?.documenti ?? const [])
         : (d?.documenti ?? const []);
+    // Offerta Formativa: API se presente, altrimenti catalogo embedded UNIUMA.
+    final offerteRaw = (d?.offerteFormative.isNotEmpty == true)
+        ? d!.offerteFormative
+        : (isUniuma
+            ? uniumaOfferteAsFormative(
+                partnerId: widget.partner.id,
+                partnerNome: widget.partner.nome,
+                lang: lang,
+              )
+            : const <OffertaFormativa>[]);
+    final offerteFicha = isUniuma
+        ? localizeUniumaOfferte(
+            offerteRaw.where(isUniumaFichaOfferta).toList(),
+            lang,
+          )
+        : offerteRaw;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -742,8 +758,7 @@ class _PartnerFichaScreenState extends State<PartnerFichaScreen> {
                               ),
                             ],
 
-                            // Offerte formative (se presenti in API)
-                            if (d != null && d.offerteFormative.isNotEmpty) ...[
+                            if (offerteFicha.isNotEmpty) ...[
                               const SizedBox(height: 24),
                               Text(
                                 l10n.translate(
@@ -755,23 +770,23 @@ class _PartnerFichaScreenState extends State<PartnerFichaScreen> {
                                 ),
                               ),
                               const SizedBox(height: 10),
-                              ...(isUniuma
-                                      ? d.offerteFormative.where(
-                                          (o) => !isUniumaProgramHeader(o))
-                                      : d.offerteFormative)
-                                  .map(
+                              ...offerteFicha.map(
                                 (o) => Padding(
                                   padding: const EdgeInsets.only(bottom: 10),
                                   child: _OffertaMiniCard(
                                     offerta: o,
-                                    onInfo: () {
-                                      // UNIUMA: linkInfo = codice programma, non URL.
-                                      if (isLaunchableHttpUrl(o.linkInfo)) {
-                                        openPartnerMediaUrl(o.linkInfo);
-                                      } else {
-                                        _openOrientazione();
-                                      }
-                                    },
+                                    // UNIUMA: solo titolo + sottotitolo (QA).
+                                    compact: isUniuma,
+                                    onInfo: isUniuma
+                                        ? null
+                                        : () {
+                                            if (isLaunchableHttpUrl(
+                                                o.linkInfo)) {
+                                              openPartnerMediaUrl(o.linkInfo);
+                                            } else {
+                                              _openOrientazione();
+                                            }
+                                          },
                                   ),
                                 ),
                               ),
@@ -892,12 +907,22 @@ class _PartnerFichaScreenState extends State<PartnerFichaScreen> {
 
 class _OffertaMiniCard extends StatelessWidget {
   final OffertaFormativa offerta;
-  final VoidCallback onInfo;
-  const _OffertaMiniCard({required this.offerta, required this.onInfo});
+  final VoidCallback? onInfo;
+  /// Solo titolo + categoria/durata (niente codice, CTA o share).
+  final bool compact;
+  const _OffertaMiniCard({
+    required this.offerta,
+    this.onInfo,
+    this.compact = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final showDescription = !compact &&
+        offerta.descrizione.isNotEmpty &&
+        // Non mostrare codici programma tipo hum_criminologia.
+        !RegExp(r'^[a-z0-9_]+$').hasMatch(offerta.descrizione.trim());
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
@@ -921,7 +946,7 @@ class _OffertaMiniCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               [offerta.categoria, offerta.durata]
-                  .where((e) => e.isNotEmpty)
+                  .where((e) => e.isNotEmpty && e != 'header')
                   .join(' · '),
               style: const TextStyle(
                 fontSize: 12,
@@ -929,7 +954,7 @@ class _OffertaMiniCard extends StatelessWidget {
               ),
             ),
           ],
-          if (offerta.descrizione.isNotEmpty) ...[
+          if (showDescription) ...[
             const SizedBox(height: 6),
             Text(
               offerta.descrizione,
@@ -941,28 +966,30 @@ class _OffertaMiniCard extends StatelessWidget {
               ),
             ),
           ],
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              TextButton(
-                onPressed: onInfo,
-                child: Text(l10n.translate('studiareItaliaRequestInfo')),
-              ),
-              const Spacer(),
-              IconButton(
-                onPressed: () {
-                  final url =
-                      'https://www.wecoop.org/offerte-formative/${offerta.id}';
-                  shareText(
-                    context,
-                    text: '${offerta.titolo}\n\n$url',
-                    subject: offerta.titolo,
-                  );
-                },
-                icon: const Icon(Icons.share_outlined, size: 20),
-              ),
-            ],
-          ),
+          if (!compact && onInfo != null) ...[
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                TextButton(
+                  onPressed: onInfo,
+                  child: Text(l10n.translate('studiareItaliaRequestInfo')),
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () {
+                    final url =
+                        'https://www.wecoop.org/offerte-formative/${offerta.id}';
+                    shareText(
+                      context,
+                      text: '${offerta.titolo}\n\n$url',
+                      subject: offerta.titolo,
+                    );
+                  },
+                  icon: const Icon(Icons.share_outlined, size: 20),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -1247,6 +1274,23 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
 
   bool get _isUniuma => isUniumaPartnerName(widget.partner?.nome);
 
+  String get _lang => Localizations.localeOf(context).languageCode;
+
+  List<OffertaFormativa> get _displayOfferte =>
+      _isUniuma ? localizeUniumaOfferte(_offerte, _lang) : _offerte;
+
+  OffertaFormativa? get _selectedDisplay {
+    final sel = _selectedProgram;
+    if (sel == null) return null;
+    final code = sel.linkInfo.isNotEmpty ? sel.linkInfo : sel.descrizione;
+    for (final o in _displayOfferte) {
+      if ((code.isNotEmpty && o.linkInfo == code) || o.id == sel.id) {
+        return o;
+      }
+    }
+    return _isUniuma ? localizeUniumaOfferta(sel, _lang) : sel;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -1270,6 +1314,7 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
         offerte = uniumaOfferteAsFormative(
           partnerId: widget.partner!.id,
           partnerNome: widget.partner!.nome,
+          lang: Localizations.localeOf(context).languageCode,
         );
       }
       setState(() {
@@ -1284,6 +1329,7 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
           _offerte = uniumaOfferteAsFormative(
             partnerId: widget.partner?.id ?? 0,
             partnerNome: widget.partner?.nome ?? 'UNIUMA',
+            lang: Localizations.localeOf(context).languageCode,
           );
         }
         _loadingOfferte = false;
@@ -1507,7 +1553,7 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                 ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<OffertaFormativa?>(
-                  value: _selectedProgram,
+                  value: _selectedDisplay,
                   isExpanded: true,
                   decoration: InputDecoration(
                     filled: true,
@@ -1532,7 +1578,7 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                         style: const TextStyle(color: AppColors.textMuted),
                         overflow: TextOverflow.ellipsis,
                       ),
-                      ..._offerte.map(
+                      ..._displayOfferte.map(
                         (o) => Text(o.titolo, overflow: TextOverflow.ellipsis),
                       ),
                     ];
@@ -1545,7 +1591,7 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                         style: const TextStyle(color: AppColors.textMuted),
                       ),
                     ),
-                    ..._offerte.map(
+                    ..._displayOfferte.map(
                       (o) {
                         final header = _isUniuma && isUniumaProgramHeader(o);
                         return DropdownMenuItem<OffertaFormativa?>(

@@ -1430,7 +1430,7 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
             'programma_titolo': _selectedProgram!.titolo,
             if (opt != null) ...{
               'programma_codice': opt.codice,
-              'programma_categoria': opt.categoria,
+              'programma_categoria': opt.categoriaFor(_lang),
               'programma_livello': opt.livello,
             },
           },

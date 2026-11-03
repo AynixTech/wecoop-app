@@ -36,26 +36,20 @@ void main() {
     );
   });
 
-  test('admission sections aligned across locales', () {
+  test('admission sections keep original how-to copy (not itinerary catalog)', () {
     expect(ficha, isNotNull);
     for (final lang in ['es', 'it', 'en', 'fr', 'ar', 'zh']) {
       final loc = ficha!.localeFor(lang);
-      expect(loc.admissionSections, hasLength(1), reason: lang);
-      expect(loc.admissionSections.first.bodyKey, isNotNull, reason: lang);
-      expect(loc.admissionSections.first.bodyKey!, isNotEmpty, reason: lang);
-      expect(loc.admissionIntro, isEmpty, reason: lang);
+      expect(loc.admissionSections, hasLength(3), reason: lang);
+      expect(loc.admissionIntro, isNotEmpty, reason: lang);
     }
+    expect(ficha!.localeFor('it').admissionSections.first.titleKey, 'Come iniziare');
+    expect(ficha!.localeFor('es').admissionSections.first.titleKey, 'Cómo empezar');
     expect(
-      ficha!.localeFor('es').admissionSections.first.titleKey,
-      contains('MEDIACIÓN LINGÜÍSTICA'),
-    );
-    expect(
-      ficha!.localeFor('es').admissionSections.first.bodyKey,
-      contains('DEPARTAMENTO DE HUMANIDADES'),
-    );
-    expect(
-      ficha!.localeFor('es').admissionSections.first.bodyKey,
-      contains('CRIMINOLOGÍA E PSICO-SOCIOLOGÍA'),
+      ficha!.localeFor('it').admissionSections.any(
+            (s) => (s.bodyKey ?? '').contains('DIPARTIMENTO UMANISTICO'),
+          ),
+      isFalse,
     );
   });
 }

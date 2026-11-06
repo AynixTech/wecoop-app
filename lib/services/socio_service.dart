@@ -1294,15 +1294,38 @@ class SocioService {
 
       // Salva dati aggiornati in storage se successo
       if (response.statusCode == 200) {
+        final data =
+            responseData is Map && responseData['data'] is Map
+                ? (responseData['data'] as Map).cast<String, dynamic>()
+                : <String, dynamic>{};
         if (nome != null || cognome != null) {
           await storage.write(
             key: 'full_name',
             value: '${nome ?? ''} ${cognome ?? ''}'.trim(),
           );
+          if (nome != null) await storage.write(key: 'first_name', value: nome);
+          if (cognome != null) {
+            await storage.write(key: 'last_name', value: cognome);
+          }
         }
         if (email != null) await storage.write(key: 'user_email', value: email);
-        if (telefono != null) {
+        // Preferisci sempre il numero internazionale restituito dal backend.
+        final phoneFull =
+            (data['telefono_completo'] ?? data['phone'] ?? telefono)
+                ?.toString()
+                .replaceAll(RegExp(r'[^\d]'), '');
+        if (phoneFull != null && phoneFull.isNotEmpty) {
+          await storage.write(key: 'telefono', value: phoneFull);
+          await storage.write(key: 'user_phone', value: phoneFull);
+          await storage.write(key: 'telefono_completo', value: phoneFull);
+        } else if (telefono != null) {
           await storage.write(key: 'telefono', value: telefono);
+        }
+        if (prefix != null) {
+          await storage.write(
+            key: 'prefix',
+            value: prefix.replaceAll(RegExp(r'[^\d]'), ''),
+          );
         }
         if (citta != null) await storage.write(key: 'citta', value: citta);
         if (indirizzo != null) {

@@ -31,6 +31,7 @@ import '../../widgets/safe_network_avatar.dart';
 import 'completa_profilo_screen.dart';
 import 'documenti_screen.dart';
 import 'mie_richieste_screen.dart';
+import 'modifica_dati_anagrafici_screen.dart';
 import 'storico_pratiche_screen.dart';
 
 final storage = SecureStorageService();
@@ -1482,6 +1483,27 @@ class _ProfiloScreenState extends State<ProfiloScreen> {
                   ),
                 ],
               ),
+            ),
+
+            const SizedBox(height: 20),
+
+            _buildActionCard(
+              context: context,
+              icon: Icons.badge_outlined,
+              accentColor: scheme.primary,
+              title: l10n.personalData,
+              subtitle: l10n.translate('editNamePhoneSubtitle'),
+              onTap: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ModificaDatiAnagraficiScreen(),
+                  ),
+                );
+                if (result == true && mounted) {
+                  await _loadUserData();
+                }
+              },
             ),
 
             const SizedBox(height: 20),

@@ -130,9 +130,6 @@ class DocumentoUnicoFlow {
   static Future<({int userId, String telefono})?> _resolveUserAndPhone() async {
     final userIdRaw = await _storage.read(key: 'user_id');
     final socioIdRaw = await _storage.read(key: 'socio_id');
-    final telefonoRaw =
-        await _storage.read(key: 'telefono') ??
-        await _storage.read(key: 'user_phone');
 
     // Mai usare socio_id tipo "S-123" come user_id numerico.
     int? userId = userIdRaw != null ? int.tryParse(userIdRaw) : null;
@@ -140,29 +137,46 @@ class DocumentoUnicoFlow {
       final digits = socioIdRaw.replaceFirst(RegExp(r'^S-', caseSensitive: false), '');
       userId = int.tryParse(digits);
     }
-    String? telefono = telefonoRaw?.trim();
 
-    if (userId == null || telefono == null || telefono.isEmpty) {
-      try {
-        final meData = await SocioService.getMe();
-        if (meData != null) {
-          final meUserIdRaw = (meData['user_id'] ?? meData['id'])?.toString();
-          final meUserId =
-              meUserIdRaw != null ? int.tryParse(meUserIdRaw) : null;
-          final meTelefono = (meData['telefono'] ?? '').toString().trim();
-          if (meUserId != null) {
-            userId = meUserId;
-            await _storage.write(key: 'user_id', value: meUserId.toString());
-          }
-          if (meTelefono.isNotEmpty) {
-            telefono = meTelefono;
-            await _storage.write(key: 'telefono', value: meTelefono);
-          }
+    // Sempre preferire il telefono del profilo server (evita cache locale
+    // incompleta tipo "29795575" senza le cifre del cellulare IT).
+    String? telefono;
+    try {
+      final meData = await SocioService.getMe();
+      if (meData != null) {
+        final meUserIdRaw = (meData['user_id'] ?? meData['id'])?.toString();
+        final meUserId =
+            meUserIdRaw != null ? int.tryParse(meUserIdRaw) : null;
+        final mePhoneFull =
+            (meData['telefono_completo'] ?? meData['phone'] ?? '')
+                .toString()
+                .replaceAll(RegExp(r'[^\d]'), '');
+        final meTelefono =
+            mePhoneFull.isNotEmpty
+                ? mePhoneFull
+                : (meData['telefono'] ?? '').toString().replaceAll(
+                  RegExp(r'[^\d]'),
+                  '',
+                );
+        if (meUserId != null) {
+          userId = meUserId;
+          await _storage.write(key: 'user_id', value: meUserId.toString());
         }
-      } catch (e) {
-        AppLogger.d('❌ [DU Flow] getMe fallback: $e');
+        if (meTelefono.isNotEmpty) {
+          telefono = meTelefono;
+          await _storage.write(key: 'telefono', value: meTelefono);
+          await _storage.write(key: 'user_phone', value: meTelefono);
+          await _storage.write(key: 'telefono_completo', value: meTelefono);
+        }
       }
+    } catch (e) {
+      AppLogger.d('❌ [DU Flow] getMe phone refresh: $e');
     }
+
+    telefono ??=
+        (await _storage.read(key: 'telefono') ??
+                await _storage.read(key: 'user_phone'))
+            ?.trim();
 
     if (userId == null || telefono == null || telefono.isEmpty) return null;
     return (userId: userId, telefono: telefono);

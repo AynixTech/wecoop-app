@@ -758,6 +758,11 @@ class AppLocalizations {
       'completeProfileHeaderSubtitle':
           'Bastano pochi dati per attivare tutti i servizi WeCoop.',
       'personalDataSubtitle': 'I tuoi dati anagrafici di base',
+      'editNamePhoneSubtitle': 'Modifica nome, cognome e telefono',
+      'editNamePhoneHint':
+          'Puoi correggere nome e numero se li hai inseriti male al primo accesso.',
+      'profileDataUpdated': 'Dati aggiornati',
+      'save': 'Salva',
       'addressSubtitle': 'Dove ti troviamo',
       'loadingData': 'Caricamento dati...',
       'profileIncomplete': 'Profilo Incompleto',
@@ -5555,6 +5560,11 @@ class AppLocalizations {
       'completeProfileHeaderSubtitle':
           'Just a few details to unlock all WeCoop services.',
       'personalDataSubtitle': 'Your basic personal details',
+      'editNamePhoneSubtitle': 'Edit name, surname and phone',
+      'editNamePhoneHint':
+          'You can fix name and phone if you entered them wrong at first access.',
+      'profileDataUpdated': 'Details updated',
+      'save': 'Save',
       'addressSubtitle': 'Where we can reach you',
       'loadingData': 'Loading data...',
       'profileIncomplete': 'Incomplete Profile',
@@ -8798,6 +8808,11 @@ class AppLocalizations {
       'completeProfileHeaderSubtitle':
           'Solo unos datos para activar todos los servicios WeCoop.',
       'personalDataSubtitle': 'Tus datos personales básicos',
+      'editNamePhoneSubtitle': 'Modifica nombre, apellido y teléfono',
+      'editNamePhoneHint':
+          'Puedes corregir nombre y número si los escribiste mal en el primer acceso.',
+      'profileDataUpdated': 'Datos actualizados',
+      'save': 'Guardar',
       'addressSubtitle': 'Dónde encontrarte',
       'loadingData': 'Cargando datos...',
       'profileIncomplete': 'Perfil Incompleto',

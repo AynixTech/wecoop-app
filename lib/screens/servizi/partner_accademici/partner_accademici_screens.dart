@@ -771,24 +771,45 @@ class _PartnerFichaScreenState extends State<PartnerFichaScreen> {
                               ),
                               const SizedBox(height: 10),
                               ...offerteFicha.map(
-                                (o) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 10),
-                                  child: _OffertaMiniCard(
-                                    offerta: o,
-                                    // UNIUMA: solo titolo + sottotitolo (QA).
-                                    compact: isUniuma,
-                                    onInfo: isUniuma
-                                        ? null
-                                        : () {
-                                            if (isLaunchableHttpUrl(
-                                                o.linkInfo)) {
-                                              openPartnerMediaUrl(o.linkInfo);
-                                            } else {
-                                              _openOrientazione();
-                                            }
-                                          },
-                                  ),
-                                ),
+                                (o) {
+                                  if (isUniuma && isUniumaProgramHeader(o)) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 8,
+                                        bottom: 10,
+                                      ),
+                                      child: Text(
+                                        o.titolo,
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: 0.2,
+                                          color: AppColors.textSecondary,
+                                          height: 1.35,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 10),
+                                    child: _OffertaMiniCard(
+                                      offerta: o,
+                                      // UNIUMA: solo titolo + sottotitolo (QA).
+                                      compact: isUniuma,
+                                      onInfo: isUniuma
+                                          ? null
+                                          : () {
+                                              if (isLaunchableHttpUrl(
+                                                  o.linkInfo)) {
+                                                openPartnerMediaUrl(
+                                                    o.linkInfo);
+                                              } else {
+                                                _openOrientazione();
+                                              }
+                                            },
+                                    ),
+                                  );
+                                },
                               ),
                             ],
 
@@ -942,15 +963,26 @@ class _OffertaMiniCard extends StatelessWidget {
               color: AppColors.textPrimary,
             ),
           ),
-          if (offerta.categoria.isNotEmpty || offerta.durata.isNotEmpty) ...[
+          if (offerta.categoria.isNotEmpty ||
+              (offerta.durata.isNotEmpty &&
+                  offerta.durata != 'header' &&
+                  offerta.durata != 'undecided')) ...[
             const SizedBox(height: 6),
             Text(
-              [offerta.categoria, offerta.durata]
-                  .where((e) => e.isNotEmpty && e != 'header')
-                  .join(' · '),
+              // UNIUMA: categoria già contiene «Dipartimento … – ECTS …».
+              // Altri partner: categoria · durata come prima.
+              offerta.categoria.contains('ECTS')
+                  ? offerta.categoria
+                  : [offerta.categoria, offerta.durata]
+                      .where((e) =>
+                          e.isNotEmpty &&
+                          e != 'header' &&
+                          e != 'undecided')
+                      .join(' · '),
               style: const TextStyle(
                 fontSize: 12,
                 color: AppColors.textMuted,
+                height: 1.35,
               ),
             ),
           ],
@@ -1555,6 +1587,8 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                 DropdownButtonFormField<OffertaFormativa?>(
                   value: _selectedDisplay,
                   isExpanded: true,
+                  // UNIUMA: titolo + sottotitolo ECTS / header A-B su più righe.
+                  itemHeight: _isUniuma ? null : kMinInteractiveDimension,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: AppColors.surface,
@@ -1594,22 +1628,55 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                     ..._displayOfferte.map(
                       (o) {
                         final header = _isUniuma && isUniumaProgramHeader(o);
+                        final subtitle = (!header &&
+                                o.categoria.isNotEmpty &&
+                                o.categoria.contains('ECTS'))
+                            ? o.categoria
+                            : null;
                         return DropdownMenuItem<OffertaFormativa?>(
                           value: o,
                           enabled: !header,
-                          child: Text(
-                            o.titolo,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: header ? 3 : 2,
-                            style: TextStyle(
-                              fontWeight:
-                                  header ? FontWeight.w700 : FontWeight.w400,
-                              fontSize: header ? 12 : 14,
-                              color: header
-                                  ? AppColors.textSecondary
-                                  : AppColors.textPrimary,
-                            ),
-                          ),
+                          child: header
+                              ? Text(
+                                  o.titolo,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 3,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 12,
+                                    color: AppColors.textSecondary,
+                                    height: 1.3,
+                                  ),
+                                )
+                              : Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      o.titolo,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14,
+                                        color: AppColors.textPrimary,
+                                      ),
+                                    ),
+                                    if (subtitle != null) ...[
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        subtitle,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                        style: const TextStyle(
+                                          fontSize: 11,
+                                          color: AppColors.textMuted,
+                                          height: 1.25,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
                         );
                       },
                     ),

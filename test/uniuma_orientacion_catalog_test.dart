@@ -28,32 +28,56 @@ void main() {
     expect(docs.last.titolo, contains('Español'));
   });
 
-  test('UNIUMA catalog has 10 selectable options', () {
+  test('UNIUMA catalog has 10 selectable options with undecided last', () {
     final selectable =
         uniumaOrientacionPrograms.where((p) => p.selectable).toList();
     expect(selectable.length, 10);
-    expect(selectable.first.codice, 'undecided');
-    expect(selectable.last.codice, 'master_criminologia');
+    expect(selectable.first.codice, 'hum_criminologia');
+    expect(selectable.last.codice, 'undecided');
+    expect(selectable.last.titoloFor('it'), 'Devo ancora decidere');
     expect(isUniumaPartnerName('Società Umanitaria'), isTrue);
     expect(isUniumaPartnerName('Altro Partner'), isFalse);
   });
 
-  test('embedded offerte include category headers', () {
+  test('embedded offerte include A/B category headers', () {
     final offerte =
-        uniumaOfferteAsFormative(partnerId: 1, partnerNome: 'UNIUMA', lang: 'es');
+        uniumaOfferteAsFormative(partnerId: 1, partnerNome: 'UNIUMA', lang: 'it');
     expect(offerte.length, uniumaOrientacionPrograms.length);
-    expect(offerte.where((o) => isUniumaProgramHeader(o)).length, 3);
+    expect(offerte.where((o) => isUniumaProgramHeader(o)).length, 2);
+    expect(
+      offerte.firstWhere((o) => o.linkInfo == 'hdr_laurea').titolo,
+      'A. CORSI DI LAUREA IN MEDIAZIONE LINGUISTICA E CULTURALE',
+    );
+    expect(
+      offerte.firstWhere((o) => o.linkInfo == 'hdr_post').titolo,
+      'B. POST-LAUREA',
+    );
   });
 
-  test('ficha list hides undecided and headers', () {
+  test('ficha list shows headers and courses, hides undecided', () {
     final offerte =
         uniumaOfferteAsFormative(partnerId: 1, partnerNome: 'UNIUMA', lang: 'it');
     final ficha = offerte.where(isUniumaFichaOfferta).toList();
-    expect(ficha.length, 9);
+    // 2 header + 8 triennale + 1 master
+    expect(ficha.length, 11);
     expect(ficha.any(isUniumaUndecided), isFalse);
-    expect(ficha.any(isUniumaProgramHeader), isFalse);
-    expect(ficha.first.titolo, 'Criminologia e Tutela Sociale');
-    expect(ficha.first.descrizione, isEmpty);
+    expect(ficha.where(isUniumaProgramHeader).length, 2);
+    expect(
+      ficha.firstWhere((o) => o.linkInfo == 'hum_criminologia').titolo,
+      'Criminologia e Tutela Sociale',
+    );
+    expect(
+      ficha.firstWhere((o) => o.linkInfo == 'hum_criminologia').categoria,
+      'Dipartimento Umanistico – Triennale – ECTS 180',
+    );
+    expect(
+      ficha.firstWhere((o) => o.linkInfo == 'eco_gestion').titolo,
+      'Business Management',
+    );
+    expect(
+      ficha.firstWhere((o) => o.linkInfo == 'master_criminologia').categoria,
+      'Master annuale – ECTS 60',
+    );
   });
 
   test('titles follow app language', () {
@@ -67,14 +91,16 @@ void main() {
     expect(es.titolo, 'Criminología y Protección Social');
     expect(it.titolo, 'Criminologia e Tutela Sociale');
     expect(en.titolo, 'Criminology and Social Protection');
-    expect(it.categoria, 'Umanistico');
-    expect(en.categoria, 'Humanities');
+    expect(it.categoria, contains('Dipartimento Umanistico'));
+    expect(it.categoria, contains('ECTS 180'));
+    expect(en.categoria, contains('Humanities Department'));
   });
 
   test('every ficha program is localized for it/es/en/fr/ar/zh', () {
     const langs = ['it', 'es', 'en', 'fr', 'ar', 'zh'];
     final base = uniumaOfferteAsFormative(partnerId: 1, partnerNome: 'U')
         .where(isUniumaFichaOfferta)
+        .where((o) => !isUniumaProgramHeader(o))
         .toList();
     expect(base, hasLength(9));
 
@@ -86,12 +112,12 @@ void main() {
             reason: '${p.codice} missing categoria $lang');
         expect(p.titoloFor(lang).trim(), isNotEmpty);
       }
-      // IT e ES devono differire (nessun testo ES “inchiodato”).
-      expect(p.titoloFor('it'), isNot(equals(p.titoloFor('es'))),
-          reason: p.codice);
+      if (p.selectable) {
+        expect(p.titoloFor('it'), isNot(equals(p.titoloFor('es'))),
+            reason: p.codice);
+      }
     }
 
-    // Anche partendo da titoli API in spagnolo, la UI IT/EN si localizza.
     final fromApiEs = base.map((o) {
       final es = localizeUniumaOfferta(o, 'es');
       return OffertaFormativa(
@@ -114,11 +140,9 @@ void main() {
     final asEs = localizeUniumaOfferte(fromApiEs, 'es');
     final asFr = localizeUniumaOfferte(fromApiEs, 'fr');
     expect(asIt.first.titolo, 'Criminologia e Tutela Sociale');
-    expect(asIt.first.categoria, 'Umanistico');
-    expect(asIt.first.durata, 'triennale');
+    expect(asIt.first.categoria, 'Dipartimento Umanistico – Triennale – ECTS 180');
     expect(asEs.first.titolo, 'Criminología y Protección Social');
-    expect(asEs.first.categoria, 'Humanidades');
-    expect(asEs.first.durata, 'trienal');
+    expect(asEs.first.categoria, contains('Departamento de Humanidades'));
     expect(asFr.first.titolo, 'Criminologie et Protection Sociale');
     expect(asIt.map((e) => e.titolo).toSet().length, 9);
     expect(asEs.map((e) => e.titolo).toSet().length, 9);
@@ -130,10 +154,32 @@ void main() {
           reason: 'codice ${p.codice} must not open via url_launcher');
     }
     expect(isLaunchableHttpUrl('undecided'), isFalse);
+    expect(isLaunchableHttpUrl('hdr_laurea'), isFalse);
     expect(isLaunchableHttpUrl('hdr_hum'), isFalse);
     expect(
       isLaunchableHttpUrl('https://www.wecoop.org/formazione/info'),
       isTrue,
     );
+  });
+
+  test('legacy titles still resolve to catalog codes', () {
+    final legacy = OffertaFormativa(
+      id: 1,
+      titolo: 'Design Multiculturale',
+      descrizione: '',
+      partnerId: 1,
+      partnerNome: 'U',
+      partnerLogoUrl: '',
+      partnerSitoWeb: '',
+      categoria: 'Umanistico',
+      durata: 'triennale',
+      linkInfo: '',
+      imageUrl: '',
+      ordine: 1,
+    );
+    final opt = uniumaOptionForOfferta(legacy);
+    expect(opt?.codice, 'hum_diseno_multi');
+    final localized = localizeUniumaOfferta(legacy, 'it');
+    expect(localized.titolo, 'Progettazione Multiculturale');
   });
 }

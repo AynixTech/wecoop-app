@@ -1,7 +1,6 @@
-/// Catalogo programmi UNIUMA / Società Umanitaria per «Solicitar orientación».
-/// Spec V1.0 — 28 ottobre 2026. Se l'API restituisce `offerte_formative`,
-/// quelle prevalgono su questo catalogo embedded (i titoli vengono comunque
-/// localizzati per codice programma).
+/// Catalogo programmi UNIUMA / Società Umanitaria per «Solicitar orientación»
+/// e Offerta Formativa in ficha.
+/// Spec aggiornata novembre 2026: sezioni A/B, ECTS, titoli aggiornati.
 library;
 
 import '../models/offerta_formativa_model.dart';
@@ -58,14 +57,16 @@ List<PartnerMedia> uniumaBrochureDocumenti(List<PartnerMedia> fromApi) {
 
 class UniumaProgramOption {
   final String codice;
-  /// Titoli per lingua (es/it/en/fr/ar/zh). Fallback: es → en → it.
+  /// Titoli per lingua (es/it/en/fr/ar/zh). Fallback: it → es → en.
   final Map<String, String> titoli;
-  /// Categoria per lingua.
+  /// Dipartimento / sezione breve per lingua (es. «Dipartimento Umanistico»).
   final Map<String, String> categorie;
   /// triennale | master | undecided | header
   final String livello;
+  /// Crediti ECTS (0 = non applicabile / header / undecided).
+  final int ects;
   final bool selectable;
-  /// Mostrare nella lista Offerta Formativa della ficha (no undecided/header).
+  /// Mostrare nella lista Offerta Formativa della ficha (no undecided).
   final bool showInFicha;
 
   const UniumaProgramOption({
@@ -73,12 +74,43 @@ class UniumaProgramOption {
     required this.titoli,
     required this.categorie,
     required this.livello,
+    this.ects = 0,
     this.selectable = true,
     this.showInFicha = true,
   });
 
   String titoloFor(String lang) => _pick(titoli, lang);
   String categoriaFor(String lang) => _pick(categorie, lang);
+
+  /// Sottotitolo UI: «Dipartimento Umanistico – Triennale – ECTS 180».
+  String dettaglioFor(String lang) {
+    if (livello == 'header' || livello == 'undecided') return '';
+    final code = lang.toLowerCase().split(RegExp(r'[_-]')).first;
+    if (livello == 'master') {
+      final masterLabel = {
+        'es': 'Máster anual',
+        'it': 'Master annuale',
+        'en': 'One-year Master',
+        'fr': 'Master annuel',
+        'ar': 'ماجستير سنوي',
+        'zh': '一年制硕士',
+      };
+      final label = masterLabel[code] ?? masterLabel['it']!;
+      return ects > 0 ? '$label – ECTS $ects' : label;
+    }
+    final cat = categoriaFor(lang);
+    final livelloLabel = uniumaLivelloLabel(livello, lang);
+    // Capitalizza «Triennale» in IT/ES/… per match brief.
+    final livelloUi = livelloLabel.isEmpty
+        ? ''
+        : '${livelloLabel[0].toUpperCase()}${livelloLabel.substring(1)}';
+    final parts = <String>[
+      if (cat.isNotEmpty) cat,
+      if (livelloUi.isNotEmpty) livelloUi,
+      if (ects > 0) 'ECTS $ects',
+    ];
+    return parts.join(' – ');
+  }
 
   static String _pick(Map<String, String> m, String lang) {
     final code = lang.toLowerCase().split(RegExp(r'[_-]')).first;
@@ -87,26 +119,26 @@ class UniumaProgramOption {
 }
 
 const _catHum = {
-  'es': 'Humanidades',
-  'it': 'Umanistico',
-  'en': 'Humanities',
-  'fr': 'Humanités',
-  'ar': 'العلوم الإنسانية',
+  'es': 'Departamento de Humanidades',
+  'it': 'Dipartimento Umanistico',
+  'en': 'Humanities Department',
+  'fr': 'Département des Humanités',
+  'ar': 'قسم العلوم الإنسانية',
   'zh': '人文学部',
 };
 
 const _catEco = {
-  'es': 'Económico',
-  'it': 'Economico',
-  'en': 'Economics',
-  'fr': 'Économique',
+  'es': 'Departamento Económico',
+  'it': 'Dipartimento Economico',
+  'en': 'Economics Department',
+  'fr': 'Département Économique',
   'ar': 'القسم الاقتصادي',
   'zh': '经济学部',
 };
 
 const _catPos = {
   'es': 'Posgrado',
-  'it': 'Post laurea',
+  'it': 'Post-laurea',
   'en': 'Postgraduate',
   'fr': 'Postgrade',
   'ar': 'دراسات عليا',
@@ -122,41 +154,22 @@ const _catOri = {
   'zh': '升学指导',
 };
 
-/// Headers non selezionabili + 10 opzioni selezionabili (spec §2.1).
+/// Headers A/B + 9 corsi + «Devo ancora decidere» in coda.
 const uniumaOrientacionPrograms = <UniumaProgramOption>[
   UniumaProgramOption(
-    codice: 'undecided',
+    codice: 'hdr_laurea',
     titoli: {
-      'es': 'Aún no lo sé',
-      'it': 'Non lo so ancora',
-      'en': "I don't know yet",
-      'fr': 'Je ne sais pas encore',
-      'ar': 'لا أعرف بعد',
-      'zh': '还不确定',
-    },
-    categorie: _catOri,
-    livello: 'undecided',
-    showInFicha: false,
-  ),
-  UniumaProgramOption(
-    codice: 'hdr_hum',
-    titoli: {
-      'es':
-          'Grado universitario trienal en Mediación Lingüística y Cultural — Departamento de Humanidades',
-      'it':
-          'Corso di laurea triennale in Mediazione Linguistica e Culturale — Dipartimento Umanistico',
-      'en':
-          'Three-year university degree in Linguistic and Cultural Mediation — Humanities Department',
-      'fr':
-          'Diplôme universitaire triennal en Médiation Linguistique et Culturelle — Département des Humanités',
-      'ar':
-          'درجة جامعية ثلاثية السنوات في الوساطة اللغوية والثقافية — قسم العلوم الإنسانية',
-      'zh': '语言与文化调解三年制大学学位 — 人文学部',
+      'es': 'A. GRADOS UNIVERSITARIOS EN MEDIACIÓN LINGÜÍSTICA Y CULTURAL',
+      'it': 'A. CORSI DI LAUREA IN MEDIAZIONE LINGUISTICA E CULTURALE',
+      'en': 'A. DEGREE COURSES IN LINGUISTIC AND CULTURAL MEDIATION',
+      'fr': 'A. CURSUS DE LICENCE EN MÉDIATION LINGUISTIQUE ET CULTURELLE',
+      'ar': 'أ. برامج البكالوريوس في الوساطة اللغوية والثقافية',
+      'zh': 'A. 语言与文化调解本科学位课程',
     },
     categorie: _catHum,
     livello: 'header',
     selectable: false,
-    showInFicha: false,
+    showInFicha: true,
   ),
   UniumaProgramOption(
     codice: 'hum_criminologia',
@@ -170,6 +183,7 @@ const uniumaOrientacionPrograms = <UniumaProgramOption>[
     },
     categorie: _catHum,
     livello: 'triennale',
+    ects: 180,
   ),
   UniumaProgramOption(
     codice: 'hum_diplomacia',
@@ -183,129 +197,116 @@ const uniumaOrientacionPrograms = <UniumaProgramOption>[
     },
     categorie: _catHum,
     livello: 'triennale',
+    ects: 180,
   ),
   UniumaProgramOption(
     codice: 'hum_diseno_multi',
     titoli: {
-      'es': 'Diseño Multicultural',
-      'it': 'Design Multiculturale',
+      'es': 'Proyectación Multicultural',
+      'it': 'Progettazione Multiculturale',
       'en': 'Multicultural Design',
-      'fr': 'Design Multiculturel',
+      'fr': 'Conception Multiculturelle',
       'ar': 'التصميم متعدد الثقافات',
       'zh': '多元文化设计',
     },
     categorie: _catHum,
     livello: 'triennale',
-  ),
-  UniumaProgramOption(
-    codice: 'hdr_eco',
-    titoli: {
-      'es':
-          'Grado universitario trienal en Mediación Lingüística y Cultural — Departamento Económico',
-      'it':
-          'Corso di laurea triennale in Mediazione Linguistica e Culturale — Dipartimento Economico',
-      'en':
-          'Three-year university degree in Linguistic and Cultural Mediation — Economics Department',
-      'fr':
-          'Diplôme universitaire triennal en Médiation Linguistique et Culturelle — Département Économique',
-      'ar':
-          'درجة جامعية ثلاثية السنوات في الوساطة اللغوية والثقافية — القسم الاقتصادي',
-      'zh': '语言与文化调解三年制大学学位 — 经济学部',
-    },
-    categorie: _catEco,
-    livello: 'header',
-    selectable: false,
-    showInFicha: false,
+    ects: 180,
   ),
   UniumaProgramOption(
     codice: 'eco_artistico',
     titoli: {
-      'es': 'Diseño Artístico (Milán)',
-      'it': 'Design Artistico (Milano)',
-      'en': 'Artistic Design (Milan)',
-      'fr': 'Design Artistique (Milan)',
-      'ar': 'التصميم الفني (ميلانو)',
-      'zh': '艺术设计（米兰）',
+      'es': 'Proyectación Artística',
+      'it': 'Progettazione Artistica',
+      'en': 'Artistic Design',
+      'fr': 'Conception Artistique',
+      'ar': 'التصميم الفني',
+      'zh': '艺术设计',
     },
     categorie: _catEco,
     livello: 'triennale',
+    ects: 180,
   ),
   UniumaProgramOption(
     codice: 'eco_gestion',
     titoli: {
-      'es': 'Gestión Empresarial (Milán)',
-      'it': 'Gestione d\'Impresa (Milano)',
-      'en': 'Business Management (Milan)',
-      'fr': 'Gestion d\'Entreprise (Milan)',
-      'ar': 'إدارة الأعمال (ميلانو)',
-      'zh': '企业管理（米兰）',
+      'es': 'Gestión Empresarial (Business Management)',
+      'it': 'Business Management',
+      'en': 'Business Management',
+      'fr': 'Gestion d\'Entreprise (Business Management)',
+      'ar': 'إدارة الأعمال',
+      'zh': '商业管理',
     },
     categorie: _catEco,
     livello: 'triennale',
+    ects: 180,
   ),
   UniumaProgramOption(
     codice: 'eco_marketing',
     titoli: {
-      'es': 'Marketing Ético y Desarrollo Digital (Milán)',
-      'it': 'Marketing Etico e Sviluppo Digitale (Milano)',
-      'en': 'Ethical Marketing and Digital Development (Milan)',
-      'fr': 'Marketing Éthique et Développement Numérique (Milan)',
-      'ar': 'التسويق الأخلاقي والتطوير الرقمي (ميلانو)',
-      'zh': '伦理营销与数字发展（米兰）',
+      'es': 'Marketing Ético y Desarrollo Digital',
+      'it': 'Marketing Etico e Sviluppo Digitale',
+      'en': 'Ethical Marketing and Digital Development',
+      'fr': 'Marketing Éthique et Développement Numérique',
+      'ar': 'التسويق الأخلاقي والتطوير الرقمي',
+      'zh': '伦理营销与数字发展',
     },
     categorie: _catEco,
     livello: 'triennale',
+    ects: 180,
   ),
   UniumaProgramOption(
     codice: 'eco_moda',
     titoli: {
-      'es': 'Gestión Sostenible de la Moda (Génova)',
-      'it': 'Gestione Sostenibile della Moda (Genova)',
-      'en': 'Sustainable Fashion Management (Genoa)',
-      'fr': 'Gestion Durable de la Mode (Gênes)',
-      'ar': 'الإدارة المستدامة للأزياء (جنوى)',
-      'zh': '可持续时尚管理（热那亚）',
+      'es': 'Gestión Sostenible de la Moda (Sustainable Fashion Management)',
+      'it': 'Sustainable Fashion Management',
+      'en': 'Sustainable Fashion Management',
+      'fr': 'Gestion Durable de la Mode (Sustainable Fashion Management)',
+      'ar': 'إدارة الأزياء المستدامة',
+      'zh': '可持续时尚管理',
     },
     categorie: _catEco,
     livello: 'triennale',
+    ects: 180,
   ),
   UniumaProgramOption(
     codice: 'eco_maritima',
     titoli: {
       'es':
-          'Gestión para el Diseño y la Gestión Marítima, Turística y Portuaria (Génova)',
+          'Management para la Proyectación y la Gestión Turística, Marítima y Portuaria',
       'it':
-          'Gestione per il Design e la Gestione Marittima, Turistica e Portuale (Genova)',
+          'Management per la Progettazione e la Gestione Turistica, Marittima e Portuale',
       'en':
-          'Management for Maritime, Tourism and Port Design and Management (Genoa)',
+          'Management for Tourism, Maritime and Port Planning and Management',
       'fr':
-          'Gestion pour le Design et la Gestion Maritime, Touristique et Portuaire (Gênes)',
+          'Management pour la Conception et la Gestion Touristique, Maritime et Portuaire',
       'ar':
-          'الإدارة للتصميم والإدارة البحرية والسياحية والمينائية (جنوى)',
-      'zh': '海事、旅游与港口设计与管理（热那亚）',
+          'إدارة تصميم وإدارة السياحة والبحر والموانئ',
+      'zh': '旅游、海事与港口规划与管理',
     },
     categorie: _catEco,
     livello: 'triennale',
+    ects: 180,
   ),
   UniumaProgramOption(
-    codice: 'hdr_master',
+    codice: 'hdr_post',
     titoli: {
-      'es': 'Formación superior de posgrado',
-      'it': 'Formazione superiore di post laurea',
-      'en': 'Postgraduate higher education',
-      'fr': 'Formation supérieure de postgrade',
-      'ar': 'تكوين عالٍ لمرحلة ما بعد التخرج',
-      'zh': '研究生高等教育',
+      'es': 'B. POSGRADO',
+      'it': 'B. POST-LAUREA',
+      'en': 'B. POSTGRADUATE',
+      'fr': 'B. POSTGRADE',
+      'ar': 'ب. الدراسات العليا',
+      'zh': 'B. 研究生',
     },
     categorie: _catPos,
     livello: 'header',
     selectable: false,
-    showInFicha: false,
+    showInFicha: true,
   ),
   UniumaProgramOption(
     codice: 'master_criminologia',
     titoli: {
-      'es': 'Máster en Criminología e Psico-Sociología de la Desviación',
+      'es': 'Máster en Criminología y Psico-Sociología de la Desviación',
       'it': 'Master in Criminologia e Psico-Sociologia della Devianza',
       'en': "Master's in Criminology and Psycho-Sociology of Deviance",
       'fr': 'Master en Criminologie et Psycho-Sociologie de la Déviance',
@@ -314,6 +315,21 @@ const uniumaOrientacionPrograms = <UniumaProgramOption>[
     },
     categorie: _catPos,
     livello: 'master',
+    ects: 60,
+  ),
+  UniumaProgramOption(
+    codice: 'undecided',
+    titoli: {
+      'es': 'Aún debo decidir',
+      'it': 'Devo ancora decidere',
+      'en': 'I still have to decide',
+      'fr': 'Je dois encore décider',
+      'ar': 'ما زلت بحاجة إلى اتخاذ قرار',
+      'zh': '我还没决定',
+    },
+    categorie: _catOri,
+    livello: 'undecided',
+    showInFicha: false,
   ),
 ];
 
@@ -364,6 +380,7 @@ List<OffertaFormativa> uniumaOfferteAsFormative({
   var i = 0;
   return uniumaOrientacionPrograms.map((p) {
     i += 1;
+    final dettaglio = p.dettaglioFor(lang);
     return OffertaFormativa(
       id: p.selectable ? (-1000 - i) : (-2000 - i),
       titolo: p.titoloFor(lang),
@@ -372,10 +389,13 @@ List<OffertaFormativa> uniumaOfferteAsFormative({
       partnerNome: partnerNome,
       partnerLogoUrl: '',
       partnerSitoWeb: '',
-      categoria: p.categoriaFor(lang),
+      // Categoria = sottotitolo completo per UI (Dipartimento … – ECTS).
+      categoria: dettaglio.isNotEmpty ? dettaglio : p.categoriaFor(lang),
       durata: p.livello == 'header'
           ? 'header'
-          : uniumaLivelloLabel(p.livello, lang),
+          : p.livello == 'undecided'
+              ? 'undecided'
+              : uniumaLivelloLabel(p.livello, lang),
       linkInfo: p.codice,
       imageUrl: '',
       ordine: i,
@@ -391,18 +411,20 @@ bool isUniumaUndecided(OffertaFormativa o) =>
     o.durata == 'undecided' ||
     o.descrizione == 'undecided';
 
-/// Voci per la lista «Offerta Formativa» in ficha: no header, no «Aún no lo sé».
+/// Voci per la lista «Offerta Formativa» in ficha: no «Devo ancora decidere».
+/// Gli header A/B restano visibili.
 bool isUniumaFichaOfferta(OffertaFormativa o) {
-  if (isUniumaProgramHeader(o) || isUniumaUndecided(o)) return false;
+  if (isUniumaUndecided(o)) return false;
   final opt = uniumaOptionForOfferta(o);
   if (opt != null) return opt.showInFicha;
-  return true;
+  return !isUniumaUndecided(o);
 }
 
 /// Localizza titolo/categoria/durata di un'offerta UNIUMA in base al codice.
 OffertaFormativa localizeUniumaOfferta(OffertaFormativa o, String lang) {
   final opt = uniumaOptionForOfferta(o);
   if (opt == null) return o;
+  final dettaglio = opt.dettaglioFor(lang);
   return OffertaFormativa(
     id: o.id,
     titolo: opt.titoloFor(lang),
@@ -411,10 +433,12 @@ OffertaFormativa localizeUniumaOfferta(OffertaFormativa o, String lang) {
     partnerNome: o.partnerNome,
     partnerLogoUrl: o.partnerLogoUrl,
     partnerSitoWeb: o.partnerSitoWeb,
-    categoria: opt.categoriaFor(lang),
+    categoria: dettaglio.isNotEmpty ? dettaglio : opt.categoriaFor(lang),
     durata: opt.livello == 'header'
         ? 'header'
-        : uniumaLivelloLabel(opt.livello, lang),
+        : opt.livello == 'undecided'
+            ? 'undecided'
+            : uniumaLivelloLabel(opt.livello, lang),
     linkInfo: opt.codice,
     imageUrl: o.imageUrl,
     ordine: o.ordine,
@@ -427,7 +451,7 @@ List<OffertaFormativa> localizeUniumaOfferte(
 ) =>
     offerte.map((o) => localizeUniumaOfferta(o, lang)).toList();
 
-/// True solo per URL http(s). I [linkInfo] UNIUMA sono codici (`hdr_hum`,
+/// True solo per URL http(s). I [linkInfo] UNIUMA sono codici (`hdr_laurea`,
 /// `undecided`, …) e non vanno aperti con url_launcher.
 bool isLaunchableHttpUrl(String? value) {
   if (value == null) return false;
@@ -444,10 +468,44 @@ UniumaProgramOption? uniumaOptionForOfferta(OffertaFormativa? o) {
   for (final p in uniumaOrientacionPrograms) {
     if (p.codice == code) return p;
   }
-  // Match su qualsiasi titolo noto (API spesso in ES).
+  // Alias legacy header codes (catalogo precedente).
+  if (code == 'hdr_hum' || code == 'hdr_eco') {
+    for (final p in uniumaOrientacionPrograms) {
+      if (p.codice == 'hdr_laurea') return p;
+    }
+  }
+  if (code == 'hdr_master') {
+    for (final p in uniumaOrientacionPrograms) {
+      if (p.codice == 'hdr_post') return p;
+    }
+  }
+  // Match su qualsiasi titolo noto (API spesso in ES / titoli vecchi).
   for (final p in uniumaOrientacionPrograms) {
     for (final t in p.titoli.values) {
       if (t == o.titolo) return p;
+    }
+  }
+  // Match titoli legacy ancora eventualmente in API.
+  const legacy = <String, String>{
+    'Design Multiculturale': 'hum_diseno_multi',
+    'Diseño Multicultural': 'hum_diseno_multi',
+    'Design Artistico (Milano)': 'eco_artistico',
+    'Diseño Artístico (Milán)': 'eco_artistico',
+    "Gestione d'Impresa (Milano)": 'eco_gestion',
+    'Gestión Empresarial (Milán)': 'eco_gestion',
+    'Marketing Etico e Sviluppo Digitale (Milano)': 'eco_marketing',
+    'Marketing Ético y Desarrollo Digital (Milán)': 'eco_marketing',
+    'Gestione Sostenibile della Moda (Genova)': 'eco_moda',
+    'Gestión Sostenible de la Moda (Génova)': 'eco_moda',
+    'Gestione per il Design e la Gestione Marittima, Turistica e Portuale (Genova)':
+        'eco_maritima',
+    'Non lo so ancora': 'undecided',
+    'Aún no lo sé': 'undecided',
+  };
+  final mapped = legacy[o.titolo];
+  if (mapped != null) {
+    for (final p in uniumaOrientacionPrograms) {
+      if (p.codice == mapped) return p;
     }
   }
   return null;

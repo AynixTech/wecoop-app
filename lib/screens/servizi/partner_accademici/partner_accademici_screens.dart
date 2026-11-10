@@ -549,15 +549,16 @@ class _PartnerFichaScreenState extends State<PartnerFichaScreen> {
     final brochureDocumenti = isUniuma
         ? uniumaBrochureDocumenti(d?.documenti ?? const [])
         : (d?.documenti ?? const []);
-    // Offerta Formativa: API se presente, altrimenti catalogo embedded UNIUMA.
-    final offerteRaw = (d?.offerteFormative.isNotEmpty == true)
-        ? d!.offerteFormative
-        : (isUniuma
-            ? uniumaOfferteAsFormative(
-                partnerId: widget.partner.id,
-                partnerNome: widget.partner.nome,
-                lang: lang,
-              )
+    // UNIUMA: catalogo embedded (evita header legacy duplicati da API).
+    // Altri partner: API se presente.
+    final offerteRaw = isUniuma
+        ? uniumaCanonicalOfferte(
+            partnerId: widget.partner.id,
+            partnerNome: widget.partner.nome,
+            lang: lang,
+          )
+        : (d?.offerteFormative.isNotEmpty == true
+            ? d!.offerteFormative
             : const <OffertaFormativa>[]);
     final offerteFicha = isUniuma
         ? localizeUniumaOfferte(
@@ -1296,7 +1297,8 @@ class PartnerOrientazioneScreen extends StatefulWidget {
 
 class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
   final _helpCtrl = TextEditingController();
-  OffertaFormativa? _selectedProgram;
+  /// Codice programma selezionato (stabile tra rebuild; evita bug Dropdown ==).
+  String? _selectedCodice;
   List<OffertaFormativa> _offerte = [];
   List<PartnerMedia> _media = [];
   bool _privacy = false;
@@ -1311,26 +1313,34 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
   List<OffertaFormativa> get _displayOfferte =>
       _isUniuma ? localizeUniumaOfferte(_offerte, _lang) : _offerte;
 
-  OffertaFormativa? get _selectedDisplay {
-    final sel = _selectedProgram;
-    if (sel == null) return null;
-    final code = sel.linkInfo.isNotEmpty ? sel.linkInfo : sel.descrizione;
+  OffertaFormativa? get _selectedProgram {
+    final code = _selectedCodice;
+    if (code == null || code.isEmpty) return null;
     for (final o in _displayOfferte) {
-      if ((code.isNotEmpty && o.linkInfo == code) || o.id == sel.id) {
-        return o;
-      }
+      if (o.linkInfo == code) return o;
     }
-    return _isUniuma ? localizeUniumaOfferta(sel, _lang) : sel;
+    return null;
+  }
+
+  String _itemValue(OffertaFormativa o) {
+    final code = o.linkInfo.isNotEmpty ? o.linkInfo : 'id:${o.id}';
+    if (_isUniuma && isUniumaProgramHeader(o)) return 'header:$code';
+    return code;
   }
 
   @override
   void initState() {
     super.initState();
-    _offerte = List.of(widget.offerte);
+    if (_isUniuma) {
+      _offerte = uniumaCanonicalOfferte(
+        partnerId: widget.partner?.id ?? 0,
+        partnerNome: widget.partner?.nome ?? 'UNIUMA',
+      );
+    } else {
+      _offerte = List.of(widget.offerte);
+    }
     if (widget.partner != null) {
       _loadOfferte();
-    } else if (_isUniuma && _offerte.isEmpty) {
-      _offerte = uniumaOfferteAsFormative(partnerId: 0, partnerNome: 'UNIUMA');
     }
   }
 
@@ -1340,15 +1350,14 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
       final d = await widget.contenutiService
           .getPartnerDettaglio(widget.partner!.id);
       if (!mounted) return;
-      var offerte = d?.offerteFormative ?? const <OffertaFormativa>[];
-      // API prevale; se vuota e partner UNIUMA → catalogo embedded.
-      if (offerte.isEmpty && _isUniuma) {
-        offerte = uniumaOfferteAsFormative(
-          partnerId: widget.partner!.id,
-          partnerNome: widget.partner!.nome,
-          lang: Localizations.localeOf(context).languageCode,
-        );
-      }
+      // UNIUMA: sempre catalogo embedded (niente hdr_eco duplicato da API).
+      final offerte = _isUniuma
+          ? uniumaCanonicalOfferte(
+              partnerId: widget.partner!.id,
+              partnerNome: widget.partner!.nome,
+              lang: Localizations.localeOf(context).languageCode,
+            )
+          : (d?.offerteFormative ?? const <OffertaFormativa>[]);
       setState(() {
         _offerte = offerte;
         _media = d?.media ?? const [];
@@ -1358,7 +1367,7 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
       if (!mounted) return;
       setState(() {
         if (_isUniuma && _offerte.isEmpty) {
-          _offerte = uniumaOfferteAsFormative(
+          _offerte = uniumaCanonicalOfferte(
             partnerId: widget.partner?.id ?? 0,
             partnerNome: widget.partner?.nome ?? 'UNIUMA',
             lang: Localizations.localeOf(context).languageCode,
@@ -1429,9 +1438,9 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
 
   Future<void> _submit() async {
     final l10n = AppLocalizations.of(context)!;
+    final selected = _selectedProgram;
     if (_isUniuma &&
-        (_selectedProgram == null ||
-            isUniumaProgramHeader(_selectedProgram!))) {
+        (selected == null || isUniumaProgramHeader(selected))) {
       setState(() => _programError = 'Selecciona un programa o «Aún no lo sé».');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(_programError!)),
@@ -1449,7 +1458,7 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
       _programError = null;
     });
     try {
-      final opt = uniumaOptionForOfferta(_selectedProgram);
+      final opt = uniumaOptionForOfferta(selected);
       final res = await SocioService.inviaRichiestaServizio(
         servizio: 'study_italy_service',
         categoria: 'studiare_in_italia',
@@ -1457,9 +1466,9 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
           'tipo_richiesta': 'orientazione_partner_accademico',
           if (widget.partner != null) 'partner_id': widget.partner!.id,
           if (widget.partner != null) 'partner_nome': widget.partner!.nome,
-          if (_selectedProgram != null) ...{
-            if (_selectedProgram!.id > 0) 'programma_id': _selectedProgram!.id,
-            'programma_titolo': _selectedProgram!.titolo,
+          if (selected != null) ...{
+            if (selected.id > 0) 'programma_id': selected.id,
+            'programma_titolo': selected.titolo,
             if (opt != null) ...{
               'programma_codice': opt.codice,
               'programma_categoria': opt.categoriaFor(_lang),
@@ -1584,11 +1593,11 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                DropdownButtonFormField<OffertaFormativa?>(
-                  value: _selectedDisplay,
+                DropdownButtonFormField<String?>(
+                  value: _selectedCodice,
                   isExpanded: true,
-                  // UNIUMA: titolo + sottotitolo ECTS / header A-B su più righe.
-                  itemHeight: _isUniuma ? null : kMinInteractiveDimension,
+                  // Altezza fissa: itemHeight null + Column rompe i tap su iOS.
+                  itemHeight: _isUniuma ? 64 : kMinInteractiveDimension,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: AppColors.surface,
@@ -1618,7 +1627,7 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                     ];
                   },
                   items: [
-                    DropdownMenuItem<OffertaFormativa?>(
+                    DropdownMenuItem<String?>(
                       value: null,
                       child: Text(
                         l10n.translate('partnerAccademiciProgramHint'),
@@ -1633,48 +1642,47 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                                 o.categoria.contains('ECTS'))
                             ? o.categoria
                             : null;
-                        return DropdownMenuItem<OffertaFormativa?>(
-                          value: o,
+                        return DropdownMenuItem<String?>(
+                          value: _itemValue(o),
                           enabled: !header,
                           child: header
                               ? Text(
                                   o.titolo,
                                   overflow: TextOverflow.ellipsis,
-                                  maxLines: 3,
+                                  maxLines: 2,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 12,
                                     color: AppColors.textSecondary,
-                                    height: 1.3,
+                                    height: 1.25,
                                   ),
                                 )
                               : Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
                                       o.titolo,
                                       overflow: TextOverflow.ellipsis,
-                                      maxLines: 2,
+                                      maxLines: 1,
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 14,
                                         color: AppColors.textPrimary,
                                       ),
                                     ),
-                                    if (subtitle != null) ...[
-                                      const SizedBox(height: 2),
+                                    if (subtitle != null)
                                       Text(
                                         subtitle,
                                         overflow: TextOverflow.ellipsis,
-                                        maxLines: 2,
+                                        maxLines: 1,
                                         style: const TextStyle(
                                           fontSize: 11,
                                           color: AppColors.textMuted,
-                                          height: 1.25,
+                                          height: 1.2,
                                         ),
                                       ),
-                                    ],
                                   ],
                                 ),
                         );
@@ -1684,13 +1692,9 @@ class _PartnerOrientazioneScreenState extends State<PartnerOrientazioneScreen> {
                   onChanged: _loadingOfferte
                       ? null
                       : (v) {
-                          if (v != null &&
-                              _isUniuma &&
-                              isUniumaProgramHeader(v)) {
-                            return;
-                          }
+                          if (v != null && v.startsWith('header:')) return;
                           setState(() {
-                            _selectedProgram = v;
+                            _selectedCodice = v;
                             _programError = null;
                           });
                         },

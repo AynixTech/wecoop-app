@@ -403,6 +403,37 @@ List<OffertaFormativa> uniumaOfferteAsFormative({
   }).toList();
 }
 
+/// Codici header legacy ancora presenti in API/seed vecchio.
+/// `hdr_eco` veniva localizzato come secondo «A. CORSI DI LAUREA…» (duplicato).
+const _legacyUniumaHeaderCodes = {'hdr_hum', 'hdr_eco', 'hdr_master'};
+
+/// Catalogo canonico UNIUMA per UI (ficha + orientamento).
+/// L’API può ancora avere header legacy duplicati: l’embedded è la source of truth.
+List<OffertaFormativa> uniumaCanonicalOfferte({
+  required int partnerId,
+  required String partnerNome,
+  String lang = 'it',
+}) =>
+    uniumaOfferteAsFormative(
+      partnerId: partnerId,
+      partnerNome: partnerNome,
+      lang: lang,
+    );
+
+/// Dopo localizzazione: una sola voce per codice; scarta header legacy ridondanti.
+List<OffertaFormativa> dedupeUniumaOfferte(List<OffertaFormativa> offerte) {
+  final seen = <String>{};
+  final out = <OffertaFormativa>[];
+  for (final o in offerte) {
+    final code = o.linkInfo.isNotEmpty ? o.linkInfo : o.descrizione;
+    if (_legacyUniumaHeaderCodes.contains(code)) continue;
+    final key = code.isNotEmpty ? code : 'id:${o.id}';
+    if (!seen.add(key)) continue;
+    out.add(o);
+  }
+  return out;
+}
+
 bool isUniumaProgramHeader(OffertaFormativa o) =>
     o.durata == 'header' || o.linkInfo.startsWith('hdr_');
 
@@ -449,7 +480,9 @@ List<OffertaFormativa> localizeUniumaOfferte(
   List<OffertaFormativa> offerte,
   String lang,
 ) =>
-    offerte.map((o) => localizeUniumaOfferta(o, lang)).toList();
+    dedupeUniumaOfferte(
+      offerte.map((o) => localizeUniumaOfferta(o, lang)).toList(),
+    );
 
 /// True solo per URL http(s). I [linkInfo] UNIUMA sono codici (`hdr_laurea`,
 /// `undecided`, …) e non vanno aperti con url_launcher.
@@ -469,7 +502,8 @@ UniumaProgramOption? uniumaOptionForOfferta(OffertaFormativa? o) {
     if (p.codice == code) return p;
   }
   // Alias legacy header codes (catalogo precedente).
-  if (code == 'hdr_hum' || code == 'hdr_eco') {
+  // Nota: hdr_eco non va reso come secondo «A.» in UI — vedi [dedupeUniumaOfferte].
+  if (code == 'hdr_hum') {
     for (final p in uniumaOrientacionPrograms) {
       if (p.codice == 'hdr_laurea') return p;
     }
@@ -479,6 +513,7 @@ UniumaProgramOption? uniumaOptionForOfferta(OffertaFormativa? o) {
       if (p.codice == 'hdr_post') return p;
     }
   }
+  // hdr_eco era un secondo header A duplicato: non mappare a hdr_laurea.
   // Match su qualsiasi titolo noto (API spesso in ES / titoli vecchi).
   for (final p in uniumaOrientacionPrograms) {
     for (final t in p.titoli.values) {

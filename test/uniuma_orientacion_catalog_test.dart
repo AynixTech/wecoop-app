@@ -52,6 +52,41 @@ void main() {
       offerte.firstWhere((o) => o.linkInfo == 'hdr_post').titolo,
       'B. POST-LAUREA',
     );
+    // Un solo header A: niente secondo «A.» tra umanistico ed economico.
+    expect(
+      offerte.where((o) => o.linkInfo == 'hdr_laurea').length,
+      1,
+    );
+  });
+
+  test('dedupe drops legacy hdr_eco duplicate A header from API', () {
+    final embedded =
+        uniumaCanonicalOfferte(partnerId: 1, partnerNome: 'U', lang: 'it');
+    final withLegacy = [
+      ...embedded.take(4), // hdr_laurea + 3 umanistici
+      OffertaFormativa(
+        id: 99,
+        titolo: 'A. CORSI DI LAUREA IN MEDIAZIONE LINGUISTICA E CULTURALE',
+        descrizione: 'hdr_eco',
+        partnerId: 1,
+        partnerNome: 'U',
+        partnerLogoUrl: '',
+        partnerSitoWeb: '',
+        categoria: 'Económico',
+        durata: 'header',
+        linkInfo: 'hdr_eco',
+        imageUrl: '',
+        ordine: 50,
+      ),
+      ...embedded.skip(4),
+    ];
+    final cleaned = localizeUniumaOfferte(withLegacy, 'it');
+    expect(cleaned.where((o) => o.linkInfo == 'hdr_eco'), isEmpty);
+    expect(cleaned.where((o) => o.linkInfo == 'hdr_laurea').length, 1);
+    expect(
+      cleaned.where((o) => o.titolo.contains('CORSI DI LAUREA')).length,
+      1,
+    );
   });
 
   test('ficha list shows headers and courses, hides undecided', () {
